@@ -1,3 +1,3 @@
 #media-refs
 
-Data API and database migration scripts for media reference (aka clip) and playlist storage.
+Data API and database migration scripts for MediaRef and Playlist models.
