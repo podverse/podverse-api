@@ -1,5 +1,5 @@
 import { IsUrl, IsInt, Min, IsNotEmpty, ValidateIf } from 'class-validator'
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn,
+import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn,
   UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
@@ -135,5 +135,39 @@ export class MediaRef {
 
   @Column({ nullable: true })
   title: string
+
+  @BeforeInsert()
+  trimStrings () {
+    if (this.description) {
+      this.description = this.description.trim() === '' ? null : this.description.trim()
+    }
+    if (this.episodeId) {
+      this.episodeId = this.episodeId.trim() === '' ? null : this.episodeId.trim()
+    }
+    if (this.episodeSummary) {
+      this.episodeSummary = this.episodeSummary.trim() === '' ? null : this.episodeSummary.trim()
+    }
+    if (this.episodeTitle) {
+      this.episodeTitle = this.episodeTitle.trim() === '' ? null : this.episodeTitle.trim()
+    }
+    if (this.ownerId) {
+      this.ownerId = this.ownerId.trim() === '' ? null : this.ownerId.trim()
+    }
+    if (this.ownerName) {
+      this.ownerName = this.ownerName.trim() === '' ? null : this.ownerName.trim()
+    }
+    if (this.podcastId) {
+      this.podcastId = this.podcastId.trim() === '' ? null : this.podcastId.trim()
+    }
+    if (this.podcastTitle) {
+      this.podcastTitle = this.podcastTitle.trim() === '' ? null : this.podcastTitle.trim()
+    }
+    if (this.shortId) {
+      this.shortId = this.shortId.trim() === '' ? null : this.shortId.trim()
+    }
+    if (this.title) {
+      this.title = this.title.trim() === '' ? null : this.title.trim()
+    }
+  }
 
 }

@@ -20,6 +20,7 @@ export const databaseInitializer = async () => {
     console.log('Database connection established')
 
     const mediaRef = new MediaRef()
+    mediaRef.title = '      asdf fds       '
     mediaRef.episodeMediaUrl = 'https://blah.com'
     mediaRef.podcastFeedUrl = 'https://blah.com'
     mediaRef.podcastId = '1234'
