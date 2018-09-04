@@ -1,9 +1,16 @@
 import * as Koa from 'koa'
+import { databaseInitializer } from 'initializers/database'
 
-const app = new Koa()
+const bootstrap = async () => {
+  await databaseInitializer()
 
-app.use(async ctx => {
-  ctx.body = 'It works still!'
-})
+  const app = new Koa()
 
-app.listen(3000)
+  app.use(async ctx => {
+    ctx.body = 'It works still!'
+  })
+
+  app.listen(2001)
+}
+
+bootstrap()
