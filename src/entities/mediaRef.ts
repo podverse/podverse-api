@@ -1,14 +1,16 @@
 import { IsUrl, IsInt, Min, IsNotEmpty, ValidateIf } from 'class-validator'
+// import { Episode } from 'entities/episode'
+// import { Podcast } from 'entities/podcast'
 import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn,
-  UpdateDateColumn } from 'typeorm'
+  UpdateDateColumn} from 'typeorm'
 
 const shortid = require('shortid')
 
 @Entity('mediaRefs')
 export class MediaRef {
 
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number
 
   @CreateDateColumn()
   createdAt: Date
@@ -40,9 +42,8 @@ export class MediaRef {
   @Column({ nullable: true })
   episodeDuration: number
 
-  @IsNotEmpty()
-  @Column()
-  episodeId: string
+  // @ManyToOne(type => Episode, { nullable: false })
+  // episode: Episode
 
   @ValidateIf(a => a.episodeImageUrl != null)
   @IsUrl()
@@ -109,6 +110,9 @@ export class MediaRef {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  // @ManyToOne(type => Podcast, { nullable: false })
+  // podcast: Podcast
+
   @IsUrl()
   @Column()
   podcastFeedUrl: string
@@ -117,10 +121,6 @@ export class MediaRef {
   @IsUrl()
   @Column({ nullable: true })
   podcastImageUrl: string
-
-  @IsNotEmpty()
-  @Column()
-  podcastId: string
 
   @Column({ nullable: true })
   podcastTitle: string
@@ -140,10 +140,7 @@ export class MediaRef {
   trimStrings () {
     if (this.description) {
       this.description = this.description.trim() === '' ? null : this.description.trim()
-    }
-    if (this.episodeId) {
-      this.episodeId = this.episodeId.trim() === '' ? null : this.episodeId.trim()
-    }
+    }    
     if (this.episodeSummary) {
       this.episodeSummary = this.episodeSummary.trim() === '' ? null : this.episodeSummary.trim()
     }
@@ -155,9 +152,6 @@ export class MediaRef {
     }
     if (this.ownerName) {
       this.ownerName = this.ownerName.trim() === '' ? null : this.ownerName.trim()
-    }
-    if (this.podcastId) {
-      this.podcastId = this.podcastId.trim() === '' ? null : this.podcastId.trim()
     }
     if (this.podcastTitle) {
       this.podcastTitle = this.podcastTitle.trim() === '' ? null : this.podcastTitle.trim()

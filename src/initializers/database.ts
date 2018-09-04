@@ -1,6 +1,6 @@
 import { createConnection } from 'typeorm'
 import { MediaRef } from 'entities/mediaRef'
-import { validate } from 'class-validator';
+import { validate } from 'class-validator'
 
 export const databaseInitializer = async () => {
 
@@ -23,8 +23,6 @@ export const databaseInitializer = async () => {
     mediaRef.title = '      asdf fds       '
     mediaRef.episodeMediaUrl = 'https://blah.com'
     mediaRef.podcastFeedUrl = 'https://blah.com'
-    mediaRef.podcastId = '1234'
-    mediaRef.episodeId = '4567'
     mediaRef.startTime = 100
 
     validate(mediaRef).then(errors => {
@@ -40,9 +38,6 @@ export const databaseInitializer = async () => {
           })
       }
     })
-
-
-
   })
 
 }
