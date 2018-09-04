@@ -1,5 +1,6 @@
 import { createConnection } from 'typeorm'
 import { MediaRef } from 'entities/mediaRef'
+import { validate } from 'class-validator';
 
 export const databaseInitializer = async () => {
 
@@ -19,18 +20,27 @@ export const databaseInitializer = async () => {
     console.log('Database connection established')
 
     const mediaRef = new MediaRef()
-    mediaRef.title = 'First mediaRef'
     mediaRef.episodeMediaUrl = 'https://blah.com'
     mediaRef.podcastFeedUrl = 'https://blah.com'
     mediaRef.podcastId = '1234'
-    mediaRef.episodeId = '1234'
+    mediaRef.episodeId = '4567'
+    mediaRef.startTime = 100
 
-    return connection.manager
-      .save(mediaRef)
-      .then(mediaRef => {
-        console.log('mediaRef saved')
-        console.log(mediaRef)
-      })
+    validate(mediaRef).then(errors => {
+      if (errors.length > 0) {
+        console.log('validation failed. errors: ', errors)
+      } else {
+        console.log('validation succeed')
+        return connection.manager
+          .save(mediaRef)
+          .then(mediaRef => {
+            console.log('mediaRef saved')
+            console.log(mediaRef)
+          })
+      }
+    })
+
+
 
   })
 

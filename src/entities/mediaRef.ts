@@ -1,4 +1,4 @@
-import { IsDate, IsUrl, IsInt, Min } from 'class-validator'
+import { IsUrl, IsInt, Min, IsNotEmpty, ValidateIf } from 'class-validator'
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn,
   UpdateDateColumn } from 'typeorm'
 
@@ -16,6 +16,7 @@ export class MediaRef {
   @UpdateDateColumn()
   updatedAt: Date
 
+  @ValidateIf(a => a.allTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
@@ -27,23 +28,28 @@ export class MediaRef {
   @Column({ nullable: true })
   description: string
 
+  @ValidateIf(a => a.endTime != null)
   @IsInt()
   @Min(1)
   @Column({ nullable: true })
   endTime: number
 
+  @ValidateIf(a => a.episodeDuration != null)
   @IsInt()
   @Min(0)
   @Column({ nullable: true })
   episodeDuration: number
 
+  @IsNotEmpty()
   @Column()
   episodeId: string
 
+  @ValidateIf(a => a.episodeImageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   episodeImageUrl: string
 
+  @ValidateIf(a => a.episodeLinkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   episodeLinkUrl: string
@@ -73,26 +79,31 @@ export class MediaRef {
   @Column({ nullable: true })
   ownerName: string
 
+  @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastHourTotalUniquePageviews: number
 
+  @ValidateIf(a => a.pastDayTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastDayTotalUniquePageviews: number
 
+  @ValidateIf(a => a.pastWeekTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastWeekTotalUniquePageviews: number
 
+  @ValidateIf(a => a.pastMonthTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastMonthTotalUniquePageviews: number
 
+  @ValidateIf(a => a.pastYearTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
@@ -102,10 +113,12 @@ export class MediaRef {
   @Column()
   podcastFeedUrl: string
 
+  @ValidateIf(a => a.podcastImageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   podcastImageUrl: string
 
+  @IsNotEmpty()
   @Column()
   podcastId: string
 
