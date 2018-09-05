@@ -5,7 +5,7 @@ import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany,
 
 const shortid = require('shortid')
 
-@Entity()
+@Entity('playlists')
 export class Playlist {
 
   @PrimaryColumn('varchar', {
