@@ -7,6 +7,15 @@ const relations = [
 
 export default {
   Mutation: {
+    async createPlaylist (_, { patch }) {
+      const repository = getRepository(Playlist)
+      const playlist = new Playlist()
+      const newPlaylist = Object.assign(playlist, patch)
+      await repository.save(newPlaylist)
+      return {
+        ...newPlaylist
+      }
+    },
     async updatePlaylist (_, { id, patch }) {
       const repository = getRepository(Playlist)
       const playlist = await repository.findOne({ id })

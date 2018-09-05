@@ -1,5 +1,12 @@
 export default `
-  input PlaylistPatch {
+  input CreatePlaylistPatch {
+    description: String
+    isPublic: Boolean
+    itemsOrder: [String]
+    title: String
+  }
+
+  input UpdatePlaylistPatch {
     description: String
     isPublic: Boolean
     itemsOrder: [String]
@@ -7,9 +14,13 @@ export default `
   }
 
   type Mutation {
+    createPlaylist(
+      patch: CreatePlaylistPatch!
+    ): Playlist
+
     updatePlaylist(
       id: String!
-      patch: PlaylistPatch!
+      patch: UpdatePlaylistPatch!
     ): Playlist
   }
 

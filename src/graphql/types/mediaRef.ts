@@ -22,6 +22,7 @@ export default `
     createMediaRef(
       patch: CreateMediaRefPatch
     ): MediaRef
+
     updateMediaRef(
       id: String!
       patch: UpdateMediaRefPatch!

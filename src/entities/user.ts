@@ -34,8 +34,9 @@ export class User {
   subscribedPodcastIds: string[]
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert () {
     this.id = shortid.generate()
+    this.subscribedPodcastIds = this.subscribedPodcastIds || []
   }
 
 }

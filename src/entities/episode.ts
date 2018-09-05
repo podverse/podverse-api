@@ -63,7 +63,7 @@ export class Episode {
   linkUrl: string
 
   @IsUrl()
-  @Column()
+  @Column({ unique: true })
   mediaUrl: string
 
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
@@ -109,7 +109,7 @@ export class Episode {
   title: string
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert() {
     this.id = shortid.generate()
   }
 

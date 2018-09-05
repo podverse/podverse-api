@@ -88,7 +88,7 @@ export class Podcast {
   title: string
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert () {
     this.id = shortid.generate()
   }
 

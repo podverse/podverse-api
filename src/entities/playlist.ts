@@ -43,8 +43,9 @@ export class Playlist {
   title: string
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert () {
     this.id = shortid.generate()
+    this.itemsOrder = this.itemsOrder || []
   }
 
   @BeforeInsert()
