@@ -1,3 +1,3 @@
-# media-refs
+# api
 
-Data API and database migration scripts for MediaRef and Playlist models.
+Data API, database migration scripts, and backend services for all Podverse models.
