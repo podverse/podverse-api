@@ -6,12 +6,23 @@ const relations = [
 ]
 
 export default {
+  Mutation: {
+    async updateMediaRef (_, { id, patch }) {
+      const repository = getRepository(MediaRef)
+      const mediaRef = await repository.findOne({ id })
+      const newMediaRef = Object.assign(mediaRef, patch)
+      await repository.save(newMediaRef)
+      return {
+        ...newMediaRef
+      }
+    }
+  },
   Query: {
-    mediaRef (obj, { id }, context, info) {
+    async mediaRef (obj, { id }, context, info) {
       const repository = getRepository(MediaRef)
       return repository.findOne({ id }, { relations })
     },
-    mediaRefs (obj, args, context, info) {
+    async mediaRefs (obj, args, context, info) {
       const repository = getRepository(MediaRef)
       return repository.find({ relations })
     }

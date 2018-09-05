@@ -1,4 +1,19 @@
 export default `
+  input MediaRefPatch {
+    description: String
+    endTime: Int
+    isPublic: Boolean
+    startTime: Int
+    title: String
+  }
+
+  type Mutation {
+    updateMediaRef(
+      id: String!
+      patch: MediaRefPatch!
+    ): MediaRef
+  }
+
   type Query {
     mediaRef(id: String!): MediaRef
     mediaRefs: [MediaRef]
