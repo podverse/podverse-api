@@ -1,5 +1,16 @@
 export default `
-  input MediaRefPatch {
+
+  input CreateMediaRefPatch {
+    description: String
+    endTime: Int
+    episodeMediaUrl: String
+    isPublic: Boolean
+    podcastFeedUrl: String
+    startTime: Int
+    title: String
+  }
+
+  input UpdateMediaRefPatch {
     description: String
     endTime: Int
     isPublic: Boolean
@@ -8,9 +19,12 @@ export default `
   }
 
   type Mutation {
+    createMediaRef(
+      patch: CreateMediaRefPatch
+    ): MediaRef
     updateMediaRef(
       id: String!
-      patch: MediaRefPatch!
+      patch: UpdateMediaRefPatch!
     ): MediaRef
   }
 

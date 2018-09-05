@@ -12,7 +12,7 @@ export default `
     categories: [Category]
     episodes: [Episode]
     mediaRefs: [MediaRef]
-    podcast: [Podcast]
+    podcasts: [Podcast]
     slug: String
     title: String
   }
