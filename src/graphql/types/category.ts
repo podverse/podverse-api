@@ -1,7 +1,7 @@
 export default `
   type Query {
     category(id: String!): Category
-    categorys: [Category]
+    categories: [Category]
   }
 
   type Category {

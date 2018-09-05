@@ -1,6 +1,7 @@
 import { IsEmail } from 'class-validator'
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryColumn,
-  UpdateDateColumn } from 'typeorm'
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany,
+  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Playlist } from 'entities/playlist'
 
 const shortid = require('shortid')
 
@@ -18,6 +19,9 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @OneToMany(type => Playlist, playlist => playlist.owner)
+  playlists: Playlist[]
 
   @IsEmail()
   @Column({ unique: true })

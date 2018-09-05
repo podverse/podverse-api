@@ -11,7 +11,7 @@ export default `
     authors: [Author]
     categories: [Category]
     episodes: [Episode]
-    feedUrls: FeedUrl[]
+    feedUrls: [FeedUrl]
     description: String
     imageUrl: String
     isExplicit: Boolean
