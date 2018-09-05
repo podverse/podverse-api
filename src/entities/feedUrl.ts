@@ -16,10 +16,10 @@ export class FeedUrl {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @Column({ default: false })
-  isAuthority: boolean
-
   @ManyToOne(type => Podcast, podcast => podcast.feedUrls)
   podcast: Podcast
+
+  @Column({ default: false })
+  isAuthority: boolean
 
 }
