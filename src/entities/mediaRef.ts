@@ -1,16 +1,25 @@
-import { IsUrl, IsInt, Min, IsNotEmpty, ValidateIf } from 'class-validator'
-// import { Episode } from 'entities/episode'
-// import { Podcast } from 'entities/podcast'
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn,
-  UpdateDateColumn} from 'typeorm'
+import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable,
+  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Author } from 'entities/author'
+import { Category } from 'entities/category'
+import { Episode } from 'entities/episode'
+import { Playlist } from 'entities/playlist'
+import { Podcast } from 'entities/podcast'
+import { User } from 'entities/user'
+
+import config from 'config'
+const { mustHavePodcast, mustHaveUser } = config.entityRelationships.mediaRef
 
 const shortid = require('shortid')
 
 @Entity('mediaRefs')
 export class MediaRef {
-
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryColumn('varchar', {
+    default: shortid.generate(),
+    length: 14
+  })
+  id: string
 
   @CreateDateColumn()
   createdAt: Date
@@ -18,14 +27,28 @@ export class MediaRef {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ValidateIf(a => a.allTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  allTimeTotalUniquePageviews: number
+  @ManyToMany(type => Author, author => author.mediaRefs)
+  @JoinTable()
+  authors: Author[]
 
-  @Column({ nullable: true })
-  dateCreated: Date
+  @ManyToMany(type => Category, category => category.mediaRefs)
+  @JoinTable()
+  categories: Category[]
+
+  @ManyToOne(type => Episode, { nullable: !mustHavePodcast })
+  @JoinColumn({ name: '_episodeId' })
+  episode: Episode
+
+  @ManyToOne(type => User, { nullable: !mustHaveUser })
+  @JoinColumn({ name: '_ownerId' })
+  owner: User
+
+  @ManyToMany(type => Playlist, playlist => playlist.mediaRefs)
+  playlists: Playlist[]
+
+  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast })
+  @JoinColumn({ name: '_podcastId' })
+  podcast: Podcast
 
   @Column({ nullable: true })
   description: string
@@ -42,13 +65,19 @@ export class MediaRef {
   @Column({ nullable: true })
   episodeDuration: number
 
-  // @ManyToOne(type => Episode, { nullable: false })
-  // episode: Episode
+  @Column({ nullable: true })
+  episodeGuid: string
+
+  @Column({ nullable: true })
+  episodeId: string
 
   @ValidateIf(a => a.episodeImageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   episodeImageUrl: string
+
+  @Column({ default: false })
+  episodeIsExplicit: boolean
 
   @ValidateIf(a => a.episodeLinkUrl != null)
   @IsUrl()
@@ -72,13 +101,16 @@ export class MediaRef {
   isPublic: boolean
 
   @Column({ nullable: true })
-  lastUpdated: Date
-
-  @Column({ nullable: true })
   ownerId: string
 
   @Column({ nullable: true })
   ownerName: string
+
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
@@ -110,23 +142,26 @@ export class MediaRef {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
-  // @ManyToOne(type => Podcast, { nullable: false })
-  // podcast: Podcast
-
   @IsUrl()
   @Column()
   podcastFeedUrl: string
+
+  @Column({ nullable: true })
+  podcastGuid: string
+
+  @Column({ nullable: true })
+  podcastId: string
 
   @ValidateIf(a => a.podcastImageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   podcastImageUrl: string
 
+  @Column({ default: false })
+  podcastIsExplicit: boolean
+
   @Column({ nullable: true })
   podcastTitle: string
-
-  @Column('text', { default: shortid.generate() })
-  shortId: string
 
   @IsInt()
   @Min(0)
@@ -137,10 +172,21 @@ export class MediaRef {
   title: string
 
   @BeforeInsert()
+  ensureUniqueIds () {
+    this.id = shortid.generate()
+  }
+
+  @BeforeInsert()
   trimStrings () {
     if (this.description) {
       this.description = this.description.trim() === '' ? null : this.description.trim()
-    }    
+    }
+    if (this.episodeGuid) {
+      this.episodeGuid = this.episodeGuid.trim() === '' ? null : this.episodeGuid.trim()
+    }
+    if (this.episodeId) {
+      this.episodeId = this.episodeId.trim() === '' ? null : this.episodeId.trim()
+    }
     if (this.episodeSummary) {
       this.episodeSummary = this.episodeSummary.trim() === '' ? null : this.episodeSummary.trim()
     }
@@ -153,15 +199,17 @@ export class MediaRef {
     if (this.ownerName) {
       this.ownerName = this.ownerName.trim() === '' ? null : this.ownerName.trim()
     }
+    if (this.podcastGuid) {
+      this.podcastGuid = this.podcastGuid.trim() === '' ? null : this.podcastGuid.trim()
+    }
+    if (this.podcastId) {
+      this.podcastId = this.podcastId.trim() === '' ? null : this.podcastId.trim()
+    }
     if (this.podcastTitle) {
       this.podcastTitle = this.podcastTitle.trim() === '' ? null : this.podcastTitle.trim()
-    }
-    if (this.shortId) {
-      this.shortId = this.shortId.trim() === '' ? null : this.shortId.trim()
     }
     if (this.title) {
       this.title = this.title.trim() === '' ? null : this.title.trim()
     }
   }
-
 }
