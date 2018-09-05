@@ -1,8 +1,8 @@
 export default `
 
   type Query {
-    mediaRefs: [MediaRef]
     mediaRef(id: String!): MediaRef
+    mediaRefs: [MediaRef]
   }
 
   type MediaRef {
