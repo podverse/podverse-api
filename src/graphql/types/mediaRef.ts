@@ -20,7 +20,7 @@ export default `
 
   type Mutation {
     createMediaRef(
-      patch: CreateMediaRefPatch
+      patch: CreateMediaRefPatch!
     ): MediaRef
 
     updateMediaRef(

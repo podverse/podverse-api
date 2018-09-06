@@ -1,13 +1,25 @@
 export default `
-  input UserPatch {
+
+  input CreateUserPatch {
+    email: String
+    name: String
+    subscribedPodcastIds: [String]
+  }
+
+  input UpdateUserPatch {
+    email: String
     name: String
     subscribedPodcastIds: [String]
   }
 
   type Mutation {
+    createUser(
+      patch: CreateUserPatch!
+    ): User
+
     updateUser(
       id: String!
-      patch: UserPatch!
+      patch: UpdateUserPatch!
     ): User
   }
 

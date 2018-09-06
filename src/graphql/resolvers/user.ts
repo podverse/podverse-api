@@ -5,6 +5,15 @@ const relations = ['playlists']
 
 export default {
   Mutation: {
+    async createUser (_, { patch }) {
+      const repository = getRepository(User)
+      const user = new User()
+      const newUser = Object.assign(user, patch)
+      await repository.save(newUser)
+      return {
+        ...newUser
+      }
+    },
     async updateUser (_, { id, patch }) {
       const repository = getRepository(User)
       const user = await repository.findOne({ id })
