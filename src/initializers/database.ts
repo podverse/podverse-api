@@ -1,4 +1,4 @@
-import { createConnection, ConnectionOptions, getConnection } from 'typeorm'
+import { createConnection, ConnectionOptions } from 'typeorm'
 import { Author } from 'entities/author'
 import { Category } from 'entities/category'
 import { Episode } from 'entities/episode'
@@ -34,6 +34,6 @@ export const databaseInitializer = async () => {
 
   let connection = await createConnection(options)
 
-  await seedDatabase(connection)
+  // await seedDatabase(connection)
 
 }

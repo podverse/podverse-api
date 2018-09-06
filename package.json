@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon",
+    "parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts"
   },
   "dependencies": {
     "@types/node": "^10.9.4",
@@ -11,9 +12,11 @@
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "merge-graphql-schemas": "^1.5.3",
+    "node-podcast-parser": "^2.3.0",
     "nodemon": "^1.18.4",
     "pg": "^7.4.3",
     "reflect-metadata": "^0.1.12",
+    "request": "^2.88.0",
     "shortid": "^2.2.13",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.5.0",

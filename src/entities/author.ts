@@ -43,7 +43,7 @@ export class Author {
   }
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert() {
     this.id = shortid.generate()
   }
 

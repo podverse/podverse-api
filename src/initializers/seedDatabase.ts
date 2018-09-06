@@ -133,6 +133,5 @@ export default async connection => {
   let playlist1 = new Playlist()
   playlist1.owner = user1
   playlist1.title = 'Greatest Hits'
-
   await connection.manager.save(playlist1)
 }

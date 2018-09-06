@@ -49,7 +49,7 @@ export class Category {
   }
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert() {
     this.id = shortid.generate()
   }
 

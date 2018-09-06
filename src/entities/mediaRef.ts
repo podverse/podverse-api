@@ -172,7 +172,7 @@ export class MediaRef {
   title: string
 
   @BeforeInsert()
-  ensureUniqueIds () {
+  beforeInsert() {
     this.id = shortid.generate()
   }
 
