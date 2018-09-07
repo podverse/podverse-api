@@ -9,31 +9,28 @@ import { Podcast } from 'entities/podcast'
 import { User } from 'entities/user'
 import seedDatabase from 'initializers/seedDatabase'
 
+import { dbConfig } from 'config'
+
 export const databaseInitializer = async () => {
 
+  const entities = [
+    Author,
+    Category,
+    Episode,
+    FeedUrl,
+    MediaRef,
+    Playlist,
+    Podcast,
+    User
+  ]
+
   const options: ConnectionOptions = {
-    type: 'postgres',
-    host: '0.0.0.0',
-    port: 5432,
-    username: 'postgres',
-    password: 'mysecretpw',
-    database: 'postgres',
-    entities: [
-      Author,
-      Category,
-      Episode,
-      FeedUrl,
-      MediaRef,
-      Playlist,
-      Podcast,
-      User
-    ],
-    logging: ['error'],
-    synchronize: true
+    ...dbConfig,
+    entities
   }
 
   let connection = await createConnection(options)
 
-  // await seedDatabase(connection)
+  await seedDatabase(connection)
 
 }
