@@ -1,3 +1,4 @@
+import { validCategories } from 'config'
 import { Author } from 'entities/author'
 import { Category } from 'entities/category'
 import { Episode } from 'entities/episode'
@@ -44,7 +45,7 @@ export default async connection => {
 
   let category4 = new Category()
   category4.categories = [category1, category2]
-  category4.title = 'Technology'
+  category4.title = 'Props'
   await connection.manager.save(category4)
 
   let episode1 = new Episode()
@@ -134,4 +135,22 @@ export default async connection => {
   playlist1.owner = user1
   playlist1.title = 'Greatest Hits'
   await connection.manager.save(playlist1)
+
+  await generateCategories(connection)
+}
+
+const generateCategories = async (connection) => {
+  let categories = []
+  for (const category of validCategories) {
+    let c = new Category()
+    c.title = category.title
+    categories.push(c)
+    for (const subCategory of category.categories) {
+      let subC = new Category()
+      subC.title = subCategory.title
+      categories.push(subC)
+    }
+  }
+  
+  await connection.manager.save(categories)
 }

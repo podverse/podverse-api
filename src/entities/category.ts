@@ -3,6 +3,8 @@ import { MediaRef } from 'entities/mediaRef'
 import { Podcast } from 'entities/podcast'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany,
   ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { IsIn } from 'class-validator';
+import { validCategoryTitles } from 'config'
 
 const shortid = require('shortid')
 
@@ -39,7 +41,7 @@ export class Category {
   @Column()
   slug: string
 
-  @Column()
+  @Column({ unique: true })
   title: string
 
   @BeforeInsert()
@@ -52,5 +54,4 @@ export class Category {
   beforeInsert () {
     this.id = shortid.generate()
   }
-
 }
