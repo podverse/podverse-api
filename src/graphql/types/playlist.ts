@@ -18,6 +18,10 @@ export default `
       patch: CreatePlaylistPatch!
     ): Playlist
 
+    deletePlaylist(
+      id: String!
+    ): Playlist
+
     updatePlaylist(
       id: String!
       patch: UpdatePlaylistPatch!

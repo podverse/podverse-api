@@ -14,6 +14,12 @@ export default {
         ...newUser
       }
     },
+    async deleteUser (_, { id }) {
+      const repository = getRepository(User)
+      const user = await repository.findOne({ id })
+      await repository.delete(id)
+      return { ...user }
+    },
     async updateUser (_, { id, patch }) {
       const repository = getRepository(User)
       const user = await repository.findOne({ id })

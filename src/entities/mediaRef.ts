@@ -8,8 +8,8 @@ import { Playlist } from 'entities/playlist'
 import { Podcast } from 'entities/podcast'
 import { User } from 'entities/user'
 
-import config from 'config'
-const { mustHavePodcast, mustHaveUser } = config.entityRelationships.mediaRef
+import { entityRelationships } from 'config'
+const { mustHavePodcast, mustHaveUser } = entityRelationships.mediaRef
 
 const shortid = require('shortid')
 
@@ -172,7 +172,7 @@ export class MediaRef {
   title: string
 
   @BeforeInsert()
-  beforeInsert() {
+  beforeInsert () {
     this.id = shortid.generate()
   }
 

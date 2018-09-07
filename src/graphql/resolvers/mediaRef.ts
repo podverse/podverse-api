@@ -12,18 +12,20 @@ export default {
       const mediaRef = new MediaRef()
       const newMediaRef = Object.assign(mediaRef, patch)
       await repository.save(newMediaRef)
-      return {
-        ...newMediaRef
-      }
+      return { ...newMediaRef }
+    },
+    async deleteMediaRef (_, { id }) {
+      const repository = getRepository(MediaRef)
+      const mediaRef = await repository.findOne({ id })
+      await repository.delete(id)
+      return { ...mediaRef }
     },
     async updateMediaRef (_, { id, patch }) {
       const repository = getRepository(MediaRef)
       const mediaRef = await repository.findOne({ id })
       const newMediaRef = Object.assign(mediaRef, patch)
       await repository.save(newMediaRef)
-      return {
-        ...newMediaRef
-      }
+      return { ...newMediaRef }
     }
   },
   Query: {

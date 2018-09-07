@@ -1,10 +1,8 @@
-import { ConnectionOptions } from 'typeorm';
+import { ConnectionOptions } from 'typeorm'
 
 const env = process.env
-const mustHavePodcast = env.MEDIA_REF_HAS_PODCAST || false
-const mustHaveUser = env.MEDIA_REF_HAS_USER || false
 
-const envDbConfig = {
+export const dbConfig = {
   database: 'postgres',
   host: env.DB_HOST || '0.0.0.0',
   log: {
@@ -17,15 +15,9 @@ const envDbConfig = {
   username: env.DB_USERNAME || 'postgres'
 } as ConnectionOptions
 
-export const dbConfig = envDbConfig
-
-const entityRelationships = {
+export const entityRelationships = {
   mediaRef: {
-    mustHavePodcast,
-    mustHaveUser
+    mustHavePodcast: env.MEDIA_REF_HAS_PODCAST || false,
+    mustHaveUser: env.MEDIA_REF_HAS_USER || false
   }
-}
-
-export default {
-  entityRelationships
 }

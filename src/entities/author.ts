@@ -43,7 +43,7 @@ export class Author {
   }
 
   @BeforeInsert()
-  beforeInsert() {
+  beforeInsert () {
     this.id = shortid.generate()
   }
 

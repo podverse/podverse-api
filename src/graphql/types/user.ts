@@ -17,6 +17,10 @@ export default `
       patch: CreateUserPatch!
     ): User
 
+    deleteUser(
+      id: String!
+    ): User
+
     updateUser(
       id: String!
       patch: UpdateUserPatch!

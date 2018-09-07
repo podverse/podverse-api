@@ -12,18 +12,20 @@ export default {
       const playlist = new Playlist()
       const newPlaylist = Object.assign(playlist, patch)
       await repository.save(newPlaylist)
-      return {
-        ...newPlaylist
-      }
+      return { ...newPlaylist }
+    },
+    async deletePlaylist (_, { id }) {
+      const repository = getRepository(Playlist)
+      const playlist = await repository.findOne({ id })
+      await repository.delete(id)
+      return { ...playlist }
     },
     async updatePlaylist (_, { id, patch }) {
       const repository = getRepository(Playlist)
       const playlist = await repository.findOne({ id })
       const newPlaylist = Object.assign(playlist, patch)
       await repository.save(newPlaylist)
-      return {
-        ...newPlaylist
-      }
+      return { ...newPlaylist }
     }
   },
   Query: {

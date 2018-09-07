@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "@types/node": "^10.9.4",
+    "apollo-errors": "^1.9.0",
     "apollo-server-koa": "^2.0.5",
     "class-validator": "^0.9.1",
     "graphql": "^14.0.0",

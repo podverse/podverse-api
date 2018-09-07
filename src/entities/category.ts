@@ -49,7 +49,7 @@ export class Category {
   }
 
   @BeforeInsert()
-  beforeInsert() {
+  beforeInsert () {
     this.id = shortid.generate()
   }
 
