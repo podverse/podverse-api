@@ -136,21 +136,34 @@ export default async connection => {
   playlist1.title = 'Greatest Hits'
   await connection.manager.save(playlist1)
 
-  await generateCategories(connection)
+  await generateCategories(connection, validCategories, null, true)
 }
 
-const generateCategories = async (connection) => {
-  let categories = []
-  for (const category of validCategories) {
-    let c = new Category()
-    c.title = category.title
-    categories.push(c)
-    for (const subCategory of category.categories) {
-      let subC = new Category()
-      subC.title = subCategory.title
-      categories.push(subC)
+const generateCategories = async (connection, data, parent, shouldSave) => {
+  let newCategories = []
+  for (let category of data) {
+    category.parent = parent
+    let c = generateCategory(category)
+    newCategories.push(c)
+
+    if (category.categories && category.categories.length > 0) {
+      const subCategories = await generateCategories(
+        connection, category.categories, c, false
+      )
+      newCategories = newCategories.concat(subCategories)
     }
   }
-  
-  await connection.manager.save(categories)
+
+  if (shouldSave) {
+    await connection.manager.save(newCategories)
+  } else {
+    return newCategories
+  }
+}
+
+const generateCategory = data => {
+  let category = new Category()
+  category.title = data.title
+  category.category = data.parent
+  return category
 }

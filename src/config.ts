@@ -60,7 +60,7 @@ export const validCategories = [
   {
     title: 'Games & Hobbies',
     categories: [
-      { title: 'Automative' },
+      { title: 'Automotive' },
       { title: 'Aviation' },
       { title: 'Hobbies' },
       { title: 'Other Games' },
@@ -132,7 +132,12 @@ export const validCategories = [
   },
   {
     title: 'Technology',
-    categories: []
+    categories: [
+      { title: 'Gadgets' },
+      { title: 'Podcasting' },
+      { title: 'Software How-To' },
+      { title: 'Tech News' }
+    ]
   }
 ]
 
