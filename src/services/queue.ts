@@ -60,36 +60,42 @@ export const addAllFeedsToQueue = async (feeds, chunkSize) => {
   await getConnection().close()
 }
 
-export const receiveNextFeedFromQueue = async () => {
+export const receiveMessageFromQueue = async (queue) => {
   let params = {
-    QueueUrl: feedsToParseUrl,
+    QueueUrl: queue,
     MessageAttributeNames: ['All'],
     VisibilityTimeout: 30
   }
 
-  const feedData = await sqs.receiveMessage(params)
+  const message = await sqs.receiveMessage(params)
     .promise()
     .then(data => {
       if (!data.Messages || data.Messages.length === 0) {
-        console.log('parseNextFeedFromQueue: No messages found.')
+        console.log('receiveMessageFromQueue: No messages found.')
         return
       }
-
       const message = data.Messages[0]
-      const attributes = message.MessageAttributes
-      const feedData = {
-        feedUrl: attributes.feedUrl.StringValue,
-        podcastId: attributes.podcastId.StringValue,
-        receiptHandle: message.ReceiptHandle
-      }
-
-      return feedData
+      return message
     })
     .catch(error => {
-      logError('parseNextFeedFromQueue: sqs.receiveMessage error', error)
+      logError('receiveMessageFromQueue: sqs.receiveMessage error', error)
     })
 
-  return feedData
+  return message
+}
+
+export const sendMessageToQueue = async (params, queue) => {
+
+  const message = {
+    MessageBody: 'aws sqs requires a message body - podverse rules',
+    QueueUrl: queue
+  }
+
+  console.log(message)
+
+  await sqs.sendMessage(message)
+    .promise()
+    .catch(error => logError('sendMessageToQueue:sqs.sendMessage', error))
 }
 
 export const deleteMessage = async receiptHandle => {
