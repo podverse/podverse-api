@@ -4,11 +4,14 @@ import { FeedUrl } from 'entities'
 import { chunkArray, logError } from 'utility'
 import { databaseInitializer } from 'initializers/database'
 import { sqs } from 'services/aws'
+import { generateFeedMessageAttributes } from 'services/parser'
 
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 
 export const addAllFeedsToQueue = async (feeds, chunkSize) => {
   await databaseInitializer()
+
+  // await purgeQueue()
 
   const feedUrlRepo = await getRepository(FeedUrl)
 
@@ -21,16 +24,7 @@ export const addAllFeedsToQueue = async (feeds, chunkSize) => {
 
   let attributes = []
   for (const feed of allFeeds) {
-    const attribute = {
-      'feedUrl': {
-        DataType: 'String',
-        StringValue: feed.url
-      },
-      'podcastId': {
-        DataType: 'String',
-        StringValue: feed.podcast.id
-      }
-    }
+    const attribute = generateFeedMessageAttributes(feed)
     attributes.push(attribute)
   }
 
@@ -84,9 +78,9 @@ export const receiveMessageFromQueue = async (queue) => {
   return message
 }
 
-export const sendMessageToQueue = async (params, queue) => {
-
+export const sendMessageToQueue = async (attrs, queue) => {
   const message = {
+    MessageAttributes: attrs,
     MessageBody: 'aws sqs requires a message body - podverse rules',
     QueueUrl: queue
   }

@@ -1,6 +1,6 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
-import { getRepository, getConnection, In } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { awsConfig } from 'config'
 import { Author, Category, Episode, FeedUrl, Podcast } from 'entities'
 import { logError } from 'utility'
@@ -15,27 +15,22 @@ export const parseNextFeedFromQueue = async (shouldConnectToDb = false) => {
   if (shouldConnectToDb) {
     await databaseInitializer()
   }
-  
+
   const message = await receiveMessageFromQueue(feedsToParseUrl)
 
   if (!message) {
     return false
   }
 
-  const attributes = message.MessageAttributes
-  const feed = {
-    feedUrl: attributes.feedUrl.StringValue,
-    podcastId: attributes.podcastId.StringValue,
-    receiptHandle: message.ReceiptHandle
-  }
+  const feed = extractFeedMessage(message)
 
-  if (feed && feed.feedUrl && feed.podcastId) {
+  if (feed && feed.url && feed.podcast.id) {
     try {
-      let res = await parseFeed(feed.feedUrl, feed.podcastId, 'false')
+      let res = await parseFeed(feed.url, feed.podcast.id, 'false')
     } catch (error) {
       logError('parseNextFeedFromQueue:parseFeed', error)
-
-      await sendMessageToQueue(message, feedsToParseErrorsUrl)
+      const attrs = generateFeedMessageAttributes(feed)
+      await sendMessageToQueue(attrs, feedsToParseErrorsUrl)
     }
 
     await deleteMessage(feed.receiptHandle)
@@ -44,16 +39,16 @@ export const parseNextFeedFromQueue = async (shouldConnectToDb = false) => {
   return true
 }
 
-export const parseFeedsFromQueueUntilAllFinished = async (shouldConnectToDb = false) => {
+export const parseAllFeedsFromQueue = async (shouldConnectToDb = false) => {
   const shouldContinue = await parseNextFeedFromQueue(shouldConnectToDb)
   if (shouldContinue) {
-    await parseFeedsFromQueueUntilAllFinished()
+    await parseAllFeedsFromQueue()
   }
 }
 
 export const parseFeed = async (url, id, shouldCreate = 'false') => {
 
-  await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     request(url, async (error, res, data) => {
       if (error) {
         logError('Network error', error, { id, url, shouldCreate })
@@ -119,6 +114,8 @@ export const parseFeed = async (url, id, shouldCreate = 'false') => {
         podcast.type = data.type
 
         await podcastRepo.save(podcast)
+
+        resolve()
       })
     })
   })
@@ -225,4 +222,28 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 
   return allEpisodes
+}
+
+export const generateFeedMessageAttributes = (feed) => {
+  return {
+    'feedUrl': {
+      DataType: 'String',
+      StringValue: feed.url
+    },
+    'podcastId': {
+      DataType: 'String',
+      StringValue: feed.podcast.id
+    }
+  }
+}
+
+const extractFeedMessage = (message) => {
+  const attrs = message.MessageAttributes
+  return {
+    url: attrs.feedUrl.StringValue,
+    podcast: {
+      id: attrs.podcastId.StringValue
+    },
+    receiptHandle: message.ReceiptHandle
+  }
 }

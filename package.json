@@ -3,7 +3,7 @@
     "addAllFeedsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllFeedsToQueue.ts",
     "start": "nodemon",
     "parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts",
-    "parseFeedsFromQueueUntilAllFinished": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedsFromQueueUntilAllFinished.ts",
+    "parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",
     "receiveNextFeedFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveNextFeedFromQueue.ts"
   },
   "dependencies": {

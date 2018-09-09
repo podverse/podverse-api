@@ -180,6 +180,6 @@ const parseFeeds = async () => {
   ]
 
   for (const feed of sampleFeeds) {
-    await parseFeed(feed, null, 'true', false)
+    // await parseFeed(feed, null, 'true', false)
   }
 }
