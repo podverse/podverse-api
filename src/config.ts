@@ -2,6 +2,14 @@ import { ConnectionOptions } from 'typeorm'
 
 const env = process.env
 
+export const awsConfig = {
+  queueUrls: {
+    feedsToParse: env.AWS_QUEUE_FEED_PARSER_URL,
+    feedsToParseErrors: env.AWS_QUEUE_FEED_PARSER_ERRORS_URL
+  },
+  region: env.AWS_REGION
+}
+
 export const dbConfig = {
   database: 'postgres',
   host: env.DB_HOST || '0.0.0.0',
