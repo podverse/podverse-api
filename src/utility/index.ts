@@ -8,7 +8,7 @@ export const chunkArray = (arr, chunkSize = 10) => {
   return chunks
 }
 
-export const logError = (msg, error, data) => {
+export const logError = (msg, error, data = {}) => {
   if (msg) {
     console.error(msg)
   }

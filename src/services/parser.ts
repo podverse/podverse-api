@@ -1,32 +1,37 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
 import { getRepository, getConnection, In } from 'typeorm'
-import { Author, Category, Episode, FeedUrl, Podcast }
-  from 'entities'
+import { Author, Category, Episode, FeedUrl, Podcast } from 'entities'
 import { logError } from 'utility'
 import { databaseInitializer } from 'initializers/database'
+import { receiveNextFeedFromQueue, deleteMessage } from 'services/queue'
 
-export const parseFeed = async (url, id, shouldCreate, shouldConnectToDb = true) => {
+export const parseFromQueueUntilAllFinished = async (shouldConnectToDb = false) => {
 
   if (shouldConnectToDb) {
     await databaseInitializer()
   }
 
+  const feed = await receiveNextFeedFromQueue()
+
+  if (feed && feed.feedUrl && feed.podcastId) {
+    await parseFeed(feed.feedUrl, feed.podcastId, 'false')
+    await deleteMessage(feed.receiptHandle)
+    await parseFromQueueUntilAllFinished()
+  }
+}
+
+export const parseFeed = async (url, id, shouldCreate = 'false') => {
+
   request(url, async (error, res, data) => {
     if (error) {
       logError(error, 'Network error', { id, url, shouldCreate })
-      if (shouldConnectToDb) {
-        await getConnection().close()
-      }
       return
     }
 
     parsePodcast(data, async (error, data) => {
       if (error) {
         logError(error, 'Parsing error', { id, url, shouldCreate })
-        if (shouldConnectToDb) {
-          await getConnection().close()
-        }
         return
       }
 
@@ -36,6 +41,7 @@ export const parseFeed = async (url, id, shouldCreate, shouldConnectToDb = true)
       if (shouldCreate === 'true') {
         const feedUrl = new FeedUrl()
         feedUrl.url = url
+        feedUrl.isAuthority = true
         podcast = new Podcast()
         feedUrl.podcast = podcast
         podcast.feedUrls = [feedUrl]
@@ -47,9 +53,6 @@ export const parseFeed = async (url, id, shouldCreate, shouldConnectToDb = true)
             null,
             { id, url, shouldCreate }
           )
-          if (shouldConnectToDb) {
-            await getConnection().close()
-          }
           return
         }
       }
@@ -82,10 +85,6 @@ export const parseFeed = async (url, id, shouldCreate, shouldConnectToDb = true)
       podcast.type = data.type
 
       await podcastRepo.save(podcast)
-
-      if (shouldConnectToDb) {
-        await getConnection().close()
-      }
     })
   })
 }
