@@ -91,8 +91,6 @@ export const sendMessageToQueue = async (params, queue) => {
     QueueUrl: queue
   }
 
-  console.log(message)
-
   await sqs.sendMessage(message)
     .promise()
     .catch(error => logError('sendMessageToQueue:sqs.sendMessage', error))

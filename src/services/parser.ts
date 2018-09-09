@@ -11,16 +11,15 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue }
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 const feedsToParseErrorsUrl = awsConfig.queueUrls.feedsToParseErrors
 
-export const parseFromQueueUntilAllFinished = async (shouldConnectToDb = false) => {
-
+export const parseNextFeedFromQueue = async (shouldConnectToDb = false) => {
   if (shouldConnectToDb) {
     await databaseInitializer()
   }
-
+  
   const message = await receiveMessageFromQueue(feedsToParseUrl)
 
   if (!message) {
-    return
+    return false
   }
 
   const attributes = message.MessageAttributes
@@ -34,12 +33,21 @@ export const parseFromQueueUntilAllFinished = async (shouldConnectToDb = false) 
     try {
       let res = await parseFeed(feed.feedUrl, feed.podcastId, 'false')
     } catch (error) {
-      logError('parseFromQueueUntilAllfinished:parseFeed', error)
+      logError('parseNextFeedFromQueue:parseFeed', error)
+
       await sendMessageToQueue(message, feedsToParseErrorsUrl)
     }
-    console.log('will delete')
+
     await deleteMessage(feed.receiptHandle)
-    await parseFromQueueUntilAllFinished()
+  }
+
+  return true
+}
+
+export const parseFeedsFromQueueUntilAllFinished = async (shouldConnectToDb = false) => {
+  const shouldContinue = await parseNextFeedFromQueue(shouldConnectToDb)
+  if (shouldContinue) {
+    await parseFeedsFromQueueUntilAllFinished()
   }
 }
 
