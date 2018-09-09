@@ -1,10 +1,8 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Author } from 'entities/author'
-import { Category } from 'entities/category'
-import { MediaRef } from 'entities/mediaRef'
-import { Podcast } from 'entities/podcast'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable, ManyToMany,
-  ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Author, Category, MediaRef, Podcast } from 'entities'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
+  UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
 
@@ -46,6 +44,12 @@ export class Episode {
   @Column({ nullable: true })
   duration: number
 
+  @Column({ nullable: true })
+  episodeType: string
+
+  @Column({ nullable: true })
+  guid: string
+
   @ValidateIf(a => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
@@ -61,6 +65,15 @@ export class Episode {
   @IsUrl()
   @Column({ nullable: true })
   linkUrl: string
+
+  @ValidateIf(a => a.mediaFilesize != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  mediaFilesize: number
+
+  @Column({ nullable: true })
+  mediaType: string
 
   @IsUrl()
   @Column({ unique: true })
@@ -111,6 +124,14 @@ export class Episode {
   @BeforeInsert()
   beforeInsert() {
     this.id = shortid.generate()
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  beforeAll () {
+    if (this.guid) {
+      this.guid = this.guid.trim() === '' ? null : this.guid.trim()
+    }
   }
 
 }

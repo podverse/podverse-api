@@ -1,12 +1,6 @@
 import { validCategories } from 'config'
-import { Author } from 'entities/author'
-import { Category } from 'entities/category'
-import { Episode } from 'entities/episode'
-import { FeedUrl } from 'entities/feedUrl'
-import { MediaRef } from 'entities/mediaRef'
-import { Playlist } from 'entities/playlist'
-import { Podcast } from 'entities/podcast'
-import { User } from 'entities/user'
+import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
+  Podcast, User } from 'entities'
 
 export default async connection => {
   await connection.synchronize(true)

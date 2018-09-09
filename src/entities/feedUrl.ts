@@ -1,5 +1,5 @@
 import { IsUrl } from 'class-validator'
-import { Podcast } from 'entities/podcast'
+import { Podcast } from 'entities'
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 

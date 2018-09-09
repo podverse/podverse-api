@@ -14,10 +14,14 @@ export default `
     podcast: Podcast
     description: String
     duration: Int
+    episodeType: String
+    guid: String
     imageUrl: String
     isExplicit: Boolean
     isPublic: Boolean
     linkUrl: String
+    mediaFilesize: Int
+    mediaType: String
     mediaUrl: String
     pastAllTimeTotalUniquePageviews: Int
     pastHourTotalUniquePageviews: Int

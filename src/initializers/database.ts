@@ -1,15 +1,8 @@
 import { createConnection, ConnectionOptions } from 'typeorm'
-import { Author } from 'entities/author'
-import { Category } from 'entities/category'
-import { Episode } from 'entities/episode'
-import { FeedUrl } from 'entities/feedUrl'
-import { MediaRef } from 'entities/mediaRef'
-import { Playlist } from 'entities/playlist'
-import { Podcast } from 'entities/podcast'
-import { User } from 'entities/user'
-import seedDatabase from 'initializers/seedDatabase'
-
 import { dbConfig } from 'config'
+import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
+  Podcast, User } from 'entities'
+import seedDatabase from 'initializers/seedDatabase'
 
 export const databaseInitializer = async () => {
 

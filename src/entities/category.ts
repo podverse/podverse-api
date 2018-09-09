@@ -1,10 +1,7 @@
-import { Episode } from 'entities/episode'
-import { MediaRef } from 'entities/mediaRef'
-import { Podcast } from 'entities/podcast'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany,
-  ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { IsIn } from 'class-validator';
-import { validCategoryTitles } from 'config'
+import { Episode, MediaRef, Podcast } from 'entities'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
+  from 'typeorm'
 
 const shortid = require('shortid')
 

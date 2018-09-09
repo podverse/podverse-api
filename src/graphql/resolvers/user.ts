@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { User } from 'entities/user'
+import { User } from 'entities'
 
 const relations = ['playlists']
 

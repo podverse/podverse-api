@@ -1,12 +1,8 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable,
-  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { Author } from 'entities/author'
-import { Category } from 'entities/category'
-import { Episode } from 'entities/episode'
-import { Playlist } from 'entities/playlist'
-import { Podcast } from 'entities/podcast'
-import { User } from 'entities/user'
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
+  JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
+  BeforeUpdate } from 'typeorm'
+import { Author, Category, Episode, Playlist, Podcast, User } from 'entities'
 
 import { entityRelationships } from 'config'
 const { mustHavePodcast, mustHaveUser } = entityRelationships.mediaRef
@@ -177,6 +173,7 @@ export class MediaRef {
   }
 
   @BeforeInsert()
+  @BeforeUpdate()
   trimStrings () {
     if (this.description) {
       this.description = this.description.trim() === '' ? null : this.description.trim()

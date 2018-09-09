@@ -1,7 +1,7 @@
 import { IsEmail } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { Playlist } from 'entities/playlist'
+import { Playlist } from 'entities'
 
 const shortid = require('shortid')
 

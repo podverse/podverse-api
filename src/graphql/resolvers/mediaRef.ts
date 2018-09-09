@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { MediaRef } from 'entities/mediaRef'
+import { MediaRef } from 'entities'
 
 const relations = [
   'authors', 'categories', 'episode', 'owner', 'podcast'

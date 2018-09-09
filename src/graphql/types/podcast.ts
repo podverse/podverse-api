@@ -13,7 +13,11 @@ export default `
     episodes: [Episode]
     feedUrls: [FeedUrl]
     description: String
+    feedLastUpdated: String
+    guid: String
     imageUrl: String
+    language: String
+    linkUrl: String
     isExplicit: Boolean
     pastAllTimeTotalUniquePageviews: Int
     pastHourTotalUniquePageviews: Int
@@ -22,5 +26,6 @@ export default `
     pastMonthTotalUniquePageviews: Int
     pastYearTotalUniquePageviews: Int
     title: String
+    type: String
   }
 `

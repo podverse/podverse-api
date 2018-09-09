@@ -1,0 +1,8 @@
+export { Author } from './author'
+export { Category } from './category'
+export { Episode } from './episode'
+export { FeedUrl } from './feedUrl'
+export { MediaRef } from './mediaRef'
+export { Playlist } from './playlist'
+export { Podcast } from './podcast'
+export { User } from './user'

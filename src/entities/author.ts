@@ -1,6 +1,4 @@
-import { Episode } from 'entities/episode'
-import { MediaRef } from 'entities/mediaRef'
-import { Podcast } from 'entities/podcast'
+import { Episode, MediaRef, Podcast } from 'entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
 
@@ -38,8 +36,9 @@ export class Author {
 
   @BeforeInsert()
   @BeforeUpdate()
-  addSlug () {
+  beforeAll () {
     this.slug = this.name.replace(/\s+/g, '-').toLowerCase()
+    this.name = this.name.trim()
   }
 
   @BeforeInsert()

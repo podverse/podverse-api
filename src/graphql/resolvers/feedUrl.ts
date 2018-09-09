@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { FeedUrl } from 'entities/feedUrl'
+import { FeedUrl } from 'entities'
 
 const relations = [
   'podcast'

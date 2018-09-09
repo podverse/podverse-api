@@ -1,7 +1,7 @@
-import { MediaRef } from 'entities/mediaRef'
-import { User } from 'entities/user'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany,
-  ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { MediaRef, User } from 'entities'
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
+  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
+  BeforeUpdate } from 'typeorm'
 
 const shortid = require('shortid')
 
@@ -49,6 +49,7 @@ export class Playlist {
   }
 
   @BeforeInsert()
+  @BeforeUpdate()
   trimStrings () {
     if (this.description) {
       this.description = this.description.trim() === '' ? null : this.description.trim()
