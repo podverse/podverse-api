@@ -1,81 +1,194 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
-import { getRepository } from 'typeorm'
-import { Podcast } from 'entities/podcast'
+import { getRepository, getConnection, In } from 'typeorm'
+import { Author, Category, Episode, FeedUrl, Podcast }
+  from 'entities'
+import { logError } from 'utility'
 import { databaseInitializer } from 'initializers/database'
-import category from 'graphql/resolvers/category';
-import { Category } from 'entities/category';
 
-export function parseFeed (url) {
+export const parseFeed = async (url, id, shouldCreate, shouldConnectToDb = true) => {
 
-  request(url, (err, res, data) => {
-    if (err) {
-      console.error('Network error', err)
+  if (shouldConnectToDb) {
+    await databaseInitializer()
+  }
+
+  request(url, async (error, res, data) => {
+    if (error) {
+      logError(error, 'Network error', { id, url, shouldCreate })
+      if (shouldConnectToDb) {
+        await getConnection().close()
+      }
       return
     }
 
-    parsePodcast(data, async (err, data) => {
-      if (err) {
-        console.error('Parsing.error', err)
+    parsePodcast(data, async (error, data) => {
+      if (error) {
+        logError(error, 'Parsing error', { id, url, shouldCreate })
+        if (shouldConnectToDb) {
+          await getConnection().close()
+        }
         return
       }
 
-      await databaseInitializer()
+      const podcastRepo = await getRepository(Podcast)
 
-      const repository = await getRepository(Podcast)
-
-      let podcast = new Podcast()
-      podcast.title = data.title
-
-      podcast.categories = []
-      for (const category of data.categories) {
-        let c = new Category()
-        console.log(category)
-        c.title = category
-        podcast.categories.push(c)
+      let podcast
+      if (shouldCreate === 'true') {
+        const feedUrl = new FeedUrl()
+        feedUrl.url = url
+        podcast = new Podcast()
+        feedUrl.podcast = podcast
+        podcast.feedUrls = [feedUrl]
+      } else {
+        podcast = await podcastRepo.findOne({ id })
+        if (!podcast) {
+          logError(
+            'Parsing error: No podcast found matching id',
+            null,
+            { id, url, shouldCreate }
+          )
+          if (shouldConnectToDb) {
+            await getConnection().close()
+          }
+          return
+        }
       }
 
-      // {
-      //   categories: ['Games & Hobbies', 'Comedy', 'Automotive'],
-      //     title: 'Car Talk',
-      //       link: 'http://www.cartalk.com',
-      //         description:
-      //   {
-      //     long:
-      //     'America\'s funniest auto mechanics take calls from weary car owners all over the country, and crack wise while they diagnose Dodges and dismiss Diahatsus. You don\'t have to know anything about cars to love this one hour weekly laugh fest.'
-      //   },
-      //   language: 'en-us',
-      //     author: 'NPR',
-      //       owner: { },
-      //   image:
-      //   'https://media.npr.org/images/podcasts/primary/icon_510208-d265115dff4c0c53bbe2ad8b5201feb26d1fcb03.jpg?s=1400',
-      //     type: 'episodic',
-      //       episodes:
-      //   [{
-      //     title: '#1835: The Soul of an Isuzu',
-      //     description: 'Car Talk September 1, 2018',
-      //     published: 2018 - 09 - 01T12: 00: 00.000Z,
-      //     guid: '4124c15f-72ed-4864-99aa-ca3d491ba700',
-      //     duration: 3254,
-      //     explicit: false,
-      //     episodeType: 'full',
-      //     enclosure: [Object]
-      //   },
-      //   {
-      //     title: '#1834: Foreign Accent Syndrome',
-      //     description: 'Car Talk August 25, 2018',
-      //     published: 2018 - 08 - 25T12: 00: 00.000Z,
-      //     guid: 'f0f3d482-82f1-4230-af72-9cad78986bb3',
-      //     duration: 3250,
-      //     explicit: false,
-      //     episodeType: 'full',
-      //     enclosure: [Object]
-      //   }],
-      //     updated: 2018 - 09 - 01T12: 00: 00.000Z
-      // }
+      let authors = []
+      if (data.author) {
+        authors = await findOrGenerateAuthors(data.author)
+      }
+      podcast.authors = authors
 
-      await repository.save(podcast)
+      let categories = []
+      if (data.categories) {
+        categories = await findCategories(data.categories)
+      }
+      podcast.categories = categories
 
+      podcast.episodes = await findOrGenerateParsedEpisodes(data.episodes, podcast)
+
+      if (data.description && data.description.long) {
+        podcast.description = data.description.long
+      }
+
+      podcast.feedLastUpdated = data.updated
+      podcast.imageUrl = data.image
+      podcast.isExplicit = data.explicit
+      podcast.guid = data.guid
+      podcast.language = data.language
+      podcast.linkUrl = data.link
+      podcast.title = data.title
+      podcast.type = data.type
+
+      await podcastRepo.save(podcast)
+
+      if (shouldConnectToDb) {
+        await getConnection().close()
+      }
     })
   })
+}
+
+const findOrGenerateAuthors = async (authorNames) => {
+  const authorRepo = await getRepository(Author)
+  let allAuthorNames = authorNames.split(',').map(x => x.trim())
+
+  const existingAuthors = await authorRepo.find({
+    where: {
+      name: In(allAuthorNames)
+    }
+  })
+
+  let newAuthors = []
+  let existingAuthorNames = existingAuthors.map(x => x.name)
+  let newAuthorNames = allAuthorNames.filter(x => !existingAuthorNames.includes(x))
+
+  for (const name of newAuthorNames) {
+    let author = generateAuthor(name)
+    newAuthors.push(author)
+  }
+
+  const allAuthors = existingAuthors.concat(newAuthors)
+
+  return allAuthors
+}
+
+const generateAuthor = name => {
+  let author = new Author()
+  author.name = name
+  return author
+}
+
+const findCategories = async categories => {
+  const categoryRepo = await getRepository(Category)
+  categories = await categoryRepo.find({
+    where: {
+      title: In(categories)
+    }
+  })
+  return categories
+}
+
+const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
+  episode.description = parsedEpisode.description
+  episode.duration = parsedEpisode.duration
+  episode.episodeType = parsedEpisode.episodeType
+  episode.guid = parsedEpisode.guid
+  episode.imageUrl = parsedEpisode.image
+  episode.isExplicit = parsedEpisode.explicit
+  episode.mediaFilesize = parsedEpisode.enclosure.filesize
+  episode.mediaType = parsedEpisode.enclosure.type
+  episode.mediaUrl = parsedEpisode.enclosure.url
+  episode.pubDate = parsedEpisode.published
+  episode.title = parsedEpisode.title
+
+  let authors = []
+  if (parsedEpisode.author) {
+    authors = await findOrGenerateAuthors(parsedEpisode.author)
+  }
+  episode.authors = authors
+
+  let categories = []
+  if (parsedEpisode.categories) {
+    categories = await findCategories(parsedEpisode.categories)
+  }
+  episode.categories = categories
+
+  episode.podcast = podcast
+
+  return episode
+}
+
+const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
+  const episodeRepo = await getRepository(Episode)  
+  const allEpisodeMediaUrls = parsedEpisodes.map(x => x.enclosure.url)
+
+  const existingEpisodes = await episodeRepo.find({
+    where: {
+      mediaUrl: In(allEpisodeMediaUrls)
+    }
+  })
+
+  const existingEpisodeMediaUrls = existingEpisodes.map(x => x.mediaUrl)
+  const newParsedEpisodes = parsedEpisodes.filter(
+    x => !existingEpisodeMediaUrls.includes(x.enclosure.url)
+  )
+
+  const allEpisodes = []
+  for (let existingEpisode of existingEpisodes) {
+    let parsedEpisode = parsedEpisodes.find(
+      x => x.enclosure.url === existingEpisode.mediaUrl
+    )
+    existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
+    allEpisodes.push(existingEpisode)
+  }
+
+  for (const newParsedEpisode of newParsedEpisodes) {
+    let episode = new Episode()
+    episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
+    allEpisodes.push(episode)
+  }
+
+  return allEpisodes
 }

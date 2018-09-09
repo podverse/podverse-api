@@ -1,6 +1,7 @@
 import { validCategories } from 'config'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
+import { parseFeed } from 'services/parser'
 
 export default async connection => {
   await connection.synchronize(true)
@@ -131,6 +132,8 @@ export default async connection => {
   await connection.manager.save(playlist1)
 
   await generateCategories(connection, validCategories, null, true)
+
+  await parseFeeds()
 }
 
 const generateCategories = async (connection, data, parent, shouldSave) => {
@@ -160,4 +163,23 @@ const generateCategory = data => {
   category.title = data.title
   category.category = data.parent
   return category
+}
+
+const parseFeeds = async () => {
+  const sampleFeeds = [
+    'http://feeds.megaphone.fm/wethepeoplelive',
+    'http://joeroganexp.joerogan.libsynpro.com/rss',
+    'http://feeds.feedburner.com/dancarlin/history?format=xml',
+    'https://audioboom.com/channels/4954758.rss',
+    'http://h3h3roost.libsyn.com/rss',
+    'http://altucher.stansberry.libsynpro.com/rss',
+    'http://www.podcastone.com/podcast?categoryID2=1237',
+    'http://philosophizethis.libsyn.com/rss',
+    'https://rss.art19.com/tim-ferriss-show',
+    'http://feeds.feedburner.com/YourMomsHouseWithChristinaPazsitzkyAndTomSegura'
+  ]
+
+  for (const feed of sampleFeeds) {
+    await parseFeed(feed, null, 'true', false)
+  }
 }
