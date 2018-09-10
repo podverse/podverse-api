@@ -21,3 +21,19 @@ export const logError = (msg, error, data = {}) => {
     console.error(error)
   }
 }
+
+export const offsetDate = (minutesOffset = 0) => {
+  let todayDate = new Date()
+  todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) + minutesOffset)
+  return todayDate.toISOString().slice(0, 10)
+}
+
+// NOTE: I am manually offsetting by 5 hours since the server is in UTC but the
+// Google Analytics data is in CST.
+// This WILL cause a problem when DST happens.
+export const lastHour = () => {
+  let todayDate = new Date()
+  todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) - 300 - 60)
+  let lastHour = todayDate.toISOString().slice(11, 13)
+  return parseInt(lastHour, 10)
+}

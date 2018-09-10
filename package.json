@@ -1,17 +1,20 @@
 {
   "scripts": {
     "addAllFeedsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllFeedsToQueue.ts",
-    "start": "nodemon",
     "parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts",
     "parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",
-    "receiveNextFeedFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveNextFeedFromQueue.ts"
+    "queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
+    "receiveNextFeedFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveNextFeedFromQueue.ts",
+    "start": "nodemon"
   },
   "dependencies": {
+    "@types/google.analytics": "^0.0.39",
     "@types/node": "^10.9.4",
     "apollo-errors": "^1.9.0",
     "apollo-server-koa": "^2.0.5",
     "aws-sdk": "^2.311.0",
     "class-validator": "^0.9.1",
+    "googleapis": "^33.0.0",
     "graphql": "^14.0.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",

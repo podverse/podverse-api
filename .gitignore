@@ -1,3 +1,5 @@
+/src/config/google/jwt.keys.json
+
 # Logs
 logs
 *.log
