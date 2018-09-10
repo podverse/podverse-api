@@ -1,7 +1,7 @@
 import { getConnection } from 'typeorm'
 import { lastHour, offsetDate } from 'utility'
-import { queryGoogleAnalyticsData } from 'services/googleApi'
-import { databaseInitializer } from 'initializers/database';
+import { queryGoogleAnalyticsData } from './google'
+import { databaseInitializer } from 'initializers/database'
 
 enum PagePaths {
   clips = '~/clips',
