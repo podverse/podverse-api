@@ -1,5 +1,5 @@
 import { getRepository, getConnection } from 'typeorm'
-import { awsConfig } from 'config'
+import { awsConfig } from 'config/aws'
 import { FeedUrl } from 'entities'
 import { chunkArray, logError } from 'utility'
 import { databaseInitializer } from 'initializers/database'
@@ -8,7 +8,7 @@ import { generateFeedMessageAttributes } from 'services/parser'
 
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 
-export const addAllFeedsToQueue = async (feeds, chunkSize) => {
+export const addAllFeedsToQueue = async () => {
   await databaseInitializer()
 
   // await purgeQueue()

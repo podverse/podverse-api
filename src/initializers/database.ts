@@ -39,8 +39,8 @@ export const databaseInitializer = async () => {
     .then(connection => connection)
     .catch(error => console.log('TypeORM connection error: ', error))
 
-  if (connection) {
-    await seedDatabase(connection)
-  }
+  // if (connection) {
+  //   await seedDatabase(connection)
+  // }
 
 }

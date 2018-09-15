@@ -1,7 +1,7 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
 import { getRepository, In } from 'typeorm'
-import { awsConfig } from 'config'
+import { awsConfig } from 'config/aws'
 import { Author, Category, Episode, FeedUrl, Podcast } from 'entities'
 import { logError } from 'utility'
 import { databaseInitializer } from 'initializers/database'
@@ -47,6 +47,7 @@ export const parseAllFeedsFromQueue = async (shouldConnectToDb = false) => {
 }
 
 export const parseFeed = async (url, id, shouldCreate = 'false') => {
+  // await databaseInitializer()
 
   return new Promise((resolve, reject) => {
     request(url, async (error, res, data) => {
