@@ -1,9 +1,10 @@
-import { validCategories } from 'config'
+import { Connection } from 'typeorm'
+import { validCategories } from 'config/categories'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
 import { parseFeed } from 'services/parser'
 
-export default async connection => {
+export default async (connection: Connection) => {
   await connection.synchronize(true)
 
   let podcast1 = new Podcast()
@@ -136,8 +137,13 @@ export default async connection => {
   await parseFeeds()
 }
 
-const generateCategories = async (connection, data, parent, shouldSave) => {
-  let newCategories = []
+const generateCategories = async (
+  connection: Connection,
+  data: any,
+  parent: any,
+  shouldSave: boolean
+): Promise<any> => {
+  let newCategories: any[] = []
   for (let category of data) {
     category.parent = parent
     let c = generateCategory(category)
@@ -153,12 +159,12 @@ const generateCategories = async (connection, data, parent, shouldSave) => {
 
   if (shouldSave) {
     await connection.manager.save(newCategories)
-  } else {
-    return newCategories
   }
+
+  return newCategories
 }
 
-const generateCategory = data => {
+const generateCategory = (data: any) => {
   let category = new Category()
   category.title = data.title
   category.category = data.parent

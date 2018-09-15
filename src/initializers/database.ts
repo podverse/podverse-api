@@ -1,5 +1,6 @@
+import * as PostgressConnectionStringParser from 'pg-connection-string'
 import { createConnection, ConnectionOptions } from 'typeorm'
-import { dbConfig } from 'config'
+import { config } from 'config'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
 import seedDatabase from 'initializers/seedDatabase'
@@ -17,13 +18,29 @@ export const databaseInitializer = async () => {
     User
   ]
 
+  const connectionOptions = PostgressConnectionStringParser.parse(config.databaseUrl)
+
   const options: ConnectionOptions = {
-    ...dbConfig,
-    entities
+    type: 'postgres',
+    host: connectionOptions.host,
+    port: connectionOptions.port,
+    username: connectionOptions.user,
+    password: connectionOptions.password,
+    database: connectionOptions.database,
+    synchronize: true,
+    logging: false,
+    entities,
+    extra: {
+      ssl: config.dbsslconn // if not development, will use SSL
+    }
   }
 
-  let connection = await createConnection(options)
+  const connection = await createConnection(options)
+    .then(connection => connection)
+    .catch(error => console.log('TypeORM connection error: ', error))
 
-  // await seedDatabase(connection)
+  if (connection) {
+    await seedDatabase(connection)
+  }
 
 }

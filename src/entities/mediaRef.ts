@@ -4,7 +4,8 @@ import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
   BeforeUpdate } from 'typeorm'
 import { Author, Category, Episode, Playlist, Podcast, User } from 'entities'
 
-import { entityRelationships } from 'config'
+import { config } from 'config'
+const { entityRelationships } = config
 const { mustHavePodcast, mustHaveUser } = entityRelationships.mediaRef
 
 const shortid = require('shortid')

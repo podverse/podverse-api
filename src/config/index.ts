@@ -1,31 +1,35 @@
-import { ConnectionOptions } from 'typeorm'
+import * as dotenv from 'dotenv'
 
-const env = process.env
+dotenv.config({ path: '.env' })
 
-export const awsConfig = {
-  queueUrls: {
-    feedsToParse: env.AWS_QUEUE_FEED_PARSER_URL,
-    feedsToParseErrors: env.AWS_QUEUE_FEED_PARSER_ERRORS_URL
-  },
-  region: env.AWS_REGION
-}
-
-export const dbConfig = {
-  database: 'postgres',
-  host: env.DB_HOST || '0.0.0.0',
-  log: {
-    query: env.DB_LOG_QUERIES || true
-  },
-  password: env.DB_PASSWORD || 'mysecretpw',
-  port: env.DB_PORT || 5432,
-  synchronize: env.DB_SYNCHRONIZE || true,
-  type: 'postgres',
-  username: env.DB_USERNAME || 'postgres'
-} as ConnectionOptions
-
-export const entityRelationships = {
+interface EntityRelationships {
   mediaRef: {
-    mustHavePodcast: env.MEDIA_REF_HAS_PODCAST || false,
-    mustHaveUser: env.MEDIA_REF_HAS_USER || false
+    mustHavePodcast: boolean
+    mustHaveUser: boolean
   }
 }
+
+export interface IConfig {
+  port: number
+  debugLogging: boolean
+  dbsslconn: boolean
+  jwtSecret: string
+  databaseUrl: string
+  entityRelationships: EntityRelationships
+}
+
+const config: IConfig = {
+  port: +process.env.PORT || 3000,
+  debugLogging: process.env.NODE_ENV === 'development',
+  dbsslconn: process.env.NODE_ENV !== 'development',
+  jwtSecret: process.env.JWT_SECRET || 'your-secret-whatever',
+  databaseUrl: process.env.DATABASE_URL || 'postgres://postgres:mysecretpw@localhost:5432/postgres',
+  entityRelationships: {
+    mediaRef: {
+      mustHavePodcast: process.env.MEDIA_REF_HAS_PODCAST === 'true',
+      mustHaveUser: process.env.MEDIA_REF_HAS_USER === 'true'
+    }
+  }
+}
+
+export { config }
