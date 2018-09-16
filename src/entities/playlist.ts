@@ -24,7 +24,7 @@ export class Playlist {
   @JoinColumn()
   mediaRefs: MediaRef[]
 
-  @ManyToOne(type => User, { nullable: false })
+  @ManyToOne(type => User, { nullable: false, onDelete: 'CASCADE' })
   owner: User
 
   @Column({ nullable: true })

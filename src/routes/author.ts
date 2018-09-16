@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getAuthor, getAuthors } from 'controllers/author'
-import { validateAuthorQuery } from 'middleware/validateQuery'
+import { validateAuthorQuery } from './validation/query'
 
 const router = new Router({ prefix: '/author' })
 

@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getPlaylist, getPlaylists } from 'controllers/playlist'
-import { validatePlaylistQuery } from 'middleware/validateQuery'
+import { validatePlaylistQuery } from './validation/query'
 
 const router = new Router({ prefix: '/playlist' })
 

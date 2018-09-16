@@ -20,7 +20,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @OneToMany(type => Playlist, playlist => playlist.owner)
+  @OneToMany(type => Playlist, playlist => playlist.owner, {
+    cascade: true
+  })
   playlists: Playlist[]
 
   @IsEmail()

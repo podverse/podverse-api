@@ -50,6 +50,20 @@ const bootstrap = async () => {
   app.use(userRouter.routes())
   app.use(userRouter.allowedMethods())
 
+  app.on('error', async (error, ctx) => {
+    // console.log(error)
+
+    if (ctx.response.status >= 500) {
+      ctx.body = 'Internal Server Error'
+    } else if (ctx.status >= 400) {
+      ctx.body = error.message
+    } else {
+      ctx.body = 'Something went wrong :('
+    }
+
+    await ctx.throw(ctx.status, ctx.body)
+  })
+
   app.listen(config.port)
 
   console.log(`Server running on port ${config.port}`)

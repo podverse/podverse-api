@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getFeedUrl, getFeedUrls } from 'controllers/feedUrl'
-import { validateFeedUrlQuery } from 'middleware/validateQuery'
+import { validateFeedUrlQuery } from './validation/query'
 
 const router = new Router({ prefix: '/feedUrl' })
 

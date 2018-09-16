@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getMediaRef, getMediaRefs } from 'controllers/mediaRef'
-import { validateMediaRefQuery } from 'middleware/validateQuery'
+import { validateMediaRefQuery } from './validation/query'
 
 const router = new Router({ prefix: '/mediaRef' })
 

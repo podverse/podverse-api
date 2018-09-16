@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
 
-const relations = ['playlists']
+const relations = ['playlistsss']
 
 const createUser = async (obj) => {
   const repository = getRepository(User)
@@ -16,8 +16,9 @@ const createUser = async (obj) => {
 const deleteUser = async (id) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id })
-  await repository.delete(id)
-  return { ...user }
+  const result = await repository.delete(id)
+
+  return result
 }
 
 const getUser = async (id) => {
