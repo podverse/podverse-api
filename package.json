@@ -48,6 +48,7 @@
     "aws-sdk": "^2.315.0",
     "class-validator": "^0.9.1",
     "googleapis": "^33.0.0",
+    "joi": "^13.6.0",
     "koa": "^2.5.3",
     "koa-bodyparser": "^4.2.1",
     "koa-helmet": "^4.0.0",

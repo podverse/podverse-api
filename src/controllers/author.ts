@@ -10,12 +10,18 @@ const getAuthor = (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getAuthors = () => {
+const getAuthors = (query) => {
   const repository = getRepository(Author)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
-export default {
+export {
   getAuthor,
   getAuthors
 }

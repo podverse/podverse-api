@@ -8,7 +8,7 @@ import * as winston from 'winston'
 
 import { config } from 'config'
 import { logger } from 'logging'
-import { router } from 'routes'
+import authorRouter from 'routes/author'
 import { databaseInitializer } from 'initializers/database'
 
 const bootstrap = async () => {
@@ -22,8 +22,12 @@ const bootstrap = async () => {
   app.use(cors())
   app.use(logger(winston))
   app.use(bodyParser())
+
   // app.use(jwt({ secret: config.jwtSecret }))
-  app.use(router.routes()).use(router.allowedMethods())
+
+  app.use(authorRouter.routes())
+  app.use(authorRouter.allowedMethods())
+
   app.listen(config.port)
 
   console.log(`Server running on port ${config.port}`)
