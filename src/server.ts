@@ -51,12 +51,10 @@ const bootstrap = async () => {
   app.use(userRouter.allowedMethods())
 
   app.on('error', async (error, ctx) => {
-    // console.log(error)
-
-    if (ctx.response.status >= 500) {
+    if (ctx.status >= 500) {
       ctx.body = 'Internal Server Error'
     } else if (ctx.status >= 400) {
-      ctx.body = error.message
+      // handled in emitError
     } else {
       ctx.body = 'Something went wrong :('
     }

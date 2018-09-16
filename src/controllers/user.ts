@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
 
-const relations = ['playlistsss']
+const relations = ['playlists']
 
 const createUser = async (obj) => {
   const repository = getRepository(User)

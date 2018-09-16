@@ -6,7 +6,7 @@ const validateQuery = async (schema, ctx, next) => {
 
   if (result.error) {
     for (const detail of result.error.details) {
-      emitError(result.error, detail.message, ctx)
+      emitError(result.error, 400, detail.message, ctx)
     }
     return
   }
