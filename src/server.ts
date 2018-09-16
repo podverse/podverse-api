@@ -8,7 +8,7 @@ import * as winston from 'winston'
 
 import { config } from 'config'
 import { logger } from 'logging'
-import authorRouter from 'routes/author'
+import { authorRouter, categoryRouter } from 'routes'
 import { databaseInitializer } from 'initializers/database'
 
 const bootstrap = async () => {
@@ -27,6 +27,9 @@ const bootstrap = async () => {
 
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
+
+  app.use(categoryRouter.routes())
+  app.use(categoryRouter.allowedMethods())
 
   app.listen(config.port)
 

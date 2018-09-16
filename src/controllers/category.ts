@@ -10,12 +10,18 @@ const getCategory = (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getCategories = () => {
+const getCategories = (query) => {
   const repository = getRepository(Category)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
-export default {
+export {
   getCategory,
   getCategories
 }

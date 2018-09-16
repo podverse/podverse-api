@@ -25,9 +25,15 @@ const getPlaylist = async (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getPlaylists = async () => {
+const getPlaylists = (query) => {
   const repository = getRepository(Playlist)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
 const updatePlaylist = async (id, obj) => {
@@ -38,7 +44,7 @@ const updatePlaylist = async (id, obj) => {
   return { ...newPlaylist }
 }
 
-export default {
+export {
   createPlaylist,
   deletePlaylist,
   getPlaylist,

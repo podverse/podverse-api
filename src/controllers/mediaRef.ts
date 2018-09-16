@@ -25,9 +25,15 @@ const getMediaRef = (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getMediaRefs = () => {
+const getMediaRefs = (query) => {
   const repository = getRepository(MediaRef)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
 const updateMediaRef = async (id, obj) => {
@@ -38,7 +44,7 @@ const updateMediaRef = async (id, obj) => {
   return { ...newMediaRef }
 }
 
-export default {
+export {
   createMediaRef,
   deleteMediaRef,
   getMediaRef,

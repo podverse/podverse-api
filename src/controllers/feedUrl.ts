@@ -10,12 +10,18 @@ const getFeedUrl = (url) => {
   return repository.findOne({ url }, { relations })
 }
 
-const getFeedUrls = () => {
+const getFeedUrls = (query) => {
   const repository = getRepository(FeedUrl)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
-export default {
+export {
   getFeedUrl,
   getFeedUrls
 }

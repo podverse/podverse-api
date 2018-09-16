@@ -10,12 +10,18 @@ const getPodcast = (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getPodcasts = () => {
+const getPodcasts = (query) => {
   const repository = getRepository(Podcast)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
-export default {
+export {
   getPodcast,
   getPodcasts
 }

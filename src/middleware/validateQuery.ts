@@ -19,3 +19,11 @@ export const validateAuthorQuery = async (ctx, next) => {
 
   await validateQuery(schema, ctx, next)
 }
+
+export const validateCategoryQuery = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    title: Joi.string().required()
+  })
+
+  await validateQuery(schema, ctx, next)
+}

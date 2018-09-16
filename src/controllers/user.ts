@@ -25,9 +25,15 @@ const getUser = async (id) => {
   return repository.findOne({ id }, { relations })
 }
 
-const getUsers = async () => {
+const getUsers = (query) => {
   const repository = getRepository(User)
-  return repository.find({ relations })
+
+  return repository.find({
+    where: {
+      ...query
+    },
+    relations
+  })
 }
 
 const updateUser = async (id, obj) => {
@@ -40,7 +46,7 @@ const updateUser = async (id, obj) => {
   }
 }
 
-export default {
+export {
   createUser,
   deleteUser,
   getUser,
