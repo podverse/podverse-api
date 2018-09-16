@@ -1,7 +1,8 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
-import { validateUserQuery } from './validation/query'
+import { validateUserQuery } from 'routes/validation/query'
+import { validateUserUpdate } from 'routes/validation/update'
 import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: '/user' })
@@ -18,38 +19,41 @@ router.get('/',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  }
-)
+  })
 
 // Get
-router.get('/:id', async ctx => {
-  try {
-    const user = await getUser(ctx.params.id)
-    ctx.body = user
-  } catch (error) {
-    emitRouterError(error, ctx)
-  }
-})
+router.get('/:id',
+  async ctx => {
+    try {
+      const user = await getUser(ctx.params.id)
+      ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 // Update
-router.patch('/', async ctx => {
-  try {
-    const body = ctx.request.body
-    const user = await updateUser(body)
-    ctx.body = user
-  } catch (error) {
-    emitRouterError(error, ctx)
-  }
-})
+router.patch('/',
+  validateUserUpdate,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const user = await updateUser(body)
+      ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 // Delete
-router.delete('/:id', async ctx => {
-  try {
-    await deleteUser(ctx.params.id)
-    ctx.status = 200
-  } catch (error) {
-    emitRouterError(error, ctx)
-  }
-})
+router.delete('/:id',
+  async ctx => {
+    try {
+      await deleteUser(ctx.params.id)
+      ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 export default router
