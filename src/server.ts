@@ -4,10 +4,9 @@ import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as helmet from 'koa-helmet'
 import * as jwt from 'koa-jwt'
-import * as winston from 'winston'
 
 import { config } from 'config'
-import { logger } from 'logging'
+import { logger, loggerInstance } from 'logging'
 import { authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { databaseInitializer } from 'initializers/database'
@@ -21,7 +20,7 @@ const bootstrap = async () => {
 
   app.use(helmet())
   app.use(cors())
-  app.use(logger(winston))
+  app.use(logger())
   app.use(bodyParser())
 
   // app.use(jwt({ secret: config.jwtSecret }))
@@ -52,15 +51,16 @@ const bootstrap = async () => {
 
   app.on('error', async (error, ctx) => {
     if (ctx.status >= 500) {
+      loggerInstance.log('error', error)
       ctx.body = 'Internal Server Error'
     } else if (ctx.status >= 400) {
       // handled in emitError
     } else {
+      loggerInstance.log('error', error)
       ctx.body = 'Something went wrong :('
     }
-
-    await ctx.throw(ctx.status, ctx.body)
   })
+
 
   app.listen(config.port)
 
