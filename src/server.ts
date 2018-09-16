@@ -8,7 +8,8 @@ import * as winston from 'winston'
 
 import { config } from 'config'
 import { logger } from 'logging'
-import { authorRouter, categoryRouter } from 'routes'
+import { authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
+  mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { databaseInitializer } from 'initializers/database'
 
 const bootstrap = async () => {
@@ -30,6 +31,24 @@ const bootstrap = async () => {
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
+
+  app.use(episodeRouter.routes())
+  app.use(episodeRouter.allowedMethods())
+
+  app.use(feedUrlRouter.routes())
+  app.use(feedUrlRouter.allowedMethods())
+
+  app.use(mediaRefRouter.routes())
+  app.use(mediaRefRouter.allowedMethods())
+
+  app.use(playlistRouter.routes())
+  app.use(playlistRouter.allowedMethods())
+
+  app.use(podcastRouter.routes())
+  app.use(podcastRouter.allowedMethods())
+
+  app.use(userRouter.routes())
+  app.use(userRouter.allowedMethods())
 
   app.listen(config.port)
 

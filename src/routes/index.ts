@@ -1,2 +1,8 @@
 export { default as authorRouter } from './author'
 export { default as categoryRouter } from './category'
+export { default as episodeRouter } from './episode'
+export { default as feedUrlRouter } from './feedUrl'
+export { default as mediaRefRouter } from './mediaRef'
+export { default as playlistRouter } from './playlist'
+export { default as podcastRouter } from './podcast'
+export { default as userRouter } from './user'
