@@ -13,7 +13,7 @@ router.get('/',
       const users = await getUsers(ctx.request.query)
       ctx.body = users
     } catch (error) {
-      emitError(error, ctx, 500, null)
+      emitError(500, null, error, ctx)
     }
   }
 )
@@ -24,7 +24,7 @@ router.get('/:id', async ctx => {
     const user = await getUser(ctx.params.id)
     ctx.body = user
   } catch (error) {
-    emitError(error, ctx, error.status, error.message)
+    emitError(ctx.status, error.message, error, ctx)
   }
 })
 
@@ -32,10 +32,9 @@ router.get('/:id', async ctx => {
 router.delete('/:id', async ctx => {
   try {
     const user = await deleteUser(ctx.params.id)
-    console.log(user);
+    ctx.status = 200
   } catch (error) {
-    console.log(error)
-    emitError(error, ctx, error.status, error.message)
+    emitError(ctx.status, error.message, error, ctx)
   }
 })
 

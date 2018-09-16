@@ -53,6 +53,8 @@ const bootstrap = async () => {
     if (ctx.status >= 500) {
       loggerInstance.log('error', error)
       ctx.body = 'Internal Server Error'
+    } else if (ctx.status >= 404) {
+      ctx.body = 'Not found'
     } else if (ctx.status >= 400) {
       // handled in emitError
     } else {

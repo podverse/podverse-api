@@ -15,7 +15,6 @@ export const loggerInstance = winston.createLogger({
   ]
 })
 
-// TODO: does this have to be type "any"?
 export function logger () {
 
   return async (ctx: Koa.Context, next: () => Promise<any>) => {
