@@ -1,12 +1,12 @@
 const Joi = require('joi')
-import { validateBase } from './base'
+import { validateBaseQuery } from 'routes/validation/base'
 
 const validateAuthorQuery = async (ctx, next) => {
   const schema = Joi.object().keys({
     name: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validateCategoryQuery = async (ctx, next) => {
@@ -14,7 +14,7 @@ const validateCategoryQuery = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validateEpisodeQuery = async (ctx, next) => {
@@ -22,7 +22,7 @@ const validateEpisodeQuery = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validateFeedUrlQuery = async (ctx, next) => {
@@ -30,7 +30,7 @@ const validateFeedUrlQuery = async (ctx, next) => {
     url: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validateMediaRefQuery = async (ctx, next) => {
@@ -38,7 +38,7 @@ const validateMediaRefQuery = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validatePlaylistQuery = async (ctx, next) => {
@@ -46,7 +46,7 @@ const validatePlaylistQuery = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validatePodcastQuery = async (ctx, next) => {
@@ -54,7 +54,7 @@ const validatePodcastQuery = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 const validateUserQuery = async (ctx, next) => {
@@ -62,7 +62,7 @@ const validateUserQuery = async (ctx, next) => {
     email: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseQuery(schema, ctx, next)
 }
 
 export {

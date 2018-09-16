@@ -1,12 +1,12 @@
 const Joi = require('joi')
-import { validateBase } from './base'
+import { validateBaseBody } from 'routes/validation/base'
 
 const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseBody(schema, ctx, next)
 }
 
 const validatePlaylistUpdate = async (ctx, next) => {
@@ -14,15 +14,16 @@ const validatePlaylistUpdate = async (ctx, next) => {
     title: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseBody(schema, ctx, next)
 }
 
 const validateUserUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    email: Joi.string().required()
+    email: Joi.string().required(),
+    id: Joi.string().required()
   })
 
-  await validateBase(schema, ctx, next)
+  await validateBaseBody(schema, ctx, next)
 }
 
 export {
