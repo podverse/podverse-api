@@ -14,9 +14,10 @@ router.get('/',
 )
 
 // Get
-router.get('/:id', async ctx => {
-  const author = await getAuthor(ctx.params.id)
-  ctx.body = author
-})
+router.get('/:id',
+  async ctx => {
+    const author = await getAuthor(ctx.params.id)
+    ctx.body = author
+  })
 
 export default router

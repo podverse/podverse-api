@@ -14,9 +14,10 @@ router.get('/',
 )
 
 // Get
-router.get('/:id', async ctx => {
-  const category = await getCategory(ctx.params.id)
-  ctx.body = category
-})
+router.get('/:id',
+  async ctx => {
+    const category = await getCategory(ctx.params.id)
+    ctx.body = category
+  })
 
 export default router

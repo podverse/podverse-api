@@ -14,9 +14,10 @@ router.get('/',
 )
 
 // Get
-router.get('/:id', async ctx => {
-  const episode = await getEpisode(ctx.params.id)
-  ctx.body = episode
-})
+router.get('/:id',
+  async ctx => {
+    const episode = await getEpisode(ctx.params.id)
+    ctx.body = episode
+  })
 
 export default router

@@ -10,13 +10,13 @@ router.get('/',
   async ctx => {
     const podcasts = await getPodcasts(ctx.request.query)
     ctx.body = podcasts
-  }
-)
+  })
 
 // Get
-router.get('/:id', async ctx => {
-  const podcast = await getPodcast(ctx.params.id)
-  ctx.body = podcast
-})
+router.get('/:id',
+  async ctx => {
+    const podcast = await getPodcast(ctx.params.id)
+    ctx.body = podcast
+  })
 
 export default router
