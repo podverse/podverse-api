@@ -26,7 +26,7 @@ export class Podcast {
   @JoinTable()
   authors: Author[]
 
-  @ManyToMany(type => Category, category => category.podcasts)
+  @ManyToMany(type => Category)
   @JoinTable()
   categories: Category[]
 

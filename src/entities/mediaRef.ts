@@ -24,26 +24,23 @@ export class MediaRef {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToMany(type => Author, author => author.mediaRefs)
+  @ManyToMany(type => Author)
   @JoinTable()
   authors: Author[]
 
-  @ManyToMany(type => Category, category => category.mediaRefs)
+  @ManyToMany(type => Category)
   @JoinTable()
   categories: Category[]
 
-  @ManyToOne(type => Episode, { nullable: !mustHavePodcast })
+  @ManyToOne(type => Episode, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
   @JoinColumn({ name: '_episodeId' })
   episode: Episode
 
-  @ManyToOne(type => User, { nullable: !mustHaveUser })
+  @ManyToOne(type => User, { nullable: !mustHaveUser, onDelete: 'CASCADE' })
   @JoinColumn({ name: '_ownerId' })
   owner: User
 
-  @ManyToMany(type => Playlist, playlist => playlist.mediaRefs)
-  playlists: Playlist[]
-
-  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast })
+  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
   @JoinColumn({ name: '_podcastId' })
   podcast: Podcast
 

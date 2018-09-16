@@ -17,7 +17,6 @@ const deleteUser = async (id) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id }) 
   const result = await repository.remove(user)
-
   return result
 }
 

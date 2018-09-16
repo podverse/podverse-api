@@ -15,9 +15,9 @@ const createMediaRef = async (obj) => {
 
 const deleteMediaRef = async (id) => {
   const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({ id })
-  await repository.delete(id)
-  return { ...mediaRef }
+  const mediaRef = await repository.findOne({ id })  
+  const result = await repository.remove(mediaRef)
+  return result
 }
 
 const getMediaRef = (id) => {

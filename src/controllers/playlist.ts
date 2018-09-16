@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm'
 import { Playlist } from 'entities'
 
 const relations = [
-  'owner'
+  'mediaRefs', 'owner'
 ]
 
 const createPlaylist = async (obj) => {
@@ -16,8 +16,8 @@ const createPlaylist = async (obj) => {
 const deletePlaylist = async (id) => {
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id })
-  await repository.delete(id)
-  return { ...playlist }
+  const result = await repository.remove(playlist)
+  return result
 }
 
 const getPlaylist = async (id) => {

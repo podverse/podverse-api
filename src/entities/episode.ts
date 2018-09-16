@@ -21,11 +21,11 @@ export class Episode {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToMany(type => Author, author => author.episodes)
+  @ManyToMany(type => Author)
   @JoinTable()
   authors: Author[]
 
-  @ManyToMany(type => Category, category => category.episodes)
+  @ManyToMany(type => Category)
   @JoinTable()
   categories: Category[]
 

@@ -31,7 +31,7 @@ router.get('/:id', async ctx => {
 // Delete
 router.delete('/:id', async ctx => {
   try {
-    const user = await deleteUser(ctx.params.id)
+    await deleteUser(ctx.params.id)
     ctx.status = 200
   } catch (error) {
     emitError(ctx.status, error.message, error, ctx)

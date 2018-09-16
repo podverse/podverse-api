@@ -84,6 +84,7 @@ export default async (connection: Connection) => {
   mediaRef1.episodeMediaUrl = 'https://podverse.fm'
   mediaRef1.podcastFeedUrl = 'https://podverse.fm'
   mediaRef1.title = 'Beep-Beep!'
+  mediaRef1.authors = [author1, author2]
   await connection.manager.save(mediaRef1)
 
   let mediaRef2 = new MediaRef()

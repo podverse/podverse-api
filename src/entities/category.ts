@@ -1,6 +1,6 @@
 import { Episode, MediaRef, Podcast } from 'entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
+  JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
 
 const shortid = require('shortid')
@@ -26,13 +26,16 @@ export class Category {
   @OneToMany(type => Category, category => category.category)
   categories: Category[]
 
-  @ManyToMany(type => Episode, episode => episode.categories)
+  @ManyToMany(type => Episode)
+  @JoinTable()
   episodes: Episode[]
 
-  @ManyToMany(type => MediaRef, mediaRef => mediaRef.categories)
+  @ManyToMany(type => MediaRef)
+  @JoinTable()
   mediaRefs: MediaRef[]
 
-  @ManyToMany(type => Podcast, podcast => podcast.categories)
+  @ManyToMany(type => Podcast)
+  @JoinTable()
   podcasts: Podcast[]
 
   @Column()

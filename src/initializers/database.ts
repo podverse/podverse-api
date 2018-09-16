@@ -18,7 +18,7 @@ export const databaseInitializer = async () => {
     User
   ]
 
-  const connectionOptions = PostgressConnectionStringParser.parse(config.databaseUrl)
+  const connectionOptions = PostgressConnectionStringParser.parse(config.databaseUrl) 
 
   const options: ConnectionOptions = {
     type: 'postgres',

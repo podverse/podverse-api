@@ -1,6 +1,6 @@
 import { Episode, MediaRef, Podcast } from 'entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany,
-  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinTable,
+  ManyToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
 
@@ -19,13 +19,16 @@ export class Author {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToMany(type => Episode, episode => episode.authors)
+  @ManyToMany(type => Episode)
+  @JoinTable()
   episodes: Episode[]
 
-  @ManyToMany(type => MediaRef, mediaRef => mediaRef.authors)
+  @ManyToMany(type => MediaRef)
+  @JoinTable()
   mediaRefs: MediaRef[]
 
-  @ManyToMany(type => Podcast, podcast => podcast.authors)
+  @ManyToMany(type => Podcast)
+  @JoinTable()
   podcasts: Podcast[]
 
   @Column({ unique: true })

@@ -1,5 +1,5 @@
 import { MediaRef, User } from 'entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
 
@@ -20,11 +20,11 @@ export class Playlist {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToMany(type => MediaRef, mediaRef => mediaRef.playlists)
-  @JoinColumn()
+  @ManyToMany(type => MediaRef)
+  @JoinTable()
   mediaRefs: MediaRef[]
 
-  @ManyToOne(type => User, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(type => User, { nullable: false }) 
   owner: User
 
   @Column({ nullable: true })
@@ -36,7 +36,7 @@ export class Playlist {
   @Column({ default: false })
   isPublic: boolean
 
-  @Column('varchar', { array: true })
+  @Column('varchar', { array: true }) 
   itemsOrder: string[]
 
   @Column({ nullable: true })
