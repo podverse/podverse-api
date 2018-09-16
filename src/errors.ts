@@ -6,18 +6,31 @@ export const emitRouterError = (error, ctx) => {
   ctx.app.emit('error', error, ctx)
 }
 
-export class CustomValidationError extends Error {
-  constructor (validationError) {
-    super(validationError)
-    for (const key of Object.keys(validationError.constraints)) {
-      this.name = key
-      this.message = validationError.constraints[key]
-      Error.captureStackTrace(this, CustomValidationError)
-    }
-  }
-
+export class CustomStatusError extends Error {
   public BadRequest () {
     return new createError.BadRequest(this.message)
   }
+}
 
+export class CustomValidationError extends CustomStatusError {
+  constructor (error) {
+    super(error)
+    for (const key of Object.keys(error.constraints)) {
+      this.name = key
+      this.message = error.constraints[key]
+      Error.captureStackTrace(this, CustomValidationError)
+    }
+  }
+}
+
+export class JoiCustomValidationError extends CustomStatusError {
+  constructor (error) {
+    super(error)
+    for (const detail of error.details) {
+      this.name = error.name
+      this.message = detail.message
+      Error.captureStackTrace(this, JoiCustomValidationError)
+      return
+    }
+  }
 }

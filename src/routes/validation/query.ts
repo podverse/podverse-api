@@ -1,12 +1,13 @@
 const Joi = require('joi')
-import { emitRouterError } from 'errors'
+import { emitRouterError, JoiCustomValidationError } from 'errors'
 
 const validateQuery = async (schema, ctx, next) => {
   const result = Joi.validate(ctx.query, schema)
+  const error = result.error
 
-  if (result.error) {
-    for (const detail of result.error.details) {
-      emitRouterError(result.error, ctx)
+  if (error) {
+    for (const detail of error.details) {
+      emitRouterError(new JoiCustomValidationError(error).BadRequest(), ctx)
     }
     return
   }
