@@ -1,10 +1,13 @@
+import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { deletePlaylist, getPlaylist, getPlaylists }
+import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
 import { validatePlaylistQuery } from './validation/query'
-import { emitError } from 'routes/error'
+import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: '/playlist' })
+
+router.use(bodyParser())
 
 // Search
 router.get('/',
@@ -14,7 +17,7 @@ router.get('/',
       const playlists = await getPlaylists(ctx.request.query)
       ctx.body = playlists
     } catch (error) {
-      emitError(500, null, error, ctx)
+      emitRouterError(error, ctx)
     }
   }
 )
@@ -25,7 +28,18 @@ router.get('/:id', async ctx => {
     const playlist = await getPlaylist(ctx.params.id)
     ctx.body = playlist
   } catch (error) {
-    emitError(ctx.status, error.message, error, ctx)
+    emitRouterError(error, ctx)
+  }
+})
+
+// Update
+router.patch('/', async ctx => {
+  try {
+    const body = ctx.request.body
+    const playlist = await updatePlaylist(body)
+    ctx.body = playlist
+  } catch (error) {
+    emitRouterError(error, ctx)
   }
 })
 
@@ -35,9 +49,7 @@ router.delete('/:id', async ctx => {
     await deletePlaylist(ctx.params.id)
     ctx.status = 200
   } catch (error) {
-    console.log(error);
-     
-    emitError(ctx.status, error.message, error, ctx)
+    emitRouterError(error, ctx)
   }
 })
 

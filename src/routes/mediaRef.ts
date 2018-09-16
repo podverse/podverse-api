@@ -1,10 +1,13 @@
+import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { deleteMediaRef, getMediaRef, getMediaRefs } 
+import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
 import { validateMediaRefQuery } from './validation/query'
-import { emitError } from 'routes/error'
+import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: '/mediaRef' })
+
+router.use(bodyParser())
 
 // Search
 router.get('/',
@@ -21,13 +24,24 @@ router.get('/:id', async ctx => {
   ctx.body = mediaRef
 })
 
+// Update
+router.patch('/', async ctx => {
+  try {
+    const body = ctx.request.body
+    const mediaRef = await updateMediaRef(body)
+    ctx.body = mediaRef
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
 // Delete
 router.delete('/:id', async ctx => {
   try {
-    const result = await deleteMediaRef(ctx.params.id)
+    await deleteMediaRef(ctx.params.id)
     ctx.status = 200
   } catch (error) {
-    emitError(ctx.status, error.message, error, ctx)
+    emitRouterError(error, ctx)
   }
 })
 

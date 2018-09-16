@@ -36,9 +36,9 @@ const getMediaRefs = (query) => {
   })
 }
 
-const updateMediaRef = async (id, obj) => {
+const updateMediaRef = async (obj) => {
   const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({ id })
+  const mediaRef = await repository.findOne({ id: obj.id })
   const newMediaRef = Object.assign(mediaRef, obj)
   await repository.save(newMediaRef)
   return { ...newMediaRef }

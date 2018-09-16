@@ -1,9 +1,12 @@
+import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { deleteUser, getUser, getUsers } from 'controllers/user'
+import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
 import { validateUserQuery } from './validation/query'
-import { emitError } from 'routes/error'
+import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: '/user' })
+
+router.use(bodyParser())
 
 // Search
 router.get('/',
@@ -13,7 +16,7 @@ router.get('/',
       const users = await getUsers(ctx.request.query)
       ctx.body = users
     } catch (error) {
-      emitError(500, null, error, ctx)
+      emitRouterError(error, ctx)
     }
   }
 )
@@ -24,7 +27,18 @@ router.get('/:id', async ctx => {
     const user = await getUser(ctx.params.id)
     ctx.body = user
   } catch (error) {
-    emitError(ctx.status, error.message, error, ctx)
+    emitRouterError(error, ctx)
+  }
+})
+
+// Update
+router.patch('/', async ctx => {
+  try {
+    const body = ctx.request.body
+    const user = await updateUser(body)
+    ctx.body = user
+  } catch (error) {
+    emitRouterError(error, ctx)
   }
 })
 
@@ -34,7 +48,7 @@ router.delete('/:id', async ctx => {
     await deleteUser(ctx.params.id)
     ctx.status = 200
   } catch (error) {
-    emitError(ctx.status, error.message, error, ctx)
+    emitRouterError(error, ctx)
   }
 })
 

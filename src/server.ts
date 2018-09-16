@@ -18,10 +18,10 @@ const bootstrap = async () => {
 
   const app = new Koa()
 
+  app.use(bodyParser())
   app.use(helmet())
   app.use(cors())
   app.use(logger())
-  app.use(bodyParser())
 
   // app.use(jwt({ secret: config.jwtSecret }))
 
@@ -56,7 +56,7 @@ const bootstrap = async () => {
     } else if (ctx.status >= 404) {
       ctx.body = 'Not found'
     } else if (ctx.status >= 400) {
-      // handled in emitError
+      ctx.body = error.message
     } else {
       loggerInstance.log('error', error)
       ctx.body = 'Something went wrong :('

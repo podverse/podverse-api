@@ -36,9 +36,9 @@ const getPlaylists = (query) => {
   })
 }
 
-const updatePlaylist = async (id, obj) => {
+const updatePlaylist = async (obj) => {
   const repository = getRepository(Playlist)
-  const playlist = await repository.findOne({ id })
+  const playlist = await repository.findOne({ id: obj.id })
   const newPlaylist = Object.assign(playlist, obj)
   await repository.save(newPlaylist)
   return { ...newPlaylist }
