@@ -16,6 +16,7 @@ export interface IConfig {
   jwtSecret: string
   databaseUrl: string
   entityRelationships: EntityRelationships
+  apiPrefix: string
 }
 
 const config: IConfig = {
@@ -29,7 +30,8 @@ const config: IConfig = {
       mustHavePodcast: process.env.MEDIA_REF_HAS_PODCAST === 'true',
       mustHaveUser: process.env.MEDIA_REF_HAS_USER === 'true'
     }
-  }
+  },
+  apiPrefix: process.env.API_PREFIX || '/api'
 }
 
 export { config }

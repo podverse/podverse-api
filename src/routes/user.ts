@@ -1,11 +1,12 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { config } from 'config'
 import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
 
-const router = new Router({ prefix: '/user' })
+const router = new Router({ prefix: `${config.apiPrefix}/user` })
 
 router.use(bodyParser())
 

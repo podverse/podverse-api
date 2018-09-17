@@ -1,12 +1,13 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { config } from 'config'
 import { emitRouterError } from 'errors'
 import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
 import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
 
-const router = new Router({ prefix: '/playlist' })
+const router = new Router({ prefix: `${config.apiPrefix}/playlist` })
 
 router.use(bodyParser())
 

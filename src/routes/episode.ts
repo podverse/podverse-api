@@ -1,8 +1,9 @@
 import * as Router from 'koa-router'
+import { config } from 'config'
 import { getEpisode, getEpisodes } from 'controllers/episode'
 import { validateEpisodeSearch } from 'middleware/validation/search'
 
-const router = new Router({ prefix: '/episode' })
+const router = new Router({ prefix: `${config.apiPrefix}/episode` })
 
 // Search
 router.get('/',

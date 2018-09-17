@@ -1,8 +1,9 @@
 import * as Router from 'koa-router'
+import { config } from 'config'
 import { getCategory, getCategories } from 'controllers/category'
 import { validateCategorySearch } from 'middleware/validation/search'
 
-const router = new Router({ prefix: '/category' })
+const router = new Router({ prefix: `${config.apiPrefix}/category` })
 
 // Search
 router.get('/',

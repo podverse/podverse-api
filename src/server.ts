@@ -4,6 +4,7 @@ import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as helmet from 'koa-helmet'
 import * as jwt from 'koa-jwt'
+import * as koaSwagger from 'koa2-swagger-ui'
 
 import { config } from 'config'
 import { logger, loggerInstance } from 'logging'
@@ -24,6 +25,13 @@ const bootstrap = async () => {
   app.use(logger())
 
   // app.use(jwt({ secret: config.jwtSecret }))
+
+  app.use(koaSwagger({
+    routePrefix: '/api/swagger',
+    swaggerOptions: {
+      url: 'http://petstore.swagger.io/v2/swagger.json'
+    }
+  }))
 
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())

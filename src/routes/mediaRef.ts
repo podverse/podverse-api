@@ -1,12 +1,13 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { config } from 'config'
 import { emitRouterError } from 'errors'
 import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
 
-const router = new Router({ prefix: '/mediaRef' })
+const router = new Router({ prefix: `${config.apiPrefix}/mediaRef` })
 
 router.use(bodyParser())
 
