@@ -3,7 +3,7 @@ import * as Router from 'koa-router'
 import { emitRouterError } from 'errors'
 import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
-import { validatePlaylistQuery } from 'middleware/validation/query'
+import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
 
 const router = new Router({ prefix: '/playlist' })
@@ -12,7 +12,7 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  validatePlaylistQuery,
+  validatePlaylistSearch,
   async ctx => {
     try {
       const playlists = await getPlaylists(ctx.request.query)

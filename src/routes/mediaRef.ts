@@ -3,7 +3,7 @@ import * as Router from 'koa-router'
 import { emitRouterError } from 'errors'
 import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
-import { validateMediaRefQuery } from 'middleware/validation/query'
+import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
 
 const router = new Router({ prefix: '/mediaRef' })
@@ -12,7 +12,7 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  validateMediaRefQuery,
+  validateMediaRefSearch,
   async ctx => {
     const mediaRefs = await getMediaRefs(ctx.request.query)
     ctx.body = mediaRefs

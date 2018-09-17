@@ -1,12 +1,12 @@
 import * as Router from 'koa-router'
 import { getFeedUrl, getFeedUrls } from 'controllers/feedUrl'
-import { validateFeedUrlQuery } from 'middleware/validation/query'
+import { validateFeedUrlSearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: '/feedUrl' })
 
 // Search
 router.get('/',
-  validateFeedUrlQuery,
+  validateFeedUrlSearch,
   async ctx => {
     const feedUrls = await getFeedUrls(ctx.request.query)
     ctx.body = feedUrls

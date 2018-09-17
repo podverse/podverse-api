@@ -24,7 +24,7 @@ export class Playlist {
   @JoinTable()
   mediaRefs: MediaRef[]
 
-  @ManyToOne(type => User, { nullable: false }) 
+  @ManyToOne(type => User, { nullable: false })
   owner: User
 
   @Column({ nullable: true })
@@ -36,7 +36,7 @@ export class Playlist {
   @Column({ default: false })
   isPublic: boolean
 
-  @Column('varchar', { array: true }) 
+  @Column('varchar', { array: true })
   itemsOrder: string[]
 
   @Column({ nullable: true })

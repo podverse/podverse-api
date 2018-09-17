@@ -1,12 +1,12 @@
 import * as Router from 'koa-router'
 import { getAuthor, getAuthors } from 'controllers/author'
-import { validateAuthorQuery } from 'middleware/validation/query'
+import { validateAuthorSearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: '/author' })
 
 // Search
 router.get('/',
-  validateAuthorQuery,
+  validateAuthorSearch,
   async ctx => {
     const authors = await getAuthors(ctx.request.query)    
     ctx.body = authors

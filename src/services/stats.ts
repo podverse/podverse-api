@@ -87,7 +87,7 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
     if (data) {
       const rows = data.rows || []
-      let rawSQLQuery = ''
+      let rawSQLSearch = ''
 
       for (const row of rows) {
         const pathName = row.dimensions[0]
@@ -106,12 +106,12 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
         const values = row.metrics[0].values[0]
         const tableName = TableNames[pagePath]
-        rawSQLQuery += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
+        rawSQLSearch += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
       }
 
       const result = await getConnection()
         .createEntityManager()
-        .query(rawSQLQuery)
+        .query(rawSQLSearch)
 
     }
   }

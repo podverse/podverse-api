@@ -1,12 +1,12 @@
 import * as Router from 'koa-router'
 import { getCategory, getCategories } from 'controllers/category'
-import { validateCategoryQuery } from 'middleware/validation/query'
+import { validateCategorySearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: '/category' })
 
 // Search
 router.get('/',
-  validateCategoryQuery,
+  validateCategorySearch,
   async ctx => {
     const categories = await getCategories(ctx.request.query)
     ctx.body = categories

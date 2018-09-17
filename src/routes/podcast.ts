@@ -1,12 +1,12 @@
 import * as Router from 'koa-router'
 import { getPodcast, getPodcasts } from 'controllers/podcast'
-import { validatePodcastQuery } from 'middleware/validation/query'
+import { validatePodcastSearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: '/podcast' })
 
 // Search
 router.get('/',
-  validatePodcastQuery,
+  validatePodcastSearch,
   async ctx => {
     const podcasts = await getPodcasts(ctx.request.query)
     ctx.body = podcasts

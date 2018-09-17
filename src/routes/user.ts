@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
-import { validateUserQuery } from 'middleware/validation/query'
+import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
 
@@ -11,7 +11,7 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  validateUserQuery,
+  validateUserSearch,
   async ctx => {
     try {
       const users = await getUsers(ctx.request.query)
