@@ -27,7 +27,7 @@ const bootstrap = async () => {
   // app.use(jwt({ secret: config.jwtSecret }))
 
   app.use(koaSwagger({
-    routePrefix: '/api/swagger',
+    routePrefix: `${config.apiPrefix}/swagger`,
     swaggerOptions: {
       url: 'http://petstore.swagger.io/v2/swagger.json'
     }
