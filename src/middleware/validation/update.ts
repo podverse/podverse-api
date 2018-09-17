@@ -1,5 +1,5 @@
 const Joi = require('joi')
-import { validateBaseBody } from 'routes/validation/base'
+import { validateBaseBody } from './base'
 
 const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({

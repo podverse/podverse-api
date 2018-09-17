@@ -3,8 +3,8 @@ import * as Router from 'koa-router'
 import { emitRouterError } from 'errors'
 import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
-import { validatePlaylistQuery } from 'routes/validation/query'
-import { validatePlaylistUpdate } from 'routes/validation/update'
+import { validatePlaylistQuery } from 'middleware/validation/query'
+import { validatePlaylistUpdate } from 'middleware/validation/update'
 
 const router = new Router({ prefix: '/playlist' })
 

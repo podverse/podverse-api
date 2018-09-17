@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getCategory, getCategories } from 'controllers/category'
-import { validateCategoryQuery } from './validation/query'
+import { validateCategoryQuery } from 'middleware/validation/query'
 
 const router = new Router({ prefix: '/category' })
 

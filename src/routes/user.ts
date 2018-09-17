@@ -1,8 +1,8 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
-import { validateUserQuery } from 'routes/validation/query'
-import { validateUserUpdate } from 'routes/validation/update'
+import { validateUserQuery } from 'middleware/validation/query'
+import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: '/user' })

@@ -3,8 +3,8 @@ import * as Router from 'koa-router'
 import { emitRouterError } from 'errors'
 import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
-import { validateMediaRefQuery } from 'routes/validation/query'
-import { validateMediaRefUpdate } from 'routes/validation/update'
+import { validateMediaRefQuery } from 'middleware/validation/query'
+import { validateMediaRefUpdate } from 'middleware/validation/update'
 
 const router = new Router({ prefix: '/mediaRef' })
 

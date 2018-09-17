@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { getEpisode, getEpisodes } from 'controllers/episode'
-import { validateEpisodeQuery } from './validation/query'
+import { validateEpisodeQuery } from 'middleware/validation/query'
 
 const router = new Router({ prefix: '/episode' })
 

@@ -1,5 +1,5 @@
 const Joi = require('joi')
-import { validateBaseQuery } from 'routes/validation/base'
+import { validateBaseQuery } from './base'
 
 const validateAuthorQuery = async (ctx, next) => {
   const schema = Joi.object().keys({
