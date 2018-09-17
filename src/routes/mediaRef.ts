@@ -6,8 +6,9 @@ import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
+const createError = require('http-errors')
 
-const router = new Router({ prefix: `${config.apiPrefix}/mediaRef` })
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
 
 router.use(bodyParser())
 
@@ -15,15 +16,26 @@ router.use(bodyParser())
 router.get('/',
   validateMediaRefSearch,
   async ctx => {
-    const mediaRefs = await getMediaRefs(ctx.request.query)
-    ctx.body = mediaRefs
+    try {
+      const mediaRefs = await getMediaRefs(ctx.request.query)
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   })
 
 // Get
 router.get('/:id',
   async ctx => {
-    const mediaRef = await getMediaRef(ctx.params.id)
-    ctx.body = mediaRef
+    try {
+      const mediaRef = await getMediaRef(ctx.params.id)
+      if (!mediaRef) {
+        throw new createError.NotFound()
+      }
+      ctx.body = mediaRef
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   })
 
 // Update

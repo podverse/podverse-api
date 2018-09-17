@@ -5,8 +5,9 @@ import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
+const createError = require('http-errors')
 
-const router = new Router({ prefix: `${config.apiPrefix}/user` })
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
 router.use(bodyParser())
 
@@ -27,6 +28,9 @@ router.get('/:id',
   async ctx => {
     try {
       const user = await getUser(ctx.params.id)
+      if (!user) {
+        throw new createError.NotFound()
+      }
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)

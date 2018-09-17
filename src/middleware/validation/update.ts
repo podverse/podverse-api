@@ -4,6 +4,7 @@ import { validateBaseBody } from './base'
 const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     endTime: Joi.number().integer().min(1),
+    id: Joi.string().min(7).max(14).required(),
     isPublic: Joi.boolean(),
     startTime: Joi.number().integer().min(0).required(),
     title: Joi.string()
@@ -15,6 +16,7 @@ const validateMediaRefUpdate = async (ctx, next) => {
 const validatePlaylistUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     description: Joi.string(),
+    id: Joi.string().min(7).max(14).required(),
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
@@ -28,7 +30,7 @@ const validatePlaylistUpdate = async (ctx, next) => {
 const validateUserUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string(),
-    id: Joi.string().required(),
+    id: Joi.string().min(7).max(14).required(),
     name: Joi.string(),
     ownerId: Joi.string().required(),
     playlists: Joi.array().items(Joi.string()),

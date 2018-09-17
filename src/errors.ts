@@ -1,7 +1,7 @@
 const createError = require('http-errors')
 
 export const emitRouterError = (error, ctx) => {
-  ctx.status = error.status || ctx.status || 500
+  ctx.status = error.status || 500
   ctx.body = error.message
   ctx.app.emit('error', error, ctx)
 }

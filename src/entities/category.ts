@@ -26,18 +26,6 @@ export class Category {
   @OneToMany(type => Category, category => category.category)
   categories: Category[]
 
-  @ManyToMany(type => Episode)
-  @JoinTable()
-  episodes: Episode[]
-
-  @ManyToMany(type => MediaRef)
-  @JoinTable()
-  mediaRefs: MediaRef[]
-
-  @ManyToMany(type => Podcast)
-  @JoinTable()
-  podcasts: Podcast[]
-
   @CreateDateColumn()
   createdAt: Date
 

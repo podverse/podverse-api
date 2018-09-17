@@ -17,6 +17,7 @@ export interface IConfig {
   databaseUrl: string
   entityRelationships: EntityRelationships
   apiPrefix: string
+  apiVersion: string
 }
 
 const config: IConfig = {
@@ -31,7 +32,8 @@ const config: IConfig = {
       mustHaveUser: process.env.MEDIA_REF_HAS_USER === 'true'
     }
   },
-  apiPrefix: process.env.API_PREFIX || '/api'
+  apiPrefix: process.env.API_PREFIX || '/api',
+  apiVersion: process.env.API_VERSION || '/v1'
 }
 
 export { config }

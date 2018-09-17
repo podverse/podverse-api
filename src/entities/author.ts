@@ -19,18 +19,6 @@ export class Author {
   @Column({ unique: true })
   slug: string
 
-  @ManyToMany(type => Episode)
-  @JoinTable()
-  episodes: Episode[]
-
-  @ManyToMany(type => MediaRef)
-  @JoinTable()
-  mediaRefs: MediaRef[]
-
-  @ManyToMany(type => Podcast)
-  @JoinTable()
-  podcasts: Podcast[]
-
   @CreateDateColumn()
   createdAt: Date
 

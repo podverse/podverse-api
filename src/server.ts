@@ -21,7 +21,9 @@ const bootstrap = async () => {
 
   const app = new Koa()
 
-  app.use(koaMount(`${config.apiPrefix}/public`, koaStatic(__dirname + '/public')))
+  app.use(koaMount(
+    `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
+  ))
 
   app.use(bodyParser())
   app.use(helmet())
@@ -31,9 +33,9 @@ const bootstrap = async () => {
   // app.use(jwt({ secret: config.jwtSecret }))
 
   app.use(koaSwagger({
-    routePrefix: `${config.apiPrefix}/swagger`,
+    routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
     swaggerOptions: {
-      url: `${config.apiPrefix}/public/swagger.json`
+      url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
     }
   }))
 

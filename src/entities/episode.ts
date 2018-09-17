@@ -122,7 +122,7 @@ export class Episode {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert() {
+  beforeInsert () {
     this.id = shortid.generate()
   }
 

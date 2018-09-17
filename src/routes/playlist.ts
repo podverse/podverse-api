@@ -6,8 +6,9 @@ import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
 import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
+const createError = require('http-errors')
 
-const router = new Router({ prefix: `${config.apiPrefix}/playlist` })
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
 
 router.use(bodyParser())
 
@@ -28,6 +29,9 @@ router.get('/:id',
   async ctx => {
     try {
       const playlist = await getPlaylist(ctx.params.id)
+      if (!playlist) {
+        throw new createError.NotFound()
+      }
       ctx.body = playlist
     } catch (error) {
       emitRouterError(error, ctx)

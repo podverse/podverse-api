@@ -13,8 +13,8 @@
       "url": "https://www.gnu.org/licenses/agpl-3.0.en.html"
     }
   },
-  "host": "podverse.fm",
-  "basePath": "/v1",
+  "host": "localhost:3000",
+  "basePath": "/api/v1",
   "tags": [
     {
       "name": "author",
@@ -47,8 +47,109 @@
     }
   ],
   "schemes": [
+    "http",
     "https"
   ],
+  "paths": {
+    "/author": {
+      "get": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Find authors by fields",
+        "description": "Returns an array of authors",
+        "operationId": "getAuthors",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "episodes",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefs",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcasts",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
+    },
+    "/author/{authorId}": {
+      "get": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Find author by ID",
+        "description": "Returns a single author",
+        "operationId": "getAuthorById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authorId",
+            "in": "path",
+            "description": "ID of author to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
+    }
+  },
   "definitions": {
     "Author": {
       "type": "object",
@@ -66,15 +167,6 @@
         },
         "slug": {
           "type": "string"
-        },
-        "episodes": {
-          "$ref": "#/definitions/Episode"
-        },
-        "mediaRefs": {
-          "$ref": "#/definitions/MediaRef"
-        },
-        "podcasts": {
-          "$ref": "#/definitions/Podcast"
         }
       }
     },
@@ -100,15 +192,6 @@
         },
         "categories": {
           "$ref": "#/definitions/Category"
-        },
-        "episodes": {
-          "$ref": "#/definitions/Episode"
-        },
-        "mediaRefs": {
-          "$ref": "#/definitions/MediaRef"
-        },
-        "podcasts": {
-          "$ref": "#/definitions/Podcast"
         }
       }
     },
