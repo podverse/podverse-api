@@ -19,6 +19,7 @@ export class CustomValidationError extends CustomStatusError {
       this.name = key
       this.message = error.constraints[key]
       Error.captureStackTrace(this, CustomValidationError)
+      return
     }
   }
 }
