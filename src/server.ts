@@ -4,6 +4,8 @@ import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as helmet from 'koa-helmet'
 import * as jwt from 'koa-jwt'
+import * as koaMount from 'koa-mount'
+import * as koaStatic from 'koa-static'
 import * as koaSwagger from 'koa2-swagger-ui'
 
 import { config } from 'config'
@@ -18,6 +20,8 @@ const bootstrap = async () => {
   await databaseInitializer()
 
   const app = new Koa()
+
+  app.use(koaMount(`${config.apiPrefix}/public`, koaStatic(__dirname + '/public')))
 
   app.use(bodyParser())
   app.use(helmet())
