@@ -14,19 +14,6 @@ export class Playlist {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
-  @ManyToMany(type => MediaRef)
-  @JoinTable()
-  mediaRefs: MediaRef[]
-
-  @ManyToOne(type => User, { nullable: false })
-  owner: User
-
   @Column({ nullable: true })
   description: string
 
@@ -41,6 +28,19 @@ export class Playlist {
 
   @Column({ nullable: true })
   title: string
+
+  @ManyToMany(type => MediaRef)
+  @JoinTable()
+  mediaRefs: MediaRef[]
+
+  @ManyToOne(type => User, { nullable: false })
+  owner: User
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   beforeInsert () {

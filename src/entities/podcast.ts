@@ -14,32 +14,6 @@ export class Podcast {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
-  @ManyToMany(type => Author, author => author.podcasts, {
-    cascade: true
-  })
-  @JoinTable()
-  authors: Author[]
-
-  @ManyToMany(type => Category)
-  @JoinTable()
-  categories: Category[]
-
-  @OneToMany(type => Episode, episode => episode.podcast, {
-    cascade: true
-  })
-  episodes: Episode[]
-
-  @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast, {
-    cascade: true
-  })
-  feedUrls: FeedUrl[]
-
   @Column({ nullable: true })
   description: string
 
@@ -106,6 +80,32 @@ export class Podcast {
 
   @Column({ nullable: true })
   type: string
+
+  @ManyToMany(type => Author, author => author.podcasts, {
+    cascade: true
+  })
+  @JoinTable()
+  authors: Author[]
+
+  @ManyToMany(type => Category)
+  @JoinTable()
+  categories: Category[]
+
+  @OneToMany(type => Episode, episode => episode.podcast, {
+    cascade: true
+  })
+  episodes: Episode[]
+
+  @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast, {
+    cascade: true
+  })
+  feedUrls: FeedUrl[]
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   beforeInsert () {

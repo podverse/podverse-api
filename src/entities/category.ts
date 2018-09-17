@@ -14,11 +14,11 @@ export class Category {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
+  @Column()
+  slug: string
 
-  @UpdateDateColumn()
-  updatedAt: Date
+  @Column({ unique: true })
+  title: string
 
   @ManyToOne(type => Category, category => category.categories)
   category: Category
@@ -38,11 +38,11 @@ export class Category {
   @JoinTable()
   podcasts: Podcast[]
 
-  @Column()
-  slug: string
+  @CreateDateColumn()
+  createdAt: Date
 
-  @Column({ unique: true })
-  title: string
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -9,7 +9,7 @@
     "parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",
     "queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "receiveNextFeedFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveNextFeedFromQueue.ts",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx --exec ts-node -r tsconfig-paths/register src/server.ts"
+    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts"
   },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",

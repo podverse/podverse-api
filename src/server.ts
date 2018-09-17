@@ -33,7 +33,7 @@ const bootstrap = async () => {
   app.use(koaSwagger({
     routePrefix: `${config.apiPrefix}/swagger`,
     swaggerOptions: {
-      url: 'http://petstore.swagger.io/v2/swagger.json'
+      url: `${config.apiPrefix}/public/swagger.json`
     }
   }))
 

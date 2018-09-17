@@ -13,11 +13,11 @@ export class Author {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
+  @Column({ unique: true })
+  name: string
 
-  @UpdateDateColumn()
-  updatedAt: Date
+  @Column({ unique: true })
+  slug: string
 
   @ManyToMany(type => Episode)
   @JoinTable()
@@ -31,11 +31,11 @@ export class Author {
   @JoinTable()
   podcasts: Podcast[]
 
-  @Column({ unique: true })
-  name: string
+  @CreateDateColumn()
+  createdAt: Date
 
-  @Column({ unique: true })
-  slug: string
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   @BeforeUpdate()

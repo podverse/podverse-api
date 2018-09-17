@@ -15,25 +15,9 @@ export class Episode {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
-  @ManyToMany(type => Author)
-  @JoinTable()
-  authors: Author[]
-
-  @ManyToMany(type => Category)
-  @JoinTable()
-  categories: Category[]
-
-  @OneToMany(type => MediaRef, mediaRef => mediaRef.episode)
-  mediaRefs: MediaRef[]
-
-  @ManyToOne(type => Podcast, podcast => podcast.episodes)
-  podcast: Podcast
+  @IsUrl()
+  @Column({ unique: true })
+  mediaUrl: string
 
   @Column({ nullable: true })
   description: string
@@ -74,10 +58,6 @@ export class Episode {
 
   @Column({ nullable: true })
   mediaType: string
-
-  @IsUrl()
-  @Column({ unique: true })
-  mediaUrl: string
 
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
@@ -120,6 +100,26 @@ export class Episode {
 
   @Column({ nullable: true })
   title: string
+
+  @ManyToMany(type => Author)
+  @JoinTable()
+  authors: Author[]
+
+  @ManyToMany(type => Category)
+  @JoinTable()
+  categories: Category[]
+
+  @OneToMany(type => MediaRef, mediaRef => mediaRef.episode)
+  mediaRefs: MediaRef[]
+
+  @ManyToOne(type => Podcast, podcast => podcast.episodes)
+  podcast: Podcast
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   beforeInsert() {

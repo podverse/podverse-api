@@ -14,17 +14,6 @@ export class User {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
-  @OneToMany(type => Playlist, playlist => playlist.owner, {
-    cascade: true
-  })
-  playlists: Playlist[]
-
   @IsEmail()
   @Column({ unique: true })
   email: string
@@ -34,6 +23,17 @@ export class User {
 
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]
+
+  @OneToMany(type => Playlist, playlist => playlist.owner, {
+    cascade: true
+  })
+  playlists: Playlist[]
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   beforeInsert () {

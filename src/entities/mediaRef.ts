@@ -18,31 +18,18 @@ export class MediaRef {
   })
   id: string
 
-  @CreateDateColumn()
-  createdAt: Date
+  @IsUrl()
+  @Column()
+  episodeMediaUrl: string
 
-  @UpdateDateColumn()
-  updatedAt: Date
+  @IsUrl()
+  @Column()
+  podcastFeedUrl: string
 
-  @ManyToMany(type => Author)
-  @JoinTable()
-  authors: Author[]
-
-  @ManyToMany(type => Category)
-  @JoinTable()
-  categories: Category[]
-
-  @ManyToOne(type => Episode, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
-  @JoinColumn({ name: '_episodeId' })
-  episode: Episode
-
-  @ManyToOne(type => User, { nullable: !mustHaveUser, onDelete: 'CASCADE' })
-  @JoinColumn({ name: '_ownerId' })
-  owner: User
-
-  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
-  @JoinColumn({ name: '_podcastId' })
-  podcast: Podcast
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  startTime: number
 
   @Column({ nullable: true })
   description: string
@@ -77,10 +64,6 @@ export class MediaRef {
   @IsUrl()
   @Column({ nullable: true })
   episodeLinkUrl: string
-
-  @IsUrl()
-  @Column()
-  episodeMediaUrl: string
 
   @Column({ nullable: true })
   episodePubDate: Date
@@ -136,10 +119,6 @@ export class MediaRef {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
-  @IsUrl()
-  @Column()
-  podcastFeedUrl: string
-
   @Column({ nullable: true })
   podcastGuid: string
 
@@ -157,13 +136,34 @@ export class MediaRef {
   @Column({ nullable: true })
   podcastTitle: string
 
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  startTime: number
-
   @Column({ nullable: true })
   title: string
+
+  @ManyToMany(type => Author)
+  @JoinTable()
+  authors: Author[]
+
+  @ManyToMany(type => Category)
+  @JoinTable()
+  categories: Category[]
+
+  @ManyToOne(type => Episode, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
+  @JoinColumn({ name: '_episodeId' })
+  episode: Episode
+
+  @ManyToOne(type => User, { nullable: !mustHaveUser, onDelete: 'CASCADE' })
+  @JoinColumn({ name: '_ownerId' })
+  owner: User
+
+  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
+  @JoinColumn({ name: '_podcastId' })
+  podcast: Podcast
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @BeforeInsert()
   beforeInsert () {

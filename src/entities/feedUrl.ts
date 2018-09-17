@@ -10,16 +10,16 @@ export class FeedUrl {
   @PrimaryColumn('varchar')
   url: string
 
+  @Column({ default: false })
+  isAuthority: boolean
+
+  @ManyToOne(type => Podcast, podcast => podcast.feedUrls)
+  podcast: Podcast
+
   @CreateDateColumn()
   createdAt: Date
 
   @UpdateDateColumn()
   updatedAt: Date
-
-  @ManyToOne(type => Podcast, podcast => podcast.feedUrls)
-  podcast: Podcast
-
-  @Column({ default: false })
-  isAuthority: boolean
 
 }
