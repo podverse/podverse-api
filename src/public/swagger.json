@@ -226,7 +226,39 @@
         }
       }
     },
-
+    "/category/{categoryId}": {
+      "get": {
+        "tags": [
+          "category"
+        ],
+        "summary": "Find category by ID",
+        "description": "Returns a single category",
+        "operationId": "getCategoryById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "ID of category to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Category"
+            }
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      }
+    },
 
     "/episode": {
       "get": {
@@ -344,7 +376,39 @@
         }
       }
     },
-
+    "/episode/{episodeId}": {
+      "get": {
+        "tags": [
+          "episode"
+        ],
+        "summary": "Find episode by ID",
+        "description": "Returns a single episode",
+        "operationId": "getEpisodeById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "episodeId",
+            "in": "path",
+            "description": "ID of episode to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Episode"
+            }
+          },
+          "404": {
+            "description": "Episode not found"
+          }
+        }
+      }
+    },
 
     "/feedUrl": {
       "get": {
@@ -387,7 +451,39 @@
         }
       }
     },
-
+    "/feedUrl/{feedUrlId}": {
+      "get": {
+        "tags": [
+          "feedUrl"
+        ],
+        "summary": "Find feedUrl by ID",
+        "description": "Returns a single feedUrl",
+        "operationId": "getFeedUrlById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "feedUrlId",
+            "in": "path",
+            "description": "ID of feedUrl to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/FeedUrl"
+            }
+          },
+          "404": {
+            "description": "FeedUrl not found"
+          }
+        }
+      }
+    },
 
     "/mediaRef": {
       "get": {
@@ -529,7 +625,39 @@
         }
       }
     },
-
+    "/mediaRef/{mediaRefId}": {
+      "get": {
+        "tags": [
+          "mediaRef"
+        ],
+        "summary": "Find mediaRef by ID",
+        "description": "Returns a single mediaRef",
+        "operationId": "getMediaRefById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "mediaRefId",
+            "in": "path",
+            "description": "ID of mediaRef to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          },
+          "404": {
+            "description": "MediaRef not found"
+          }
+        }
+      }
+    },
 
     "/playlist": {
       "get": {
@@ -580,7 +708,39 @@
         }
       }
     },
-
+    "/playlist/{playlistId}": {
+      "get": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Find playlist by ID",
+        "description": "Returns a single playlist",
+        "operationId": "getPlaylistById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "playlistId",
+            "in": "path",
+            "description": "ID of playlist to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "404": {
+            "description": "Playlist not found"
+          }
+        }
+      }
+    },
 
     "/podcast": {
       "get": {
@@ -683,7 +843,39 @@
         }
       }
     },
-
+    "/podcast/{podcastId}": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Find podcast by ID",
+        "description": "Returns a single podcast",
+        "operationId": "getPodcastById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "podcastId",
+            "in": "path",
+            "description": "ID of podcast to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Podcast"
+            }
+          },
+          "404": {
+            "description": "Podcast not found"
+          }
+        }
+      }
+    },
 
     "/user": {
       "get": {
@@ -720,9 +912,40 @@
           }
         }
       }
+    },
+    "/user/{userId}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Find user by ID",
+        "description": "Returns a single user",
+        "operationId": "getUserById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
     }
-
-
   },
   "definitions": {
     "Author": {
