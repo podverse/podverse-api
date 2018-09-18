@@ -2,8 +2,9 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'errors'
-import { deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
+import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
+import { validatePlaylistCreate } from 'middleware/validation/create'
 import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
 const createError = require('http-errors')
@@ -33,6 +34,19 @@ router.get('/:id',
         throw new createError.NotFound()
       }
       ctx.body = playlist
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Create
+router.post('/',
+  validatePlaylistCreate,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const mediaRef = await createPlaylist(body)
+      ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)
     }

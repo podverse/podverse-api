@@ -1,7 +1,8 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
+import { createUser, deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
+import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
@@ -31,6 +32,19 @@ router.get('/:id',
       if (!user) {
         throw new createError.NotFound()
       }
+      ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Create
+router.post('/',
+  validateUserCreate,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const user = await createUser(body)
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
