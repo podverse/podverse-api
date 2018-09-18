@@ -148,7 +148,581 @@
           }
         }
       }
+    },
+
+
+    "/category": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Find categories by fields",
+        "description": "Returns an array of categories",
+        "operationId": "getCategories",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodes",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefs",
+            "in": "query",
+            "type": "string",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcasts",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Category"
+            }
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      }
+    },
+
+
+    "/episode": {
+      "get": {
+        "tags": [
+          "episode"
+        ],
+        "summary": "Find episodes by fields",
+        "description": "Returns an array of episodes",
+        "operationId": "getEpisodes",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authors",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "episodeType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "guid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "imageUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isExplicit",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "linkUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefs",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "podcast",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "pubDate",
+            "in": "query",
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Episode"
+            }
+          },
+          "404": {
+            "description": "Episode not found"
+          }
+        }
+      }
+    },
+
+
+    "/feedUrl": {
+      "get": {
+        "tags": [
+          "feedUrl"
+        ],
+        "summary": "Find feedUrls by fields",
+        "description": "Returns an array of feedUrls",
+        "operationId": "getFeedUrls",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "isAuthority",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "podcast",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/FeedUrl"
+            }
+          },
+          "404": {
+            "description": "FeedUrl not found"
+          }
+        }
+      }
+    },
+
+
+    "/mediaRef": {
+      "get": {
+        "tags": [
+          "mediaRef"
+        ],
+        "summary": "Find mediaRefs by fields",
+        "description": "Returns an array of mediaRefs",
+        "operationId": "getMediaRefs",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "_episodeId",
+            "in": "query",
+            "description": "relational databases only",
+            "type": "string"
+          },
+          {
+            "name": "_podcastId",
+            "in": "query",
+            "description": "relational databases only",
+            "type": "string"
+          },
+          {
+            "name": "authors",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "episodeDuration",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "episodeId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodeImageUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodeMediaUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodePubDate",
+            "in": "query",
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "name": "episodeSummary",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodeTitle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcastFeedUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcastGuid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcastImageUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcastIsExplicit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "podcastTitle",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          },
+          "404": {
+            "description": "MediaRef not found"
+          }
+        }
+      }
+    },
+
+
+    "/playlist": {
+      "get": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Find playlists by fields",
+        "description": "Returns an array of playlists",
+        "operationId": "getPlaylists",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefs",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "404": {
+            "description": "Playlist not found"
+          }
+        }
+      }
+    },
+
+
+    "/podcast": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Find podcasts by fields",
+        "description": "Returns an array of podcasts",
+        "operationId": "getPodcasts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "authors",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "episodes",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "feedLastUpdated",
+            "in": "query",
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "name": "guid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "imageUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "isExplicit",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "linkUrl",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Podcast"
+            }
+          },
+          "404": {
+            "description": "Podcast not found"
+          }
+        }
+      }
+    },
+
+
+    "/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Find users by fields",
+        "description": "Returns an array of users",
+        "operationId": "getUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          },
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
     }
+
+
   },
   "definitions": {
     "Author": {
