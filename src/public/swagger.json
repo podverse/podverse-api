@@ -105,7 +105,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Author"
             }
@@ -135,7 +135,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Author"
             }
@@ -210,7 +210,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Category"
             }
@@ -240,7 +240,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Category"
             }
@@ -356,7 +356,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Episode"
             }
@@ -386,7 +386,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Episode"
             }
@@ -427,7 +427,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/FeedUrl"
             }
@@ -457,7 +457,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/FeedUrl"
             }
@@ -597,7 +597,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
@@ -654,7 +654,48 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "mediaRef"
+        ],
+        "summary": "Update a mediaRef",
+        "description": "Returns the updated mediaRef",
+        "operationId": "updateMediaRef",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "endTime": "integer",
+                "id": "string",
+                "isPublic": "boolean",
+                "startTime": "integer",
+                "title": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          },
+          "400": {
+            "description": "Bad request",
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
@@ -684,7 +725,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
@@ -736,7 +777,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Playlist"
             }
@@ -772,7 +813,50 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Update a playlist",
+        "description": "Returns the updated playlist",
+        "operationId": "updatePlaylist",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "description": "string",
+                "id": "string - required",
+                "isPublic": "boolean",
+                "itemsOrder": [
+                  "string"
+                ],
+                "mediaRefs": [
+                  "string"
+                ],
+                "title": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Playlist"
             }
@@ -805,7 +889,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Playlist"
             }
@@ -907,7 +991,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Podcast"
             }
@@ -937,7 +1021,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/Podcast"
             }
@@ -974,7 +1058,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/User"
             }
@@ -993,23 +1077,64 @@
         ],
         "parameters": [
           {
-            "name": "email",
-            "in": "query",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "type": "string"
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string - required",
+                "name": "string"
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/User"
             }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update a user",
+        "description": "Returns the upated user",
+        "operationId": "updateUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "id": "string - required",
+                "name": "string",
+                "playlists": ["string"],
+                "subscribedPodcastIds": ["string"]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
@@ -1036,7 +1161,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "Successful operation",
             "schema": {
               "$ref": "#/definitions/User"
             }
