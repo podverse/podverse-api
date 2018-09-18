@@ -701,6 +701,37 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "mediaRef"
+        ],
+        "summary": "Delete mediaRef by ID",
+        "description": "Returns success or error message",
+        "operationId": "getMediaRefById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "mediaRefId",
+            "in": "path",
+            "description": "ID of mediaRef to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          },
+          "404": {
+            "description": "MediaRef not found"
+          }
+        }
       }
     },
     "/mediaRef/{mediaRefId}": {
@@ -736,9 +767,6 @@
         }
       }
     },
-    
-
-
     "/playlist": {
       "get": {
         "tags": [
@@ -863,6 +891,37 @@
           },
           "400": {
             "description": "Bad request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Delete playlist by ID",
+        "description": "Returns success or error message",
+        "operationId": "getPlaylistById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "playlistId",
+            "in": "path",
+            "description": "ID of playlist to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "404": {
+            "description": "Playlist not found"
           }
         }
       }
@@ -1135,6 +1194,37 @@
           },
           "400": {
             "description": "Bad request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user by ID",
+        "description": "Returns success or error message",
+        "operationId": "getUserById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of user to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
