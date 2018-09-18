@@ -109,9 +109,6 @@
             "schema": {
               "$ref": "#/definitions/Author"
             }
-          },
-          "404": {
-            "description": "Author not found"
           }
         }
       }
@@ -217,9 +214,6 @@
             "schema": {
               "$ref": "#/definitions/Category"
             }
-          },
-          "404": {
-            "description": "Category not found"
           }
         }
       }
@@ -366,9 +360,6 @@
             "schema": {
               "$ref": "#/definitions/Episode"
             }
-          },
-          "404": {
-            "description": "Episode not found"
           }
         }
       }
@@ -440,9 +431,6 @@
             "schema": {
               "$ref": "#/definitions/FeedUrl"
             }
-          },
-          "404": {
-            "description": "FeedUrl not found"
           }
         }
       }
@@ -613,9 +601,6 @@
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
-          },
-          "404": {
-            "description": "MediaRef not found"
           }
         }
       }
@@ -698,9 +683,6 @@
             "schema": {
               "$ref": "#/definitions/Playlist"
             }
-          },
-          "404": {
-            "description": "Playlist not found"
           }
         }
       }
@@ -833,9 +815,6 @@
             "schema": {
               "$ref": "#/definitions/Podcast"
             }
-          },
-          "404": {
-            "description": "Podcast not found"
           }
         }
       }
@@ -903,9 +882,6 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
-          },
-          "404": {
-            "description": "User not found"
           }
         }
       }
