@@ -603,6 +603,63 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "mediaRef"
+        ],
+        "summary": "Add a mediaRef",
+        "description": "Returns the new mediaRef",
+        "operationId": "createMediaRef",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "_episodeId": "string",
+                "_ownerId": "string",
+                "_podcastId": "string",
+                "authors": ["ids"],
+                "categories": ["ids"],
+                "description": "string",
+                "endTime": "integer",
+                "episodeDuration": "integer",
+                "episodeGuid": "string",
+                "episodeId": "string",
+                "episodeImageUrl": "url",
+                "episodeLinkUrl": "url",
+                "episodeMediaUrl": "url",
+                "episodePubDate": "date",
+                "episodeSummary": "string",
+                "episodeTitle": "string",
+                "isPublic": "boolean",
+                "ownerId": "string",
+                "ownerName": "string",
+                "podcastFeedUrl": "url",
+                "podcastGuid": "string",
+                "podcastId": "string",
+                "podcastImageUrl": "url",
+                "podcastIsExplicit": "boolean",
+                "podcastTitle": "string",
+                "startTime": "integer",
+                "title": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/MediaRef"
+            }
+          }
+        }
       }
     },
     "/mediaRef/{mediaRefId}": {
@@ -685,6 +742,45 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Add a playlist",
+        "description": "Returns the new playlist",
+        "operationId": "createPlaylist",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "description": "string",
+                "isPublic": "boolean",
+                "itemsOrder": ["string"],
+                "mediaRefs": ["string"],
+                "ownerId": "string",
+                "title": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
       }
     },
     "/playlist/{playlistId}": {
@@ -720,7 +816,7 @@
         }
       }
     },
-
+      
     "/podcast": {
       "get": {
         "tags": [
@@ -874,7 +970,39 @@
             "name": "name",
             "in": "query",
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add a user",
+        "description": "Returns the new user",
+        "operationId": "createUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "type": "string",
+            "required": true
           },
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string"
+          }
         ],
         "responses": {
           "200": {
