@@ -701,13 +701,15 @@
             }
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/mediaRef/{mediaRefId}": {
+      "get": {
         "tags": [
           "mediaRef"
         ],
-        "summary": "Delete mediaRef by ID",
-        "description": "Returns success or error message",
+        "summary": "Find mediaRef by ID",
+        "description": "Returns a single mediaRef",
         "operationId": "getMediaRefById",
         "produces": [
           "application/json"
@@ -732,15 +734,13 @@
             "description": "MediaRef not found"
           }
         }
-      }
-    },
-    "/mediaRef/{mediaRefId}": {
-      "get": {
+      },
+      "delete": {
         "tags": [
           "mediaRef"
         ],
-        "summary": "Find mediaRef by ID",
-        "description": "Returns a single mediaRef",
+        "summary": "Delete mediaRef by ID",
+        "description": "Returns success or error message",
         "operationId": "getMediaRefById",
         "produces": [
           "application/json"
@@ -893,37 +893,6 @@
             "description": "Bad request"
           }
         }
-      },
-      "delete": {
-        "tags": [
-          "playlist"
-        ],
-        "summary": "Delete playlist by ID",
-        "description": "Returns success or error message",
-        "operationId": "getPlaylistById",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "playlistId",
-            "in": "path",
-            "description": "ID of playlist to return",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/Playlist"
-            }
-          },
-          "404": {
-            "description": "Playlist not found"
-          }
-        }
       }
     },
     "/playlist/{playlistId}": {
@@ -957,9 +926,39 @@
             "description": "Playlist not found"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Delete playlist by ID",
+        "description": "Returns success or error message",
+        "operationId": "getPlaylistById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "playlistId",
+            "in": "path",
+            "description": "ID of playlist to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "404": {
+            "description": "Playlist not found"
+          }
+        }
       }
     },
-      
     "/podcast": {
       "get": {
         "tags": [
@@ -1091,7 +1090,6 @@
         }
       }
     },
-
     "/user": {
       "get": {
         "tags": [
@@ -1196,13 +1194,15 @@
             "description": "Bad request"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/user/{userId}": {
+      "get": {
         "tags": [
           "user"
         ],
-        "summary": "Delete user by ID",
-        "description": "Returns success or error message",
+        "summary": "Find user by ID",
+        "description": "Returns a single user",
         "operationId": "getUserById",
         "produces": [
           "application/json"
@@ -1227,15 +1227,13 @@
             "description": "User not found"
           }
         }
-      }
-    },
-    "/user/{userId}": {
-      "get": {
+      },
+      "delete": {
         "tags": [
           "user"
         ],
-        "summary": "Find user by ID",
-        "description": "Returns a single user",
+        "summary": "Delete user by ID",
+        "description": "Returns success or error message",
         "operationId": "getUserById",
         "produces": [
           "application/json"
