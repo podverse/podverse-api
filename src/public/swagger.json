@@ -149,7 +149,7 @@
     "/category": {
       "get": {
         "tags": [
-          "categories"
+          "category"
         ],
         "summary": "Find categories by fields",
         "description": "Returns an array of categories",
