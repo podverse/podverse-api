@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Playlist } from 'entities'
+import { validateClassOrThrow } from 'errors'
 
 const relations = [
   'mediaRefs', 'owner'
@@ -9,8 +10,11 @@ const createPlaylist = async (obj) => {
   const repository = getRepository(Playlist)
   const playlist = new Playlist()
   const newPlaylist = Object.assign(playlist, obj)
+
+  await validateClassOrThrow(newPlaylist)
+
   await repository.save(newPlaylist)
-  return { ...newPlaylist }
+  return newPlaylist
 }
 
 const deletePlaylist = async (id) => {
@@ -40,6 +44,9 @@ const updatePlaylist = async (obj) => {
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id: obj.id })
   const newPlaylist = Object.assign(playlist, obj)
+
+  await validateClassOrThrow(newPlaylist)
+
   await repository.save(newPlaylist)
   return { ...newPlaylist }
 }

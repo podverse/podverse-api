@@ -2,8 +2,9 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'errors'
-import { deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
+import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
+import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
 const createError = require('http-errors')
@@ -32,6 +33,19 @@ router.get('/:id',
       if (!mediaRef) {
         throw new createError.NotFound()
       }
+      ctx.body = mediaRef
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Create
+router.post('/',
+  validateMediaRefCreate,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const mediaRef = await createMediaRef(body)
       ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)

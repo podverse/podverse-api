@@ -59,7 +59,7 @@ const validateUserCreate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
-export default {
+export {
   validateMediaRefCreate,
   validatePlaylistCreate,
   validateUserCreate

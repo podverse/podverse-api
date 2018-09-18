@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
+import { validateClassOrThrow } from 'errors'
 
 const relations = [
   'authors', 'categories', 'episode', 'owner', 'podcast'
@@ -9,13 +10,16 @@ const createMediaRef = async (obj) => {
   const repository = getRepository(MediaRef)
   const mediaRef = new MediaRef()
   const newMediaRef = Object.assign(mediaRef, obj)
+
+  await validateClassOrThrow(newMediaRef)
+
   await repository.save(newMediaRef)
-  return { ...newMediaRef }
+  return newMediaRef
 }
 
 const deleteMediaRef = async (id) => {
   const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({ id })  
+  const mediaRef = await repository.findOne({ id })
   const result = await repository.remove(mediaRef)
   return result
 }
@@ -40,8 +44,11 @@ const updateMediaRef = async (obj) => {
   const repository = getRepository(MediaRef)
   const mediaRef = await repository.findOne({ id: obj.id })
   const newMediaRef = Object.assign(mediaRef, obj)
+
+  await validateClassOrThrow(newMediaRef)
+
   await repository.save(newMediaRef)
-  return { ...newMediaRef }
+  return newMediaRef
 }
 
 export {
