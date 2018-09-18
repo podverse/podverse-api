@@ -35,7 +35,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     category: Joi.string(),
     categories: Joi.array().items(Joi.string()),
     description: Joi.string(),
-    duration: Joi.number().int().min(0),
+    duration: Joi.number().integer().min(0),
     episodeType: Joi.string(),
     guid: Joi.string(),
     id: Joi.string().min(7).max(14),
@@ -45,7 +45,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     mediaUrl: Joi.string().uri(),
     mediaRefs: Joi.array().items(Joi.string()),
     podcast: Joi.string(),
-    pubDate: Joi.string().date().iso(),
+    pubDate: Joi.date().iso(),
     title: Joi.string()
   }).min(1)
 
@@ -76,7 +76,7 @@ const validateMediaRefSearch = async (ctx, next) => {
     episodeImageUrl: Joi.string().uri(),
     episodeLinkUrl: Joi.string().uri(),
     episodeMediaUrl: Joi.string().uri(),
-    episodePubDate: Joi.string().date().iso(),
+    episodePubDate: Joi.date().iso(),
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     id: Joi.string().min(7).max(14),
@@ -110,7 +110,7 @@ const validatePodcastSearch = async (ctx, next) => {
     categories: Joi.array().items(Joi.string()),
     description: Joi.string(),
     episodes: Joi.array().items(Joi.string()),
-    feedLastUpdated: Joi.string().date().iso(),
+    feedLastUpdated: Joi.date().iso(),
     feedUrls: Joi.array().items(Joi.string()),
     guid: Joi.string(),
     id: Joi.string().min(7).max(14),

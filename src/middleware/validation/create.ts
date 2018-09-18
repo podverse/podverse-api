@@ -16,7 +16,7 @@ const validateMediaRefCreate = async (ctx, next) => {
     episodeImageUrl: Joi.string().uri(),
     episodeLinkUrl: Joi.string().uri(),
     episodeMediaUrl: Joi.string().uri().required(),
-    episodePubDate: Joi.string().date().iso(),
+    episodePubDate: Joi.date().iso(),
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     isPublic: Joi.boolean(),

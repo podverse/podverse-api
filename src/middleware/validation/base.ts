@@ -17,10 +17,13 @@ const validateBase = async (body, schema, ctx, next) => {
 
 export const validateBaseBody = async (schema, ctx, next) => {
   const body = ctx.request.body
+  console.log(body);
+  
   await validateBase(body, schema, ctx, next)
 }
 
 export const validateBaseQuery = async (schema, ctx, next) => {
   const query = ctx.query
+  console.log('query', 'wtf');
   await validateBase(query, schema, ctx, next)
 }
