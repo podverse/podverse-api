@@ -679,7 +679,7 @@
             "schema": {
               "example": {
                 "endTime": "integer",
-                "id": "string",
+                "id": "string - required",
                 "isPublic": "boolean",
                 "startTime": "integer",
                 "title": "string"
