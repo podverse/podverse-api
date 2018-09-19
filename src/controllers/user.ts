@@ -63,9 +63,7 @@ const updateUser = async (obj) => {
   await validateClassOrThrow(newUser)
 
   await repository.save(newUser)
-  return {
-    ...newUser
-  }
+  return newUser
 }
 
 export {

@@ -11,7 +11,7 @@ const getAuthor = id => {
   if (!author) {
     throw new createError.NotFound('MediaRef not found')
   }
-  
+
   return author
 }
 

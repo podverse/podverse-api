@@ -32,7 +32,7 @@ const deletePlaylist = async (id) => {
 
 const getPlaylist = async (id) => {
   const repository = getRepository(Playlist)
-  const playlist = repository.findOne({ id }, { relations })
+  const playlist = await repository.findOne({ id }, { relations })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
@@ -65,7 +65,7 @@ const updatePlaylist = async (obj) => {
   await validateClassOrThrow(newPlaylist)
 
   await repository.save(newPlaylist)
-  return { ...newPlaylist }
+  return newPlaylist
 }
 
 export {

@@ -2,7 +2,7 @@ import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
-import { Author, Category, Episode, Playlist, Podcast, User } from 'entities'
+import { Author, Category, Episode, Podcast, User } from 'entities'
 
 import { config } from 'config'
 const { entityRelationships } = config

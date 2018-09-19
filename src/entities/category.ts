@@ -1,6 +1,5 @@
-import { Episode, MediaRef, Podcast } from 'entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
+  ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
 
 const shortid = require('shortid')

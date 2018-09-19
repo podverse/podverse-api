@@ -3,11 +3,8 @@ import { validateBaseQuery } from './base'
 
 const validateAuthorSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    episodes: Joi.string(),
     id: Joi.string().min(7).max(14),
-    mediaRefs: Joi.string(),
     name: Joi.string(),
-    podcasts: Joi.string(),
     slug: Joi.string()
   }).min(1)
 
@@ -17,10 +14,8 @@ const validateAuthorSearch = async (ctx, next) => {
 const validateCategorySearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     category: Joi.string(),
+    categories: Joi.string(),
     id: Joi.string().min(7).max(14),
-    episodes: Joi.string(),
-    mediaRefs: Joi.string(),
-    podcasts: Joi.string(),
     slug: Joi.string(),
     title: Joi.string()
   }).min(1)

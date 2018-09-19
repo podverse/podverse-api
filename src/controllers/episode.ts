@@ -13,7 +13,7 @@ const getEpisode = (id) => {
   if (!episode) {
     throw new createError.NotFound('Episode not found')
   }
-  
+
   return episode
 }
 

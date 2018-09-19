@@ -7,7 +7,7 @@ import { validateCategorySearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/category` })
 
-const delimitKeys = ['episodes', 'mediaRefs', 'podcasts']
+const delimitKeys = ['categories']
 
 // Search
 router.get('/',

@@ -13,7 +13,7 @@ const getPodcast = (id) => {
   if (!podcast) {
     throw new createError.NotFound('Podcast not found')
   }
-  
+
   return podcast
 }
 

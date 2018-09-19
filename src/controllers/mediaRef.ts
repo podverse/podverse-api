@@ -37,7 +37,7 @@ const getMediaRef = (id) => {
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
   }
-  
+
   return mediaRef
 }
 
