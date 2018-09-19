@@ -29,9 +29,6 @@ router.get('/:id',
   async ctx => {
     try {
       const user = await getUser(ctx.params.id)
-      if (!user) {
-        throw new createError.NotFound()
-      }
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)

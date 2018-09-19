@@ -1,11 +1,18 @@
 import { getRepository } from 'typeorm'
 import { Author } from 'entities'
+const createError = require('http-errors')
 
 const relations = []
 
 const getAuthor = id => {
   const repository = getRepository(Author)
-  return repository.findOne({ id }, { relations })
+  const author = repository.findOne({ id }, { relations })
+
+  if (!author) {
+    throw new createError.NotFound('MediaRef not found')
+  }
+  
+  return author
 }
 
 const getAuthors = query => {

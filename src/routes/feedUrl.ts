@@ -25,9 +25,6 @@ router.get('/:id',
   async ctx => {
     try {
       const feedUrl = await getFeedUrl(ctx.params.id)
-      if (!feedUrl) {
-        throw new createError.NotFound()
-      }
       ctx.body = feedUrl
     } catch (error) {
       emitRouterError(error, ctx)

@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Podcast } from 'entities'
+const createError = require('http-errors')
 
 const relations = [
   'authors', 'categories', 'episodes', 'feedUrls'
@@ -7,7 +8,13 @@ const relations = [
 
 const getPodcast = (id) => {
   const repository = getRepository(Podcast)
-  return repository.findOne({ id }, { relations })
+  const podcast = repository.findOne({ id }, { relations })
+
+  if (!podcast) {
+    throw new createError.NotFound('Podcast not found')
+  }
+  
+  return podcast
 }
 
 const getPodcasts = (query) => {

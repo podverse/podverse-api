@@ -25,9 +25,6 @@ router.get('/:id',
   async ctx => {
     try {
       const category = await getCategory(ctx.params.id)
-      if (!category) {
-        throw new createError.NotFound()
-      }
       ctx.body = category
     } catch (error) {
       emitRouterError(error, ctx)

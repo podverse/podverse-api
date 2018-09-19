@@ -25,9 +25,6 @@ router.get('/:id',
   async ctx => {
     try {
       const episode = await getEpisode(ctx.params.id)
-      if (!episode) {
-        throw new createError.NotFound()
-      }
       ctx.body = episode
     } catch (error) {
       emitRouterError(error, ctx)

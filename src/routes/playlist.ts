@@ -30,9 +30,6 @@ router.get('/:id',
   async ctx => {
     try {
       const playlist = await getPlaylist(ctx.params.id)
-      if (!playlist) {
-        throw new createError.NotFound()
-      }
       ctx.body = playlist
     } catch (error) {
       emitRouterError(error, ctx)

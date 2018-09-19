@@ -12,6 +12,8 @@ router.get('/',
   validateAuthorSearch,
   async ctx => {
     try {
+      console.log(ctx.request.query);
+      
       const authors = await getAuthors(ctx.request.query)
       ctx.body = authors
     } catch (error) {
@@ -25,9 +27,6 @@ router.get('/:id',
   async ctx => {
     try {
       const author = await getAuthor(ctx.params.id)
-      if (!author) {
-        throw new createError.NotFound()
-      }
       ctx.body = author
     } catch (error) {
       emitRouterError(error, ctx)

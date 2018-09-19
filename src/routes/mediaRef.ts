@@ -30,9 +30,6 @@ router.get('/:id',
   async ctx => {
     try {
       const mediaRef = await getMediaRef(ctx.params.id)
-      if (!mediaRef) {
-        throw new createError.NotFound()
-      }
       ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)
