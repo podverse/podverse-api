@@ -79,6 +79,36 @@ export default async (connection: Connection) => {
   feedUrl2.podcast = podcast1
   await connection.manager.save(feedUrl2)
 
+  let mediaRef11 = new MediaRef()
+  mediaRef11.episodeMediaUrl = 'https://podverse.fm'
+  mediaRef11.podcastFeedUrl = 'https://podverse.fm'
+  mediaRef11.title = 'Beep'
+  await connection.manager.save(mediaRef11)
+
+  let mediaRef12 = new MediaRef()
+  mediaRef12.episodeMediaUrl = 'https://podverse.fm'
+  mediaRef12.podcastFeedUrl = 'https://podverse.fm'
+  mediaRef12.title = 'Beep'
+  await connection.manager.save(mediaRef12)
+
+  let mediaRef13 = new MediaRef()
+  mediaRef13.episodeMediaUrl = 'https://podverse.fm'
+  mediaRef13.podcastFeedUrl = 'https://podverse.fm'
+  mediaRef13.title = 'Beep'
+  await connection.manager.save(mediaRef13)
+
+  let mediaRef14 = new MediaRef()
+  mediaRef14.episodeMediaUrl = 'https://podverse.fm'
+  mediaRef14.podcastFeedUrl = 'https://podverse.fm'
+  mediaRef14.title = 'Beep'
+  await connection.manager.save(mediaRef14)
+
+  let mediaRef15 = new MediaRef()
+  mediaRef15.episodeMediaUrl = 'https://podverse.fm'
+  mediaRef15.podcastFeedUrl = 'https://podverse.fm'
+  mediaRef15.title = 'Beep'
+  await connection.manager.save(mediaRef15)
+
   let mediaRef1 = new MediaRef()
   mediaRef1.categories = []
   mediaRef1.episodeMediaUrl = 'https://podverse.fm'

@@ -17,14 +17,15 @@ const getFeedUrl = (id) => {
   return feedUrl
 }
 
-const getFeedUrls = (query) => {
+const getFeedUrls = (query, options) => {
   const repository = getRepository(FeedUrl)
 
   return repository.find({
     where: {
       ...query
     },
-    relations
+    relations,
+    ...options
   })
 }
 

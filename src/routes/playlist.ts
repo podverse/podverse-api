@@ -5,6 +5,7 @@ import { emitRouterError } from 'errors'
 import { delimitQueryValues } from 'utility'
 import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from 'middleware/validation/create'
 import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
@@ -17,11 +18,12 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-validatePlaylistSearch,
+  parseQueryPageOptions,
+  validatePlaylistSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const playlists = await getPlaylists(ctx.request.query)
+      const playlists = await getPlaylists(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = playlists
     } catch (error) {
       emitRouterError(error, ctx)

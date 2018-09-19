@@ -41,14 +41,15 @@ const getMediaRef = (id) => {
   return mediaRef
 }
 
-const getMediaRefs = (query) => {
+const getMediaRefs = (query, options) => {
   const repository = getRepository(MediaRef)
-
+  
   return repository.find({
     where: {
       ...query
     },
-    relations
+    relations,
+    ...options
   })
 }
 

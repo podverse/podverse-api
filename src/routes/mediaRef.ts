@@ -5,6 +5,7 @@ import { emitRouterError } from 'errors'
 import { delimitQueryValues } from 'utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
@@ -17,11 +18,12 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-validateMediaRefSearch,
+  parseQueryPageOptions,
+  validateMediaRefSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(ctx.request.query)
+      const mediaRefs = await getMediaRefs(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)

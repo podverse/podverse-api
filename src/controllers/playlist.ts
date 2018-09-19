@@ -41,14 +41,15 @@ const getPlaylist = async (id) => {
   return playlist
 }
 
-const getPlaylists = (query) => {
+const getPlaylists = (query, options) => {
   const repository = getRepository(Playlist)
 
   return repository.find({
     where: {
       ...query
     },
-    relations
+    relations,
+    ...options
   })
 }
 

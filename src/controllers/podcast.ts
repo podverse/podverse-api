@@ -17,14 +17,15 @@ const getPodcast = (id) => {
   return podcast
 }
 
-const getPodcasts = (query) => {
+const getPodcasts = (query, options) => {
   const repository = getRepository(Podcast)
 
   return repository.find({
     where: {
       ...query
     },
-    relations
+    relations,
+    ...options
   })
 }
 

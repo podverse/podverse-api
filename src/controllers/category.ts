@@ -17,16 +17,16 @@ const getCategory = (id) => {
   return category
 }
 
-const getCategories = (query) => {
+const getCategories = (query, options) => {
   const repository = getRepository(Category)
-  const findObj = {
+  
+  return repository.find({
     where: {
       ...query
     },
-    relations
-  }
-
-  return repository.find(findObj)
+    relations,
+    ...options
+  })
 }
 
 export {

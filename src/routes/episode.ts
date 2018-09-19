@@ -3,6 +3,7 @@ import { config } from 'config'
 import { emitRouterError } from 'errors'
 import { delimitQueryValues } from 'utility'
 import { getEpisode, getEpisodes } from 'controllers/episode'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
@@ -11,11 +12,12 @@ const delimitKeys = ['authors', 'categories', 'mediaRefs']
 
 // Search
 router.get('/',
-validateEpisodeSearch,
+  parseQueryPageOptions,
+  validateEpisodeSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const episodes = await getEpisodes(ctx.request.query)
+      const episodes = await getEpisodes(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = episodes
     } catch (error) {
       emitRouterError(error, ctx)

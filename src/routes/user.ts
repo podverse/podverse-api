@@ -1,11 +1,12 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
+import { emitRouterError } from 'errors'
 import { createUser, deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
-import { emitRouterError } from 'errors'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
@@ -13,10 +14,11 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-validateUserSearch,
+  parseQueryPageOptions,
+  validateUserSearch,
   async ctx => {
     try {
-      const users = await getUsers(ctx.request.query)
+      const users = await getUsers(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = users
     } catch (error) {
       emitRouterError(error, ctx)

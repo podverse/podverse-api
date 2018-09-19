@@ -3,6 +3,7 @@ import { config } from 'config'
 import { emitRouterError } from 'errors'
 import { delimitQueryValues } from 'utility'
 import { getCategory, getCategories } from 'controllers/category'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateCategorySearch } from 'middleware/validation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/category` })
@@ -11,11 +12,12 @@ const delimitKeys = ['categories']
 
 // Search
 router.get('/',
-validateCategorySearch,
+  parseQueryPageOptions,
+  validateCategorySearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const categories = await getCategories(ctx.request.query)
+      const categories = await getCategories(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = categories
     } catch (error) {
       emitRouterError(error, ctx)

@@ -39,14 +39,15 @@ const getUser = async (id) => {
   return user
 }
 
-const getUsers = (query) => {
+const getUsers = (query, options) => {
   const repository = getRepository(User)
 
   return repository.find({
     where: {
       ...query
     },
-    relations
+    relations,
+    ...options
   })
 }
 

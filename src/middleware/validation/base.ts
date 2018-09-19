@@ -24,3 +24,15 @@ export const validateBaseQuery = async (schema, ctx, next) => {
   const query = ctx.query
   await validateBase(query, schema, ctx, next)
 }
+
+export const validateQueryPageOptions = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    order: Joi.object(),
+    orderAsc: Joi.boolean(),
+    skip: Joi.number().integer().min(0),
+    take: Joi.number().integer().min(0)
+  })
+
+  const queryPageOptions = ctx.state.queryPageOptions
+  await validateBase(queryPageOptions, schema, ctx, next)
+}
