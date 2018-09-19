@@ -64,38 +64,14 @@
         ],
         "parameters": [
           {
-            "name": "episodes",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
             "name": "id",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "mediaRefs",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
             "name": "name",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "podcasts",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           },
           {
             "name": "slug",
@@ -164,38 +140,9 @@
             "type": "string"
           },
           {
-            "name": "episodes",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
             "name": "id",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "mediaRefs",
-            "in": "query",
-            "type": "string",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "podcasts",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           },
           {
             "name": "slug",
@@ -624,8 +571,8 @@
                 "_episodeId": "string",
                 "_ownerId": "string",
                 "_podcastId": "string",
-                "authors": ["ids"],
-                "categories": ["ids"],
+                "authors": ["id"],
+                "categories": ["id"],
                 "description": "string",
                 "endTime": "integer",
                 "episodeDuration": "integer",
@@ -831,8 +778,8 @@
               "example": {
                 "description": "string",
                 "isPublic": "boolean",
-                "itemsOrder": ["string"],
-                "mediaRefs": ["string"],
+                "itemsOrder": ["id"],
+                "mediaRefs": ["id"],
                 "ownerId": "string",
                 "title": "string"
               }
@@ -1177,8 +1124,8 @@
                 "email": "string",
                 "id": "string - required",
                 "name": "string",
-                "playlists": ["string"],
-                "subscribedPodcastIds": ["string"]
+                "playlists": ["id"],
+                "subscribedPodcastIds": ["id"]
               }
             }
           }

@@ -5,9 +5,9 @@ const relations = [
   'podcast'
 ]
 
-const getFeedUrl = (url) => {
+const getFeedUrl = (id) => {
   const repository = getRepository(FeedUrl)
-  return repository.findOne({ url }, { relations })
+  return repository.findOne({ id }, { relations })
 }
 
 const getFeedUrls = (query) => {

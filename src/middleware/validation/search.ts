@@ -20,7 +20,6 @@ const validateCategorySearch = async (ctx, next) => {
     id: Joi.string().min(7).max(14),
     episodes: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
-    name: Joi.string(),
     podcasts: Joi.array().items(Joi.string()),
     slug: Joi.string(),
     title: Joi.string()
@@ -54,6 +53,7 @@ const validateEpisodeSearch = async (ctx, next) => {
 
 const validateFeedUrlSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
+    id: Joi.string(),
     isAuthority: Joi.boolean(),
     podcast: Joi.string(),
     url: Joi.string()

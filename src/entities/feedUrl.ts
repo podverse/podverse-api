@@ -1,17 +1,24 @@
 import { IsUrl } from 'class-validator'
 import { Podcast } from 'entities'
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
-  UpdateDateColumn } from 'typeorm'
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, 
+  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+const shortid = require('shortid')
 
 @Entity('feedUrls')
 export class FeedUrl {
 
-  @IsUrl()
-  @PrimaryColumn('varchar')
-  url: string
+  @PrimaryColumn('varchar', {
+    default: shortid.generate(),
+    length: 14
+  })
+  id: string
 
   @Column({ default: false })
   isAuthority: boolean
+
+  @IsUrl()
+  @Column({ unique: true })
+  url: string
 
   @ManyToOne(type => Podcast, podcast => podcast.feedUrls)
   podcast: Podcast
@@ -21,5 +28,10 @@ export class FeedUrl {
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @BeforeInsert()
+  beforeInsert () {
+    this.id = shortid.generate()
+  }
 
 }
