@@ -3,7 +3,6 @@ import { config } from 'config'
 import { emitRouterError } from 'errors'
 import { getFeedUrl, getFeedUrls } from 'controllers/feedUrl'
 import { validateFeedUrlSearch } from 'middleware/validation/search'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/feedUrl` })
 

@@ -1,3 +1,14 @@
+export const delimitQueryValues = (ctx, keys) => {
+  let query = ctx.request.query
+  for (const key of keys) {
+    if (query[key]) {
+      query[key] = query[key].split(',')
+    }
+  }
+  ctx.request.query = query
+  return ctx
+}
+
 export const chunkArray = (arr, chunkSize = 10) => {
   let i
   let j

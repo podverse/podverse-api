@@ -2,22 +2,25 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'errors'
+import { delimitQueryValues } from 'utility'
 import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
 import { validatePlaylistCreate } from 'middleware/validation/create'
 import { validatePlaylistSearch } from 'middleware/validation/search'
 import { validatePlaylistUpdate } from 'middleware/validation/update'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
+
+const delimitKeys = ['mediaRefs']
 
 router.use(bodyParser())
 
 // Search
 router.get('/',
-  validatePlaylistSearch,
+validatePlaylistSearch,
   async ctx => {
     try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
       const playlists = await getPlaylists(ctx.request.query)
       ctx.body = playlists
     } catch (error) {

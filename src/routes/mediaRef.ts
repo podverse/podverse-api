@@ -2,22 +2,25 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'errors'
+import { delimitQueryValues } from 'utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
 import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
+
+const delimitKeys = ['authors', 'categories']
 
 router.use(bodyParser())
 
 // Search
 router.get('/',
-  validateMediaRefSearch,
+validateMediaRefSearch,
   async ctx => {
     try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
       const mediaRefs = await getMediaRefs(ctx.request.query)
       ctx.body = mediaRefs
     } catch (error) {

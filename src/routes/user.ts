@@ -6,7 +6,6 @@ import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
 import { emitRouterError } from 'errors'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
@@ -14,7 +13,7 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  validateUserSearch,
+validateUserSearch,
   async ctx => {
     try {
       const users = await getUsers(ctx.request.query)

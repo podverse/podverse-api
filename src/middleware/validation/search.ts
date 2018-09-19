@@ -3,11 +3,11 @@ import { validateBaseQuery } from './base'
 
 const validateAuthorSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    episodes: Joi.array().items(Joi.string()),
+    episodes: Joi.string(),
     id: Joi.string().min(7).max(14),
-    mediaRefs: Joi.array().items(Joi.string()),
+    mediaRefs: Joi.string(),
     name: Joi.string(),
-    podcasts: Joi.array().items(Joi.string()),
+    podcasts: Joi.string(),
     slug: Joi.string()
   }).min(1)
 
@@ -18,9 +18,9 @@ const validateCategorySearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     category: Joi.string(),
     id: Joi.string().min(7).max(14),
-    episodes: Joi.array().items(Joi.string()),
-    mediaRefs: Joi.array().items(Joi.string()),
-    podcasts: Joi.array().items(Joi.string()),
+    episodes: Joi.string(),
+    mediaRefs: Joi.string(),
+    podcasts: Joi.string(),
     slug: Joi.string(),
     title: Joi.string()
   }).min(1)
@@ -30,9 +30,9 @@ const validateCategorySearch = async (ctx, next) => {
 
 const validateEpisodeSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    authors: Joi.array().items(Joi.string()),
+    authors: Joi.string(),
     category: Joi.string(),
-    categories: Joi.array().items(Joi.string()),
+    categories: Joi.string(),
     description: Joi.string(),
     duration: Joi.number().integer().min(0),
     episodeType: Joi.string(),
@@ -42,7 +42,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     isExplicit: Joi.boolean(),
     linkUrl: Joi.string().uri(),
     mediaUrl: Joi.string().uri(),
-    mediaRefs: Joi.array().items(Joi.string()),
+    mediaRefs: Joi.string(),
     podcast: Joi.string(),
     pubDate: Joi.date().iso(),
     title: Joi.string()
@@ -66,8 +66,8 @@ const validateMediaRefSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     _episodeId: Joi.string(),
     _podcastId: Joi.string(),
-    authors: Joi.array().items(Joi.string()),
-    categories: Joi.array().items(Joi.string()),
+    authors: Joi.string(),
+    categories: Joi.string(),
     description: Joi.string(),
     endTime: Joi.number().integer().min(1),
     episodeDuration: Joi.number().integer().min(0),
@@ -97,7 +97,7 @@ const validatePlaylistSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     description: Joi.string(),
     id: Joi.string().min(7).max(14),
-    mediaRefs: Joi.array().items(Joi.string()),
+    mediaRefs: Joi.string(),
     title: Joi.string()
   }).min(1)
 
@@ -106,12 +106,12 @@ const validatePlaylistSearch = async (ctx, next) => {
 
 const validatePodcastSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    authors: Joi.array().items(Joi.string()),
-    categories: Joi.array().items(Joi.string()),
+    authors: Joi.string(),
+    categories: Joi.string(),
     description: Joi.string(),
-    episodes: Joi.array().items(Joi.string()),
+    episodes: Joi.string(),
     feedLastUpdated: Joi.date().iso(),
-    feedUrls: Joi.array().items(Joi.string()),
+    feedUrls: Joi.string(),
     guid: Joi.string(),
     id: Joi.string().min(7).max(14),
     imageUrl: Joi.string().uri(),

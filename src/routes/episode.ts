@@ -1,17 +1,20 @@
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'errors'
+import { delimitQueryValues } from 'utility'
 import { getEpisode, getEpisodes } from 'controllers/episode'
 import { validateEpisodeSearch } from 'middleware/validation/search'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
+const delimitKeys = ['authors', 'categories', 'mediaRefs']
+
 // Search
 router.get('/',
-  validateEpisodeSearch,
+validateEpisodeSearch,
   async ctx => {
     try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
       const episodes = await getEpisodes(ctx.request.query)
       ctx.body = episodes
     } catch (error) {
