@@ -21,6 +21,9 @@ export class User {
   @Column({ nullable: true })
   name: string
 
+  @Column()
+  password: string
+
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]
 

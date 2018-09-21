@@ -3,16 +3,23 @@ import * as dotenv from 'dotenv'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as helmet from 'koa-helmet'
-import * as jwt from 'koa-jwt'
-import * as koaMount from 'koa-mount'
 import * as koaStatic from 'koa-static'
-import * as koaSwagger from 'koa2-swagger-ui'
+import * as mount from 'koa-mount'
+import * as passport from 'koa-passport'
+import * as session from 'koa-session'
+import * as swagger from 'koa2-swagger-ui'
 
 import { config } from 'config'
 import { logger, loggerInstance } from 'logging'
-import { authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
+import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { databaseInitializer } from 'initializers/database'
+import validatePassword from 'middleware/validation/password'
+
+const sessionConfig = {
+  key: config.sessionCookieName,
+  maxAge: config.sessionExpiration
+}
 
 const bootstrap = async () => {
   dotenv.config({ path: './env' })
@@ -21,7 +28,10 @@ const bootstrap = async () => {
 
   const app = new Koa()
 
-  app.use(koaMount(
+  app.keys = [config.authSecretKey]
+  app.use(session(sessionConfig, app))
+
+  app.use(mount(
     `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
   ))
 
@@ -30,14 +40,35 @@ const bootstrap = async () => {
   app.use(cors())
   app.use(logger())
 
-  // app.use(jwt({ secret: config.jwtSecret }))
+  // Everytime "password" is a key in the request body, validate it.
+  app.use((ctx, next) => {
+    // @ts-ignore
+    const password = ctx.request.body.password
+    if (password) {
+      const isValid = validatePassword.validate(password)
+      if (!isValid) {
+        ctx.body = 'Invalid password. Password must be at least 8 character, with at least 1 uppercase letter, 1 lowercase letter, and 1 number, with no spaces.'
+        return
+      }
+    }
+    next()
+  })
 
-  app.use(koaSwagger({
+  // Add passport method handlers
+  // NOTE: passport grabs and processes the password property in every request body
+  require('./middleware/auth.ts')
+  app.use(passport.initialize())
+  app.use(passport.session())
+
+  app.use(swagger({
     routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
     swaggerOptions: {
       url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
     }
   }))
+
+  app.use(authRouter.routes())
+  app.use(authRouter.allowedMethods())
 
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())

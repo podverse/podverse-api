@@ -141,21 +141,25 @@ export default async (connection: Connection) => {
   let user1 = new User()
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
+  user1.password = 'asdfasdf'
   await connection.manager.save(user1)
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
   user2.name = 'Sylvester the Cat'
+  user2.password = 'zxcvzxcv'
   await connection.manager.save(user2)
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
   user3.name = 'Tweety'
+  user3.password = 'vbnmvbnm'
   await connection.manager.save(user3)
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'
   user4.name = 'Wile E. Coyote'
+  user4.password = 'hjklhjkl'
   await connection.manager.save(user4)
 
   let playlist1 = new Playlist()

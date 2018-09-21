@@ -13,18 +13,19 @@ export interface IConfig {
   port: number
   debugLogging: boolean
   dbsslconn: boolean
-  jwtSecret: string
   databaseUrl: string
   entityRelationships: EntityRelationships
   apiPrefix: string
   apiVersion: string
+  authSecretKey: string
+  sessionCookieName: string
+  sessionExpiration: number
 }
 
 const config: IConfig = {
   port: +process.env.PORT || 3000,
   debugLogging: process.env.NODE_ENV === 'development',
   dbsslconn: process.env.NODE_ENV !== 'development',
-  jwtSecret: process.env.JWT_SECRET || 'your-secret-whatever',
   databaseUrl: process.env.DATABASE_URL || 'postgres://postgres:mysecretpw@localhost:5432/postgres',
   entityRelationships: {
     mediaRef: {
@@ -33,7 +34,10 @@ const config: IConfig = {
     }
   },
   apiPrefix: process.env.API_PREFIX || '/api',
-  apiVersion: process.env.API_VERSION || '/v1'
+  apiVersion: process.env.API_VERSION || '/v1',
+  authSecretKey: process.env.AUTH_SECRET_KEY || 'your-secret-whatever',
+  sessionCookieName: process.env.SESSION_COOKIE_NAME || 'podverse_session',
+  sessionExpiration: parseInt(process.env.SESSION_EXPIRATION, 10) || 31540000000 // in ms, default one year
 }
 
 export { config }

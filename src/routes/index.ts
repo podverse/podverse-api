@@ -1,3 +1,4 @@
+export { default as authRouter } from './auth'
 export { default as authorRouter } from './author'
 export { default as categoryRouter } from './category'
 export { default as episodeRouter } from './episode'

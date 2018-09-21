@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcryptjs'
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
 import { validateClassOrThrow } from 'errors'
@@ -8,7 +9,11 @@ const relations = ['playlists']
 const createUser = async (obj) => {
   const repository = getRepository(User)
   const user = new User()
-  const newUser = Object.assign(user, obj)
+
+  const salt = bcrypt.genSaltSync()
+  const hash = bcrypt.hashSync(obj.password, salt)
+
+  const newUser = Object.assign(user, obj, { password: hash })
 
   await validateClassOrThrow(newUser)
 
@@ -59,7 +64,10 @@ const updateUser = async (obj) => {
     throw new createError.NotFound('User not found')
   }
 
-  const newUser = Object.assign(user, obj)
+  const salt = bcrypt.genSaltSync()
+  const hash = bcrypt.hashSync(obj.password, salt)
+
+  const newUser = Object.assign(user, obj, { password: hash })
 
   await validateClassOrThrow(newUser)
 
