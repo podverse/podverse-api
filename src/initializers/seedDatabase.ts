@@ -3,6 +3,8 @@ import { validCategories } from 'config/categories'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
 import { parseFeed } from 'services/parser'
+const saltRounds = 10
+import { hash } from 'bcrypt'
 
 export default async (connection: Connection) => {
   await connection.synchronize(true)
@@ -141,7 +143,8 @@ export default async (connection: Connection) => {
   let user1 = new User()
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
-  user1.password = 'asdfasdf'
+  user1.password = await hash('asdfasdf', saltRounds)
+  
   await connection.manager.save(user1)
 
   let user2 = new User()
