@@ -68,6 +68,7 @@
     "koa-session": "^5.9.0",
     "koa-static": "^5.0.0",
     "node-podcast-parser": "^2.3.0",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "password-validator": "^4.1.1",
     "pg": "^7.4.3",

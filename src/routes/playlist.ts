@@ -1,8 +1,8 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { emitRouterError } from 'errors'
-import { delimitQueryValues } from 'utility'
+import { emitRouterError } from 'lib/errors'
+import { delimitQueryValues } from 'lib/utility'
 import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'

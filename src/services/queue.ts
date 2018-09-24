@@ -1,8 +1,8 @@
 import { getRepository, getConnection } from 'typeorm'
 import { awsConfig } from 'config/aws'
 import { FeedUrl } from 'entities'
-import { chunkArray, logError } from 'utility'
-import { connectToDb } from 'db'
+import { chunkArray } from 'utility'
+import { connectToDb } from 'lib/db'
 import { sqs } from 'services/aws'
 import { generateFeedMessageAttributes } from 'services/parser'
 
@@ -48,7 +48,7 @@ export const addAllFeedsToQueue = async () => {
     await sqs.sendMessageBatch(chunkParams)
       .promise()
       .catch(error => {
-        logError('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
+        console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
       })
   }
 
@@ -73,7 +73,7 @@ export const receiveMessageFromQueue = async (queue) => {
       return message
     })
     .catch(error => {
-      logError('receiveMessageFromQueue: sqs.receiveMessage error', error)
+      console.error('receiveMessageFromQueue: sqs.receiveMessage error', error)
     })
 
   return message
@@ -88,7 +88,7 @@ export const sendMessageToQueue = async (attrs, queue) => {
 
   await sqs.sendMessage(message)
     .promise()
-    .catch(error => logError('sendMessageToQueue:sqs.sendMessage', error))
+    .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
 export const deleteMessage = async receiptHandle => {
@@ -101,7 +101,7 @@ export const deleteMessage = async receiptHandle => {
     await sqs.deleteMessage(params)
       .promise()
       .catch(error => {
-        logError('deleteMessage:sqs.deleteMessage error', error)
+        console.error('deleteMessage:sqs.deleteMessage error', error)
       })
   }
 }
@@ -112,6 +112,6 @@ const purgeQueue = async () => {
   await sqs.purgeQueue(params)
     .promise()
     .catch(error => {
-      logError('purgeQueue.sqs.purgeQueue error', error)
+      console.error('purgeQueue.sqs.purgeQueue error', error)
     })
 }

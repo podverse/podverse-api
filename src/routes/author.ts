@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { emitRouterError } from 'errors'
+import { emitRouterError } from 'lib/errors'
 import { getAuthor, getAuthors } from 'controllers/author'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateAuthorSearch } from 'middleware/validation/search'

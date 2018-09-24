@@ -1,5 +1,5 @@
 import { getConnection } from 'typeorm'
-import { connectToDb } from 'db'
+import { connectToDb } from 'lib/db'
 import { lastHour, offsetDate } from 'utility'
 import { queryGoogleAnalyticsData } from './google'
 

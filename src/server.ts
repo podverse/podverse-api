@@ -2,7 +2,7 @@ require('dotenv').config({ path: './env' })
 
 import 'reflect-metadata'
 import { createApp } from 'app'
-import { connectToDb } from 'db'
+import { connectToDb } from 'lib/db'
 import { seedDatabase } from 'seeds/db'
 
 const port = process.env.PORT || 3000

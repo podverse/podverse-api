@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Playlist } from 'entities'
-import { validateClassOrThrow } from 'errors'
+import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
 const relations = [

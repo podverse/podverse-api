@@ -10,10 +10,10 @@ import { Connection } from 'typeorm'
 
 import { config } from 'config'
 import { User } from 'entities'
-import { logger, loggerInstance } from 'logging'
 import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
-import { createLocalStrategy } from 'middleware/auth'
+import { logger, loggerInstance } from 'lib/logging'
+import { createJwtStrategy, createLocalStrategy } from 'middleware/auth'
 
 declare module 'koa' {
   interface BaseContext {
@@ -27,7 +27,7 @@ export const createApp = (conn: Connection) => {
   app.context.db = conn
 
   passport.use(createLocalStrategy(conn.getRepository(User)))
-  // passport.use(createJWTStrategy())
+  passport.use(createJwtStrategy())
 
   app.use(helmet())
   app.use(logger())

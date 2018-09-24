@@ -1,6 +1,6 @@
 import {ValidationArguments, ValidatorConstraint,
   ValidatorConstraintInterface } from 'class-validator'
-import { validatePassword } from 'utility'
+import { validatePassword } from 'lib/utility'
 
 @ValidatorConstraint({ name: '', async: false })
 export class ValidatePassword implements ValidatorConstraintInterface {

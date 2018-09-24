@@ -2,9 +2,8 @@ import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
 import { getRepository, In } from 'typeorm'
 import { awsConfig } from 'config/aws'
-import { connectToDb } from 'db'
+import { connectToDb } from 'lib/db'
 import { Author, Category, Episode, FeedUrl, Podcast } from 'entities'
-import { logError } from 'utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue }
   from 'services/queue'
 
@@ -28,7 +27,7 @@ export const parseNextFeedFromQueue = async (shouldConnectToDb = false) => {
     try {
       let res = await parseFeed(feed.url, feed.podcast.id, 'false')
     } catch (error) {
-      logError('parseNextFeedFromQueue:parseFeed', error)
+      console.error('parseNextFeedFromQueue:parseFeed', error)
       const attrs = generateFeedMessageAttributes(feed)
       await sendMessageToQueue(attrs, feedsToParseErrorsUrl)
     }
@@ -51,14 +50,14 @@ export const parseFeed = async (url, id, shouldCreate = 'false') => {
   return new Promise((resolve, reject) => {
     request(url, async (error, res, data) => {
       if (error) {
-        logError('Network error', error, { id, url, shouldCreate })
+        console.error('Network error', error, { id, url, shouldCreate })
         reject()
         return
       }
 
       await parsePodcast(data, async (error, data) => {
         if (error) {
-          logError('Parsing error', error, { id, url, shouldCreate })
+          console.error('Parsing error', error, { id, url, shouldCreate })
           reject()
           return
         }
@@ -76,7 +75,7 @@ export const parseFeed = async (url, id, shouldCreate = 'false') => {
         } else {
           podcast = await podcastRepo.findOne({ id })
           if (!podcast) {
-            logError(
+            console.error(
               'Parsing error: No podcast found matching id',
               null,
               { id, url, shouldCreate }

@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { emitRouterError } from 'errors'
+import { emitRouterError } from 'lib/errors'
 import { createUser, deleteUser, getUser, getUsers, updateUser } from 'controllers/user'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/validation/create'

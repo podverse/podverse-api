@@ -1,7 +1,7 @@
 import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
 import { User } from 'entities'
-import { CustomStatusError, emitRouterError } from 'errors'
+import { CustomStatusError, emitRouterError } from 'lib/errors'
 
 const emailExists = async (conn: Connection, email) => {
   const user = await conn.getRepository(User).findOne({ email })

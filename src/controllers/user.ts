@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
-import { validateClassOrThrow, CustomStatusError } from 'errors'
-import { validatePassword } from 'utility'
+import { validateClassOrThrow } from 'lib/errors'
+import { validatePassword } from 'lib/utility'
 
 const createError = require('http-errors')
 
@@ -15,7 +15,7 @@ const createUser = async (obj) => {
   const isValidPassword = validatePassword(password)
 
   if (!isValidPassword) {
-    throw new CustomStatusError('Invalid password provided.').BadRequest()
+    throw new createError.BadRequest('Invalid password provided.')
   }
 
   const newUser = Object.assign(user, obj, { password })
@@ -31,7 +31,7 @@ const deleteUser = async (id) => {
   const user = await repository.findOne({ id })
 
   if (!user) {
-    throw new createError.NotFound('User not found')
+    throw new createError.NotFound('User not found.')
   }
 
   const result = await repository.remove(user)
@@ -43,7 +43,7 @@ const getUser = async (id) => {
   const user = repository.findOne({ id }, { relations })
 
   if (!user) {
-    throw new createError.NotFound('User not found')
+    throw new createError.NotFound('User not found.')
   }
 
   return user
@@ -67,12 +67,12 @@ const updateUser = async (obj) => {
 
   const { password } = obj.password
 
-  if (!validatePassword(password)) {
-    throw new CustomStatusError('Invalid password provided.').BadRequest()
+  if (!user) {
+    throw new createError.NotFound('User not found.')
   }
 
-  if (!user) {
-    throw new createError.NotFound('User not found')
+  if (!validatePassword(password)) {
+    throw new createError.BadRequest('Invalid password provided.')
   }
 
   const newUser = Object.assign(user, obj, { password })

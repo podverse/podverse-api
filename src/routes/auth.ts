@@ -1,9 +1,10 @@
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { emitRouterError } from 'errors'
+import { emitRouterError } from 'lib/errors'
 import { createUser } from 'controllers/user'
 import { authenticate, localAuth } from 'middleware/auth'
 import { emailNotExists, validEmail } from 'middleware/auth/registerUser'
+import { jwtAuth } from 'middleware/auth/jwtAuth'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
