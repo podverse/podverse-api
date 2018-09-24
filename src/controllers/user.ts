@@ -1,7 +1,8 @@
-import * as bcrypt from 'bcryptjs'
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
-import { validateClassOrThrow } from 'errors'
+import { validateClassOrThrow, CustomStatusError } from 'errors'
+import { validatePassword } from 'utility'
+
 const createError = require('http-errors')
 
 const relations = ['playlists']
@@ -9,11 +10,15 @@ const relations = ['playlists']
 const createUser = async (obj) => {
   const repository = getRepository(User)
   const user = new User()
+  const { password } = obj
 
-  const salt = bcrypt.genSaltSync()
-  const hash = bcrypt.hashSync(obj.password, salt)
+  const isValidPassword = validatePassword(password)
 
-  const newUser = Object.assign(user, obj, { password: hash })
+  if (!isValidPassword) {
+    throw new CustomStatusError('Invalid password provided.').BadRequest()
+  }
+
+  const newUser = Object.assign(user, obj, { password })
 
   await validateClassOrThrow(newUser)
 
@@ -60,14 +65,17 @@ const updateUser = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
+  const { password } = obj.password
+
+  if (!validatePassword(password)) {
+    throw new CustomStatusError('Invalid password provided.').BadRequest()
+  }
+
   if (!user) {
     throw new createError.NotFound('User not found')
   }
 
-  const salt = bcrypt.genSaltSync()
-  const hash = bcrypt.hashSync(obj.password, salt)
-
-  const newUser = Object.assign(user, obj, { password: hash })
+  const newUser = Object.assign(user, obj, { password })
 
   await validateClassOrThrow(newUser)
 

@@ -58,9 +58,9 @@ const genTokenAsync = payload => new Promise((resolve, reject) => {
   }))
 })
 
-export async function generateToken ({ uuid, roles }) {
+export async function generateToken ({ id, roles }) {
   const exp = Math.floor(Date.now() / 1000) + (60 * 60)
-  const token = await genTokenAsync({ uuid, roles, exp })
+  const token = await genTokenAsync({ id, roles, exp })
   return { token, exp }
 }
 

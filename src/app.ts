@@ -15,9 +15,16 @@ import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { createLocalStrategy } from 'middleware/auth'
 
+declare module 'koa' {
+  interface BaseContext {
+    db: Connection
+  }
+}
+
 export const createApp = (conn: Connection) => {
 
   const app = new Koa()
+  app.context.db = conn
 
   passport.use(createLocalStrategy(conn.getRepository(User)))
   // passport.use(createJWTStrategy())

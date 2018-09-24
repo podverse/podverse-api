@@ -11,7 +11,7 @@ connectToDb()
   .then(async connection => {
 
     if (connection) {
-      await seedDatabase(connection)
+      // await seedDatabase(connection)
 
       const app = createApp(connection)
 

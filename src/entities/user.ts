@@ -1,13 +1,12 @@
-import { hash } from 'bcrypt'
+import { hash } from 'bcryptjs'
 import { IsEmail, Validate } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany,
   PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
+import { saltRounds } from 'constant'
 import { Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
 
 const shortid = require('shortid')
-
-const saltRounds = 10
 
 @Entity('users')
 export class User {
@@ -21,6 +20,9 @@ export class User {
   @IsEmail()
   @Column({ unique: true })
   email: string
+
+  @Column({ default: false })
+  emailVerified: boolean
 
   @Column({ nullable: true })
   name: string
