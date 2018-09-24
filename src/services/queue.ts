@@ -1,7 +1,7 @@
 import { getRepository, getConnection } from 'typeorm'
 import { awsConfig } from 'config/aws'
 import { FeedUrl } from 'entities'
-import { chunkArray } from 'utility'
+import { chunkArray } from 'lib/utility'
 import { connectToDb } from 'lib/db'
 import { sqs } from 'services/aws'
 import { generateFeedMessageAttributes } from 'services/parser'
