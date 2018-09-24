@@ -1,3 +1,5 @@
+import { sign } from 'jsonwebtoken'
+
 export const delimitQueryValues = (ctx, keys) => {
   let query = ctx.request.query
   for (const key of keys) {
@@ -47,4 +49,32 @@ export const lastHour = () => {
   todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) - 300 - 60)
   let lastHour = todayDate.toISOString().slice(11, 13)
   return parseInt(lastHour, 10)
+}
+
+const genTokenAsync = payload => new Promise((resolve, reject) => {
+  sign(payload, process.env.JWT_SECRET, ((err, encoded) => {
+    if (err) return reject(err)
+    resolve(encoded)
+  }))
+})
+
+export async function generateToken ({ uuid, roles }) {
+  const exp = Math.floor(Date.now() / 1000) + (60 * 60)
+  const token = await genTokenAsync({ uuid, roles, exp })
+  return { token, exp }
+}
+
+import * as passwordValidator from 'password-validator'
+
+const schema = new passwordValidator()
+
+const validatePasswordSchema = schema
+  .is().min(8)
+  .has().uppercase()
+  .has().lowercase()
+  .has().digits()
+  .has().not().spaces()
+
+export const validatePassword = password => {
+  return validatePasswordSchema.validate(password)
 }

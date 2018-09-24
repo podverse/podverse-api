@@ -1,7 +1,7 @@
 import { getConnection } from 'typeorm'
+import { connectToDb } from 'db'
 import { lastHour, offsetDate } from 'utility'
 import { queryGoogleAnalyticsData } from './google'
-import { databaseInitializer } from 'initializers/database'
 
 enum PagePaths {
   clips = '~/clips',
@@ -78,7 +78,7 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 }
 
 const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
-  await databaseInitializer()
+  await connectToDb()
 
   const reports = response.data.reports
 

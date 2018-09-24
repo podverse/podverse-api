@@ -3,10 +3,8 @@ import { validCategories } from 'config/categories'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
 import { parseFeed } from 'services/parser'
-const saltRounds = 10
-import { hash } from 'bcrypt'
 
-export default async (connection: Connection) => {
+export const seedDatabase = async (connection: Connection) => {
   await connection.synchronize(true)
 
   let podcast1 = new Podcast()
@@ -143,26 +141,26 @@ export default async (connection: Connection) => {
   let user1 = new User()
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
-  user1.password = await hash('asdfasdf', saltRounds)
-  
+  user1.password = 'Aa!1asdf'
+
   await connection.manager.save(user1)
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
   user2.name = 'Sylvester the Cat'
-  user2.password = 'zxcvzxcv'
+  user2.password = 'Aa!1asdf'
   await connection.manager.save(user2)
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
   user3.name = 'Tweety'
-  user3.password = 'vbnmvbnm'
+  user3.password = 'Aa!1asdf'
   await connection.manager.save(user3)
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'
   user4.name = 'Wile E. Coyote'
-  user4.password = 'hjklhjkl'
+  user4.password = 'Aa!1asdf'
   await connection.manager.save(user4)
 
   let playlist1 = new Playlist()
@@ -172,7 +170,7 @@ export default async (connection: Connection) => {
 
   await generateCategories(connection, validCategories, null, true)
 
-  await parseFeeds()
+  // await parseFeeds()
 }
 
 const generateCategories = async (
@@ -224,6 +222,6 @@ const parseFeeds = async () => {
   ]
 
   for (const feed of sampleFeeds) {
-    // await parseFeed(feed, null, 'true', false)
+    await parseFeed(feed, null, 'true')
   }
 }

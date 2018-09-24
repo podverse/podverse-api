@@ -1,9 +1,13 @@
-import { IsEmail } from 'class-validator'
+import { hash } from 'bcrypt'
+import { IsEmail, Validate } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany,
-  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+  PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
 import { Playlist } from 'entities'
+import { ValidatePassword } from 'entities/validation/password'
 
 const shortid = require('shortid')
+
+const saltRounds = 10
 
 @Entity('users')
 export class User {
@@ -21,6 +25,7 @@ export class User {
   @Column({ nullable: true })
   name: string
 
+  @Validate(ValidatePassword)
   @Column()
   password: string
 
@@ -42,6 +47,12 @@ export class User {
   beforeInsert () {
     this.id = shortid.generate()
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async beforeAll () {
+    this.password = await hash(this.password, saltRounds)
   }
 
 }
