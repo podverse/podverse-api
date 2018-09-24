@@ -17,9 +17,6 @@ export interface IConfig {
   entityRelationships: EntityRelationships
   apiPrefix: string
   apiVersion: string
-  authSecretKey: string
-  sessionCookieName: string
-  sessionExpiration: number
 }
 
 const config: IConfig = {
@@ -34,10 +31,7 @@ const config: IConfig = {
     }
   },
   apiPrefix: process.env.API_PREFIX || '/api',
-  apiVersion: process.env.API_VERSION || '/v1',
-  authSecretKey: process.env.AUTH_SECRET_KEY || 'your-secret-whatever',
-  sessionCookieName: process.env.SESSION_COOKIE_NAME || 'podverse_session',
-  sessionExpiration: parseInt(process.env.SESSION_EXPIRATION, 10) || 31540000000 // in ms, default one year
+  apiVersion: process.env.API_VERSION || '/v1'
 }
 
 export { config }
