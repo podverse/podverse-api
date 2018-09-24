@@ -2,6 +2,7 @@ import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
 import { User } from 'entities'
 import { CustomStatusError, emitRouterError } from 'lib/errors'
+import { createUser } from 'controllers/user'
 
 const emailExists = async (conn: Connection, email) => {
   const user = await conn.getRepository(User).findOne({ email })
@@ -26,4 +27,20 @@ export const emailNotExists = async (ctx, next) => {
   }
 
   await next()
+}
+
+export const registerUser = async (ctx, next) => {
+  const user = {
+    email: ctx.request.body.email,
+    emailVerified: false,
+    password: ctx.request.body.password
+  }
+
+  try {
+    const { id, email } = await createUser(user)
+    ctx.body = { id, email }
+    next()
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
 }

@@ -1,10 +1,8 @@
 import * as PostgressConnectionStringParser from 'pg-connection-string'
 import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from 'config'
-import {
-  Author, Category, Episode, FeedUrl, MediaRef, Playlist,
-  Podcast, User
-} from 'entities'
+import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
+  Podcast, User } from 'entities'
 
 const entities = [
   Author,
