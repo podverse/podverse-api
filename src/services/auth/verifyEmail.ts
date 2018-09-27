@@ -7,15 +7,16 @@ export const sendVerificationEmail = async (email, token) => {
   const transporter = createTransporter()
 
   const emailFields = {
+    preheader: '',
     greeting: 'Hello!',
     topMessage: 'To verify your account, please click the button below.',
     button: 'Verify Email',
     buttonLink: `${config.apiHost}${config.apiPrefix}${config.apiVersion}/auth/verify-email?token=${token}`,
-    bottomMessage: 'It\'s not required for you to sign in, but we may add extra features for verified accounts in the future.',
+    bottomMessage: 'Verifying is not required, but we may add extra features for verified accounts in the future.',
     closing: 'Have a nice day :)',
     name: 'Podverse',
-    address: null,
-    unsubscribeLink: null,
+    address: '',
+    unsubscribeLink: '',
     buttonColor: '#2968B1'
   }
 
