@@ -21,6 +21,9 @@ export class User {
   @Column({ unique: true })
   email: string
 
+  @Column({ nullable: true })
+  emailVerificationCode: string
+
   @Column({ default: false })
   emailVerified: boolean
 

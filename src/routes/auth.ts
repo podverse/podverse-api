@@ -10,4 +10,8 @@ router.post('/register', validEmail, emailNotExists, registerUser)
 
 router.post('/login', localAuth, authenticate)
 
+router.post('/send-verification')
+
+router.get('/verify')
+
 export default router

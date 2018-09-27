@@ -65,17 +65,17 @@ const updateUser = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
-  const { password } = obj.password
-
   if (!user) {
     throw new createError.NotFound('User not found.')
   }
+
+  const { password } = obj
 
   if (!validatePassword(password)) {
     throw new createError.BadRequest('Invalid password provided.')
   }
 
-  const newUser = Object.assign(user, obj, { password })
+  const newUser = Object.assign(user, obj)
 
   await validateClassOrThrow(newUser)
 

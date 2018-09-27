@@ -13,7 +13,7 @@ import { User } from 'entities'
 import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { logger, loggerInstance } from 'lib/logging'
-import { createJwtStrategy, createLocalStrategy } from 'middleware/auth'
+import { createJwtStrategy, createLocalStrategy } from 'services/auth'
 
 declare module 'koa' {
   interface BaseContext {
