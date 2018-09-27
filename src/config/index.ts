@@ -15,9 +15,12 @@ export interface IConfig {
   dbsslconn: boolean
   databaseUrl: string
   entityRelationships: EntityRelationships
+  apiHost: string
   apiPrefix: string
   apiVersion: string
 }
+
+const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
 
 const config: IConfig = {
   port: +process.env.PORT || 3000,
@@ -30,6 +33,7 @@ const config: IConfig = {
       mustHaveUser: process.env.MEDIA_REF_HAS_USER === 'true'
     }
   },
+  apiHost,
   apiPrefix: process.env.API_PREFIX || '/api',
   apiVersion: process.env.API_VERSION || '/v1'
 }

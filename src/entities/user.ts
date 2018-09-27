@@ -1,7 +1,7 @@
 import { hash } from 'bcryptjs'
 import { IsEmail, Validate } from 'class-validator'
-import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany,
-  PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  OneToMany, PrimaryColumn, UpdateDateColumn, Generated } from 'typeorm'
 import { saltRounds } from 'lib/constants'
 import { Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
@@ -21,8 +21,9 @@ export class User {
   @Column({ unique: true })
   email: string
 
-  @Column({ nullable: true })
-  emailVerificationCode: string
+  @Column({ unique: true })
+  @Generated('uuid')
+  emailVerificationToken: string
 
   @Column({ default: false })
   emailVerified: boolean

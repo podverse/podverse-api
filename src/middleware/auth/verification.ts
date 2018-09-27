@@ -1,14 +1,15 @@
-import { getUser, updateUser } from 'controllers/user'
+import { getUser, updateUser, getUserByVerificationToken } from 'controllers/user'
 import { emitRouterError } from 'lib/errors'
+import { sendVerificationEmail } from 'services/auth/verifyEmail'
 
-export const sendVerificationEmail = async ctx => {
+export const sendVerification = async ctx => {
   const { id } = ctx.request.body
 
   try {
-    const { emailVerified } = await getUser(id)
+    const { email, emailVerificationToken, emailVerified } = await getUser(id)
 
-    if (!emailVerified) {
-      // send verfication email
+    if (emailVerified) {
+      await sendVerificationEmail(email, emailVerificationToken)
       ctx.body = `Verification email sent!`
       ctx.status = 200
     } else {
@@ -20,16 +21,17 @@ export const sendVerificationEmail = async ctx => {
   }
 }
 
-export const verifyUser = async ctx => {
-  const { id, code } = ctx.params
+export const verifyEmail = async ctx => {
+  const { token } = ctx.request.query
 
   try {
-    const { email, emailVerificationCode } = await getUser(id)
+    const { email, emailVerificationToken, id } = await getUserByVerificationToken(token)
 
-    if (emailVerificationCode && code && code === emailVerificationCode) {
-      const user = await updateUser({
+    if (emailVerificationToken && token && token === emailVerificationToken) {
+      await updateUser({
         emailVerified: true,
-        emailVerificationCode: null
+        emailVerificationCode: null,
+        id
       })
       ctx.body = `Email successfully verified for ${email}. Thank you, have a nice day!`
       ctx.status = 200

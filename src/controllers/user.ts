@@ -40,7 +40,19 @@ const deleteUser = async (id) => {
 
 const getUser = async (id) => {
   const repository = getRepository(User)
-  const user = repository.findOne({ id }, { relations })
+  
+  const user = await repository.findOne({ id }, { relations })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  return user
+}
+
+const getUserByVerificationToken = async (emailVerificationToken) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne({ emailVerificationToken }, { relations })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
@@ -71,7 +83,7 @@ const updateUser = async (obj) => {
 
   const { password } = obj
 
-  if (!validatePassword(password)) {
+  if (password && !validatePassword(password)) {
     throw new createError.BadRequest('Invalid password provided.')
   }
 
@@ -87,6 +99,7 @@ export {
   createUser,
   deleteUser,
   getUser,
+  getUserByVerificationToken,
   getUsers,
   updateUser
 }

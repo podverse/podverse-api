@@ -3,6 +3,7 @@ import { isEmail } from 'validator'
 import { User } from 'entities'
 import { CustomStatusError, emitRouterError } from 'lib/errors'
 import { createUser } from 'controllers/user'
+import { sendVerificationEmail } from 'services/auth/verifyEmail';
 
 const emailExists = async (conn: Connection, email) => {
   const user = await conn.getRepository(User).findOne({ email })
@@ -37,7 +38,10 @@ export const registerUser = async (ctx, next) => {
   }
 
   try {
-    const { id, email } = await createUser(user)
+    const { id, email, emailVerificationToken } = await createUser(user)
+
+    await sendVerificationEmail(email, emailVerificationToken)
+
     ctx.body = { id, email }
     next()
   } catch (error) {
