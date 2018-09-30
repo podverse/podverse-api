@@ -40,7 +40,7 @@ export const registerUser = async (ctx, next) => {
     email: ctx.request.body.email,
     emailVerified: false,
     emailVerificationToken: uuidv4(),
-    emailVerificationTokenExpiration: addSeconds(new Date(), expirationDate),
+    emailVerificationTokenExpiration: expirationDate,
     password: ctx.request.body.password
   }
 

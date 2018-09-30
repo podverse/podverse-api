@@ -11,9 +11,8 @@ export const sendVerification = async ctx => {
     const { email, emailVerified } = await getUser(id)
 
     if (!emailVerified) {
-      const expirationDate = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
       const emailVerificationToken = uuidv4()
-      const emailVerificationTokenExpiration = addSeconds(new Date(), expirationDate)
+      const emailVerificationTokenExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
 
       await updateUser({
         emailVerificationToken,
