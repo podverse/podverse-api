@@ -36,11 +36,15 @@ export const verifyEmail = async ctx => {
   const { token } = ctx.request.query
 
   try {
-    const { email, emailVerified, emailVerificationToken, id } = await getUserByVerificationToken(token)
+    const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration, 
+      id } = await getUserByVerificationToken(token)
 
     if (emailVerified) {
       ctx.body = `Email already verified. Thank you, have a nice day!`
       ctx.status = 200
+    } else if (emailVerificationTokenExpiration < new Date()) {
+      ctx.body = `Email verification code has expired.`
+      ctx.status = 400
     } else if (emailVerificationToken && token && token === emailVerificationToken) {
       await updateUser({
         emailVerified: true,

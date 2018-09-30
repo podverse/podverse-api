@@ -73,16 +73,16 @@ export const createApp = (conn: Connection) => {
   app.use(userRouter.routes())
   app.use(userRouter.allowedMethods())
 
-  app.on('error', async (error, ctx) => {
+  app.on('error', async (error, ctx) => {    
     if (ctx.status >= 500) {
-      loggerInstance.log('error', error)
+      loggerInstance.log('error', error.message)
       ctx.body = 'Internal Server Error'
     } else if (ctx.status >= 404) {
       ctx.body = error.message || 'Not found'
     } else if (ctx.status >= 400) {
       ctx.body = error.message
     } else {
-      loggerInstance.log('error', error)
+      loggerInstance.log('error', error.message)
       ctx.body = 'Something went wrong :('
     }
   })

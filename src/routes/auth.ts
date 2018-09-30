@@ -1,8 +1,8 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { authenticate, emailNotExists, localAuth, registerUser, sendResetPassword,
-  sendVerification, validEmail, verifyEmail } from 'middleware/auth'
+import { authenticate, emailNotExists, localAuth, registerUser, resetPassword,
+  sendResetPassword, sendVerification, validEmail, verifyEmail } from 'middleware/auth'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -12,7 +12,9 @@ router.post('/register', validEmail, emailNotExists, registerUser)
 
 router.post('/login', localAuth, authenticate)
 
-router.post('/reset-password', sendResetPassword)
+router.post('/send-reset-password', sendResetPassword)
+
+router.post('/reset-password', resetPassword)
 
 router.post('/send-verification', sendVerification)
 

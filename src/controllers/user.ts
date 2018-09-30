@@ -61,12 +61,32 @@ const getUserByEmail = async (email) => {
   return user
 }
 
+const getUserByResetPasswordToken = async (resetPasswordToken) => {
+  if (!resetPasswordToken) {
+    throw new createError.BadRequest('Must provide a reset password token.')
+  }
+
+  const repository = getRepository(User)
+  const user = await repository.findOne({ resetPasswordToken }, { relations })
+
+  if (!user) {
+    throw new createError.NotFound('User not found or invalid token.')
+  }
+
+  return user
+}
+
 const getUserByVerificationToken = async (emailVerificationToken) => {
+
+  if (!emailVerificationToken) {
+    throw new createError.BadRequest('Must provide an email verification token.')
+  }
+
   const repository = getRepository(User)
   const user = await repository.findOne({ emailVerificationToken }, { relations })
 
   if (!user) {
-    throw new createError.NotFound('User not found.')
+    throw new createError.NotFound('User not found or invalid token.')
   }
 
   return user
@@ -92,12 +112,32 @@ const updateUser = async (obj) => {
     throw new createError.NotFound('User not found.')
   }
 
-  const { password } = obj
+  delete obj.password
 
-  if (password && !validatePassword(password)) {
-    throw new createError.BadRequest('Invalid password provided.')
+  const newUser = Object.assign(user, obj)
+
+  await validateClassOrThrow(newUser)
+
+  await repository.save(newUser)
+  return newUser
+}
+
+const updateUserPassword = async (obj) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne({ id: obj.id })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
   }
 
+  const password = obj.password
+
+  if (!password) {
+    throw new createError.BadRequest('Must provide a new password.')
+  } else if (password && !validatePassword(password)) {
+    throw new createError.BadRequest('Invalid password provided.')
+  }
+  
   const newUser = Object.assign(user, obj)
 
   await validateClassOrThrow(newUser)
@@ -111,7 +151,9 @@ export {
   deleteUser,
   getUser,
   getUserByEmail,
+  getUserByResetPasswordToken,
   getUserByVerificationToken,
   getUsers,
-  updateUser
+  updateUser,
+  updateUserPassword
 }
