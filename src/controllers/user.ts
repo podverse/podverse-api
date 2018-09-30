@@ -35,7 +35,7 @@ const deleteUser = async (id, loggedInUserId) => {
   }
 
   if (id !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to delete this user')
+    throw new createError.Unauthorized('Log in to delete this user')
   }
 
   const result = await repository.remove(user)
@@ -81,7 +81,6 @@ const getUserByResetPasswordToken = async (resetPasswordToken) => {
 }
 
 const getUserByVerificationToken = async (emailVerificationToken) => {
-
   if (!emailVerificationToken) {
     throw new createError.BadRequest('Must provide an email verification token.')
   }
@@ -118,7 +117,7 @@ const updateUser = async (obj, loggedInUserId) => {
   }
 
   if (id !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to update this user')
+    throw new createError.Unauthorized('Log in to update this user')
   }
 
   delete obj.password
@@ -133,7 +132,7 @@ const updateUser = async (obj, loggedInUserId) => {
   return newUser
 }
 
-const updateUserResetPasswordToken = async (obj) => {
+const updateUserEmailVerificationToken = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -142,9 +141,10 @@ const updateUserResetPasswordToken = async (obj) => {
   }
 
   const cleanedObj = {
-    id: obj.id,
-    resetPasswordToken: obj.resetPasswordToken,
-    resetPasswordTokenExpiration: obj.resetPasswordTokenExpiration
+    emailVerified: obj.emailVerified,
+    emailVerificationToken: obj.emailVerificationToken,
+    emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration,
+    id: obj.id
   }
 
   const newUser = Object.assign(user, cleanedObj)
@@ -181,6 +181,29 @@ const updateUserPassword = async (obj) => {
   return newUser
 }
 
+
+const updateUserResetPasswordToken = async (obj) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne({ id: obj.id })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  const cleanedObj = {
+    id: obj.id,
+    resetPasswordToken: obj.resetPasswordToken,
+    resetPasswordTokenExpiration: obj.resetPasswordTokenExpiration
+  }
+
+  const newUser = Object.assign(user, cleanedObj)
+
+  await validateClassOrThrow(newUser)
+
+  await repository.save(newUser)
+  return newUser
+}
+
 export {
   createUser,
   deleteUser,
@@ -190,6 +213,7 @@ export {
   getUserByVerificationToken,
   getUsers,
   updateUser,
-  updateUserResetPasswordToken,
-  updateUserPassword
+  updateUserEmailVerificationToken,
+  updateUserPassword,
+  updateUserResetPasswordToken
 }

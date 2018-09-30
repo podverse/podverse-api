@@ -1,7 +1,6 @@
 import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
-import { create } from 'domain';
 const createError = require('http-errors')
 
 const relations = [
@@ -32,7 +31,7 @@ const deleteMediaRef = async (id, loggedInUserId) => {
   }
 
   if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to delete this media ref')
+    throw new createError.Unauthorized('Log in to delete this media ref')
   }
 
   const result = await repository.remove(mediaRef)
@@ -75,7 +74,7 @@ const updateMediaRef = async (obj, loggedInUserId) => {
   }
 
   if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to edit this media ref')
+    throw new createError.Unauthorized('Log in to edit this media ref')
   }
 
   const newMediaRef = Object.assign(mediaRef, obj)

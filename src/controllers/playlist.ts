@@ -27,7 +27,7 @@ const deletePlaylist = async (id, loggedInUserId) => {
   }
 
   if (playlist.owner !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to delete this playlist')
+    throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
   const result = await repository.remove(playlist)
@@ -66,7 +66,7 @@ const updatePlaylist = async (obj, loggedInUserId) => {
   }
 
   if (playlist.owner !== loggedInUserId) {
-    throw new createError.Unauthorized('Login to delete this playlist')
+    throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
   const newPlaylist = Object.assign(playlist, obj)

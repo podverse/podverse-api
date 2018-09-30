@@ -1,4 +1,5 @@
-import { getUserByEmail, updateUser, getUserByVerificationToken } from 'controllers/user'
+import { getUserByEmail, getUserByVerificationToken, updateUser,
+  updateUserEmailVerificationToken  } from 'controllers/user'
 import { emitRouterError } from 'lib/errors'
 import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
@@ -14,7 +15,7 @@ export const sendVerification = async ctx => {
       const emailVerificationToken = uuidv4()
       const emailVerificationTokenExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
       
-      await updateUser({
+      await updateUserEmailVerificationToken({
         emailVerificationToken,
         emailVerificationTokenExpiration,
         id
@@ -40,18 +41,17 @@ export const verifyEmail = async ctx => {
       id } = await getUserByVerificationToken(token)
 
     if (emailVerified) {
-      ctx.body = `Email already verified. Thank you, have a nice day!`
+      ctx.body = `Email already verified.`
       ctx.status = 200
     } else if (emailVerificationTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 400
     } else if (emailVerificationToken && token && token === emailVerificationToken) {
-      await updateUser({
+      await updateUserEmailVerificationToken({
         emailVerified: true,
-        emailVerificationCode: null,
         id
       })
-      ctx.body = `Email successfully verified. Thank you, have a nice day!`
+      ctx.body = `Email successfully verified.`
       ctx.status = 200
     } else {
       ctx.body = `Invalid verification code.`
