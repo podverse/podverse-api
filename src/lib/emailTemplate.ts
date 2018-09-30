@@ -141,9 +141,9 @@ export const emailTemplate = (obj) => {
                               </tr>
                             </tbody>
                           </table>
-                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${bottomMessage}</p>
-                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${closing}</p>
-                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${name}</p>
+                          ${!bottomMessage ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${bottomMessage}</p>`}
+                          ${!closing ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${closing}</p>`}
+                          ${!name ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${name}</p>`}
                         </td>
                       </tr>
                     </table>
