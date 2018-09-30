@@ -1,14 +1,25 @@
+import { uuidv4 } from 'uuid'
 import { getUser, updateUser, getUserByVerificationToken } from 'controllers/user'
 import { emitRouterError } from 'lib/errors'
-import { sendVerificationEmail } from 'services/auth/verifyEmail'
+import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
+const addSeconds = require('date-fns/add_seconds')
 
 export const sendVerification = async ctx => {
   const { id } = ctx.request.body
 
   try {
-    const { email, emailVerificationToken, emailVerified } = await getUser(id)
+    const { email, emailVerified } = await getUser(id)
 
-    if (emailVerified) {
+    if (!emailVerified) {
+      const expirationDate = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
+      const emailVerificationToken = uuidv4()
+      const emailVerificationTokenExpiration = addSeconds(new Date(), expirationDate)
+
+      await updateUser({
+        emailVerificationToken,
+        emailVerificationTokenExpiration
+      })
+
       await sendVerificationEmail(email, emailVerificationToken)
       ctx.body = `Verification email sent!`
       ctx.status = 200

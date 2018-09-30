@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs'
-import { IsEmail, Validate } from 'class-validator'
+import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn, Generated } from 'typeorm'
 import { saltRounds } from 'lib/constants'
@@ -21,9 +21,16 @@ export class User {
   @Column({ unique: true })
   email: string
 
-  @Column({ unique: true })
-  @Generated('uuid')
+  @ValidateIf(a => a.emailVerificationToken != null)
+  @IsUUID()
+  @Column({
+    nullable: true,
+    unique: true
+  })
   emailVerificationToken: string
+
+  @Column({ nullable: true })
+  emailVerificationTokenExpiration: Date
 
   @Column({ default: false })
   emailVerified: boolean
@@ -34,6 +41,17 @@ export class User {
   @Validate(ValidatePassword)
   @Column()
   password: string
+
+  @ValidateIf(a => a.resetPasswordToken != null)
+  @IsUUID()
+  @Column({
+    nullable: true,
+    unique: true
+  })
+  resetPasswordToken: string
+
+  @Column({ nullable: true })
+  resetPasswordTokenExpiration: Date
 
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]

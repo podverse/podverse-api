@@ -81,9 +81,7 @@ export class Podcast {
   @Column({ nullable: true })
   type: string
 
-  @ManyToMany(type => Author, author => author.podcasts, {
-    cascade: true
-  })
+  @ManyToMany(type => Author)
   @JoinTable()
   authors: Author[]
 

@@ -40,7 +40,7 @@ const deleteUser = async (id) => {
 
 const getUser = async (id) => {
   const repository = getRepository(User)
-  
+
   const user = await repository.findOne({ id }, { relations })
 
   if (!user) {
