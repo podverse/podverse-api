@@ -50,6 +50,17 @@ const getUser = async (id) => {
   return user
 }
 
+const getUserByEmail = async (email) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne({ email }, { relations })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  return user
+}
+
 const getUserByVerificationToken = async (emailVerificationToken) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ emailVerificationToken }, { relations })
@@ -99,6 +110,7 @@ export {
   createUser,
   deleteUser,
   getUser,
+  getUserByEmail,
   getUserByVerificationToken,
   getUsers,
   updateUser

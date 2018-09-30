@@ -78,7 +78,7 @@ export const createApp = (conn: Connection) => {
       loggerInstance.log('error', error)
       ctx.body = 'Internal Server Error'
     } else if (ctx.status >= 404) {
-      ctx.body = 'Not found'
+      ctx.body = error.message || 'Not found'
     } else if (ctx.status >= 400) {
       ctx.body = error.message
     } else {

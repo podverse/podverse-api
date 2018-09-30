@@ -1,7 +1,7 @@
 import { validate } from 'class-validator'
 const createError = require('http-errors')
 
-export const emitRouterError = (error, ctx) => {
+export const emitRouterError = (error, ctx) => {  
   ctx.status = error.status || 500
   ctx.body = error.message
   ctx.app.emit('error', error, ctx)
