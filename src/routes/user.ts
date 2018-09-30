@@ -19,7 +19,18 @@ router.get('/',
   validateUserSearch,
   async ctx => {
     try {
-      const users = await getUsers(ctx.request.query, ctx.state.queryPageOptions)
+      const users = await getUsers(
+        ctx.request.query, 
+        Object.assign(
+          ctx.state.queryPageOptions,
+          {
+            select: [
+              'name',
+              'subscribedPodcastIds'
+            ]
+          }
+        )
+      )
       ctx.body = users
     } catch (error) {
       emitRouterError(error, ctx)
@@ -30,7 +41,12 @@ router.get('/',
 router.get('/:id',
   async ctx => {
     try {
-      const user = await getUser(ctx.params.id)
+      const user = await getUser(ctx.params.id, {
+        select: [
+          'name',
+          'subscribedPodcastIds'
+        ]
+      })
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)

@@ -42,10 +42,13 @@ const deleteUser = async (id, loggedInUserId) => {
   return result
 }
 
-const getUser = async (id) => {
+const getUser = async (id, options) => {
   const repository = getRepository(User)
 
-  const user = await repository.findOne({ id }, { relations })
+  const user = await repository.findOne({ id }, { 
+    relations,
+    ...options
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
