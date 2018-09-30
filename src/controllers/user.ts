@@ -113,6 +113,8 @@ const updateUser = async (obj) => {
   }
 
   delete obj.password
+  delete obj.resetPasswordToken
+  delete obj.resetPasswordTokenExpiration
 
   const newUser = Object.assign(user, obj)
 
