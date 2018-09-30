@@ -124,6 +124,24 @@ const updateUser = async (obj) => {
   return newUser
 }
 
+const updateUserResetPasswordToken = async (obj) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne({ id: obj.id })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  delete obj.password
+
+  const newUser = Object.assign(user, obj)
+
+  await validateClassOrThrow(newUser)
+
+  await repository.save(newUser)
+  return newUser
+}
+
 const updateUserPassword = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
@@ -157,5 +175,6 @@ export {
   getUserByVerificationToken,
   getUsers,
   updateUser,
+  updateUserResetPasswordToken,
   updateUserPassword
 }

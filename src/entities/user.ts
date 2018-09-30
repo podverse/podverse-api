@@ -1,7 +1,7 @@
 import { hash } from 'bcryptjs'
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  OneToMany, PrimaryColumn, UpdateDateColumn, Generated } from 'typeorm'
+  OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { saltRounds } from 'lib/constants'
 import { Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
