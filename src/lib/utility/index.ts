@@ -36,3 +36,8 @@ export const lastHour = () => {
   let lastHour = todayDate.toISOString().slice(11, 13)
   return parseInt(lastHour, 10)
 }
+
+export const convertSecondsToDaysText = (seconds) => {
+  const totalDays = Math.round(parseInt(seconds) / 86400)
+  return `${totalDays > 1 ? `${totalDays} days` : '24 hours'}`
+}

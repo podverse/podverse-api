@@ -40,13 +40,14 @@ export const registerUser = async (ctx, next) => {
     emailVerified: false,
     emailVerificationToken: token,
     emailVerificationTokenExpiration: expirationDate,
+    name: ctx.request.body.name,
     password: ctx.request.body.password
   }
 
   try {
-    const { id, email, emailVerificationToken } = await createUser(user)
+    const { id, email, emailVerificationToken, name } = await createUser(user)
 
-    await sendVerificationEmail(email, emailVerificationToken)
+    await sendVerificationEmail(email, name, emailVerificationToken)
 
     ctx.body = { id, email }
     next()

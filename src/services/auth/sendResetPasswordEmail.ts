@@ -2,17 +2,19 @@ import createError from 'http-errors'
 import { config } from 'config'
 import { createTransporter } from 'services/mailer'
 import { emailTemplate } from 'lib/emailTemplate'
+import { convertSecondsToDaysText } from 'lib/utility';
 
-export const sendVerificationEmail = async (email, name, token) => {
+export const sendResetPasswordEmail = async (email, name, token) => {
   const transporter = createTransporter()
+  const daysToExpire = convertSecondsToDaysText(parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION))
 
   const emailFields = {
     preheader: '',
     greeting: `Hello${name ? ` ${name},` : ','}`,
-    topMessage: 'To verify your email, please click the button below.',
-    button: 'Verify Email',
-    buttonLink: `${config.apiHost}${config.apiPrefix}${config.apiVersion}/auth/verify-email?token=${token}`,
-    bottomMessage: 'We will never send you emails without your permission or share your email with 3rd parties.',
+    topMessage: `To reset your Podverse password, please click the button below.`,
+    button: 'Reset Password',
+    buttonLink: `${config.apiHost}/auth/reset-password?token=${token}`,
+    bottomMessage: `This link will expire in ${daysToExpire }.`,
     closing: 'Have a nice day :)',
     name: 'Podverse',
     address: '',
@@ -24,7 +26,7 @@ export const sendVerificationEmail = async (email, name, token) => {
     await transporter.sendMail({
       from: process.env.MAILER_USERNAME,
       to: email,
-      subject: 'Verify your Podverse account',
+      subject: 'Reset your Podverse password',
       html: emailTemplate(emailFields)
     })
   } catch (error) {

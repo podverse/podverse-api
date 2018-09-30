@@ -8,7 +8,7 @@ export const sendVerification = async ctx => {
   const { email } = ctx.request.body
 
   try {
-    const { emailVerified, id } = await getUserByEmail(email)
+    const { emailVerified, id, name } = await getUserByEmail(email)
 
     if (!emailVerified) {
       const emailVerificationToken = uuidv4()
@@ -20,7 +20,7 @@ export const sendVerification = async ctx => {
         id
       })
 
-      await sendVerificationEmail(email, emailVerificationToken)
+      await sendVerificationEmail(email, name, emailVerificationToken)
       ctx.body = `Verification email sent!`
       ctx.status = 200
     } else {
