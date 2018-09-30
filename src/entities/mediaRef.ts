@@ -77,12 +77,6 @@ export class MediaRef {
   @Column({ default: false })
   isPublic: boolean
 
-  @Column({ nullable: true })
-  ownerId: string
-
-  @Column({ nullable: true })
-  ownerName: string
-
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -187,12 +181,6 @@ export class MediaRef {
     }
     if (this.episodeTitle) {
       this.episodeTitle = this.episodeTitle.trim() === '' ? null : this.episodeTitle.trim()
-    }
-    if (this.ownerId) {
-      this.ownerId = this.ownerId.trim() === '' ? null : this.ownerId.trim()
-    }
-    if (this.ownerName) {
-      this.ownerName = this.ownerName.trim() === '' ? null : this.ownerName.trim()
     }
     if (this.podcastGuid) {
       this.podcastGuid = this.podcastGuid.trim() === '' ? null : this.podcastGuid.trim()

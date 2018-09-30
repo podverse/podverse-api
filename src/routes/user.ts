@@ -7,6 +7,7 @@ import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
 import { validateUserUpdate } from 'middleware/validation/update'
+import { jwtAuth } from 'middleware/auth/jwtAuth';
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
@@ -52,10 +53,11 @@ router.post('/',
 // Update
 router.patch('/',
   validateUserUpdate,
+  jwtAuth,
   async ctx => {
     try {
       const body = ctx.request.body
-      const user = await updateUser(body)
+      const user = await updateUser(body, ctx.state.user.id)
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
@@ -64,9 +66,10 @@ router.patch('/',
 
 // Delete
 router.delete('/:id',
+  jwtAuth,
   async ctx => {
     try {
-      await deleteUser(ctx.params.id)
+      await deleteUser(ctx.params.id, ctx.state.user.id)
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)

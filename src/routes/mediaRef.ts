@@ -5,6 +5,7 @@ import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
+import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
@@ -57,10 +58,11 @@ router.post('/',
 // Update
 router.patch('/',
   validateMediaRefUpdate,
+  jwtAuth,
   async ctx => {
     try {
       const body = ctx.request.body
-      const mediaRef = await updateMediaRef(body)
+      const mediaRef = await updateMediaRef(body, ctx.state.user.id)
       ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)
@@ -69,9 +71,10 @@ router.patch('/',
 
 // Delete
 router.delete('/:id',
+  jwtAuth,
   async ctx => {
     try {
-      await deleteMediaRef(ctx.params.id)
+      await deleteMediaRef(ctx.params.id, ctx.state.user.id)
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)

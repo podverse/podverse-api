@@ -26,12 +26,16 @@ const createUser = async (obj) => {
   return newUser
 }
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, loggedInUserId) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
+  }
+
+  if (id !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to delete this user')
   }
 
   const result = await repository.remove(user)
@@ -104,12 +108,17 @@ const getUsers = (query, options) => {
   })
 }
 
-const updateUser = async (obj) => {
+const updateUser = async (obj, loggedInUserId) => {
   const repository = getRepository(User)
-  const user = await repository.findOne({ id: obj.id })
+  const { id } = obj
+  const user = await repository.findOne({ id })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
+  }
+
+  if (id !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to update this user')
   }
 
   delete obj.password
@@ -132,9 +141,13 @@ const updateUserResetPasswordToken = async (obj) => {
     throw new createError.NotFound('User not found.')
   }
 
-  delete obj.password
+  const cleanedObj = {
+    id: obj.id,
+    resetPasswordToken: obj.resetPasswordToken,
+    resetPasswordTokenExpiration: obj.resetPasswordTokenExpiration
+  }
 
-  const newUser = Object.assign(user, obj)
+  const newUser = Object.assign(user, cleanedObj)
 
   await validateClassOrThrow(newUser)
 
@@ -157,8 +170,10 @@ const updateUserPassword = async (obj) => {
   } else if (password && !validatePassword(password)) {
     throw new createError.BadRequest('Invalid password provided.')
   }
+
+  const cleanedObj = { password }
   
-  const newUser = Object.assign(user, obj)
+  const newUser = Object.assign(user, cleanedObj)
 
   await validateClassOrThrow(newUser)
 

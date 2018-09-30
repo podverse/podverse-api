@@ -18,12 +18,16 @@ const createPlaylist = async (obj) => {
   return newPlaylist
 }
 
-const deletePlaylist = async (id) => {
+const deletePlaylist = async (id, loggedInUserId) => {
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
+  }
+
+  if (playlist.owner !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to delete this playlist')
   }
 
   const result = await repository.remove(playlist)
@@ -53,12 +57,16 @@ const getPlaylists = (query, options) => {
   })
 }
 
-const updatePlaylist = async (obj) => {
+const updatePlaylist = async (obj, loggedInUserId) => {
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id: obj.id })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
+  }
+
+  if (playlist.owner !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to delete this playlist')
   }
 
   const newPlaylist = Object.assign(playlist, obj)

@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
+import { create } from 'domain';
 const createError = require('http-errors')
 
 const relations = [
@@ -18,12 +19,20 @@ const createMediaRef = async (obj) => {
   return newMediaRef
 }
 
-const deleteMediaRef = async (id) => {
+const deleteMediaRef = async (id, loggedInUserId) => {
   const repository = getRepository(MediaRef)
   const mediaRef = await repository.findOne({ id })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
+  }
+
+  if (!mediaRef.owner) {
+    throw new createError.Unauthorized('Cannot delete an anonymous media ref')
+  }
+
+  if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to delete this media ref')
   }
 
   const result = await repository.remove(mediaRef)
@@ -53,12 +62,20 @@ const getMediaRefs = (query, options) => {
   })
 }
 
-const updateMediaRef = async (obj) => {
+const updateMediaRef = async (obj, loggedInUserId) => {
   const repository = getRepository(MediaRef)
   const mediaRef = await repository.findOne({ id: obj.id })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
+  }
+
+  if (!mediaRef.owner) {
+    throw new createError.Unauthorized('Cannot update an anonymous media ref')
+  }
+
+  if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
+    throw new createError.Unauthorized('Login to edit this media ref')
   }
 
   const newMediaRef = Object.assign(mediaRef, obj)

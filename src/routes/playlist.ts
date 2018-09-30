@@ -5,6 +5,7 @@ import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
   from 'controllers/playlist'
+import { jwtAuth } from 'middleware/auth/jwtAuth';
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from 'middleware/validation/create'
 import { validatePlaylistSearch } from 'middleware/validation/search'
@@ -57,10 +58,11 @@ router.post('/',
 // Update
 router.patch('/',
   validatePlaylistUpdate,
+  jwtAuth,
   async ctx => {
     try {
       const body = ctx.request.body
-      const playlist = await updatePlaylist(body)
+      const playlist = await updatePlaylist(body, ctx.state.user.id)
       ctx.body = playlist
     } catch (error) {
       emitRouterError(error, ctx)
@@ -69,9 +71,10 @@ router.patch('/',
 
 // Delete
 router.delete('/:id',
+  jwtAuth,
   async ctx => {
     try {
-      await deletePlaylist(ctx.params.id)
+      await deletePlaylist(ctx.params.id, ctx.state.user.id)
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
