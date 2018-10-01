@@ -1,4 +1,3 @@
-import * as PostgressConnectionStringParser from 'pg-connection-string'
 import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from 'config'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
@@ -15,13 +14,13 @@ const entities = [
   User
 ]
 
-const options = PostgressConnectionStringParser.parse(config.databaseUrl)
+const options = config.dbConfig
 
 const connectionOptions: ConnectionOptions = {
   type: 'postgres',
   host: options.host,
   port: options.port,
-  username: options.user,
+  username: options.username,
   password: options.password,
   database: options.database,
   synchronize: true,
