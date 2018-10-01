@@ -644,8 +644,16 @@
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/mediaRef/{mediaRefId}": {
@@ -706,10 +714,18 @@
               "$ref": "#/definitions/MediaRef"
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "MediaRef not found"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/playlist": {
@@ -793,8 +809,16 @@
           },
           "400": {
             "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       },
       "patch": {
         "tags": [
@@ -836,8 +860,16 @@
           },
           "400": {
             "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/playlist/{playlistId}": {
@@ -898,10 +930,18 @@
               "$ref": "#/definitions/Playlist"
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "Playlist not found"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/podcast": {
@@ -1137,8 +1177,16 @@
           },
           "400": {
             "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/user/{userId}": {
@@ -1199,11 +1247,26 @@
               "$ref": "#/definitions/User"
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "User not found"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
+    }
+  },
+  "securityDefinitions": {
+    "authorization": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
     }
   },
   "definitions": {
