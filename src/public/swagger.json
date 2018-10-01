@@ -569,7 +569,6 @@
             "schema": {
               "example": {
                 "_episodeId": "string",
-                "_ownerId": "string",
                 "_podcastId": "string",
                 "authors": ["id"],
                 "categories": ["id"],
@@ -586,7 +585,6 @@
                 "episodeTitle": "string",
                 "isPublic": "boolean",
                 "ownerId": "string",
-                "ownerName": "string",
                 "podcastFeedUrl": "url",
                 "podcastGuid": "string",
                 "podcastId": "string",
@@ -1409,9 +1407,6 @@
           "type": "boolean"
         },
         "ownerId": {
-          "type": "string"
-        },
-        "ownerName": {
           "type": "string"
         },
         "pastAllTimeTotalUniquePageviews": {

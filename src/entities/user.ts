@@ -3,7 +3,7 @@ import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { saltRounds } from 'lib/constants'
-import { Playlist } from 'entities'
+import { MediaRef, Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
 
 const shortid = require('shortid')
@@ -55,6 +55,9 @@ export class User {
 
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]
+
+  @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
+  mediaRefs: MediaRef[]
 
   @OneToMany(type => Playlist, playlist => playlist.owner, {
     cascade: true

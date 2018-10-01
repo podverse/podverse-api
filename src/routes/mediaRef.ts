@@ -11,9 +11,9 @@ import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
 import { validateMediaRefUpdate } from 'middleware/validation/update'
 
-const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
-
 const delimitKeys = ['authors', 'categories']
+
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
 
 router.use(bodyParser())
 
@@ -24,7 +24,10 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(ctx.request.query, ctx.state.queryPageOptions)
+      const mediaRefs = await getMediaRefs(
+        ctx.request.query, 
+        ctx.state.queryPageOptions
+      )
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)

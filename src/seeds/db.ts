@@ -80,36 +80,42 @@ export const seedDatabase = async (connection: Connection) => {
   await connection.manager.save(feedUrl2)
 
   let mediaRef11 = new MediaRef()
+  mediaRef11.episode = episode1
   mediaRef11.episodeMediaUrl = 'https://podverse.fm'
   mediaRef11.podcastFeedUrl = 'https://podverse.fm'
   mediaRef11.title = 'Beep'
   await connection.manager.save(mediaRef11)
 
   let mediaRef12 = new MediaRef()
+  mediaRef12.episode = episode1
   mediaRef12.episodeMediaUrl = 'https://podverse.fm'
   mediaRef12.podcastFeedUrl = 'https://podverse.fm'
   mediaRef12.title = 'Beep'
   await connection.manager.save(mediaRef12)
 
   let mediaRef13 = new MediaRef()
+  mediaRef13.episode = episode1
   mediaRef13.episodeMediaUrl = 'https://podverse.fm'
   mediaRef13.podcastFeedUrl = 'https://podverse.fm'
   mediaRef13.title = 'Beep'
   await connection.manager.save(mediaRef13)
 
   let mediaRef14 = new MediaRef()
+  mediaRef14.episode = episode1
   mediaRef14.episodeMediaUrl = 'https://podverse.fm'
   mediaRef14.podcastFeedUrl = 'https://podverse.fm'
   mediaRef14.title = 'Beep'
   await connection.manager.save(mediaRef14)
 
   let mediaRef15 = new MediaRef()
+  mediaRef15.episode = episode1
   mediaRef15.episodeMediaUrl = 'https://podverse.fm'
   mediaRef15.podcastFeedUrl = 'https://podverse.fm'
   mediaRef15.title = 'Beep'
   await connection.manager.save(mediaRef15)
 
   let mediaRef1 = new MediaRef()
+  mediaRef1.episode = episode1
   mediaRef1.categories = []
   mediaRef1.episodeMediaUrl = 'https://podverse.fm'
   mediaRef1.podcastFeedUrl = 'https://podverse.fm'
@@ -118,6 +124,7 @@ export const seedDatabase = async (connection: Connection) => {
   await connection.manager.save(mediaRef1)
 
   let mediaRef2 = new MediaRef()
+  mediaRef2.episode = episode1
   mediaRef2.episodeMediaUrl = 'https://podverse.fm'
   mediaRef2.podcastFeedUrl = 'https://podverse.fm'
   mediaRef2.title = 'Eh, what\'s up, Doc?'
@@ -125,6 +132,7 @@ export const seedDatabase = async (connection: Connection) => {
   await connection.manager.save(mediaRef2)
 
   let mediaRef3 = new MediaRef()
+  mediaRef3.episode = episode1
   mediaRef3.episodeMediaUrl = 'https://podverse.fm'
   mediaRef3.podcastFeedUrl = 'https://podverse.fm'
   mediaRef3.title = 'Wabbits wuv carrots.'
@@ -132,6 +140,7 @@ export const seedDatabase = async (connection: Connection) => {
   await connection.manager.save(mediaRef3)
 
   let mediaRef4 = new MediaRef()
+  mediaRef4.episode = episode1
   mediaRef4.episodeMediaUrl = 'https://podverse.fm'
   mediaRef4.podcastFeedUrl = 'https://podverse.fm'
   mediaRef4.title = 'Th-th-th-that\'s all, folks!'

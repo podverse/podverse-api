@@ -141,17 +141,17 @@ export class MediaRef {
   @JoinTable()
   categories: Category[]
 
-  @ManyToOne(type => Episode, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
+  @ManyToOne(type => Episode, episode => episode.mediaRefs, { 
+    nullable: !mustHavePodcast, onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: '_episodeId' })
   episode: Episode
 
-  @ManyToOne(type => User, { nullable: !mustHaveUser, onDelete: 'CASCADE' })
-  @JoinColumn({ name: '_ownerId' })
+  @ManyToOne(type => User, user => user.mediaRefs, {
+    nullable: !mustHaveUser, onDelete: 'CASCADE' 
+  })
+  @JoinColumn()
   owner: User
-
-  @ManyToOne(type => Podcast, { nullable: !mustHavePodcast, onDelete: 'CASCADE' })
-  @JoinColumn({ name: '_podcastId' })
-  podcast: Podcast
 
   @CreateDateColumn()
   createdAt: Date

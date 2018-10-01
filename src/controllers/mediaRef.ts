@@ -4,7 +4,7 @@ import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'episode', 'owner', 'podcast'
+  'authors', 'categories', 'episode', 'podcast'
 ]
 
 const createMediaRef = async (obj) => {
@@ -56,8 +56,7 @@ const getMediaRefs = (query, options) => {
     where: {
       ...query
     },
-    relations,
-    ...options
+    relations
   })
 }
 

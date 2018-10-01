@@ -21,7 +21,6 @@ const validateMediaRefCreate = async (ctx, next) => {
     episodeTitle: Joi.string(),
     isPublic: Joi.boolean(),
     ownerId: Joi.string(),
-    ownerName: Joi.string(),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),

@@ -13,6 +13,11 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/use
 
 router.use(bodyParser())
 
+const selectedFields = [
+  'name',
+  'subscribedPodcastIds'
+]
+
 // Search
 router.get('/',
   parseQueryPageOptions,
@@ -24,10 +29,7 @@ router.get('/',
         Object.assign(
           ctx.state.queryPageOptions,
           {
-            select: [
-              'name',
-              'subscribedPodcastIds'
-            ]
+            select: selectedFields
           }
         )
       )
@@ -42,10 +44,7 @@ router.get('/:id',
   async ctx => {
     try {
       const user = await getUser(ctx.params.id, {
-        select: [
-          'name',
-          'subscribedPodcastIds'
-        ]
+        select: selectedFields
       })
       ctx.body = user
     } catch (error) {
