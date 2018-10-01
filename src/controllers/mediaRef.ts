@@ -4,7 +4,7 @@ import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'episode', 'podcast'
+  'authors', 'categories', 'episode', 'episode.podcast'
 ]
 
 const createMediaRef = async (obj) => {
