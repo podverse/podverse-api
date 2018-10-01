@@ -17,6 +17,10 @@
   "basePath": "/api/v1",
   "tags": [
     {
+      "name": "auth",
+      "description": "authentication related endpoints"
+    },
+    {
       "name": "author",
       "description": "podcast hosts, co-hosts, and guests"
     },
@@ -51,6 +55,227 @@
     "https"
   ],
   "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login as user",
+        "description": "Sets a bearer token in the Authentication cookie",
+        "operationId": "authLogin",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "password": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register new user",
+        "description": "Create a new user, and send verification email",
+        "operationId": "authRegister",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "name": "string",
+                "password": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Reset a user's password",
+        "description": "Reset a user's password if the correct token is provided",
+        "operationId": "authResetPassword",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "password": "string",
+                "resetPasswordToken": "guid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User not found or invalid token"
+          }
+        }
+      }
+    },
+    "/auth/send-reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Send email to reset user's password",
+        "description": "Sends email to user that directs the user to the password reset page, along with a resetPasswordToken",
+        "operationId": "authSendResetPassword",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized, token has expired"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/send-verification": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Send email to verify a user's email address",
+        "description": "Send email to verify a user's email address",
+        "operationId": "authSendVerification",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify a user's email address",
+        "description": "Verification is successful if a valid emailVerificationToken is included in the request",
+        "operationId": "authVerifyEmail",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized, token has expired"
+          },
+          "404": {
+            "description": "User not found or invalid verification token"
+          }
+        }
+      }
+    },
     "/author": {
       "get": {
         "tags": [
