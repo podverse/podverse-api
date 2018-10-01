@@ -5,7 +5,10 @@ export function authenticate (ctx: Context, next) {
   return generateToken(ctx.state.user)
     .then(token => {
       if (token) {
-        ctx.set('Authentication', `Bearer ${token}`)
+        ctx.cookies.set('Authentication', `Bearer ${token}`, { 
+          httpOnly: true,
+          overwrite: true
+        })
         ctx.status = 200
       } else {
         ctx.status = 500
