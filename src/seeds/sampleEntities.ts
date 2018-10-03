@@ -1,10 +1,9 @@
 import { Connection } from 'typeorm'
-import { validCategories } from 'config/categories'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
-import { parseFeed } from 'services/parser'
+import { connectToDb } from 'lib/db'
 
-export const seedDatabase = async (connection: Connection) => {
+const seedDatabase = async (connection: Connection) => {
   await connection.synchronize(true)
 
   let podcast1 = new Podcast()
@@ -176,61 +175,11 @@ export const seedDatabase = async (connection: Connection) => {
   playlist1.owner = user1
   playlist1.title = 'Greatest Hits'
   await connection.manager.save(playlist1)
-
-  await generateCategories(connection, validCategories, null, true)
-
-  // await parseFeeds()
 }
 
-const generateCategories = async (
-  connection: Connection,
-  data: any,
-  parent: any,
-  shouldSave: boolean
-): Promise<any> => {
-  let newCategories: any[] = []
-  for (let category of data) {
-    category.parent = parent
-    let c = generateCategory(category)
-    newCategories.push(c)
-
-    if (category.categories && category.categories.length > 0) {
-      const subCategories = await generateCategories(
-        connection, category.categories, c, false
-      )
-      newCategories = newCategories.concat(subCategories)
+connectToDb()
+  .then(async connection => {
+    if (connection) {
+      await seedDatabase(connection)
     }
-  }
-
-  if (shouldSave) {
-    await connection.manager.save(newCategories)
-  }
-
-  return newCategories
-}
-
-const generateCategory = (data: any) => {
-  let category = new Category()
-  category.title = data.title
-  category.category = data.parent
-  return category
-}
-
-const parseFeeds = async () => {
-  const sampleFeeds = [
-    'http://feeds.megaphone.fm/wethepeoplelive',
-    'http://joeroganexp.joerogan.libsynpro.com/rss',
-    'http://feeds.feedburner.com/dancarlin/history?format=xml',
-    'https://audioboom.com/channels/4954758.rss',
-    'http://h3h3roost.libsyn.com/rss',
-    'http://altucher.stansberry.libsynpro.com/rss',
-    'http://www.podcastone.com/podcast?categoryID2=1237',
-    'http://philosophizethis.libsyn.com/rss',
-    'https://rss.art19.com/tim-ferriss-show',
-    'http://feeds.feedburner.com/YourMomsHouseWithChristinaPazsitzkyAndTomSegura'
-  ]
-
-  for (const feed of sampleFeeds) {
-    await parseFeed(feed, null, 'true')
-  }
-}
+  })
