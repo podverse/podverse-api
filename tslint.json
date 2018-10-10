@@ -1,6 +1,5 @@
 {
   "extends": [
-      "tslint-config-standard",
-      "plugin:you-dont-need-momentjs/recommended"
+      "tslint-config-standard"
     ]
 }
