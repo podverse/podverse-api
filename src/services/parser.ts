@@ -99,6 +99,13 @@ export const parseFeed = async (url, id, shouldCreate = 'false') => {
 
         podcast.episodes = await findOrGenerateParsedEpisodes(data.episodes, podcast)
 
+        const latestEpisode = podcast.episodes.reduce((r, a) => {
+          return r.pubDate > a.pubDate ? r : a
+        })
+
+        podcast.lastEpisodePubDate = latestEpisode.pubDate
+        podcast.lastEpisodeTitle = latestEpisode.title
+
         if (data.description && data.description.long) {
           podcast.description = data.description.long
         }

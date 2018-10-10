@@ -15,10 +15,6 @@ export class Episode {
   })
   id: string
 
-  @IsUrl()
-  @Column({ unique: true })
-  mediaUrl: string
-
   @Column({ nullable: true })
   description: string
 
@@ -58,6 +54,10 @@ export class Episode {
 
   @Column({ nullable: true })
   mediaType: string
+
+  @IsUrl()
+  @Column({ unique: true })
+  mediaUrl: string
 
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()

@@ -18,27 +18,14 @@ export class MediaRef {
   })
   id: string
 
-  @IsUrl()
-  @Column()
-  episodeMediaUrl: string
-
-  @IsUrl()
-  @Column()
-  podcastFeedUrl: string
-
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  startTime: number
-
-  @Column({ nullable: true })
-  description: string
-
   @ValidateIf(a => a.endTime != null)
   @IsInt()
   @Min(1)
   @Column({ nullable: true })
   endTime: number
+  
+  @Column({ nullable: true })
+  episodeDescription: string
 
   @ValidateIf(a => a.episodeDuration != null)
   @IsInt()
@@ -65,11 +52,12 @@ export class MediaRef {
   @Column({ nullable: true })
   episodeLinkUrl: string
 
-  @Column({ nullable: true })
-  episodePubDate: Date
+  @IsUrl()
+  @Column()
+  episodeMediaUrl: string
 
   @Column({ nullable: true })
-  episodeSummary: string
+  episodePubDate: Date
 
   @Column({ nullable: true })
   episodeTitle: string
@@ -113,6 +101,10 @@ export class MediaRef {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @IsUrl()
+  @Column()
+  podcastFeedUrl: string
+
   @Column({ nullable: true })
   podcastGuid: string
 
@@ -129,6 +121,11 @@ export class MediaRef {
 
   @Column({ nullable: true })
   podcastTitle: string
+
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  startTime: number
 
   @Column({ nullable: true })
   title: string
