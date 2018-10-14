@@ -15,7 +15,7 @@ export class Playlist {
   id: string
 
   @Column({ nullable: true })
-  description: string
+  description?: string
 
   @Column({ default: false })
   isMyClips: boolean
@@ -27,7 +27,7 @@ export class Playlist {
   itemsOrder: string[]
 
   @Column({ nullable: true })
-  title: string
+  title?: string
 
   @ManyToMany(type => MediaRef)
   @JoinTable()
@@ -52,10 +52,10 @@ export class Playlist {
   @BeforeUpdate()
   trimStrings () {
     if (this.description) {
-      this.description = this.description.trim() === '' ? null : this.description.trim()
+      this.description = this.description.trim() === '' ? undefined : this.description.trim()
     }
     if (this.title) {
-      this.title = this.title.trim() === '' ? null : this.title.trim()
+      this.title = this.title.trim() === '' ? undefined : this.title.trim()
     }
   }
 

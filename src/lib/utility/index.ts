@@ -16,7 +16,8 @@ export const chunkArray = (arr, chunkSize = 10) => {
   let j
   let chunks = []
   for (i = 0, j = arr.length; i < j; i += chunkSize) {
-    chunks.push(arr.slice(i, i + chunkSize))
+    let chunk = arr.slice(i, i + chunkSize) as never // TODO: What does this mean?
+    chunks.push(chunk)
   }
   return chunks
 }
@@ -40,4 +41,46 @@ export const lastHour = () => {
 export const convertSecondsToDaysText = (seconds) => {
   const totalDays = Math.round(parseInt(seconds) / 86400)
   return `${totalDays > 1 ? `${totalDays} days` : '24 hours'}`
+}
+
+export const convertSecToHHMMSS = (sec: number) => {
+  const totalSec = Math.floor(sec)
+  const hours = totalSec / 3600 % 24
+  const minutes = totalSec / 60 % 60
+  const seconds = totalSec % 60
+  let result = ''
+
+  if (hours > 0) {
+    result += hours + ':'
+  }
+
+  if (minutes > 9) {
+    result += minutes + ':'
+  } else if (minutes > 0 && hours > 0) {
+    result += '0' + minutes + ':'
+  } else if (minutes > 0) {
+    result += minutes + ':'
+  } else if (minutes === 0 && hours > 0) {
+    result += '00:'
+  }
+
+  if (seconds > 9) {
+    result += seconds
+  } else if (seconds > 0 && minutes > 0) {
+    result += '0' + seconds
+  } else if (seconds > 0) {
+    result += seconds
+  } else {
+    result += '00'
+  }
+
+  if (result.length === 2) {
+    result = '0:' + result
+  }
+
+  if (result.length === 1) {
+    result = '0:0' + result
+  }
+
+  return result
 }

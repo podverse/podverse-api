@@ -15,35 +15,35 @@ export class Podcast {
   id: string
 
   @Column({ nullable: true })
-  description: string
+  description?: string
 
   @Column({ nullable: true })
-  feedLastUpdated: Date
+  feedLastUpdated?: Date
 
   @Column({ nullable: true })
-  guid: string
+  guid?: string
 
   @ValidateIf(a => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
-  imageUrl: string
+  imageUrl?: string
 
   @Column({ default: false })
   isExplicit: boolean
 
   @Column({ nullable: true })
-  language: string
+  language?: string
 
   @Column({ nullable: true })
-  lastEpisodePubDate: Date
+  lastEpisodePubDate?: Date
 
   @Column({ nullable: true })
-  lastEpisodeTitle: String
+  lastEpisodeTitle?: String
 
   @ValidateIf(a => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
-  linkUrl: string
+  linkUrl?: string
 
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
@@ -82,10 +82,10 @@ export class Podcast {
   pastYearTotalUniquePageviews: number
 
   @Column({ nullable: true })
-  title: string
+  title?: string
 
   @Column({ nullable: true })
-  type: string
+  type?: string
 
   @ManyToMany(type => Author)
   @JoinTable()
@@ -120,13 +120,13 @@ export class Podcast {
   @BeforeUpdate()
   beforeAll () {
     if (this.description) {
-      this.description = this.description.trim() === '' ? null : this.description.trim()
+      this.description = this.description.trim() === '' ? undefined : this.description.trim()
     }
     if (this.guid) {
-      this.guid = this.guid.trim() === '' ? null : this.guid.trim()
+      this.guid = this.guid.trim() === '' ? undefined : this.guid.trim()
     }
     if (this.title) {
-      this.title = this.title.trim() === '' ? null : this.title.trim()
+      this.title = this.title.trim() === '' ? undefined : this.title.trim()
     }
   }
 

@@ -16,24 +16,24 @@ export class Episode {
   id: string
 
   @Column({ nullable: true })
-  description: string
+  description?: string
 
   @ValidateIf(a => a.duration != null)
   @IsInt()
   @Min(0)
   @Column({ nullable: true })
-  duration: number
+  duration?: number
 
   @Column({ nullable: true })
-  episodeType: string
+  episodeType?: string
 
   @Column({ nullable: true })
-  guid: string
+  guid?: string
 
   @ValidateIf(a => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
-  imageUrl: string
+  imageUrl?: string
 
   @Column({ default: false })
   isExplicit: boolean
@@ -44,7 +44,7 @@ export class Episode {
   @ValidateIf(a => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
-  linkUrl: string
+  linkUrl?: string
 
   @ValidateIf(a => a.mediaFilesize != null)
   @IsInt()
@@ -53,7 +53,7 @@ export class Episode {
   mediaFilesize: number
 
   @Column({ nullable: true })
-  mediaType: string
+  mediaType?: string
 
   @IsUrl()
   @Column({ unique: true })
@@ -96,10 +96,10 @@ export class Episode {
   pastYearTotalUniquePageviews: number
 
   @Column({ nullable: true })
-  pubDate: Date
+  pubDate?: Date
 
   @Column({ nullable: true })
-  title: string
+  title?: string
 
   @ManyToMany(type => Author)
   @JoinTable()
@@ -130,7 +130,7 @@ export class Episode {
   @BeforeUpdate()
   beforeAll () {
     if (this.guid) {
-      this.guid = this.guid.trim() === '' ? null : this.guid.trim()
+      this.guid = this.guid.trim() === '' ? '' : this.guid.trim()
     }
   }
 

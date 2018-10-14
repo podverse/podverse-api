@@ -31,17 +31,20 @@ export interface IConfig {
 
 const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
 
+let port = process.env.PORT || '3000'
+let dbPort = process.env.DB_PORT || '5432'
+
 const config: IConfig = {
-  port: +process.env.PORT || 3000,
+  port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
   dbsslconn: process.env.NODE_ENV !== 'development',
   dbConfig: {
     type: 'postgres',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: parseInt(dbPort, 10),
+    username: process.env.DB_USERNAME || 'postgres',
+    password: process.env.DB_PASSWORD || 'mysecretpw',
+    database: process.env.DB_DATABASE || 'postgres'
   },
   entityRelationships: {
     mediaRef: {
