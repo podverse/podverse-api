@@ -3,6 +3,8 @@ import { config } from 'config'
 import { createTransporter } from 'services/mailer'
 import { emailTemplate } from 'lib/emailTemplate'
 
+const { mailerUsername } = config
+
 export const sendVerificationEmail = async (email, name, token) => {
   const transporter = createTransporter()
 
@@ -22,7 +24,7 @@ export const sendVerificationEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.MAILER_USERNAME,
+      from: mailerUsername,
       to: email,
       subject: 'Verify your Podverse account',
       html: emailTemplate(emailFields)

@@ -1,7 +1,9 @@
 import { sign } from 'jsonwebtoken'
+import { config } from 'config'
+const { jwtSecret } = config
 
 const genTokenAsync = payload => new Promise((resolve, reject) => {
-  return sign(payload, process.env.JWT_SECRET, ((err, encoded) => {
+  return sign(payload, jwtSecret, ((err, encoded) => {
     if (err) return reject(err)
     resolve(encoded)
   }))

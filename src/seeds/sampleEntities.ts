@@ -86,7 +86,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef.episode = episode
   mediaRef.owner = user1
 
-  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, playlist1, podcast, episode, mediaRef, feedUrl])
+  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, playlist1, podcast, episode, feedUrl, mediaRef])
 }
 
 connectToDb()

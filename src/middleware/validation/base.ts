@@ -6,7 +6,7 @@ const validateBase = async (body, schema, ctx, next) => {
   const error = result.error
 
   if (error) {
-    for (const detail of error.details) {
+    for (const _ of error.details) {
       emitRouterError(new JoiCustomValidationError(error).BadRequest(), ctx)
     }
     return

@@ -4,9 +4,11 @@ import { createTransporter } from 'services/mailer'
 import { emailTemplate } from 'lib/emailTemplate'
 import { convertSecondsToDaysText } from 'lib/utility';
 
+const { resetPasswordTokenExpiration } = config
+
 export const sendResetPasswordEmail = async (email, name, token) => {
   const transporter = createTransporter()
-  const daysToExpire = convertSecondsToDaysText(parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION))
+  const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
 
   const emailFields = {
     preheader: '',

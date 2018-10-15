@@ -27,12 +27,23 @@ export interface IConfig {
   apiHost: string
   apiPrefix: string
   apiVersion: string
+  jwtSecret: string
+  resetPasswordTokenExpiration: number
+  emailVerificationTokenExpiration: number
+  mailerService: string
+  mailerHost: string
+  mailerPort: number
+  mailerUsername: string
+  mailerPassword: string
 }
 
 const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
 
 let port = process.env.PORT || '3000'
 let dbPort = process.env.DB_PORT || '5432'
+let resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
+let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
+let mailerPort = process.env.MAILER_PORT || '587'
 
 const config: IConfig = {
   port: parseInt(port, 10),
@@ -54,7 +65,15 @@ const config: IConfig = {
   },
   apiHost,
   apiPrefix: process.env.API_PREFIX || '/api',
-  apiVersion: process.env.API_VERSION || '/v1'
+  apiVersion: process.env.API_VERSION || '/v1',
+  jwtSecret: process.env.JWT_SECRET || 'mysecretjwt',
+  resetPasswordTokenExpiration: parseInt(resetPasswordTokenExpiration, 10),
+  emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),
+  mailerService: process.env.mailerService || '',
+  mailerHost: process.env.mailerHost || '',
+  mailerPort: parseInt(mailerPort, 10),
+  mailerUsername: process.env.MAILER_USERNAME || '',
+  mailerPassword: process.env.MAILER_PASSWORD || ''
 }
 
 export { config }

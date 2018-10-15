@@ -10,12 +10,17 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
     async (email, password, done) => {
       try {
         const user = await userRepo.findOne({ email })
-        const isValid = await compareHash(password, user.password)
 
-        if (!email || !password || !user || !isValid) {
-          throw new createError.Unauthorized('Invalid email or password')
+        if (user) {
+          const isValid = await compareHash(password, user.password)
+  
+          if (!email || !password || !user || !isValid) {
+            throw new createError.Unauthorized('Invalid email or password')
+          } else {
+            done(null, { ...user, password: undefined })
+          }
         } else {
-          done(null, { ...user, password: undefined })
+          throw new createError.Unauthorized('Invalid email or password')
         }
       } catch (error) {
         done(new createError.Unauthorized('Invalid email or password'))

@@ -24,7 +24,7 @@ export function logger () {
 
     const ms = new Date().getMilliseconds() - start
 
-    let logLevel: string
+    let logLevel = ''
     if (ctx.status >= 500) {
       logLevel = 'error'
     } else if (ctx.status >= 400) {
