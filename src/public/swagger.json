@@ -749,7 +749,7 @@
           {
             "name": "podcastIsExplicit",
             "in": "query",
-            "type": "string"
+            "type": "boolean"
           },
           {
             "name": "podcastTitle",
@@ -759,7 +759,7 @@
           {
             "name": "startTime",
             "in": "query",
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "title",
