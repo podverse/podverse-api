@@ -152,6 +152,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef.episodeLinkUrl = 'https://jamesaltucher.com/'
   mediaRef.episodeMediaUrl = 'http://traffic.libsyn.com/altucher/JAS-220-MattMullenweg-v01-FREE.mp3?dest-id=172343'
   mediaRef.episodePubDate = new Date(1490130000000)
+  mediaRef.episodeTitle = 'Ep. 220 - Matt Mullenweg: Do You Have Your Own Internal "Code"'
   mediaRef.podcastFeedUrl = 'http://altucher.stansberry.libsynpro.com/rss'
   mediaRef.podcastImageUrl = 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
   mediaRef.podcastTitle = 'The James Altucher Show'
@@ -168,6 +169,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef2.episodeLinkUrl = ''
   mediaRef2.episodeMediaUrl = 'http://traffic.libsyn.com/wakingup/Waking_Up_138_Harari.mp3?dest-id=480596'
   mediaRef2.episodePubDate = new Date(1537428776000)
+  mediaRef2.episodeTitle = '#138 — The Edge of Humanity'
   mediaRef2.podcastFeedUrl = 'http://wakingup.libsyn.com/rss'
   mediaRef2.podcastImageUrl = 'http://static.libsyn.com/p/assets/0/b/e/4/0be4dc9e0fc61265/podcast_art_alt_1.5.18.jpg'
   mediaRef2.podcastTitle = 'Waking Up with Sam Harris'
@@ -184,6 +186,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef3.episodeLinkUrl = 'https://jamesaltucher.com/'
   mediaRef3.episodeMediaUrl = 'http://traffic.libsyn.com/altucher/Adam20Grant20final20final20mp3.mp3?dest-id=172343'
   mediaRef3.episodePubDate = new Date(1455671485000)
+  mediaRef3.episodeTitle = 'Ep. 154 - Adam Grant: What’s Next - How to Turn Your Idea into a (Successful) Business'
   mediaRef3.podcastFeedUrl = 'http://altucher.stansberry.libsynpro.com/rss'
   mediaRef3.podcastImageUrl = 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
   mediaRef3.podcastTitle = 'The James Altucher Show'
@@ -200,6 +203,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef3b.episodeLinkUrl = ''
   mediaRef3b.episodeMediaUrl = 'http://traffic.libsyn.com/altucher/Adam20Grant20final20final20mp3.mp3?dest-id=172343'
   mediaRef3b.episodePubDate = new Date(1455671485000)
+  mediaRef3b.episodeTitle = 'Ep. 154 - Adam Grant: What’s Next - How to Turn Your Idea into a (Successful) Business'
   mediaRef3b.podcastFeedUrl = 'http://altucher.stansberry.libsynpro.com/rss'
   mediaRef3b.podcastImageUrl = 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
   mediaRef3b.podcastTitle = 'The James Altucher Show'
@@ -216,6 +220,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef4.episodeLinkUrl = 'http://traffic.libsyn.com/altucher/JAS-216-YuvalHarari-v01-FREE.mp3'
   mediaRef4.episodeMediaUrl = 'http://traffic.libsyn.com/altucher/JAS-216-YuvalHarari-v01-FREE.mp3?dest-id=172343'
   mediaRef4.episodePubDate = new Date(1488322800000)
+  mediaRef4.episodeTitle = 'Ep. 216 - Yuval Noah Harari: A Brief History of The Future'
   mediaRef4.podcastFeedUrl = 'http://altucher.stansberry.libsynpro.com/rss'
   mediaRef4.podcastImageUrl = 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
   mediaRef4.podcastTitle = 'The James Altucher Show'
@@ -232,6 +237,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef5.episodeLinkUrl = ''
   mediaRef5.episodeMediaUrl = 'http://rss.art19.com/episodes/24f7ada5-64c3-4844-9522-ed6f3c144f1f.mp3'
   mediaRef5.episodePubDate = new Date(1489788000000)
+  mediaRef5.episodeTitle = 'Stewart Brand - The Polymath of Polymaths'
   mediaRef5.podcastFeedUrl = 'https://rss.art19.com/tim-ferriss-show'
   mediaRef5.podcastImageUrl = 'https://dfkfj8j276wwv.cloudfront.net/images/69/10/10/fb/691010fb-625e-4abe-993c-a57228b28dbe/91cb53ae0d5dbb379b9dffecf0a772593891d0d09bbe6d90ee746edbdb79e3ec75584f2ceb8260e9f675a90c05419b9b99842a76905b686f0f51c1a9d3e227ab.jpeg'
   mediaRef5.podcastTitle = 'The Tim Ferriss Show'
@@ -248,6 +254,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef6.episodeLinkUrl = ''
   mediaRef6.episodeMediaUrl = 'https://rss.art19.com/episodes/5016cc2c-3e67-449f-8b53-f06d488e5baf.mp3'
   mediaRef6.episodePubDate = new Date(1537901136000)
+  mediaRef6.episodeTitle = '#338: Howard Marks — How to Invest with Clear Thinking'
   mediaRef6.podcastFeedUrl = 'https://rss.art19.com/tim-ferriss-show'
   mediaRef6.podcastImageUrl = 'https://dfkfj8j276wwv.cloudfront.net/images/69/10/10/fb/691010fb-625e-4abe-993c-a57228b28dbe/91cb53ae0d5dbb379b9dffecf0a772593891d0d09bbe6d90ee746edbdb79e3ec75584f2ceb8260e9f675a90c05419b9b99842a76905b686f0f51c1a9d3e227ab.jpeg'
   mediaRef6.podcastTitle = 'The Tim Ferriss Show'
