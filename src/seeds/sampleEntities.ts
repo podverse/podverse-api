@@ -211,7 +211,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef3b.categories = [category1, category2]
   mediaRef3b.episode = episode3
   mediaRef3b.owner = user1
- 
+
   const mediaRef4 = new MediaRef()
   mediaRef4.endTime = 750
   mediaRef4.startTime = 679
@@ -260,10 +260,27 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef6.podcastTitle = 'The Tim Ferriss Show'
   mediaRef6.authors = [author1, author2, author3, author4]
   mediaRef6.categories = [category1, category2]
-  mediaRef6.episode = episode5
+  mediaRef6.episode = episode6
   mediaRef6.owner = user1
 
-  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, playlist1, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3, mediaRef, mediaRef2, mediaRef3, mediaRef3b, mediaRef4, mediaRef5, mediaRef6])
+  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, playlist1, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3])
+
+  mediaRef.episodeId = episode.id
+  mediaRef.podcastId = podcast.id
+  mediaRef2.episodeId = episode2.id
+  mediaRef2.podcastId = podcast2.id
+  mediaRef3.episodeId = episode3.id
+  mediaRef3.podcastId = podcast.id
+  mediaRef3b.episodeId = episode3.id
+  mediaRef3b.podcastId = podcast.id
+  mediaRef4.episodeId = episode4.id
+  mediaRef4.podcastId = podcast.id
+  mediaRef5.episodeId = episode5.id
+  mediaRef5.podcastId = podcast3.id
+  mediaRef6.episodeId = episode6.id
+  mediaRef6.podcastId = podcast3.id
+
+  await connection.manager.save([mediaRef, mediaRef2, mediaRef3, mediaRef3b, mediaRef4, mediaRef5, mediaRef6])
 }
 
 connectToDb()
