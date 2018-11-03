@@ -4,6 +4,7 @@
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "main": "dist/server.js",
   "scripts": {
+    "build": "webpack",
     "scripts:addAllFeedsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllFeedsToQueue.ts",
     "scripts:parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts",
     "scripts:parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",

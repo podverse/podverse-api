@@ -25,8 +25,9 @@ router.get('/',
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const mediaRefs = await getMediaRefs(
-        ctx.request.query, 
-        ctx.state.queryPageOptions
+        ctx.request.query,
+        ctx.state.queryPageOptions,
+        ctx.request.query.isNowPlayingItem
       )
       ctx.body = mediaRefs
     } catch (error) {

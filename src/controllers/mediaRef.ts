@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
+import { convertToNowPlayingItem, NowPlayingItem } from 'lib/utility/nowPlayingItem'
 const createError = require('http-errors')
 
 const relations = [
@@ -49,15 +50,27 @@ const getMediaRef = (id) => {
   return mediaRef
 }
 
-const getMediaRefs = (query, options) => {
+const getMediaRefs = async (query, options, isNowPlayingItem) => {
   const repository = getRepository(MediaRef)
-  
-  return repository.find({
+
+  const mediaRefs = await repository.find({
     where: {
       ...query
     },
     relations
   })
+
+  // TODO: can we format the MediaRefs into NowPlayingItems using the TypeORM
+  // query builder?
+  if (isNowPlayingItem) {
+    let nowPlayingItems: NowPlayingItem[] = []
+    for (const mediaRef of mediaRefs) {
+      nowPlayingItems.push(convertToNowPlayingItem(mediaRef))
+    }
+    return nowPlayingItems
+  } else {
+    return mediaRefs
+  }
 }
 
 const updateMediaRef = async (obj, loggedInUserId) => {

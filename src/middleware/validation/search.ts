@@ -75,6 +75,7 @@ const validateMediaRefSearch = async (ctx, next) => {
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     id: Joi.string().min(7).max(14),
+    isNowPlayingItem: Joi.boolean(),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),
