@@ -8,7 +8,10 @@ const relations = [
 
 const getPodcast = (id) => {
   const repository = getRepository(Podcast)
-  const podcast = repository.findOne({ id }, { relations })
+  const podcast = repository.findOne({
+    id,
+    isPublic: true
+  }, { relations })
 
   if (!podcast) {
     throw new createError.NotFound('Podcast not found')
@@ -22,7 +25,8 @@ const getPodcasts = (query, options) => {
 
   return repository.find({
     where: {
-      ...query
+      ...query,
+      isPublic: true
     },
     relations,
     ...options

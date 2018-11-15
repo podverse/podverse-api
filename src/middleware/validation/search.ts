@@ -35,13 +35,15 @@ const validateEpisodeSearch = async (ctx, next) => {
     id: Joi.string().min(7).max(14),
     imageUrl: Joi.string().uri(),
     isExplicit: Joi.boolean(),
+    isPublic: Joi.boolean(),
     linkUrl: Joi.string().uri(),
     mediaUrl: Joi.string().uri(),
     mediaRefs: Joi.string(),
     podcast: Joi.string(),
     pubDate: Joi.date().iso(),
+    sort: Joi.string(),
     title: Joi.string()
-  }).min(1)
+  })
 
   await validateBaseQuery(schema, ctx, next)
 }
@@ -76,15 +78,17 @@ const validateMediaRefSearch = async (ctx, next) => {
     episodeTitle: Joi.string(),
     id: Joi.string().min(7).max(14),
     isNowPlayingItem: Joi.boolean(),
+    isPublic: Joi.boolean(),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),
     podcastImageUrl: Joi.string().uri(),
     podcastIsExplicit: Joi.boolean(),
     podcastTitle: Joi.string(),
+    sort: Joi.string(),
     startTime: Joi.number().integer().min(0),
     title: Joi.string()
-  }).min(1)
+  })
 
   await validateBaseQuery(schema, ctx, next)
 }
@@ -93,6 +97,7 @@ const validatePlaylistSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     description: Joi.string(),
     id: Joi.string().min(7).max(14),
+    isPublic: Joi.boolean(),
     mediaRefs: Joi.string(),
     title: Joi.string()
   }).min(1)
@@ -112,8 +117,10 @@ const validatePodcastSearch = async (ctx, next) => {
     id: Joi.string().min(7).max(14),
     imageUrl: Joi.string().uri(),
     isExplicit: Joi.boolean(),
+    isPublic: Joi.boolean(),
     language: Joi.string(),
     linkUrl: Joi.string().uri(),
+    sort: Joi.string(),
     title: Joi.string(),
     type: Joi.string()
   }).min(1)

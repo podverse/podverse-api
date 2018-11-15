@@ -84,3 +84,25 @@ export const convertSecToHHMMSS = (sec: number) => {
 
   return result
 }
+
+export const createQueryOrderObject = (sort, sortDateKey) => {
+  let order: any = {}
+
+  if (sort === 'top-past-hour') {
+    order.pastHourTotalUniquePageviews = 'DESC'
+  } else if (sort === 'top-past-day') {
+    order.pastDayTotalUniquePageviews = 'DESC'
+  } else if (sort === 'top-past-month') {
+    order.pastMonthTotalUniquePageviews = 'DESC'
+  } else if (sort === 'top-past-year') {
+    order.pastYearTotalUniquePageviews = 'DESC'
+  } else if (sort === 'top-all-time') {
+    order.pastAllTimeTotalUniquePageviews = 'DESC'
+  } else if (sort === 'most-recent') {
+    order[sortDateKey] = 'DESC'
+  } else { // sort = top-past-week
+    order.pastWeekTotalUniquePageviews = 'DESC'
+  }
+
+  return order
+}

@@ -31,6 +31,9 @@ export class Podcast {
   @Column({ default: false })
   isExplicit: boolean
 
+  @Column({ default: false })
+  isPublic: boolean
+
   @Column({ nullable: true })
   language?: string
 
