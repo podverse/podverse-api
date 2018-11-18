@@ -3,9 +3,6 @@ import { validateBaseBody } from './base'
 
 const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    _episodeId: Joi.string(),
-    _ownerId: Joi.string(),
-    _podcastId: Joi.string(),
     authors: Joi.array().items(Joi.string()),
     categories: Joi.array().items(Joi.string()),
     description: Joi.string(),

@@ -13,7 +13,8 @@
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts"
+    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "watch-server-dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts"
   },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",

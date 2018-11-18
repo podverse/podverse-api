@@ -2,13 +2,6 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: '.env' })
 
-interface EntityRelationships {
-  mediaRef: {
-    mustHavePodcast: boolean
-    mustHaveUser: boolean
-  }
-}
-
 export interface DbConfig {
   type: string
   host: string
@@ -23,7 +16,6 @@ export interface IConfig {
   debugLogging: boolean
   dbsslconn: boolean
   dbConfig: DbConfig
-  entityRelationships: EntityRelationships
   apiHost: string
   apiPrefix: string
   apiVersion: string
@@ -56,12 +48,6 @@ const config: IConfig = {
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'mysecretpw',
     database: process.env.DB_DATABASE || 'postgres'
-  },
-  entityRelationships: {
-    mediaRef: {
-      mustHavePodcast: process.env.MEDIA_REF_HAS_PODCAST === 'true',
-      mustHaveUser: process.env.MEDIA_REF_HAS_USER === 'true'
-    }
   },
   apiHost,
   apiPrefix: process.env.API_PREFIX || '/api',

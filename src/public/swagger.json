@@ -653,18 +653,6 @@
         ],
         "parameters": [
           {
-            "name": "_episodeId",
-            "in": "query",
-            "description": "relational databases only",
-            "type": "string"
-          },
-          {
-            "name": "_podcastId",
-            "in": "query",
-            "description": "relational databases only",
-            "type": "string"
-          },
-          {
             "name": "authors",
             "in": "query",
             "type": "array",
@@ -793,8 +781,6 @@
             "required": true,
             "schema": {
               "example": {
-                "_episodeId": "string",
-                "_podcastId": "string",
                 "authors": ["id"],
                 "categories": ["id"],
                 "description": "string",

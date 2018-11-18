@@ -4,10 +4,6 @@ import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
   BeforeUpdate } from 'typeorm'
 import { Author, Category, Episode, User } from 'entities'
 
-import { config } from 'config'
-const { entityRelationships } = config
-const { mustHavePodcast, mustHaveUser } = entityRelationships.mediaRef
-
 const shortid = require('shortid')
 
 @Entity('mediaRefs')
@@ -101,8 +97,9 @@ export class MediaRef {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @ValidateIf(a => a.podcastFeedUrl != null)
   @IsUrl()
-  @Column()
+  @Column({ nullable: true })
   podcastFeedUrl: string
 
   @Column({ nullable: true })
@@ -139,13 +136,13 @@ export class MediaRef {
   categories: Category[]
 
   @ManyToOne(type => Episode, episode => episode.mediaRefs, {
-    nullable: !mustHavePodcast, onDelete: 'CASCADE'
+    onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: '_episodeId' })
+  @JoinColumn()
   episode: Episode
 
   @ManyToOne(type => User, user => user.mediaRefs, {
-    nullable: !mustHaveUser, onDelete: 'CASCADE'
+    onDelete: 'CASCADE'
   })
   @JoinColumn()
   owner: User

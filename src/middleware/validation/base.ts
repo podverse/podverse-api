@@ -7,6 +7,10 @@ const validateBase = async (body, schema, ctx, next) => {
 
   if (error) {
     for (const _ of error.details) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(error)
+      }
+
       emitRouterError(new JoiCustomValidationError(error).BadRequest(), ctx)
     }
     return
