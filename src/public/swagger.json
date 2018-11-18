@@ -1630,7 +1630,6 @@
       "required": [
         "id",
         "episodeMediaUrl",
-        "podcastFeedUrl",
         "startTime"
       ],
       "properties": {
@@ -1638,9 +1637,6 @@
           "type": "string"
         },
         "episodeMediaUrl": {
-          "type": "string"
-        },
-        "podcastFeedUrl": {
           "type": "string"
         },
         "startTime": {
@@ -1700,6 +1696,9 @@
         },
         "pastYearTotalUniquePageviews": {
           "type": "integer"
+        },
+        "podcastFeedUrl": {
+          "type": "string"
         },
         "podcastGuid": {
           "type": "string"
