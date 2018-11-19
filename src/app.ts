@@ -1,4 +1,3 @@
-import * as cors from '@koa/cors'
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
 import * as helmet from 'koa-helmet'
@@ -14,6 +13,8 @@ import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
 import { logger, loggerInstance } from 'lib/logging'
 import { createJwtStrategy, createLocalStrategy } from 'services/auth'
+
+const cors = require('@koa/cors')
 
 declare module 'koa' {
   interface BaseContext {
@@ -33,7 +34,12 @@ export const createApp = (conn: Connection) => {
   app.use(logger())
   app.use(bodyParser())
   app.use(passport.initialize())
-  app.use(cors())
+
+  if (process.env.NODE_ENV === 'development') {
+    app.use(cors({
+      credentials: true
+    }))
+  }
 
   app.use(mount(
     `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
