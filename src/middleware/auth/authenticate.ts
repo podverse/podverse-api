@@ -6,7 +6,7 @@ export function authenticate (ctx: Context, next) {
     .then(token => {
       if (token) {
         ctx.cookies.set('Authentication', `Bearer ${token}`, {
-          httpOnly: false,
+          httpOnly: true,
           overwrite: true
         })
         ctx.status = 200

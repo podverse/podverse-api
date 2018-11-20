@@ -1,20 +1,20 @@
 import { getUserByEmail, getUserByResetPasswordToken,
   updateUserPassword, updateUserResetPasswordToken} from 'controllers/user'
-import { emitRouterError } from "lib/errors";
+import { emitRouterError } from 'lib/errors'
 import { sendResetPasswordEmail } from 'services/auth/sendResetPasswordEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
 export const resetPassword = async ctx => {
   const { password, resetPasswordToken } = ctx.request.body
-
+console.log('wtf')
   try {
     const { id, resetPasswordTokenExpiration } = await getUserByResetPasswordToken(resetPasswordToken)
 
     if (resetPasswordTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 401
-    } else {      
+    } else {
       await updateUserPassword({
         id,
         password,
@@ -25,7 +25,8 @@ export const resetPassword = async ctx => {
       ctx.body = 'Password reset successful.'
       ctx.status = 200
     }
-  } catch (error) {    
+  } catch (error) {
+    console.log(error)
     emitRouterError(error, ctx)
   }
 }
@@ -46,10 +47,10 @@ export const sendResetPassword = async ctx => {
     })
 
     await sendResetPasswordEmail(email, name, resetPasswordToken)
-    
-    ctx.body = 'Reset password email sent!'
+    ctx.body = 'A reset password email will be sent to this address if it exists in our system.'
     ctx.status = 200
   } catch (error) {
-    emitRouterError(error, ctx)
+    ctx.body = 'A reset password email will be sent to this address if it exists in our system.'
+    ctx.status = 200
   }
 }

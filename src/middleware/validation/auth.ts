@@ -1,7 +1,7 @@
 const Joi = require('joi')
 import { validateBaseBody, validateBaseQuery } from './base'
 
-const validateAuthRegister = async (ctx, next) => {
+const validateAuthSignUp = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string().required(),
     name: Joi.string(),
@@ -54,7 +54,7 @@ const validateAuthVerifyEmail = async (ctx, next) => {
 }
 
 export {
-  validateAuthRegister,
+  validateAuthSignUp,
   validateAuthLogin,
   validateAuthSendVerification,
   validateAuthSendResetPassword,

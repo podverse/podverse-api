@@ -1,5 +1,6 @@
 export { authenticate } from 'middleware/auth/authenticate'
+export { logOut } from 'middleware/auth/logOut'
 export { localAuth } from 'middleware/auth/localAuth'
-export { emailNotExists, registerUser, validEmail } from 'middleware/auth/registerUser'
+export { emailNotExists, signUpUser, validEmail } from 'middleware/auth/signUpUser'
 export { resetPassword, sendResetPassword } from 'middleware/auth/resetPassword'
 export { sendVerification, verifyEmail } from 'middleware/auth/verification'

@@ -15,7 +15,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
     greeting: `Hello${name ? ` ${name},` : ','}`,
     topMessage: `To reset your Podverse password, please click the button below.`,
     button: 'Reset Password',
-    buttonLink: `${config.apiHost}/auth/reset-password?token=${token}`,
+    buttonLink: `${config.apiHost}${config.apiPrefix}${config.apiVersion}/auth/reset-password?token=${token}`,
     bottomMessage: `This link will expire in ${daysToExpire }.`,
     closing: 'Have a nice day :)',
     name: 'Podverse',

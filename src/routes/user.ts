@@ -25,7 +25,7 @@ router.get('/',
   async ctx => {
     try {
       const users = await getUsers(
-        ctx.request.query, 
+        ctx.request.query,
         Object.assign(
           ctx.state.queryPageOptions,
           {
