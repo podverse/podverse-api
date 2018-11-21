@@ -12,12 +12,12 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   const emailFields = {
     preheader: '',
-    greeting: `Hello${name ? ` ${name},` : ','}`,
-    topMessage: `To reset your Podverse password, please click the button below.`,
+    greeting: `${name ? `Hi ${name},` : ''}`,
+    topMessage: `Please click the button below to reset your password.`,
     button: 'Reset Password',
-    buttonLink: `${config.apiHost}${config.apiPrefix}${config.apiVersion}/auth/reset-password?token=${token}`,
+    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
     bottomMessage: `This link will expire in ${daysToExpire }.`,
-    closing: 'Have a nice day :)',
+    closing: '',
     name: 'Podverse',
     address: '',
     unsubscribeLink: '',

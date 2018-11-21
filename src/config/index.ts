@@ -27,6 +27,9 @@ export interface IConfig {
   mailerPort: number
   mailerUsername: string
   mailerPassword: string
+  websiteDomain: string
+  websiteProtocol: string
+  websiteResetPasswordPagePath: string
 }
 
 const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
@@ -59,7 +62,10 @@ const config: IConfig = {
   mailerHost: process.env.mailerHost || '',
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
-  mailerPassword: process.env.MAILER_PASSWORD || ''
+  mailerPassword: process.env.MAILER_PASSWORD || '',
+  websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
+  websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
+  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token='
 }
 
 export { config }

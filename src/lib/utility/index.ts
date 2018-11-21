@@ -1,4 +1,4 @@
-export { validatePassword } from 'lib/utility/validatePassword'
+export { validatePassword } from 'lib/utility/validation'
 
 export const delimitQueryValues = (ctx, keys) => {
   let query = ctx.request.query

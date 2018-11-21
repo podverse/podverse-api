@@ -7,7 +7,7 @@ const uuidv4 = require('uuid/v4')
 
 export const resetPassword = async ctx => {
   const { password, resetPasswordToken } = ctx.request.body
-console.log('wtf')
+
   try {
     const { id, resetPasswordTokenExpiration } = await getUserByResetPasswordToken(resetPasswordToken)
 
