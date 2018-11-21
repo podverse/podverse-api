@@ -11,12 +11,12 @@ export const sendVerificationEmail = async (email, name, token) => {
   const emailFields = {
     preheader: '',
     greeting: `${name ? `Hi ${name},` : ''}`,
-    topMessage: 'Please click the button below to verify your Podverse account.',
+    topMessage: 'Please click the button below to verify your account.',
     button: 'Verify Email',
-    buttonLink: `${config.apiHost}${config.apiPrefix}${config.apiVersion}/auth/verify-email?token=${token}`,
-    bottomMessage: `We will never send you emails or share your data without your permission.`,
-    closing: 'Thank you :)',
-    name: 'Podverse',
+    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
+    bottomMessage: `Podverse will never send emails or share your data without your permission.`,
+    closing: 'Have a nice day :)',
+    name: '',
     address: '',
     unsubscribeLink: '',
     buttonColor: '#2968B1'

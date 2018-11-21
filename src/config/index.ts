@@ -30,6 +30,7 @@ export interface IConfig {
   websiteDomain: string
   websiteProtocol: string
   websiteResetPasswordPagePath: string
+  websiteVerifyEmailPagePath: string
 }
 
 const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
@@ -65,7 +66,8 @@ const config: IConfig = {
   mailerPassword: process.env.MAILER_PASSWORD || '',
   websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
   websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
-  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token='
+  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',
+  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '/verify-email?token='
 }
 
 export { config }
