@@ -14,6 +14,7 @@ import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
 import { logger, loggerInstance } from 'lib/logging'
 import { createJwtStrategy, createLocalStrategy } from 'services/auth'
 
+const cookie = require('cookie')
 const cors = require('@koa/cors')
 
 declare module 'koa' {
@@ -33,7 +34,19 @@ export const createApp = (conn: Connection) => {
   app.use(helmet())
   app.use(logger())
   app.use(bodyParser())
+
   app.use(passport.initialize())
+
+  app.use(async (ctx, next) => {
+    if (ctx.request.headers.cookie) {
+      const parsedCookie = cookie.parse(ctx.request.headers.cookie)
+      if (parsedCookie.Authorization) {
+        ctx.headers.authorization = parsedCookie.Authorization
+      }
+    }
+
+    await next()
+  })
 
   if (process.env.NODE_ENV === 'development') {
     app.use(cors({

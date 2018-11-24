@@ -5,7 +5,7 @@ import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from 'controllers/mediaRef'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
+import { jwtAuth, optionalJwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from 'middleware/validation/create'
 import { validateMediaRefSearch } from 'middleware/validation/search'
@@ -25,9 +25,7 @@ router.get('/',
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const mediaRefs = await getMediaRefs(
-        ctx.request.query,
-        ctx.state.queryPageOptions,
-        ctx.request.query.isNowPlayingItem
+        ctx.request.query
       )
       ctx.body = mediaRefs
     } catch (error) {
@@ -49,9 +47,15 @@ router.get('/:id',
 // Create
 router.post('/',
   validateMediaRefCreate,
+  optionalJwtAuth,
   async ctx => {
     try {
-      const body = ctx.request.body
+      let body: any = ctx.request.body
+
+      if (ctx.state.user && ctx.state.user.id) {
+        body.owner = ctx.state.user.id
+      }
+
       const mediaRef = await createMediaRef(body)
       ctx.body = mediaRef
     } catch (error) {

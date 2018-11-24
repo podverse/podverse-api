@@ -6,7 +6,7 @@ const validateMediaRefCreate = async (ctx, next) => {
     authors: Joi.array().items(Joi.string()),
     categories: Joi.array().items(Joi.string()),
     description: Joi.string(),
-    endTime: Joi.number().integer().min(1),
+    endTime: Joi.number().integer().min(1).allow(null).allow(''),
     episodeDuration: Joi.number().integer().min(0),
     episodeGuid: Joi.string(),
     episodeId: Joi.string(),
@@ -17,7 +17,6 @@ const validateMediaRefCreate = async (ctx, next) => {
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     isPublic: Joi.boolean(),
-    ownerId: Joi.string(),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),
@@ -25,7 +24,7 @@ const validateMediaRefCreate = async (ctx, next) => {
     podcastIsExplicit: Joi.boolean(),
     podcastTitle: Joi.string(),
     startTime: Joi.number().integer().min(0).required(),
-    title: Joi.string()
+    title: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)
