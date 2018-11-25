@@ -11,8 +11,8 @@ export type NowPlayingItem = {
   episodeTitle?: string
   isPublic?: boolean
   ownerId?: string
-  podcastImageUrl?: string
   podcastId?: string
+  podcastImageUrl?: string
   podcastTitle?: string
 }
 
@@ -44,7 +44,7 @@ export const convertToNowPlayingItem = (data) => {
     nowPlayingItem.episodePubDate = data.episode.pubDate
     nowPlayingItem.episodeTitle = data.episode.title
     nowPlayingItem.isPublic = data.isPublic
-    nowPlayingItem.ownerId = data.ownerId
+    nowPlayingItem.ownerId = data.owner && data.owner.id
     nowPlayingItem.podcastImageUrl = data.episode.podcast.imageUrl
     nowPlayingItem.podcastId = data.episode.podcast.id
     nowPlayingItem.podcastTitle = data.episode.podcast.title

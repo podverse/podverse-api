@@ -74,7 +74,12 @@ const getMediaRefs = async (query) => {
 
 const updateMediaRef = async (obj, loggedInUserId) => {
   const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({ id: obj.id })
+  const mediaRef = await repository.findOne({
+    where: {
+      id: obj.id
+    },
+    relations
+  })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
@@ -84,7 +89,7 @@ const updateMediaRef = async (obj, loggedInUserId) => {
     throw new createError.Unauthorized('Cannot update an anonymous media ref')
   }
 
-  if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
+  if (mediaRef.owner && mediaRef.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to edit this media ref')
   }
 

@@ -3,11 +3,29 @@ import { validateBaseBody } from './base'
 
 const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    endTime: Joi.number().integer().min(1).allow(null),
-    id: Joi.string().min(7).max(14).required(),
+    authors: Joi.array().items(Joi.string()),
+    categories: Joi.array().items(Joi.string()),
+    description: Joi.string(),
+    endTime: Joi.number().integer().min(1).allow(null).allow(''),
+    episodeDuration: Joi.number().integer().min(0),
+    episodeGuid: Joi.string(),
+    episodeId: Joi.string(),
+    episodeImageUrl: Joi.string().uri(),
+    episodeLinkUrl: Joi.string().uri(),
+    episodeMediaUrl: Joi.string().uri().required(),
+    episodePubDate: Joi.date().iso(),
+    episodeSummary: Joi.string(),
+    episodeTitle: Joi.string(),
+    id: Joi.string(),
     isPublic: Joi.boolean(),
+    podcastFeedUrl: Joi.string().uri(),
+    podcastGuid: Joi.string(),
+    podcastId: Joi.string(),
+    podcastImageUrl: Joi.string().uri(),
+    podcastIsExplicit: Joi.boolean(),
+    podcastTitle: Joi.string(),
     startTime: Joi.number().integer().min(0).required(),
-    title: Joi.string().allow(null)
+    title: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)
