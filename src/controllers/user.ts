@@ -166,7 +166,7 @@ const updateUserPassword = async (obj) => {
     throw new createError.NotFound('User not found.')
   }
 
-  const password = obj.password
+  const { password, resetPasswordToken, resetPasswordTokenExpiration } = obj
 
   if (!password) {
     throw new createError.BadRequest('Must provide a new password.')
@@ -174,8 +174,12 @@ const updateUserPassword = async (obj) => {
     throw new createError.BadRequest('Invalid password provided.')
   }
 
-  const cleanedObj = { password }
-  
+  const cleanedObj = {
+    password,
+    resetPasswordToken,
+    resetPasswordTokenExpiration
+  }
+
   const newUser = Object.assign(user, cleanedObj)
 
   await validateClassOrThrow(newUser)
@@ -183,7 +187,6 @@ const updateUserPassword = async (obj) => {
   await repository.save(newUser)
   return newUser
 }
-
 
 const updateUserResetPasswordToken = async (obj) => {
   const repository = getRepository(User)
