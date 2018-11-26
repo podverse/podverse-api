@@ -1,11 +1,14 @@
 export const parseQueryPageOptions = async (ctx, next) => {
 
   const query = ctx.request.query
+  const { episodeId, podcastId } = query
 
   let options = {
     sort: '',
     skip: 0,
-    take: 10
+    take: 10,
+    ...(episodeId ? { episodeId } : {}),
+    ...(podcastId ? { podcastId } : {})
   }
 
   const { page, sort } = query
