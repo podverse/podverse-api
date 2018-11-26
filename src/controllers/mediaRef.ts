@@ -72,8 +72,8 @@ const getMediaRefs = async (query) => {
       isPublic: true
     },
     order,
-    skip,
-    take,
+    skip: parseInt(skip, 10),
+    take: parseInt(take, 10),
     relations
   })
 

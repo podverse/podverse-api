@@ -5,21 +5,17 @@ export const parseQueryPageOptions = async (ctx, next) => {
   let options = {
     sort: '',
     skip: 0,
-    take: 2
+    take: 10
   }
 
-  const { page, sort, take } = query
+  const { page, sort } = query
 
   if (sort) {
     options.sort = sort
   }
 
-  if (take) {
-    options.take = parseInt(take, 10)
-  }
-
-  if (page) {
-    options.skip = (parseInt(page, 10) * take) - 1
+  if (page > 1) {
+    options.skip = (((parseInt(page, 10) - 1) * options.take))
   }
 
   ctx.request.query = options
