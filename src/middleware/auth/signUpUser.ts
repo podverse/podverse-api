@@ -49,6 +49,16 @@ export const signUpUser = async (ctx, next) => {
 
     await sendVerificationEmail(email, name, emailVerificationToken)
 
+    ctx.cookies.set('Authorization', `Bearer ${token}`, {
+      httpOnly: true,
+      overwrite: true
+    })
+
+    ctx.cookies.set('userId', id, {
+      httpOnly: true,
+      overwrite: true
+    })
+
     ctx.body = { id, email }
     next()
   } catch (error) {
