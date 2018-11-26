@@ -77,7 +77,7 @@ const getUserByResetPasswordToken = async (resetPasswordToken) => {
   const user = await repository.findOne({ resetPasswordToken }, { relations })
 
   if (!user) {
-    throw new createError.NotFound('User not found or invalid token.')
+    throw new createError.NotFound('Invalid password reset token.')
   }
 
   return user
@@ -92,7 +92,7 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   const user = await repository.findOne({ emailVerificationToken }, { relations })
 
   if (!user) {
-    throw new createError.NotFound('User not found or invalid token.')
+    throw new createError.NotFound('Invalid verify email token.')
   }
 
   return user

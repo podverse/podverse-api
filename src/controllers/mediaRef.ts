@@ -60,12 +60,20 @@ const getMediaRefs = async (query) => {
   const order = createQueryOrderObject(query.sort, 'createdAt')
   delete query.sort
 
+  const skip = query.skip
+  delete query.skip
+
+  const take = query.take
+  delete query.take
+
   const mediaRefs = await repository.find({
     where: {
       ...query,
       isPublic: true
     },
     order,
+    skip,
+    take,
     relations
   })
 

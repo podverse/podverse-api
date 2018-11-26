@@ -1,38 +1,28 @@
-import { validateQueryPageOptions } from './validation/base'
-
 export const parseQueryPageOptions = async (ctx, next) => {
 
   const query = ctx.request.query
 
   let options = {
-    order: {},
+    sort: '',
     skip: 0,
-    take: 20
+    take: 2
   }
 
-  const { order, orderAsc, skip, take } = query
+  const { page, sort, take } = query
 
-  if (order) {
-    options.order[order] = orderAsc === 'true' ? 'DESC' : 'ASC'
-    delete query.order
-    if (orderAsc) {
-      delete query.orderAsc
-    }
-  }
-
-  if (skip) {
-    options.skip = parseInt(skip, 10)
-    query.skip = null
-    delete query.skip
+  if (sort) {
+    options.sort = sort
   }
 
   if (take) {
     options.take = parseInt(take, 10)
-    delete query.take
   }
 
-  ctx.request.query = query
-  ctx.state.queryPageOptions = options
+  if (page) {
+    options.skip = (parseInt(page, 10) * take) - 1
+  }
 
-  await validateQueryPageOptions(ctx, next)
+  ctx.request.query = options
+
+  await next(ctx)
 }
