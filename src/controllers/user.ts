@@ -45,13 +45,27 @@ const deleteUser = async (id, loggedInUserId) => {
 const getUser = async (id, options) => {
   const repository = getRepository(User)
 
-  const user = await repository.findOne({ id }, { 
+  let user = await repository.findOne({ id }, {
     relations,
     ...options
   })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
+  }
+
+  // TODO: how can we use typeOrm queryBuilder so we don't need to sort playlists by title here?
+  if (user && user.playlists) {
+    user.playlists = user.playlists.sort((a, b) => {
+      const textA = a.title && a.title.toUpperCase()
+      const textB = b.title && b.title.toUpperCase()
+
+      if (textA && textB) {
+        return textA.localeCompare(textB)
+      }
+
+      return 0
+    })
   }
 
   return user

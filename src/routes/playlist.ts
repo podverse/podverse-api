@@ -3,9 +3,9 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
-import { createPlaylist, deletePlaylist, getPlaylist, getPlaylists, updatePlaylist }
-  from 'controllers/playlist'
-import { jwtAuth } from 'middleware/auth/jwtAuth';
+import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
+  updatePlaylist } from 'controllers/playlist'
+import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from 'middleware/validation/create'
 import { validatePlaylistSearch } from 'middleware/validation/search'
@@ -45,11 +45,17 @@ router.get('/:id',
 // Create
 router.post('/',
   validatePlaylistCreate,
+  jwtAuth,
   async ctx => {
     try {
-      const body = ctx.request.body
-      const mediaRef = await createPlaylist(body)
-      ctx.body = mediaRef
+      let body: any = ctx.request.body
+
+      if (ctx.state.user && ctx.state.user.id) {
+        body.owner = ctx.state.user.id
+      }
+
+      const playlist = await createPlaylist(body)
+      ctx.body = playlist
     } catch (error) {
       emitRouterError(error, ctx)
     }
@@ -76,6 +82,25 @@ router.delete('/:id',
     try {
       await deletePlaylist(ctx.params.id, ctx.state.user.id)
       ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Add or remove mediaRef from playlist
+router.patch('/add-or-remove',
+  jwtAuth,
+  async ctx => {
+    try {
+      const body: any = ctx.request.body
+      const { mediaRefId, playlistId } = body
+
+      const updatedPlaylist = await addOrRemovePlaylistItem(playlistId, mediaRefId, ctx.state.user.id)
+
+      ctx.body = {
+        playlistId: updatedPlaylist.id,
+        playlistItemCount: updatedPlaylist.itemCount
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }

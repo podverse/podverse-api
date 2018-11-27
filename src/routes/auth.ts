@@ -7,6 +7,7 @@ import { authenticate, emailNotExists, localAuth, logOut, optionalJwtAuth,
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from 'middleware/validation/auth'
+import { getUser } from 'controllers/user'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -16,14 +17,21 @@ router.post('/get-authenticated-user-info',
   optionalJwtAuth,
   async ctx => {
     try {
-      if (ctx.state.user) {
-        ctx.body = {
-          id: ctx.state.user.id
+      const { user: jwtUserData } = ctx.state
+      if (jwtUserData && jwtUserData.id) {
+        const user = await getUser(jwtUserData.id, {})
+        if (user) {
+          ctx.body = {
+            id: user.id,
+            playlists: user.playlists,
+            subscribedPodcastIds: user.subscribedPodcastIds
+          }
         }
       }
 
       ctx.status = 200
     } catch (error) {
+      ctx.body = {}
       ctx.status = 403
     }
   })

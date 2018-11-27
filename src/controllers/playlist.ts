@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { Playlist } from 'entities'
+import { Playlist, MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
@@ -77,7 +77,50 @@ const updatePlaylist = async (obj, loggedInUserId) => {
   return newPlaylist
 }
 
+const addOrRemovePlaylistItem = async (playlistId, mediaRefId, loggedInUserId) => {
+  const repository = getRepository(Playlist)
+  let playlist = await repository.findOne(
+    {
+      where: {
+        id: playlistId
+      },
+      relations
+    }
+  )
+
+  if (!playlist) {
+    throw new createError.NotFound('Playlist not found')
+  }
+
+  if (!loggedInUserId || playlist.owner.id !== loggedInUserId) {
+    throw new createError.Unauthorized('Log in to delete this playlist')
+  }
+
+  // If no mediaRefs match filter, add the playlist item.
+  // Else, remove the playlist item.
+  const filteredMediaRefs = playlist.mediaRefs.filter(x => x.id !== mediaRefId)
+
+  if (filteredMediaRefs.length === playlist.mediaRefs.length) {
+    const mediaRefRepository = getRepository(MediaRef)
+    let mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
+    if (mediaRef) {
+      playlist.mediaRefs.push(mediaRef)
+    } else {
+      throw new createError.NotFound('MediaRef not found')
+    }
+  } else {
+    playlist.mediaRefs = filteredMediaRefs
+  }
+
+  await validateClassOrThrow(playlist)
+
+  const saved = await repository.save(playlist)
+
+  return saved
+}
+
 export {
+  addOrRemovePlaylistItem,
   createPlaylist,
   deletePlaylist,
   getPlaylist,

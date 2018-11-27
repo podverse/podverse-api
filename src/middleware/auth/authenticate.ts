@@ -10,15 +10,11 @@ export function authenticate (ctx: Context, next) {
           overwrite: true
         })
 
-        const userId = ctx.state.user.id
-
-        ctx.cookies.set('userId', userId, {
-          httpOnly: true,
-          overwrite: true
-        })
-
+        const { user } = ctx.state
         ctx.body = {
-          id: userId
+          id: user.id,
+          playlists: user.playlists,
+          subscribedPodcastIds: user.subscribedPodcastIds
         }
         ctx.status = 200
       } else {

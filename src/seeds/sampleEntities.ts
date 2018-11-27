@@ -44,10 +44,6 @@ const seedDatabase = async (connection: Connection) => {
   user4.name = 'Wile E. Coyote'
   user4.password = 'Aa!1asdf'
 
-  let playlist1 = new Playlist()
-  playlist1.owner = user1
-  playlist1.title = 'Greatest Hits'
-
   let podcast = new Podcast()
   podcast.title = 'The James Altucher Show'
   podcast.imageUrl = 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
@@ -279,6 +275,24 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef6.owner = user1
   mediaRef6.isPublic = true
 
+  let playlist1 = new Playlist()
+  playlist1.owner = user1
+  playlist1.title = 'Greatest Hits'
+  playlist1.itemCount = 3
+  playlist1.mediaRefs = [mediaRef2, mediaRef3, mediaRef3b]
+
+  let playlist2 = new Playlist()
+  playlist2.owner = user1
+  playlist2.title = 'Playlist #2'
+  playlist2.itemCount = 4
+  playlist2.mediaRefs = [mediaRef4, mediaRef5, mediaRef2, mediaRef3]
+
+  let playlist3 = new Playlist()
+  playlist3.owner = user1
+  playlist3.title = 'Playlist #3'
+  playlist3.itemCount = 5
+  playlist3.mediaRefs = [mediaRef, mediaRef6, mediaRef5, mediaRef4, mediaRef3]
+
   const generateRandomPageVisitData = () => {
     return {
       pastAllTimeTotalUniquePageviews: Math.floor(Math.random() * 1000),
@@ -307,7 +321,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef5 = Object.assign(mediaRef5, generateRandomPageVisitData())
   mediaRef6 = Object.assign(mediaRef6, generateRandomPageVisitData())
 
-  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, playlist1, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3])
+  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3])
 
   mediaRef.episodeId = episode.id
   mediaRef.podcastId = podcast.id
@@ -325,6 +339,8 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef6.podcastId = podcast3.id
 
   await connection.manager.save([mediaRef, mediaRef2, mediaRef3, mediaRef3b, mediaRef4, mediaRef5, mediaRef6])
+
+  await connection.manager.save([playlist1, playlist2, playlist3])
 }
 
 connectToDb()

@@ -23,6 +23,9 @@ export class Playlist {
   @Column({ default: false })
   isPublic: boolean
 
+  @Column({ default: 0 })
+  itemCount: number
+
   @Column('varchar', { array: true })
   itemsOrder: string[]
 
@@ -59,4 +62,11 @@ export class Playlist {
     }
   }
 
+  @BeforeInsert()
+  @BeforeUpdate()
+  setItemCount () {
+    if (this.mediaRefs) {
+      this.itemCount = this.mediaRefs.length
+    }
+  }
 }

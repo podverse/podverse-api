@@ -8,7 +8,7 @@ export const createJwtStrategy = () => {
     secretOrKey: jwtSecret
   }
 
-  return new JwtStrategy(opts, ({ id, roles }, done) => {
-    done(null, { id, roles })
+  return new JwtStrategy(opts, (user, done) => {
+    done(null, user)
   })
 }
