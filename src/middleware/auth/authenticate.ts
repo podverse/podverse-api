@@ -14,6 +14,7 @@ export function authenticate (ctx: Context, next) {
         ctx.body = {
           id: user.id,
           playlists: user.playlists,
+          queueItems: user.queueItems,
           subscribedPodcastIds: user.subscribedPodcastIds
         }
         ctx.status = 200

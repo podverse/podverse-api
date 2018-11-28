@@ -28,21 +28,25 @@ const seedDatabase = async (connection: Connection) => {
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
   user1.password = 'Aa!1asdf'
+  user1.queueItems = []
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
   user2.name = 'Sylvester the Cat'
   user2.password = 'Aa!1asdf'
+  user2.queueItems = []
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
   user3.name = 'Tweety'
   user3.password = 'Aa!1asdf'
+  user3.queueItems = []
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'
   user4.name = 'Wile E. Coyote'
   user4.password = 'Aa!1asdf'
+  user4.queueItems = []
 
   let podcast = new Podcast()
   podcast.title = 'The James Altucher Show'

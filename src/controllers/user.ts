@@ -237,13 +237,17 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  user.queueItems = queueItems
+  const updatedUser = {
+    id: user.id,
+    email: user.email,
+    queueItems
+  }
 
-  await validateClassOrThrow(user)
+  await validateClassOrThrow(updatedUser)
 
-  await repository.save(user)
+  await repository.save(updatedUser)
 
-  return user
+  return updatedUser
 }
 
 export {

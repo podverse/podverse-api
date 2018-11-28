@@ -57,7 +57,7 @@ export class User {
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]
 
-  @Column('simple-array', { default: [] })
+  @Column('simple-json')
   queueItems: NowPlayingItem[]
 
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)

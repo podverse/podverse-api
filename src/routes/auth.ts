@@ -24,6 +24,7 @@ router.post('/get-authenticated-user-info',
           ctx.body = {
             id: user.id,
             playlists: user.playlists,
+            queueItems: user.queueItems,
             subscribedPodcastIds: user.subscribedPodcastIds
           }
         }

@@ -119,15 +119,7 @@ router.patch('/update-queue',
       const body: any = ctx.request.body
       const user = await updateQueueItems(body.queueItems, ctx.state.user.id)
 
-      const filteredUser = {
-        id: user.id,
-        name: user.name,
-        playlists: user.playlists,
-        queueItems: user.queueItems,
-        subscribedPodcastIds: user.subscribedPodcastIds
-      }
-
-      ctx.body = filteredUser
+      ctx.body = user.queueItems
     } catch (error) {
       emitRouterError(error, ctx)
     }
