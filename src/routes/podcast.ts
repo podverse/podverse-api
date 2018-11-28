@@ -2,7 +2,8 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
-import { getPodcast, getPodcasts } from 'controllers/podcast'
+import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from 'controllers/podcast'
+import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePodcastSearch } from 'middleware/validation/search'
 
@@ -30,6 +31,18 @@ router.get('/:id',
     try {
       const podcast = await getPodcast(ctx.params.id)
       ctx.body = podcast
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Toggle subscribe to podcast
+router.get('/toggle-subscribe/:id',
+  jwtAuth,
+  async ctx => {
+    try {
+      const subscribedPodcastIds = await toggleSubscribeToPodcast(ctx.params.id, ctx.state.user.id)
+      ctx.body = subscribedPodcastIds
     } catch (error) {
       emitRouterError(error, ctx)
     }

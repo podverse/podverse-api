@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
-import { Podcast } from 'entities'
+import { Podcast, User } from 'entities'
+import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
 const relations = [
@@ -33,7 +34,43 @@ const getPodcasts = (query, options) => {
   })
 }
 
+const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to delete this playlist')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      }
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found')
+  }
+
+  // If no podcastIds match the filter, add the podcastId.
+  // Else, remove the podcastId.
+  const filteredPodcasts = user.subscribedPodcastIds.filter(x => x !== podcastId)
+  if (filteredPodcasts.length === user.subscribedPodcastIds.length) {
+    user.subscribedPodcastIds.push(podcastId)
+  } else {
+    user.subscribedPodcastIds = filteredPodcasts
+  }
+
+  await validateClassOrThrow(user)
+
+  const updatedUser = await repository.save(user)
+
+  return updatedUser.subscribedPodcastIds
+}
+
 export {
   getPodcast,
-  getPodcasts
+  getPodcasts,
+  toggleSubscribeToPodcast
 }
