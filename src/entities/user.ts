@@ -5,6 +5,7 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
 import { saltRounds } from 'lib/constants'
 import { MediaRef, Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
+import { NowPlayingItem } from 'lib/utility/nowPlayingItem';
 
 const shortid = require('shortid')
 
@@ -55,6 +56,9 @@ export class User {
 
   @Column('varchar', { array: true })
   subscribedPodcastIds: string[]
+
+  @Column('simple-array', { default: [] })
+  queueItems: NowPlayingItem[]
 
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
   mediaRefs: MediaRef[]

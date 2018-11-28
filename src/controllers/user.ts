@@ -224,6 +224,28 @@ const updateUserResetPasswordToken = async (obj) => {
   return newUser
 }
 
+const updateQueueItems = async (queueItems, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to update this user')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne({ id: loggedInUserId })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  user.queueItems = queueItems
+
+  await validateClassOrThrow(user)
+
+  await repository.save(user)
+
+  return user
+}
+
 export {
   createUser,
   deleteUser,
@@ -232,6 +254,7 @@ export {
   getUserByResetPasswordToken,
   getUserByVerificationToken,
   getUsers,
+  updateQueueItems,
   updateUser,
   updateUserEmailVerificationToken,
   updateUserPassword,
