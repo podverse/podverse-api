@@ -24,9 +24,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(
-        ctx.request.query
-      )
+      const mediaRefs = await getMediaRefs(ctx.request.query)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
