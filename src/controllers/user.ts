@@ -266,13 +266,22 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne({ id: loggedInUserId })
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'historyItems'
+      ]
+    })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
   }
 
-  let { historyItems } = user
+  let historyItems = user.historyItems || []
 
   // Remove historyItem if it already exists in the array, then append it to the end.
   historyItems = historyItems.filter(x => {
@@ -289,8 +298,6 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   historyItems.push(nowPlayingItem)
 
   const updatedUser = Object.assign(user, { historyItems })
-
-  await validateClassOrThrow(updatedUser)
 
   await repository.save(updatedUser)
 

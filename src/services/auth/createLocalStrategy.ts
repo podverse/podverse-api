@@ -29,7 +29,6 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
 
         if (user) {
           const isValid = await compareHash(password, user.password)
-
           if (!email || !password || !user || !isValid) {
             throw new createError.Unauthorized('Invalid email or password')
           } else {

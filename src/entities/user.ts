@@ -1,5 +1,5 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
-import { BeforeInsert, Column, CreateDateColumn, Entity,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { MediaRef, Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
@@ -95,7 +95,25 @@ export class User {
   @BeforeInsert()
   beforeInsert () {
     this.id = shortid.generate()
+
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
+
+    this.historyItems = this.historyItems || []
+    if (this.historyItems.length > 2) {
+      const totalToRemove = this.historyItems.length - 2
+      this.historyItems = this.historyItems.splice(0, totalToRemove)
+    }
+  }
+
+  @BeforeUpdate()
+  beforeUpdate () {
+    this.subscribedPodcastIds = this.subscribedPodcastIds || []
+
+    this.historyItems = this.historyItems || []
+    if (this.historyItems.length > 1000) {
+      const totalToRemove = (this.historyItems.length - 1000)
+      this.historyItems.splice(0, totalToRemove)
+    }
   }
 
 }
