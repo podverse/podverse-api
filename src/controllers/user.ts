@@ -237,13 +237,58 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne({ id: loggedInUserId })
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'queueItems'
+      ]
+    })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
   }
 
   const updatedUser = Object.assign(user, { queueItems })
+
+  await repository.save(updatedUser)
+
+  return updatedUser
+}
+
+const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to add history items')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne({ id: loggedInUserId })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  let { historyItems } = user
+
+  // Remove historyItem if it already exists in the array, then append it to the end.
+  historyItems = historyItems.filter(x => {
+    if (x) {
+      if ((x.clipStartTime || x.clipEndTime) && x.clipId !== nowPlayingItem.clipId) {
+        return x
+      } else if (x.episodeId !== nowPlayingItem.episodeId) {
+        return x
+      }
+    }
+
+    return
+  })
+  historyItems.push(nowPlayingItem)
+
+  const updatedUser = Object.assign(user, { historyItems })
 
   await validateClassOrThrow(updatedUser)
 
@@ -253,6 +298,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 export {
+  addOrUpdateHistoryItem,
   createUser,
   deleteUser,
   getUser,

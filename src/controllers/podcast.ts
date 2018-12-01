@@ -1,6 +1,5 @@
 import { getRepository } from 'typeorm'
 import { Podcast, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
 
 const relations = [
@@ -45,7 +44,11 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
     {
       where: {
         id: loggedInUserId
-      }
+      },
+      select: [
+        'id',
+        'subscribedPodcastIds'
+      ]
     }
   )
 
@@ -61,8 +64,6 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
   } else {
     user.subscribedPodcastIds = filteredPodcasts
   }
-
-  await validateClassOrThrow(user)
 
   const updatedUser = await repository.save(user)
 

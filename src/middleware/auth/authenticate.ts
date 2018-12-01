@@ -12,6 +12,7 @@ export function authenticate (ctx: Context, next) {
 
         const { user } = ctx.state
         ctx.body = {
+          historyItems: user.historyItems,
           id: user.id,
           playlists: user.playlists,
           queueItems: user.queueItems,

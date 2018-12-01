@@ -19,9 +19,17 @@ router.post('/get-authenticated-user-info',
     try {
       const { user: jwtUserData } = ctx.state
       if (jwtUserData && jwtUserData.id) {
-        const user = await getUser(jwtUserData.id, {})
+        const user = await getUser(jwtUserData.id, {
+          select: [
+            'historyItems',
+            'id',
+            'queueItems',
+            'subscribedPodcastIds'
+          ]
+        })
         if (user) {
           ctx.body = {
+            historyItems: user.historyItems,
             id: user.id,
             playlists: user.playlists,
             queueItems: user.queueItems,

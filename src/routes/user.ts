@@ -2,12 +2,13 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
-import { createUser, deleteUser, getUser, getUsers, updateQueueItems, updateUser
-  } from 'controllers/user'
+import { addOrUpdateHistoryItem, createUser, deleteUser, getUser, getUsers,
+  updateQueueItems, updateUser } from 'controllers/user'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
-import { validateUserUpdate } from 'middleware/validation/update'
+import { validateUserAddOrUpdateHistoryItem, validateUserUpdate, validateUserUpdateQueue
+  } from 'middleware/validation/update'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
@@ -63,6 +64,7 @@ router.post('/',
       const user = await createUser(body)
 
       const filteredUser = {
+        historyItems: user.historyItems,
         id: user.id,
         name: user.name,
         playlists: user.playlists,
@@ -113,6 +115,7 @@ router.delete('/:id',
 
 // Update queueItems
 router.patch('/update-queue',
+  validateUserUpdateQueue,
   jwtAuth,
   async ctx => {
     try {
@@ -120,6 +123,22 @@ router.patch('/update-queue',
       const user = await updateQueueItems(body.queueItems, ctx.state.user.id)
 
       ctx.body = user.queueItems
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Add or update history item
+router.patch('/add-or-update-history-item',
+  validateUserAddOrUpdateHistoryItem,
+  jwtAuth,
+  async ctx => {
+    try {
+      const body: any = ctx.request.body
+      await addOrUpdateHistoryItem(body.historyItem, ctx.state.user.id)
+
+      ctx.status = 200
+      ctx.body = 'Updated user history'
     } catch (error) {
       emitRouterError(error, ctx)
     }

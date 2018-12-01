@@ -1,7 +1,6 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-
 import { MediaRef, Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
 import { NowPlayingItem } from 'lib/utility/nowPlayingItem';
@@ -18,45 +17,65 @@ export class User {
   id: string
 
   @IsEmail()
-  @Column({ unique: true })
+  @Column({
+    select: false,
+    unique: true
+  })
   email: string
 
   @ValidateIf(a => a.emailVerificationToken != null)
   @IsUUID()
   @Column({
     nullable: true,
+    select: false,
     unique: true
   })
   emailVerificationToken: string
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    select: false
+  })
   emailVerificationTokenExpiration: Date
 
-  @Column({ default: false })
+  @Column({
+    default: false,
+    select: false
+  })
   emailVerified: boolean
 
   @Column({ nullable: true })
   name: string
 
   @Validate(ValidatePassword)
-  @Column()
+  @Column({ select: false })
   password: string
 
   @ValidateIf(a => a.resetPasswordToken != null)
   @IsUUID()
   @Column({
     nullable: true,
+    select: false,
     unique: true
   })
   resetPasswordToken: string
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    select: false
+  })
   resetPasswordTokenExpiration: Date
 
-  @Column('varchar', { array: true })
+  @Column('varchar', {
+    array: true,
+    select: false
+  })
   subscribedPodcastIds: string[]
 
-  @Column('simple-json')
+  @Column('simple-json', { select: false })
+  historyItems: NowPlayingItem[]
+
+  @Column('simple-json', { select: false })
   queueItems: NowPlayingItem[]
 
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)

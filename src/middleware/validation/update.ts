@@ -48,10 +48,28 @@ const validatePlaylistUpdate = async (ctx, next) => {
 const validateUserUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string(),
+    historyItems: Joi.array().items(Joi.string()),
     id: Joi.string().min(7).max(14).required(),
     name: Joi.string().allow(null),
     playlists: Joi.array().items(Joi.string()),
+    queueItems: Joi.array().items(Joi.string()),
     subscribedPodcastIds: Joi.array().items(Joi.string())
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
+const validateUserUpdateQueue = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    queueItems: Joi.array().items(Joi.object())
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
+const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    historyItem: Joi.object()
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -60,5 +78,7 @@ const validateUserUpdate = async (ctx, next) => {
 export {
   validateMediaRefUpdate,
   validatePlaylistUpdate,
-  validateUserUpdate
+  validateUserAddOrUpdateHistoryItem,
+  validateUserUpdate,
+  validateUserUpdateQueue
 }

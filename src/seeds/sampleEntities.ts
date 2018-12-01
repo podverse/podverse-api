@@ -1,9 +1,13 @@
+import { hash } from 'bcryptjs'
 import { Connection } from 'typeorm'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
+import { saltRounds } from 'lib/constants'
 import { connectToDb } from 'lib/db'
 
 const seedDatabase = async (connection: Connection) => {
+  const saltedPassword = await hash('Aa!1asdf', saltRounds)
+
   await connection.synchronize(true)
 
   let author1 = new Author()
@@ -27,25 +31,29 @@ const seedDatabase = async (connection: Connection) => {
   let user1 = new User()
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
-  user1.password = 'Aa!1asdf'
+  user1.password = saltedPassword
+  user1.historyItems = []
   user1.queueItems = []
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
   user2.name = 'Sylvester the Cat'
-  user2.password = 'Aa!1asdf'
+  user2.password = saltedPassword
+  user2.historyItems = []
   user2.queueItems = []
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
   user3.name = 'Tweety'
-  user3.password = 'Aa!1asdf'
+  user3.password = saltedPassword
+  user3.historyItems = []
   user3.queueItems = []
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'
   user4.name = 'Wile E. Coyote'
-  user4.password = 'Aa!1asdf'
+  user4.password = saltedPassword
+  user4.historyItems = []
   user4.queueItems = []
 
   let podcast = new Podcast()

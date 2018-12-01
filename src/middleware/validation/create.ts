@@ -45,6 +45,7 @@ const validatePlaylistCreate = async (ctx, next) => {
 const validateUserCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string().required(),
+    historyItems: Joi.array().items(Joi.string()),
     name: Joi.string(),
     playlists: Joi.array().items(Joi.string()),
     subscribedPodcastIds: Joi.array().items(Joi.string())
