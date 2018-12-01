@@ -1,8 +1,7 @@
-import { hash } from 'bcryptjs'
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+import { BeforeInsert, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { saltRounds } from 'lib/constants'
+
 import { MediaRef, Playlist } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
 import { NowPlayingItem } from 'lib/utility/nowPlayingItem';
@@ -78,12 +77,6 @@ export class User {
   beforeInsert () {
     this.id = shortid.generate()
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async beforeAll () {
-    this.password = await hash(this.password, saltRounds)
   }
 
 }

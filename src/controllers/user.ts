@@ -1,5 +1,7 @@
+import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
 import { User } from 'entities'
+import { saltRounds } from 'lib/constants'
 import { validateClassOrThrow } from 'lib/errors'
 import { validatePassword } from 'lib/utility'
 
@@ -18,7 +20,9 @@ const createUser = async (obj) => {
     throw new createError.BadRequest('Invalid password provided.')
   }
 
-  const newUser = Object.assign(user, obj, { password })
+  const saltedPassword = await hash(password, saltRounds)
+
+  const newUser = Object.assign(user, obj, { password: saltedPassword })
 
   await validateClassOrThrow(newUser)
 
@@ -188,8 +192,10 @@ const updateUserPassword = async (obj) => {
     throw new createError.BadRequest('Invalid password provided.')
   }
 
+  const saltedPassword = await hash(password, saltRounds)
+
   const cleanedObj = {
-    password,
+    password: saltedPassword,
     resetPasswordToken,
     resetPasswordTokenExpiration
   }
@@ -237,11 +243,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  const updatedUser = {
-    id: user.id,
-    email: user.email,
-    queueItems
-  }
+  const updatedUser = Object.assign(user, { queueItems })
 
   await validateClassOrThrow(updatedUser)
 
