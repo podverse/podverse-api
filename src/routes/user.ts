@@ -3,11 +3,11 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getUser, getUsers,
-  updateQueueItems, updateUser } from 'controllers/user'
+  updateQueueItems } from 'controllers/user'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/validation/create'
 import { validateUserSearch } from 'middleware/validation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserUpdate, validateUserUpdateQueue
+import { validateUserAddOrUpdateHistoryItem, validateUserUpdateQueue
   } from 'middleware/validation/update'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 
@@ -69,29 +69,6 @@ router.post('/',
         name: user.name,
         playlists: user.playlists,
         queueItems: user.queueItems,
-        subscribedPodcastIds: user.subscribedPodcastIds
-      }
-
-      ctx.body = filteredUser
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Update
-router.patch('/',
-  validateUserUpdate,
-  jwtAuth,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const user = await updateUser(body, ctx.state.user.id)
-
-      const filteredUser = {
-        id: user.id,
-        name: user.name,
-        queueItems: user.queueItems,
-        playlists: user.playlists,
         subscribedPodcastIds: user.subscribedPodcastIds
       }
 

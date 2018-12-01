@@ -128,31 +128,6 @@ const getUsers = (query, options) => {
   })
 }
 
-const updateUser = async (obj, loggedInUserId) => {
-  const repository = getRepository(User)
-  const { id } = obj
-  const user = await repository.findOne({ id })
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  if (id !== loggedInUserId) {
-    throw new createError.Unauthorized('Log in to update this user')
-  }
-
-  delete obj.password
-  delete obj.resetPasswordToken
-  delete obj.resetPasswordTokenExpiration
-
-  const newUser = Object.assign(user, obj)
-
-  await validateClassOrThrow(newUser)
-
-  await repository.save(newUser)
-  return newUser
-}
-
 const updateUserEmailVerificationToken = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
@@ -164,15 +139,15 @@ const updateUserEmailVerificationToken = async (obj) => {
   const cleanedObj = {
     emailVerified: obj.emailVerified,
     emailVerificationToken: obj.emailVerificationToken,
-    emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration,
-    id: obj.id
+    emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration
   }
 
   const newUser = Object.assign(user, cleanedObj)
 
   await validateClassOrThrow(newUser)
 
-  await repository.save(newUser)
+  await repository.update(obj.id, cleanedObj)
+
   return newUser
 }
 
@@ -204,7 +179,8 @@ const updateUserPassword = async (obj) => {
 
   await validateClassOrThrow(newUser)
 
-  await repository.save(newUser)
+  await repository.update(obj.id, cleanedObj)
+
   return newUser
 }
 
@@ -217,7 +193,6 @@ const updateUserResetPasswordToken = async (obj) => {
   }
 
   const cleanedObj = {
-    id: obj.id,
     resetPasswordToken: obj.resetPasswordToken,
     resetPasswordTokenExpiration: obj.resetPasswordTokenExpiration
   }
@@ -226,7 +201,8 @@ const updateUserResetPasswordToken = async (obj) => {
 
   await validateClassOrThrow(newUser)
 
-  await repository.save(newUser)
+  await repository.update(obj.id, cleanedObj)
+
   return newUser
 }
 
@@ -252,11 +228,9 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  const updatedUser = Object.assign(user, { queueItems })
+  await repository.update(loggedInUserId, { queueItems })
 
-  await repository.save(updatedUser)
-
-  return updatedUser
+  return { queueItems }
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
@@ -286,7 +260,7 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   // Remove historyItem if it already exists in the array, then append it to the end.
   historyItems = historyItems.filter(x => {
     if (x) {
-      if ((x.clipStartTime || x.clipEndTime) && x.clipId !== nowPlayingItem.clipId) {
+      if (x.clipId && nowPlayingItem.clipId && x.clipId !== nowPlayingItem.clipId) {
         return x
       } else if (x.episodeId !== nowPlayingItem.episodeId) {
         return x
@@ -297,11 +271,7 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   })
   historyItems.push(nowPlayingItem)
 
-  const updatedUser = Object.assign(user, { historyItems })
-
-  await repository.save(updatedUser)
-
-  return updatedUser
+  return repository.update(loggedInUserId, { historyItems })
 }
 
 export {
@@ -314,7 +284,6 @@ export {
   getUserByVerificationToken,
   getUsers,
   updateQueueItems,
-  updateUser,
   updateUserEmailVerificationToken,
   updateUserPassword,
   updateUserResetPasswordToken

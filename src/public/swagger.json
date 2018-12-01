@@ -1352,52 +1352,6 @@
             "description": "Bad request"
           }
         }
-      },
-      "patch": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Update a user",
-        "description": "Returns the upated user",
-        "operationId": "updateUser",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "example": {
-                "email": "string",
-                "id": "string - required",
-                "name": "string",
-                "playlists": ["id"],
-                "subscribedPodcastIds": ["id"]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
       }
     },
     "/user/{userId}": {
