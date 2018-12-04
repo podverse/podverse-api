@@ -26,7 +26,7 @@ const getEpisodes = async query => {
 
   if (query.podcastId && query.podcastId.split(',').length > 1) {
     query.podcast = In(query.podcastId.split(','))
-  } else {
+  } else if (query.podcastId) {
     query.podcast = query.podcastId
   }
 
