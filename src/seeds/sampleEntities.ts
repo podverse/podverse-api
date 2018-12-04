@@ -78,7 +78,7 @@ const seedDatabase = async (connection: Connection) => {
   podcast2.lastEpisodePubDate = new Date(1537428776000)
   podcast2.lastEpisodeTitle = '#138 — The Edge of Humanity'
   podcast2.authors = [author1, author2, author3, author4]
-  podcast2.categories = [category1, category2]
+  podcast2.categories = []
   podcast2.isPublic = true
 
   const feedUrl2 = new FeedUrl()
@@ -93,7 +93,7 @@ const seedDatabase = async (connection: Connection) => {
   podcast3.lastEpisodePubDate = new Date(1455671485000)
   podcast3.lastEpisodeTitle = 'Stewart Brand - The Polymath of Polymaths'
   podcast3.authors = [author1, author2, author3, author4]
-  podcast3.categories = [category1, category2]
+  podcast3.categories = []
   podcast3.isPublic = true
 
   const feedUrl3 = new FeedUrl()
@@ -349,6 +349,33 @@ const seedDatabase = async (connection: Connection) => {
   await connection.manager.save([mediaRef, mediaRef2, mediaRef3, mediaRef3b, mediaRef4, mediaRef5, mediaRef6])
 
   await connection.manager.save([playlist1, playlist2, playlist3])
+
+  let nestedCategory1 = new Category()
+  nestedCategory1.title = 'Nested Category 1'
+  nestedCategory1.category = category1
+
+  let nestedCategory2 = new Category()
+  nestedCategory2.title = 'Nested Category 2'
+  nestedCategory2.category = category2
+
+  await connection.manager.save([nestedCategory1, nestedCategory2])
+
+  let podcast4 = new Podcast()
+  podcast4.title = '#WeThePeople LIVE'
+  podcast4.imageUrl = 'http://static.megaphone.fm/podcasts/631704f4-0b52-11e7-b31e-e736e00075b3/image/18343616958_f4243669cd_k.jpg'
+  podcast4.description = `In an era of thought bubbles, of talking points, of fake news and phony debate, #WeThePeople LIVE is a refreshing bar-room conversation about the biggest issues of our time. A place to reach across the conversational chasm. Pull up a stool, grab a cocktail, and help make debate healthy again. It's the discussion show for planet earth. Join the conversation: @WTP_Live.`
+  podcast4.lastEpisodePubDate = new Date(1455672000000)
+  podcast4.lastEpisodeTitle = `EP 137. WE'RE BACK! with SARAH HAIDER`
+  podcast4.authors = [author1, author2, author3, author4]
+  podcast4.categories = [category1, nestedCategory1]
+  podcast4.isPublic = true
+
+  const feedUrl4 = new FeedUrl()
+  feedUrl4.podcast = podcast4
+  feedUrl4.url = 'http://feeds.megaphone.fm/wethepeoplelive'
+  feedUrl4.isAuthority = true
+
+  await connection.manager.save([podcast4, feedUrl4])
 }
 
 connectToDb()

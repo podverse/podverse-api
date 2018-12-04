@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Podcast, User } from 'entities'
+import { createQueryOrderObject } from 'lib/utility'
 const createError = require('http-errors')
 
 const relations = [
@@ -8,10 +9,15 @@ const relations = [
 
 const getPodcast = (id) => {
   const repository = getRepository(Podcast)
-  const podcast = repository.findOne({
-    id,
-    isPublic: true
-  }, { relations })
+  const podcast = repository.findOne(
+    {
+      id,
+      isPublic: true
+    },
+    {
+      relations: ['authors', 'categories', 'feedUrls']
+    }
+  )
 
   if (!podcast) {
     throw new createError.NotFound('Podcast not found')
@@ -20,17 +26,47 @@ const getPodcast = (id) => {
   return podcast
 }
 
-const getPodcasts = (query, options) => {
+const getPodcasts = async query => {
   const repository = getRepository(Podcast)
 
-  return repository.find({
-    where: {
-      ...query,
-      isPublic: true
-    },
-    relations,
-    ...options
-  })
+  const order = createQueryOrderObject(query.sort, 'createdAt')
+  delete query.sort
+
+  const skip = query.skip
+  delete query.skip
+
+  const take = query.take
+  delete query.take
+
+  // handle queries on a ManyToMany relationship with query builder
+  // TODO: how can we allow filtering by multiple category ids?
+  if (query.categories && query.categories.length > 0) {
+    const podcasts = await repository
+      .createQueryBuilder('podcast')
+      .innerJoinAndSelect(
+        'podcast.categories', 'category', 'category.id = :id',
+        { id: query.categories[0] }
+      )
+      .where({ isPublic: true })
+      .skip(skip)
+      .take(take)
+      .getMany()
+
+    return podcasts
+  } else {
+    const podcasts = await repository.find({
+      where: {
+        ...query,
+        isPublic: true
+      },
+      order,
+      skip: parseInt(skip, 10),
+      take: parseInt(take, 10),
+      relations
+    })
+
+    return podcasts
+  }
 }
 
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {

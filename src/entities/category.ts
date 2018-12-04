@@ -1,7 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
+  ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
-
+import { Podcast } from 'entities'
 const shortid = require('shortid')
 
 @Entity('categories')
@@ -24,6 +24,9 @@ export class Category {
 
   @OneToMany(type => Category, category => category.category)
   categories: Category[]
+
+  @ManyToMany(type => Podcast, podcast => podcast.categories)
+  podcasts: Podcast[]
 
   @CreateDateColumn()
   createdAt: Date

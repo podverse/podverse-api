@@ -18,7 +18,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getPodcasts(ctx.request.query, ctx.state.queryPageOptions)
+      const podcasts = await getPodcasts(ctx.request.query)
       ctx.body = podcasts
     } catch (error) {
       emitRouterError(error, ctx)

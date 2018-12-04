@@ -2,13 +2,11 @@ import { getRepository } from 'typeorm'
 import { Category } from 'entities'
 const createError = require('http-errors')
 
-const relations = [
-  'category', 'categories'
-]
-
 const getCategory = (id) => {
   const repository = getRepository(Category)
-  const category = repository.findOne({ id }, { relations })
+  const category = repository.findOne({ id }, {
+    relations: ['category', 'category.category', 'categories']
+  })
 
   if (!category) {
     throw new createError.NotFound('Category not found')
@@ -19,12 +17,12 @@ const getCategory = (id) => {
 
 const getCategories = (query, options) => {
   const repository = getRepository(Category)
-  
+
   return repository.find({
     where: {
       ...query
     },
-    relations,
+    relations: ['category', 'categories'],
     ...options
   })
 }

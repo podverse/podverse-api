@@ -21,24 +21,36 @@ const getEpisode = (id) => {
   return episode
 }
 
-const getEpisodes = (query) => {
+const getEpisodes = async query => {
   const repository = getRepository(Episode)
 
-  if (query.podcast && query.podcast.split(',').length > 1) {
-    query.podcast = In(query.podcast.split(','))
+  if (query.podcastId && query.podcastId.split(',').length > 1) {
+    query.podcast = In(query.podcastId.split(','))
+  } else {
+    query.podcast = query.podcastId
   }
 
-  const order = createQueryOrderObject(query.sort, 'pubDate')
+  const order = createQueryOrderObject(query.sort, 'createdAt')
   delete query.sort
 
-  return repository.find({
+  const skip = query.skip
+  delete query.skip
+
+  const take = query.take
+  delete query.take
+
+  const episodes = await repository.find({
     where: {
       ...query,
       isPublic: true
     },
     order,
+    skip: parseInt(skip, 10),
+    take: parseInt(take, 10),
     relations
   })
+
+  return episodes
 }
 
 export {
