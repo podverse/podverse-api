@@ -134,6 +134,7 @@ const validatePodcastSearch = async (ctx, next) => {
     isPublic: Joi.boolean(),
     language: Joi.string(),
     linkUrl: Joi.string().uri(),
+    podcastId: Joi.string(),
     title: Joi.string(),
     type: Joi.string(),
     skip: Joi.number().integer().min(0),
