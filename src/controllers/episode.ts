@@ -29,6 +29,7 @@ const getEpisodes = async query => {
   } else if (query.podcastId) {
     query.podcast = query.podcastId
   }
+  delete query.podcastId
 
   const order = createQueryOrderObject(query.sort, 'createdAt')
   delete query.sort
@@ -42,6 +43,9 @@ const getEpisodes = async query => {
   const episodes = await repository.find({
     where: {
       ...query,
+      ...query.podcast && {
+        podcast: { id: query.podcast }
+      },
       isPublic: true
     },
     order,
