@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { In, getRepository } from 'typeorm'
 import { Podcast, User } from 'entities'
 import { createQueryOrderObject } from 'lib/utility'
 const createError = require('http-errors')
@@ -54,6 +54,12 @@ const getPodcasts = async query => {
 
     return podcasts
   } else {
+    if (query.podcastId && query.podcastId.split(',').length > 1) {
+      query.id = In(query.podcastId.split(','))
+    } else if (query.podcastId) {
+      query.id = query.podcastId
+    }
+
     const podcasts = await repository.find({
       where: {
         ...query,
