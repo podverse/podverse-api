@@ -49,13 +49,10 @@ export const signUpUser = async (ctx, next) => {
     const { id, email, emailVerificationToken, name } = await createUser(user)
 
     await sendVerificationEmail(email, name, emailVerificationToken)
-
+    let expires = new Date()
+    expires.setDate(expires.getDate() + 365)
     ctx.cookies.set('Authorization', `Bearer ${token}`, {
-      httpOnly: true,
-      overwrite: true
-    })
-
-    ctx.cookies.set('userId', id, {
+      expires,
       httpOnly: true,
       overwrite: true
     })

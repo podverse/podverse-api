@@ -5,7 +5,10 @@ export function authenticate (ctx: Context, next) {
   return generateToken(ctx.state.user)
     .then(token => {
       if (token) {
+        let expires = new Date()
+        expires.setDate(expires.getDate() + 365)
         ctx.cookies.set('Authorization', `Bearer ${token}`, {
+          expires,
           httpOnly: true,
           overwrite: true
         })
