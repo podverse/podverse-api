@@ -45,6 +45,12 @@ export class User {
   emailVerified: boolean
 
   @Column({ nullable: true })
+  freeTrialExpires: Date
+
+  @Column({ nullable: true })
+  membershipExpires: Date
+
+  @Column({ nullable: true })
   name: string
 
   @Validate(ValidatePassword)
