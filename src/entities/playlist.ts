@@ -1,4 +1,4 @@
-import { MediaRef, User } from 'entities'
+import { Episode, MediaRef, User } from 'entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
@@ -31,6 +31,10 @@ export class Playlist {
 
   @Column({ nullable: true })
   title?: string
+
+  @ManyToMany(type => Episode)
+  @JoinTable()
+  episodes: Episode[]
 
   @ManyToMany(type => MediaRef)
   @JoinTable()
