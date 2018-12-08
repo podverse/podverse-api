@@ -292,17 +292,24 @@ const seedDatabase = async (connection: Connection) => {
 
   let playlist2 = new Playlist()
   playlist2.owner = user1
-  playlist2.title = 'Playlist #2'
+  playlist2.title = `Foghorn's Playlist`
   playlist2.itemCount = 4
   playlist2.mediaRefs = [mediaRef4, mediaRef5, mediaRef2, mediaRef3]
   playlist2.description = 'Sed tortor ante, eleifend nec egestas ac, aliquet sed lorem. Duis eget libero consequat, tempor elit nec, sollicitudin arcu.'
 
   let playlist3 = new Playlist()
-  playlist3.owner = user1
-  playlist3.title = 'Playlist #3'
+  playlist3.owner = user2
+  playlist3.title = `Sylvester's Playlist`
   playlist3.itemCount = 5
   playlist3.mediaRefs = [mediaRef, mediaRef6, mediaRef5, mediaRef4, mediaRef3]
   playlist3.description = 'Nam dui justo, fermentum at mauris ac, venenatis rhoncus neque. Aenean porttitor massa odio, id fermentum lectus ante bebendum.'
+
+  let playlist4 = new Playlist()
+  playlist4.owner = user3
+  playlist4.title = `Tweety's Playlist`
+  playlist4.itemCount = 3
+  playlist4.mediaRefs = [mediaRef, mediaRef5, mediaRef3]
+  playlist4.description = 'Aliquam vehicula, justo in eleifend rhoncus, mi leo gravida nisi, ac laoreet risus augue non lacus. Mauris ut ligula ultrices, accumsan metus finibus, dignissim est.'
 
   const generateRandomPageVisitData = () => {
     return {
@@ -351,7 +358,7 @@ const seedDatabase = async (connection: Connection) => {
 
   await connection.manager.save([mediaRef, mediaRef2, mediaRef3, mediaRef3b, mediaRef4, mediaRef5, mediaRef6])
 
-  await connection.manager.save([playlist1, playlist2, playlist3])
+  await connection.manager.save([playlist1, playlist2, playlist3, playlist4])
 
   let nestedCategory1 = new Category()
   nestedCategory1.title = 'Nested Category 1'

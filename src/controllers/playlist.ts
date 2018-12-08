@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { Episode, Playlist, MediaRef, User } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
 const createError = require('http-errors')
@@ -20,13 +20,18 @@ const createPlaylist = async (obj) => {
 
 const deletePlaylist = async (id, loggedInUserId) => {
   const repository = getRepository(Playlist)
-  const playlist = await repository.findOne({ id })
+  const playlist = await repository.findOne({
+    where: {
+      id
+    },
+    relations: ['owner']
+  })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
   }
 
-  if (playlist.owner !== loggedInUserId) {
+  if (playlist.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
@@ -48,6 +53,16 @@ const getPlaylist = async (id) => {
 const getPlaylists = (query, options) => {
   const repository = getRepository(Playlist)
 
+  if (query.playlistId && query.playlistId.split(',').length > 1) {
+    query.id = In(query.playlistId.split(','))
+  } else if (query.playlistId) {
+    query.id = query.playlistId
+  }
+
+  delete query.sort
+  delete query.skip
+  delete query.take
+
   return repository.find({
     where: {
       ...query
@@ -59,13 +74,18 @@ const getPlaylists = (query, options) => {
 
 const updatePlaylist = async (obj, loggedInUserId) => {
   const repository = getRepository(Playlist)
-  const playlist = await repository.findOne({ id: obj.id })
+  const playlist = await repository.findOne({
+    where: {
+      id: obj.id
+    },
+    relations: ['owner']
+  })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
   }
 
-  if (playlist.owner !== loggedInUserId) {
+  if (playlist.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
@@ -96,6 +116,8 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
+  let itemsOrder = playlist.itemsOrder
+
   if (mediaRefId) {
     // If no mediaRefs match filter, add the playlist item.
     // Else, remove the playlist item.
@@ -112,6 +134,8 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     } else {
       playlist.mediaRefs = filteredMediaRefs
     }
+
+    playlist.itemsOrder = itemsOrder.filter(x => x !== mediaRefId)
   } else if (episodeId) {
     // If no episodes match filter, add the playlist item.
     // Else, remove the playlist item.
@@ -128,6 +152,8 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     } else {
       playlist.episodes = filteredEpisodes
     }
+
+    playlist.itemsOrder = itemsOrder.filter(x => x !== episodeId)
   } else {
     throw new createError.NotFound('Must provide a MediaRef or Episode id')
   }

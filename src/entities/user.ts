@@ -44,10 +44,16 @@ export class User {
   })
   emailVerified: boolean
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    select: false
+  })
   freeTrialExpires: Date
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    select: false
+  })
   membershipExpires: Date
 
   @Column({ nullable: true })

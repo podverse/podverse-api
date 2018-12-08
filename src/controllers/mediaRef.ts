@@ -21,7 +21,10 @@ const createMediaRef = async (obj) => {
 
 const deleteMediaRef = async (id, loggedInUserId) => {
   const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({ id })
+  const mediaRef = await repository.findOne({
+    where: { id },
+    relations: ['owner']
+  })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
@@ -31,7 +34,7 @@ const deleteMediaRef = async (id, loggedInUserId) => {
     throw new createError.Unauthorized('Cannot delete an anonymous media ref')
   }
 
-  if (mediaRef.owner && mediaRef.owner !== loggedInUserId) {
+  if (mediaRef.owner && mediaRef.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this media ref')
   }
 

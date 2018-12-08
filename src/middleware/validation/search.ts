@@ -110,6 +110,7 @@ const validatePlaylistSearch = async (ctx, next) => {
     id: Joi.string().min(7).max(14),
     isPublic: Joi.boolean(),
     mediaRefs: Joi.string(),
+    playlistId: Joi.string(),
     title: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),

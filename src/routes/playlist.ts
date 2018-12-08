@@ -24,6 +24,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
+      console.log(ctx.request.query)
       const playlists = await getPlaylists(ctx.request.query, ctx.state.queryPageOptions)
       ctx.body = playlists
     } catch (error) {

@@ -38,7 +38,7 @@ const validatePlaylistUpdate = async (ctx, next) => {
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
-    ownerId: Joi.string().required(),
+    ownerId: Joi.string(),
     title: Joi.string().allow(null)
   })
 
