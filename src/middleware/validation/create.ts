@@ -48,6 +48,7 @@ const validateUserCreate = async (ctx, next) => {
     historyItems: Joi.array().items(Joi.string()),
     name: Joi.string(),
     playlists: Joi.array().items(Joi.string()),
+    subscribedPlaylistIds: Joi.array().items(Joi.string()),
     subscribedPodcastIds: Joi.array().items(Joi.string())
   })
 

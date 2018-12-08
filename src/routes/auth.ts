@@ -24,6 +24,7 @@ router.post('/get-authenticated-user-info',
             'historyItems',
             'id',
             'queueItems',
+            'subscribedPlaylistIds',
             'subscribedPodcastIds'
           ]
         })
@@ -33,6 +34,7 @@ router.post('/get-authenticated-user-info',
             id: user.id,
             playlists: user.playlists,
             queueItems: user.queueItems,
+            subscribedPlaylistIds: user.subscribedPlaylistIds,
             subscribedPodcastIds: user.subscribedPodcastIds
           }
         }

@@ -76,6 +76,12 @@ export class User {
     array: true,
     select: false
   })
+  subscribedPlaylistIds: string[]
+
+  @Column('varchar', {
+    array: true,
+    select: false
+  })
   subscribedPodcastIds: string[]
 
   @Column('simple-json', { select: false })
@@ -103,6 +109,7 @@ export class User {
     this.id = shortid.generate()
 
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
+    this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
 
     this.historyItems = this.historyItems || []
     if (this.historyItems.length > 2) {
@@ -114,6 +121,7 @@ export class User {
   @BeforeUpdate()
   beforeUpdate () {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
+    this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
 
     this.historyItems = this.historyItems || []
     if (this.historyItems.length > 1000) {
@@ -121,5 +129,4 @@ export class User {
       this.historyItems.splice(0, totalToRemove)
     }
   }
-
 }

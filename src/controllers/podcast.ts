@@ -78,7 +78,7 @@ const getPodcasts = async query => {
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 
   if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to delete this playlist')
+    throw new createError.Unauthorized('Log in to subscribe to this podcast')
   }
 
   const repository = getRepository(User)

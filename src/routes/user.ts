@@ -69,6 +69,7 @@ router.post('/',
         name: user.name,
         playlists: user.playlists,
         queueItems: user.queueItems,
+        subscribedPlaylistIds: user.subscribedPlaylistIds,
         subscribedPodcastIds: user.subscribedPodcastIds
       }
 

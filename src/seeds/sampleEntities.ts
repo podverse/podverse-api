@@ -288,18 +288,21 @@ const seedDatabase = async (connection: Connection) => {
   playlist1.title = 'Greatest Hits'
   playlist1.itemCount = 3
   playlist1.mediaRefs = [mediaRef2, mediaRef3, mediaRef3b]
+  playlist1.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis rhoncus metus, non commodo elit. Nunc sed felis non lacus vestibulum pharetra vel a erat.'
 
   let playlist2 = new Playlist()
   playlist2.owner = user1
   playlist2.title = 'Playlist #2'
   playlist2.itemCount = 4
   playlist2.mediaRefs = [mediaRef4, mediaRef5, mediaRef2, mediaRef3]
+  playlist2.description = 'Sed tortor ante, eleifend nec egestas ac, aliquet sed lorem. Duis eget libero consequat, tempor elit nec, sollicitudin arcu.'
 
   let playlist3 = new Playlist()
   playlist3.owner = user1
   playlist3.title = 'Playlist #3'
   playlist3.itemCount = 5
   playlist3.mediaRefs = [mediaRef, mediaRef6, mediaRef5, mediaRef4, mediaRef3]
+  playlist3.description = 'Nam dui justo, fermentum at mauris ac, venenatis rhoncus neque. Aenean porttitor massa odio, id fermentum lectus ante bebendum.'
 
   const generateRandomPageVisitData = () => {
     return {

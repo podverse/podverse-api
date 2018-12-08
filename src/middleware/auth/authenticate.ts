@@ -19,6 +19,7 @@ export function authenticate (ctx: Context, next) {
           id: user.id,
           playlists: user.playlists,
           queueItems: user.queueItems,
+          subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds
         }
         ctx.status = 200

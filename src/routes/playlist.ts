@@ -4,7 +4,7 @@ import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
-  updatePlaylist } from 'controllers/playlist'
+  toggleSubscribeToPlaylist, updatePlaylist } from 'controllers/playlist'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from 'middleware/validation/create'
@@ -87,20 +87,32 @@ router.delete('/:id',
     }
   })
 
-// Add or remove mediaRef from playlist
+// Add/remove mediaRef/episode to/from playlist
 router.patch('/add-or-remove',
   jwtAuth,
   async ctx => {
     try {
       const body: any = ctx.request.body
-      const { mediaRefId, playlistId } = body
+      const { episodeId, mediaRefId, playlistId } = body
 
-      const updatedPlaylist = await addOrRemovePlaylistItem(playlistId, mediaRefId, ctx.state.user.id)
+      const updatedPlaylist = await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, ctx.state.user.id)
 
       ctx.body = {
         playlistId: updatedPlaylist.id,
         playlistItemCount: updatedPlaylist.itemCount
       }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Toggle subscribe to playlist
+router.get('/toggle-subscribe/:id',
+  jwtAuth,
+  async ctx => {
+    try {
+      const subscribedPlaylistIds = await toggleSubscribeToPlaylist(ctx.params.id, ctx.state.user.id)
+      ctx.body = subscribedPlaylistIds
     } catch (error) {
       emitRouterError(error, ctx)
     }

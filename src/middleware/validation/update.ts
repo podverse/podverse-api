@@ -53,6 +53,7 @@ const validateUserUpdate = async (ctx, next) => {
     name: Joi.string().allow(null),
     playlists: Joi.array().items(Joi.string()),
     queueItems: Joi.array().items(Joi.string()),
+    subscribedPlaylistIds: Joi.array().items(Joi.string()),
     subscribedPodcastIds: Joi.array().items(Joi.string())
   })
 
