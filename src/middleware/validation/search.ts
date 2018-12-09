@@ -136,6 +136,8 @@ const validatePodcastSearch = async (ctx, next) => {
     language: Joi.string(),
     linkUrl: Joi.string().uri(),
     podcastId: Joi.string(),
+    searchAuthor: Joi.string(),
+    searchTitle: Joi.string(),
     title: Joi.string(),
     type: Joi.string(),
     skip: Joi.number().integer().min(0),
