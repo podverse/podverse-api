@@ -1,7 +1,8 @@
 export const parseQueryPageOptions = async (ctx, next) => {
 
   const query = ctx.request.query
-  const { categories, episodeId, podcastId } = query
+  const { categories, episodeId, playlistId, podcastId, searchAuthor, searchTitle
+    } = query
 
   let options = {
     sort: 'top-past-week',
@@ -9,7 +10,10 @@ export const parseQueryPageOptions = async (ctx, next) => {
     take: 10,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
-    ...(podcastId ? { podcastId } : {})
+    ...(playlistId ? { playlistId } : {}),
+    ...(podcastId ? { podcastId } : {}),
+    ...(searchAuthor ? { searchAuthor } : {}),
+    ...(searchTitle ? { searchTitle } : {})
   }
 
   const { page, sort } = query
