@@ -17,7 +17,8 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const episodes = await getEpisodes(ctx.request.query)
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const episodes = await getEpisodes(ctx.request.query, includeNSFW)
       ctx.body = episodes
     } catch (error) {
       emitRouterError(error, ctx)

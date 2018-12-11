@@ -53,7 +53,7 @@ const getMediaRef = (id) => {
   return mediaRef
 }
 
-const getMediaRefs = async (query) => {
+const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
 
   if (query.podcastId && query.podcastId.split(',').length > 1) {
@@ -69,18 +69,38 @@ const getMediaRefs = async (query) => {
   const take = query.take
   delete query.take
 
-  const mediaRefs = await repository.find({
-    where: {
-      ...query,
-      isPublic: true
-    },
-    order,
-    skip: parseInt(skip, 10),
-    take: parseInt(take, 10),
-    relations
-  })
+  if (includeNSFW) {
+    const mediaRefs = await repository.find({
+      where: {
+        ...query,
+        ...!includeNSFW && {
+          episode: {
+            isExplicit: true
+          }
+        },
+        isPublic: true
+      },
+      order,
+      skip: parseInt(skip, 10),
+      take: parseInt(take, 10),
+      relations
+    })
 
-  return mediaRefs
+    return mediaRefs
+  } else {
+    const mediaRefs = await repository
+      .createQueryBuilder('mediaRef')
+      .innerJoinAndSelect(
+        'mediaRef.episode', 'episode', 'episode.isExplicit = :isExplicit',
+        { isExplicit: false }
+      )
+      .where({ isPublic: true })
+      .skip(skip)
+      .take(take)
+      .getMany()
+    return mediaRefs
+  }
+
 }
 
 const updateMediaRef = async (obj, loggedInUserId) => {

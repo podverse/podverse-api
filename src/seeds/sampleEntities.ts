@@ -80,6 +80,7 @@ const seedDatabase = async (connection: Connection) => {
   podcast2.authors = [author1, author2, author3, author4]
   podcast2.categories = []
   podcast2.isPublic = true
+  podcast2.isExplicit = true
 
   const feedUrl2 = new FeedUrl()
   feedUrl2.podcast = podcast2
@@ -120,6 +121,7 @@ const seedDatabase = async (connection: Connection) => {
   episode2.authors = [author1, author2, author3, author4]
   episode2.categories = [category1, category2]
   episode2.isPublic = true
+  episode2.isExplicit = true
 
   let episode3 = new Episode()
   episode3.mediaUrl = 'http://traffic.libsyn.com/altucher/Adam20Grant20final20final20mp3.mp3?dest-id=172343'
@@ -130,7 +132,7 @@ const seedDatabase = async (connection: Connection) => {
   episode3.authors = [author1, author2, author3, author4]
   episode3.categories = [category1, category2]
   episode3.isPublic = true
-
+  
   let episode4 = new Episode()
   episode4.mediaUrl = 'http://traffic.libsyn.com/altucher/JAS-216-YuvalHarari-v01-FREE.mp3?dest-id=172343'
   episode4.title = 'Ep. 216 - Yuval Noah Harari: A Brief History of The Future'
@@ -140,6 +142,7 @@ const seedDatabase = async (connection: Connection) => {
   episode4.authors = [author1, author2, author3, author4]
   episode4.categories = [category1, category2]
   episode4.isPublic = true
+  episode4.isExplicit = true
 
   let episode5 = new Episode()
   episode5.mediaUrl = 'http://rss.art19.com/episodes/24f7ada5-64c3-4844-9522-ed6f3c144f1f.mp3'

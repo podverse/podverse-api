@@ -21,7 +21,7 @@ const getEpisode = (id) => {
   return episode
 }
 
-const getEpisodes = async query => {
+const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
 
   if (query.podcastId && query.podcastId.split(',').length > 1) {
@@ -46,6 +46,7 @@ const getEpisodes = async query => {
       ...query.podcast && {
         podcast: { id: query.podcast }
       },
+      ...!includeNSFW && { isExplicit: false },
       isPublic: true
     },
     order,

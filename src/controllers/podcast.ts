@@ -26,7 +26,7 @@ const getPodcast = (id) => {
   return podcast
 }
 
-const getPodcasts = async query => {
+const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
 
   const order = createQueryOrderObject(query.sort, 'createdAt')
@@ -47,7 +47,10 @@ const getPodcasts = async query => {
         'podcast.categories', 'category', 'category.id = :id',
         { id: query.categories[0] }
       )
-      .where({ isPublic: true })
+      .where({
+        isPublic: true,
+        ...!includeNSFW && { isExplicit: false }
+      })
       .skip(skip)
       .take(take)
       .getMany()
@@ -68,7 +71,8 @@ const getPodcasts = async query => {
     const podcasts = await repository.find({
       where: {
         ...query,
-        isPublic: true
+        isPublic: true,
+        ...!includeNSFW && { isExplicit: true }
       },
       order,
       skip: parseInt(skip, 10),

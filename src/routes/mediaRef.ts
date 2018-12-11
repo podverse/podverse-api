@@ -24,7 +24,8 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(ctx.request.query)
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const mediaRefs = await getMediaRefs(ctx.request.query, includeNSFW)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)

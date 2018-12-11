@@ -1,5 +1,5 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn,
+import { BeforeInsert, Column, CreateDateColumn, Entity,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
 import { Author, Category, Episode, User } from 'entities'
@@ -138,13 +138,11 @@ export class MediaRef {
   @ManyToOne(type => Episode, episode => episode.mediaRefs, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn()
   episode: Episode
 
   @ManyToOne(type => User, user => user.mediaRefs, {
     onDelete: 'CASCADE'
   })
-  @JoinColumn()
   owner: User
 
   @CreateDateColumn()
