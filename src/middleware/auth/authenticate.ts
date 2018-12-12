@@ -17,6 +17,7 @@ export function authenticate (ctx: Context, next) {
         ctx.body = {
           historyItems: user.historyItems,
           id: user.id,
+          name: user.name,
           playlists: user.playlists,
           queueItems: user.queueItems,
           subscribedPlaylistIds: user.subscribedPlaylistIds,

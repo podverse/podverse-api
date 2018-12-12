@@ -19,6 +19,7 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
             select: [
               'historyItems',
               'id',
+              'name',
               'password',
               'queueItems',
               'subscribedPlaylistIds',

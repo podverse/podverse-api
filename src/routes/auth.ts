@@ -23,6 +23,7 @@ router.post('/get-authenticated-user-info',
           select: [
             'historyItems',
             'id',
+            'name',
             'queueItems',
             'subscribedPlaylistIds',
             'subscribedPodcastIds'
@@ -32,6 +33,7 @@ router.post('/get-authenticated-user-info',
           ctx.body = {
             historyItems: user.historyItems,
             id: user.id,
+            name: user.name,
             playlists: user.playlists,
             queueItems: user.queueItems,
             subscribedPlaylistIds: user.subscribedPlaylistIds,
