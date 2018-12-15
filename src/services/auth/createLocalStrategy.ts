@@ -17,8 +17,11 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
           },
           {
             select: [
+              'email',
+              'freeTrialExpiration',
               'historyItems',
               'id',
+              'membershipExpiration',
               'name',
               'password',
               'queueItems',

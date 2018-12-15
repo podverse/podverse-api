@@ -37,7 +37,7 @@ export const verifyEmail = async ctx => {
   const { token } = ctx.request.query
 
   try {
-    const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration, 
+    const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration,
       id } = await getUserByVerificationToken(token)
 
     if (emailVerified) {

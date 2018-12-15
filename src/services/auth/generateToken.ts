@@ -1,5 +1,6 @@
 import { sign } from 'jsonwebtoken'
 import { config } from 'config'
+import { authExpires } from 'lib/constants'
 const { jwtSecret } = config
 
 const genTokenAsync = payload => new Promise((resolve, reject) => {
@@ -9,10 +10,10 @@ const genTokenAsync = payload => new Promise((resolve, reject) => {
   }))
 })
 
-export const generateToken = async ({ id, roles }) => {
-  const exp = Math.floor(Date.now() / 1000) + (60 * 60)
+export const generateToken = async ({ freeTrialExpiration, id, membershipExpiration }) => {
+  const exp = authExpires().getTime() / 1000
 
-  return genTokenAsync({ id, roles, exp })
+  return genTokenAsync({ id, freeTrialExpiration, membershipExpiration, exp })
     .then(payload => payload)
     .catch(error => { throw error })
 }

@@ -49,10 +49,7 @@ router.post('/',
   async ctx => {
     try {
       let body: any = ctx.request.body
-
-      if (ctx.state.user && ctx.state.user.id) {
-        body.owner = ctx.state.user.id
-      }
+      body.owner = ctx.state.user.id
 
       const playlist = await createPlaylist(body)
       ctx.body = playlist

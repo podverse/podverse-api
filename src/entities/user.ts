@@ -48,13 +48,13 @@ export class User {
     nullable: true,
     select: false
   })
-  freeTrialExpires: Date
+  freeTrialExpiration: Date
 
   @Column({
     nullable: true,
     select: false
   })
-  membershipExpires: Date
+  membershipExpiration: Date
 
   @Column({ nullable: true })
   name: string

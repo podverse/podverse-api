@@ -2,8 +2,11 @@ import { hash } from 'bcryptjs'
 import { Connection } from 'typeorm'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist,
   Podcast, User } from 'entities'
+import { config } from 'config'
 import { saltRounds } from 'lib/constants'
 import { connectToDb } from 'lib/db'
+const addSeconds = require('date-fns/add_seconds')
+const { freeTrialExpiration, membershipExpiration } = config
 
 const seedDatabase = async (connection: Connection) => {
   const saltedPassword = await hash('Aa!1asdf', saltRounds)
@@ -34,6 +37,7 @@ const seedDatabase = async (connection: Connection) => {
   user1.password = saltedPassword
   user1.historyItems = []
   user1.queueItems = []
+  user1.freeTrialExpiration = addSeconds(new Date(), freeTrialExpiration)
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
@@ -41,6 +45,8 @@ const seedDatabase = async (connection: Connection) => {
   user2.password = saltedPassword
   user2.historyItems = []
   user2.queueItems = []
+  user2.freeTrialExpiration = addSeconds(new Date(), 0)
+  user2.membershipExpiration = addSeconds(new Date(), membershipExpiration)
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
@@ -48,6 +54,8 @@ const seedDatabase = async (connection: Connection) => {
   user3.password = saltedPassword
   user3.historyItems = []
   user3.queueItems = []
+  user3.freeTrialExpiration = addSeconds(new Date(), 0)
+  user3.membershipExpiration = addSeconds(new Date(), 0)
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'

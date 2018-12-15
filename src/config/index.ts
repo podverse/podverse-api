@@ -22,6 +22,8 @@ export interface IConfig {
   jwtSecret: string
   resetPasswordTokenExpiration: number
   emailVerificationTokenExpiration: number
+  freeTrialExpiration: number
+  membershipExpiration: number
   mailerService: string
   mailerHost: string
   mailerPort: number
@@ -39,6 +41,8 @@ let port = process.env.PORT || '3000'
 let dbPort = process.env.DB_PORT || '5432'
 let resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
 let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
+let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
+let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
 let mailerPort = process.env.MAILER_PORT || '587'
 
 const config: IConfig = {
@@ -59,6 +63,8 @@ const config: IConfig = {
   jwtSecret: process.env.JWT_SECRET || 'mysecretjwt',
   resetPasswordTokenExpiration: parseInt(resetPasswordTokenExpiration, 10),
   emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),
+  freeTrialExpiration: parseInt(freeTrialExpiration, 10),
+  membershipExpiration: parseInt(membershipExpiration, 10),
   mailerService: process.env.mailerService || '',
   mailerHost: process.env.mailerHost || '',
   mailerPort: parseInt(mailerPort, 10),

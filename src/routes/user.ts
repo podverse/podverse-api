@@ -2,58 +2,16 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
-import { addOrUpdateHistoryItem, createUser, deleteUser, getUser, getUsers,
-  updateQueueItems } from 'controllers/user'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
+import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
+  updateQueueItems, updateUser } from 'controllers/user'
 import { validateUserCreate } from 'middleware/validation/create'
-import { validateUserSearch } from 'middleware/validation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserUpdateQueue
-  } from 'middleware/validation/update'
+import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
+  validateUserUpdateQueue } from 'middleware/validation/update'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
 router.use(bodyParser())
-
-// Search
-router.get('/',
-  parseQueryPageOptions,
-  validateUserSearch,
-  async ctx => {
-    try {
-      const users = await getUsers(
-        ctx.request.query,
-        Object.assign(
-          ctx.state.queryPageOptions,
-          {
-            select: [
-              'id',
-              'name'
-            ]
-          }
-        )
-      )
-      ctx.body = users
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Get
-router.get('/:id',
-  async ctx => {
-    try {
-      const user = await getUser(ctx.params.id, {
-        select: [
-          'id',
-          'name'
-        ]
-      })
-      ctx.body = user
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
 
 // Create
 router.post('/',
@@ -64,6 +22,7 @@ router.post('/',
       const user = await createUser(body)
 
       const filteredUser = {
+        email: user.email,
         historyItems: user.historyItems,
         id: user.id,
         name: user.name,
@@ -86,6 +45,20 @@ router.delete('/:id',
     try {
       await deleteUser(ctx.params.id, ctx.state.user.id)
       ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Update
+router.patch('/',
+  validateUserUpdate,
+  jwtAuth,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const user = await updateUser(body, ctx.state.user.id)
+      ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
     }
@@ -117,6 +90,18 @@ router.patch('/add-or-update-history-item',
 
       ctx.status = 200
       ctx.body = 'Updated user history'
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get
+router.get('/download/:id',
+  jwtAuth,
+  async ctx => {
+    try {
+      const userJSON = await getCompleteUserDataAsJSON(ctx.params.id, ctx.state.user.id)
+      ctx.body = userJSON
     } catch (error) {
       emitRouterError(error, ctx)
     }

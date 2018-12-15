@@ -48,13 +48,8 @@ const validatePlaylistUpdate = async (ctx, next) => {
 const validateUserUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string(),
-    historyItems: Joi.array().items(Joi.string()),
     id: Joi.string().min(7).max(14).required(),
-    name: Joi.string().allow(null),
-    playlists: Joi.array().items(Joi.string()),
-    queueItems: Joi.array().items(Joi.string()),
-    subscribedPlaylistIds: Joi.array().items(Joi.string()),
-    subscribedPodcastIds: Joi.array().items(Joi.string())
+    name: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)

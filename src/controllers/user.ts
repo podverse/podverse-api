@@ -4,6 +4,7 @@ import { User } from 'entities'
 import { saltRounds } from 'lib/constants'
 import { validateClassOrThrow } from 'lib/errors'
 import { validatePassword } from 'lib/utility'
+import { validateEmail } from 'lib/utility/validation';
 
 const createError = require('http-errors')
 
@@ -126,6 +127,41 @@ const getUsers = (query, options) => {
     relations,
     ...options
   })
+}
+
+const updateUser = async (obj, loggedInUserId) => {
+
+  if (!obj.id) {
+    throw new createError.NotFound('Must provide a user id.')
+  }
+
+  if (obj.id !== loggedInUserId) {
+    throw new createError.Unauthorized('Log in to update this user.')
+  }
+
+  if (obj.email && !validateEmail(obj.email)) {
+    throw new createError.BadRequest('Please provide a valid email address.')
+  }
+
+  const repository = getRepository(User)
+  const user = await repository.findOne({ id: obj.id })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  const cleanedObj = {
+    ...(obj.email ? { email: obj.email } : {}),
+    ...(obj.name || obj.name === '' ? { name: obj.name } : {})
+  }
+
+  await repository.update(obj.id, cleanedObj)
+
+  return {
+    email: obj.email,
+    id: obj.id,
+    name: obj.name
+  }
 }
 
 const updateUserEmailVerificationToken = async (obj) => {
@@ -274,16 +310,45 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   return repository.update(loggedInUserId, { historyItems })
 }
 
+const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
+
+  if (id !== loggedInUserId) {
+    throw new createError.Unauthorized(`Unauthorized error. Please check that you are logged in.`)
+  }
+  const userRepository = getRepository(User)
+
+  const user = await userRepository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'email',
+        'name',
+        'subscribedPlaylistIds',
+        'subscribedPodcastIds',
+        'historyItems'
+      ],
+      relations: ['mediaRefs', 'playlists']
+    }
+  )
+
+  return JSON.stringify(user)
+}
+
 export {
   addOrUpdateHistoryItem,
   createUser,
   deleteUser,
+  getCompleteUserDataAsJSON,
   getUser,
   getUserByEmail,
   getUserByResetPasswordToken,
   getUserByVerificationToken,
   getUsers,
   updateQueueItems,
+  updateUser,
   updateUserEmailVerificationToken,
   updateUserPassword,
   updateUserResetPasswordToken

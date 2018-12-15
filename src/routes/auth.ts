@@ -21,8 +21,11 @@ router.post('/get-authenticated-user-info',
       if (jwtUserData && jwtUserData.id) {
         const user = await getUser(jwtUserData.id, {
           select: [
+            'email',
+            'freeTrialExpiration',
             'historyItems',
             'id',
+            'membershipExpiration',
             'name',
             'queueItems',
             'subscribedPlaylistIds',
@@ -31,8 +34,11 @@ router.post('/get-authenticated-user-info',
         })
         if (user) {
           ctx.body = {
+            email: user.email,
+            freeTrialExpiration: user.freeTrialExpiration,
             historyItems: user.historyItems,
             id: user.id,
+            membershipExpiration: user.membershipExpiration,
             name: user.name,
             playlists: user.playlists,
             queueItems: user.queueItems,

@@ -32,14 +32,16 @@ export const emailNotExists = async (ctx, next) => {
 }
 
 export const signUpUser = async (ctx, next) => {
-  const expirationDate = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
+  const emailVerificationExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
+  const freeTrialExpiration = addSeconds(new Date(), process.env.FREE_TRIAL_EXPIRATION)
   const token = uuidv4()
 
   const user = {
     email: ctx.request.body.email,
     emailVerified: false,
     emailVerificationToken: token,
-    emailVerificationTokenExpiration: expirationDate,
+    emailVerificationTokenExpiration: emailVerificationExpiration,
+    freeTrialExpiration,
     name: ctx.request.body.name,
     password: ctx.request.body.password,
     queueItems: ctx.request.body.queueItems || []
