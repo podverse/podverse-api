@@ -63,6 +63,23 @@ const seedDatabase = async (connection: Connection) => {
   user4.password = saltedPassword
   user4.historyItems = []
   user4.queueItems = []
+  user4.freeTrialExpiration = addSeconds(new Date(), 259200)
+
+  let user5 = new User()
+  user5.email = 'roadrunner@looney.tunes'
+  user5.name = 'Roadrunner'
+  user5.password = saltedPassword
+  user5.historyItems = []
+  user5.queueItems = []
+  user5.membershipExpiration = addSeconds(new Date(), 259200)
+
+  let user6 = new User()
+  user6.email = 'daffy@looney.tunes'
+  user6.name = 'Daffy Duck'
+  user6.password = saltedPassword
+  user6.historyItems = []
+  user6.queueItems = []
+  user6.freeTrialExpiration = addSeconds(new Date(), 0)
 
   let podcast = new Podcast()
   podcast.title = 'The James Altucher Show'
@@ -350,7 +367,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef5 = Object.assign(mediaRef5, generateRandomPageVisitData())
   mediaRef6 = Object.assign(mediaRef6, generateRandomPageVisitData())
 
-  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3])
+  await connection.manager.save([author1, author2, author3, author4, category1, category2, user1, user2, user3, user4, user5, user6, podcast, podcast2, podcast3, episode, episode2, episode3, episode4, episode5, episode6, feedUrl, feedUrl2, feedUrl3])
 
   mediaRef.episodeId = episode.id
   mediaRef.podcastId = podcast.id

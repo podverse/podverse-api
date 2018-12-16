@@ -99,9 +99,7 @@ export class User {
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
   mediaRefs: MediaRef[]
 
-  @OneToMany(type => Playlist, playlist => playlist.owner, {
-    cascade: true
-  })
+  @OneToMany(type => Playlist, playlist => playlist.owner)
   playlists: Playlist[]
 
   @CreateDateColumn()

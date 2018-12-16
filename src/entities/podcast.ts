@@ -99,12 +99,12 @@ export class Podcast {
   categories: Category[]
 
   @OneToMany(type => Episode, episode => episode.podcast, {
-    cascade: true
+    onDelete: 'CASCADE'
   })
   episodes: Episode[]
 
   @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast, {
-    cascade: true
+    onDelete: 'CASCADE'
   })
   feedUrls: FeedUrl[]
 

@@ -32,15 +32,16 @@ const createUser = async (obj) => {
 }
 
 const deleteUser = async (id, loggedInUserId) => {
+
+  if (id !== loggedInUserId) {
+    throw new createError.Unauthorized('Log in to delete this user')
+  }
+
   const repository = getRepository(User)
   const user = await repository.findOne({ id })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
-  }
-
-  if (id !== loggedInUserId) {
-    throw new createError.Unauthorized('Log in to delete this user')
   }
 
   const result = await repository.remove(user)
