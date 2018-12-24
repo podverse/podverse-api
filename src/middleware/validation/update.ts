@@ -31,6 +31,17 @@ const validateMediaRefUpdate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validatePayPalOrderUpdate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    paymentID: Joi.string(),
+    payerID: Joi.string(),
+    paymentToken: Joi.string(),
+    state: Joi.string()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validatePlaylistUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     description: Joi.string().allow(null),
@@ -40,6 +51,15 @@ const validatePlaylistUpdate = async (ctx, next) => {
     mediaRefs: Joi.array().items(Joi.string()),
     ownerId: Joi.string(),
     title: Joi.string().allow(null)
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
+const validateUserMembershipUpdate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    id: Joi.string().min(7).max(14).required(),
+    membershipExpiration: Joi.date().iso().required()
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -73,8 +93,10 @@ const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
 
 export {
   validateMediaRefUpdate,
+  validatePayPalOrderUpdate,
   validatePlaylistUpdate,
   validateUserAddOrUpdateHistoryItem,
+  validateUserMembershipUpdate,
   validateUserUpdate,
   validateUserUpdateQueue
 }

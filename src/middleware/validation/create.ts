@@ -30,6 +30,17 @@ const validateMediaRefCreate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validatePayPalOrderCreate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    paymentID: Joi.string(),
+    payerID: Joi.string(),
+    paymentToken: Joi.string(),
+    state: Joi.string()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validatePlaylistCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     description: Joi.string(),
@@ -57,6 +68,7 @@ const validateUserCreate = async (ctx, next) => {
 
 export {
   validateMediaRefCreate,
+  validatePayPalOrderCreate,
   validatePlaylistCreate,
   validateUserCreate
 }

@@ -10,7 +10,8 @@ import { Connection } from 'typeorm'
 import { config } from 'config'
 import { User } from 'entities'
 import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
-  mediaRefRouter, playlistRouter, podcastRouter, userRouter } from 'routes'
+  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
+  } from 'routes'
 import { logger, loggerInstance } from 'lib/logging'
 import { createJwtStrategy, createLocalStrategy } from 'services/auth'
 
@@ -27,6 +28,12 @@ export const createApp = (conn: Connection) => {
 
   const app = new Koa()
   app.context.db = conn
+
+  if (process.env.NODE_ENV === 'development') {
+    app.use(cors({
+      credentials: true
+    }))
+  }
 
   passport.use(createLocalStrategy(conn.getRepository(User)))
   passport.use(createJwtStrategy())
@@ -47,12 +54,6 @@ export const createApp = (conn: Connection) => {
 
     await next()
   })
-
-  if (process.env.NODE_ENV === 'development') {
-    app.use(cors({
-      credentials: true
-    }))
-  }
 
   app.use(mount(
     `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
@@ -83,6 +84,9 @@ export const createApp = (conn: Connection) => {
   app.use(mediaRefRouter.routes())
   app.use(mediaRefRouter.allowedMethods())
 
+  app.use(paypalRouter.routes())
+  app.use(paypalRouter.allowedMethods())
+
   app.use(playlistRouter.routes())
   app.use(playlistRouter.allowedMethods())
 
@@ -92,7 +96,7 @@ export const createApp = (conn: Connection) => {
   app.use(userRouter.routes())
   app.use(userRouter.allowedMethods())
 
-  app.on('error', async (error, ctx) => {    
+  app.on('error', async (error, ctx) => {
     if (ctx.status >= 500) {
       loggerInstance.log('error', error.message)
       ctx.body = 'Internal Server Error'

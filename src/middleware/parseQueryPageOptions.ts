@@ -7,7 +7,7 @@ export const parseQueryPageOptions = async (ctx, next) => {
   let options = {
     sort: 'top-past-week',
     skip: 0,
-    take: 10,
+    take: 2,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
     ...(playlistId ? { playlistId } : {}),

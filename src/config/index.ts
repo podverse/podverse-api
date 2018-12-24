@@ -29,13 +29,14 @@ export interface IConfig {
   mailerPort: number
   mailerUsername: string
   mailerPassword: string
+  paypalConfig: any
   websiteDomain: string
   websiteProtocol: string
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
 }
 
-const apiHost = process.env.NODE_ENV === 'prod' ? 'https://podverse.fm' : 'http://localhost:3000'
+const apiHost = process.env.NODE_ENV === 'production' ? 'https://podverse.fm' : 'http://localhost:3000'
 
 let port = process.env.PORT || '3000'
 let dbPort = process.env.DB_PORT || '5432'
@@ -44,6 +45,13 @@ let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPI
 let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
 let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
 let mailerPort = process.env.MAILER_PORT || '587'
+
+const paypalConfig = {
+  clientId: process.env.PAYPAL_CLIENT_ID,
+  clientSecret: process.env.PAYPAL_CLIENT_SECRET,
+  mode: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
+  webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
+}
 
 const config: IConfig = {
   port: parseInt(port, 10),
@@ -70,6 +78,7 @@ const config: IConfig = {
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
+  paypalConfig,
   websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
   websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',
