@@ -108,3 +108,17 @@ export const createQueryOrderObject = (sort, sortDateKey) => {
 
   return order
 }
+
+// @ts-ignore
+Date.prototype.addDays = function (days) {
+  const date = new Date(this.valueOf())
+  date.setDate(date.getDate() + days)
+  return date
+}
+
+export const isBeforeDate = (expirationDate, dayOffset = 0) => {
+  const currentDate = new Date()
+  // @ts-ignore
+  const offsetDate = currentDate.addDays(dayOffset)
+  return new Date(expirationDate) > offsetDate
+}

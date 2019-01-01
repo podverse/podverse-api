@@ -7,9 +7,10 @@ import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaR
   from 'controllers/mediaRef'
 import { jwtAuth, optionalJwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateMediaRefCreate } from 'middleware/validation/create'
-import { validateMediaRefSearch } from 'middleware/validation/search'
-import { validateMediaRefUpdate } from 'middleware/validation/update'
+import { validateMediaRefCreate } from 'middleware/queryValidation/create'
+import { validateMediaRefSearch } from 'middleware/queryValidation/search'
+import { validateMediaRefUpdate } from 'middleware/queryValidation/update'
+import { hasValidMembershipIfJwt } from 'middleware/hasValidMembership'
 
 const delimitKeys = ['authors', 'categories']
 
@@ -47,6 +48,7 @@ router.get('/:id',
 router.post('/',
   validateMediaRefCreate,
   optionalJwtAuth,
+  hasValidMembershipIfJwt,
   async ctx => {
     try {
       let body: any = ctx.request.body

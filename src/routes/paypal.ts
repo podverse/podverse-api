@@ -5,8 +5,8 @@ import { emitRouterError } from 'lib/errors'
 import { completePayPalOrder, createPayPalOrder, getPayPalOrder, updatePayPalOrder
   } from 'controllers/paypalOrder'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
-import { validatePayPalOrderCreate } from 'middleware/validation/create'
-import { validatePayPalOrderUpdate } from 'middleware/validation/update'
+import { validatePayPalOrderCreate } from 'middleware/queryValidation/create'
+import { validatePayPalOrderUpdate } from 'middleware/queryValidation/update'
 import { verifyWebhookSignature, getPayPalResponseHeaders } from 'services/paypal'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/paypal` })

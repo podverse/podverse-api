@@ -4,7 +4,7 @@ import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { getCategory, getCategories } from 'controllers/category'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateCategorySearch } from 'middleware/validation/search'
+import { validateCategorySearch } from 'middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/category` })
 

@@ -4,7 +4,7 @@ import { emitRouterError } from 'lib/errors'
 import { delimitQueryValues } from 'lib/utility'
 import { getEpisode, getEpisodes } from 'controllers/episode'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateEpisodeSearch } from 'middleware/validation/search'
+import { validateEpisodeSearch } from 'middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 

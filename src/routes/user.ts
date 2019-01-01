@@ -4,9 +4,10 @@ import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
   updateQueueItems, updateUser } from 'controllers/user'
-import { validateUserCreate } from 'middleware/validation/create'
+import { validateUserCreate } from 'middleware/queryValidation/create'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
-  validateUserUpdateQueue } from 'middleware/validation/update'
+  validateUserUpdateQueue } from 'middleware/queryValidation/update'
+import { hasValidMembership } from 'middleware/hasValidMembership'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
@@ -54,6 +55,7 @@ router.delete('/:id',
 router.patch('/',
   validateUserUpdate,
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const body = ctx.request.body
@@ -68,6 +70,7 @@ router.patch('/',
 router.patch('/update-queue',
   validateUserUpdateQueue,
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const body: any = ctx.request.body
@@ -83,6 +86,7 @@ router.patch('/update-queue',
 router.patch('/add-or-update-history-item',
   validateUserAddOrUpdateHistoryItem,
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const body: any = ctx.request.body

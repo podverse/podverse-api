@@ -5,7 +5,8 @@ import { delimitQueryValues } from 'lib/utility'
 import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from 'controllers/podcast'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validatePodcastSearch } from 'middleware/validation/search'
+import { validatePodcastSearch } from 'middleware/queryValidation/search'
+import { hasValidMembership } from 'middleware/hasValidMembership'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/podcast` })
 
@@ -40,6 +41,7 @@ router.get('/:id',
 // Toggle subscribe to podcast
 router.get('/toggle-subscribe/:id',
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const subscribedPodcastIds = await toggleSubscribeToPodcast(ctx.params.id, ctx.state.user.id)

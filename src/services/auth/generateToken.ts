@@ -10,10 +10,10 @@ const genTokenAsync = payload => new Promise((resolve, reject) => {
   }))
 })
 
-export const generateToken = async ({ freeTrialExpiration, id, membershipExpiration }) => {
+export const generateToken = async ({ id }) => {
   const exp = authExpires().getTime() / 1000
 
-  return genTokenAsync({ id, freeTrialExpiration, membershipExpiration, exp })
+  return genTokenAsync({ id, exp })
     .then(payload => payload)
     .catch(error => { throw error })
 }

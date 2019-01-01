@@ -73,11 +73,6 @@ const getMediaRefs = async (query, includeNSFW) => {
     const mediaRefs = await repository.find({
       where: {
         ...query,
-        ...!includeNSFW && {
-          episode: {
-            isExplicit: true
-          }
-        },
         isPublic: true
       },
       order,
@@ -94,6 +89,7 @@ const getMediaRefs = async (query, includeNSFW) => {
         'mediaRef.episode', 'episode', 'episode.isExplicit = :isExplicit',
         { isExplicit: false }
       )
+      .innerJoinAndSelect('episode.podcast', 'podcast')
       .where({ isPublic: true })
       .skip(skip)
       .take(take)

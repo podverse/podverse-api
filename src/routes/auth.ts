@@ -6,7 +6,7 @@ import { authenticate, emailNotExists, localAuth, logOut, optionalJwtAuth,
   verifyEmail } from 'middleware/auth'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
-  } from 'middleware/validation/auth'
+  } from 'middleware/queryValidation/auth'
 import { getUser } from 'controllers/user'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })

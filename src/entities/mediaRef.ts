@@ -1,4 +1,4 @@
-import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
+import { IsInt, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
@@ -19,44 +19,6 @@ export class MediaRef {
   @Min(1)
   @Column({ nullable: true })
   endTime: number
-
-  @Column({ nullable: true })
-  episodeDescription?: string
-
-  @ValidateIf(a => a.episodeDuration != null)
-  @IsInt()
-  @Min(0)
-  @Column({ nullable: true })
-  episodeDuration?: number
-
-  @Column({ nullable: true })
-  episodeGuid?: string
-
-  @Column({ nullable: true })
-  episodeId?: string
-
-  @ValidateIf(a => a.episodeImageUrl != null)
-  @IsUrl()
-  @Column({ nullable: true })
-  episodeImageUrl?: string
-
-  @Column({ default: false })
-  episodeIsExplicit: boolean
-
-  @ValidateIf(a => a.episodeLinkUrl != null)
-  @IsUrl()
-  @Column({ nullable: true })
-  episodeLinkUrl?: string
-
-  @IsUrl()
-  @Column()
-  episodeMediaUrl: string
-
-  @Column({ nullable: true })
-  episodePubDate?: Date
-
-  @Column({ nullable: true })
-  episodeTitle?: string
 
   @Column({ default: false })
   isPublic: boolean
@@ -96,28 +58,6 @@ export class MediaRef {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
-
-  @ValidateIf(a => a.podcastFeedUrl != null)
-  @IsUrl()
-  @Column({ nullable: true })
-  podcastFeedUrl: string
-
-  @Column({ nullable: true })
-  podcastGuid?: string
-
-  @Column({ nullable: true })
-  podcastId?: string
-
-  @ValidateIf(a => a.podcastImageUrl != null)
-  @IsUrl()
-  @Column({ nullable: true })
-  podcastImageUrl?: string
-
-  @Column({ default: false })
-  podcastIsExplicit: boolean
-
-  @Column({ nullable: true })
-  podcastTitle?: string
 
   @IsInt()
   @Min(0)
@@ -159,27 +99,6 @@ export class MediaRef {
   @BeforeInsert()
   @BeforeUpdate()
   trimStrings () {
-    if (this.episodeGuid) {
-      this.episodeGuid = this.episodeGuid.trim() === '' ? undefined : this.episodeGuid.trim()
-    }
-    if (this.episodeId) {
-      this.episodeId = this.episodeId.trim() === '' ? undefined : this.episodeId.trim()
-    }
-    if (this.episodeDescription) {
-      this.episodeDescription = this.episodeDescription.trim() === '' ? undefined : this.episodeDescription.trim()
-    }
-    if (this.episodeTitle) {
-      this.episodeTitle = this.episodeTitle.trim() === '' ? undefined : this.episodeTitle.trim()
-    }
-    if (this.podcastGuid) {
-      this.podcastGuid = this.podcastGuid.trim() === '' ? undefined : this.podcastGuid.trim()
-    }
-    if (this.podcastId) {
-      this.podcastId = this.podcastId.trim() === '' ? undefined : this.podcastId.trim()
-    }
-    if (this.podcastTitle) {
-      this.podcastTitle = this.podcastTitle.trim() === '' ? undefined : this.podcastTitle.trim()
-    }
     if (this.title) {
       this.title = this.title.trim() === '' ? undefined : this.title.trim()
     }

@@ -3,7 +3,7 @@ import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { getFeedUrl, getFeedUrls } from 'controllers/feedUrl'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateFeedUrlSearch } from 'middleware/validation/search'
+import { validateFeedUrlSearch } from 'middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/feedUrl` })
 

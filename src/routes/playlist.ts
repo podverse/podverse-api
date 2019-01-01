@@ -7,9 +7,10 @@ import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, g
   toggleSubscribeToPlaylist, updatePlaylist } from 'controllers/playlist'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validatePlaylistCreate } from 'middleware/validation/create'
-import { validatePlaylistSearch } from 'middleware/validation/search'
-import { validatePlaylistUpdate } from 'middleware/validation/update'
+import { validatePlaylistCreate } from 'middleware/queryValidation/create'
+import { validatePlaylistSearch } from 'middleware/queryValidation/search'
+import { validatePlaylistUpdate } from 'middleware/queryValidation/update'
+import { hasValidMembership } from 'middleware/hasValidMembership'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
 
@@ -46,6 +47,7 @@ router.get('/:id',
 router.post('/',
   validatePlaylistCreate,
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       let body: any = ctx.request.body
@@ -87,6 +89,7 @@ router.delete('/:id',
 // Add/remove mediaRef/episode to/from playlist
 router.patch('/add-or-remove',
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const body: any = ctx.request.body
@@ -106,6 +109,7 @@ router.patch('/add-or-remove',
 // Toggle subscribe to playlist
 router.get('/toggle-subscribe/:id',
   jwtAuth,
+  hasValidMembership,
   async ctx => {
     try {
       const subscribedPlaylistIds = await toggleSubscribeToPlaylist(ctx.params.id, ctx.state.user.id)
