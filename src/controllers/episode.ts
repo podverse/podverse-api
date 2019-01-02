@@ -31,7 +31,7 @@ const getEpisodes = async (query, includeNSFW) => {
   }
   delete query.podcastId
 
-  const order = createQueryOrderObject(query.sort, 'createdAt')
+  const order = createQueryOrderObject(query.sort, 'pubDate')
   delete query.sort
 
   const skip = query.skip

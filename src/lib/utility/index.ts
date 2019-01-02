@@ -109,6 +109,24 @@ export const createQueryOrderObject = (sort, sortDateKey) => {
   return order
 }
 
+export const getQueryOrderColumn = (type, sort, sortDateKey) => {
+  if (sort === 'top-past-hour') {
+    return `${type}.pastHourTotalUniquePageviews`
+  } else if (sort === 'top-past-day') {
+    return `${type}.pastDayTotalUniquePageviews`
+  } else if (sort === 'top-past-month') {
+    return `${type}.pastMonthTotalUniquePageviews`
+  } else if (sort === 'top-past-year') {
+    return `${type}.pastYearTotalUniquePageviews`
+  } else if (sort === 'top-all-time') {
+    return `${type}.pastAllTimeTotalUniquePageviews`
+  } else if (sort === 'most-recent') {
+    return `${type}.${sortDateKey}`
+  } else { // sort = top-past-week
+    return `${type}.pastWeekTotalUniquePageviews`
+  }
+}
+
 // @ts-ignore
 Date.prototype.addDays = function (days) {
   const date = new Date(this.valueOf())

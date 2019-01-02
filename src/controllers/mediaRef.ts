@@ -1,7 +1,8 @@
-import { getRepository, In } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
-import { createQueryOrderObject } from 'lib/utility'
+import { getQueryOrderColumn } from 'lib/utility';
+// import { createQueryOrderObject } from 'lib/utility'
 const createError = require('http-errors')
 
 const relations = [
@@ -56,47 +57,38 @@ const getMediaRef = (id) => {
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
 
-  if (query.podcastId && query.podcastId.split(',').length > 1) {
-    query.podcastId = In(query.podcastId.split(','))
-  }
+  const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
+  let podcastIds = query.podcastId && query.podcastId.split(',') || []
+  let episodeIds = query.episodeId && query.episodeId.split(',') || []
 
-  const order = createQueryOrderObject(query.sort, 'createdAt')
-  delete query.sort
+  const episodeJoinAndSelect = `
+    ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
+    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+    ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
+  `
 
-  const skip = query.skip
-  delete query.skip
+  const mediaRefs = await repository
+    .createQueryBuilder('mediaRef')
+    .innerJoinAndSelect(
+      'mediaRef.episode',
+      'episode',
+      episodeJoinAndSelect,
+      {
+        isExplicit: !!includeNSFW,
+        podcastId: query.podcastId,
+        podcastIds: podcastIds,
+        episodeId: query.episodeId,
+        episodeIds: episodeIds
+      }
+    )
+    .innerJoinAndSelect('episode.podcast', 'podcast')
+    .where({ isPublic: true })
+    .skip(query.skip)
+    .take(query.take)
+    .orderBy(orderColumn, 'ASC')
+    .getMany()
 
-  const take = query.take
-  delete query.take
-
-  if (includeNSFW) {
-    const mediaRefs = await repository.find({
-      where: {
-        ...query,
-        isPublic: true
-      },
-      order,
-      skip: parseInt(skip, 10),
-      take: parseInt(take, 10),
-      relations
-    })
-
-    return mediaRefs
-  } else {
-    const mediaRefs = await repository
-      .createQueryBuilder('mediaRef')
-      .innerJoinAndSelect(
-        'mediaRef.episode', 'episode', 'episode.isExplicit = :isExplicit',
-        { isExplicit: false }
-      )
-      .innerJoinAndSelect('episode.podcast', 'podcast')
-      .where({ isPublic: true })
-      .skip(skip)
-      .take(take)
-      .getMany()
-    return mediaRefs
-  }
-
+  return mediaRefs
 }
 
 const updateMediaRef = async (obj, loggedInUserId) => {

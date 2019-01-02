@@ -115,6 +115,13 @@ export class Episode {
   @ManyToOne(type => Podcast, podcast => podcast.episodes)
   podcast: Podcast
 
+  // This podcastId field is Mitch's hacky workaround for not knowing how to
+  // use the TypeORM query builder with nested relational properties.
+  // See the getMediaRefs query in the mediaRef controller for example of where I
+  // needed to query for mediaRefs filtered by episode.id and episode.podcast.id.
+  @Column()
+  podcastId: string
+
   @CreateDateColumn()
   createdAt: Date
 
@@ -124,6 +131,7 @@ export class Episode {
   @BeforeInsert()
   beforeInsert () {
     this.id = shortid.generate()
+    this.podcastId = this.podcast.id
   }
 
   @BeforeInsert()
