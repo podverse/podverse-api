@@ -50,6 +50,9 @@ export class User {
   })
   freeTrialExpiration: Date
 
+  @Column({ default: false })
+  isPublic: boolean
+
   @Column({
     nullable: true,
     select: false

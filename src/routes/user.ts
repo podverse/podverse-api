@@ -3,7 +3,7 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
-  updateQueueItems, updateUser } from 'controllers/user'
+  getPublicUser, updateQueueItems, updateUser } from 'controllers/user'
 import { validateUserCreate } from 'middleware/queryValidation/create'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from 'middleware/queryValidation/update'
@@ -13,6 +13,17 @@ import { jwtAuth } from 'middleware/auth/jwtAuth'
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
 router.use(bodyParser())
+
+// Get
+router.get('/:id',
+  async ctx => {
+    try {
+      const user = await getPublicUser(ctx.params.id, true, true)
+      ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 // Create
 router.post('/',

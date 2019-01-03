@@ -8,8 +8,6 @@ import { validateEmail } from 'lib/utility/validation';
 
 const createError = require('http-errors')
 
-const relations = ['playlists']
-
 const createUser = async (obj) => {
   const repository = getRepository(User)
   const user = new User()
@@ -48,38 +46,99 @@ const deleteUser = async (id, loggedInUserId) => {
   return result
 }
 
-const getUser = async (id, options) => {
+const getPublicUser = async (id, includeMediaRefs, includePlaylists) => {
   const repository = getRepository(User)
 
-  let user = await repository.findOne({ id }, {
-    relations,
-    ...options
-  })
+  let qb = repository
+    .createQueryBuilder('user')
+    .select('user.id')
+    .addSelect('user.name')
+    .where('user.id = :id', { id: 'WLZduWLY7P' })
 
-  if (!user) {
-    throw new createError.NotFound('User not found.')
+  if (includeMediaRefs) {
+    qb.leftJoinAndMapMany(
+      'user.mediaRefs',
+      'user.mediaRefs',
+      'mediaRef',
+      '"mediaRef"."ownerId" = user.id AND "mediaRef"."isPublic" = true'
+    )
   }
 
-  // TODO: how can we use typeOrm queryBuilder so we don't need to sort playlists by title here?
-  if (user && user.playlists) {
-    user.playlists = user.playlists.sort((a, b) => {
-      const textA = a.title && a.title.toUpperCase()
-      const textB = b.title && b.title.toUpperCase()
-
-      if (textA && textB) {
-        return textA.localeCompare(textB)
-      }
-
-      return 0
-    })
+  if (includePlaylists) {
+    qb.leftJoinAndMapMany(
+      'user.playlists',
+      'user.playlists',
+      'playlist',
+      '"playlist"."ownerId" = user.id AND "playlist"."isPublic" = true'
+    )
   }
 
-  return user
+  try {
+    const user = await qb.getOne()
+
+    if (!user) {
+      throw new createError.NotFound('User not found.')
+    }
+
+    return user
+  } catch (error) {
+    console.log(error)
+    return
+  }
+}
+
+const getLoggedInUser = async (id, includeMediaRefs, includePlaylists) => {
+  const repository = getRepository(User)
+
+  let qb = repository
+    .createQueryBuilder('user')
+    .select('user.id')
+    .addSelect('user.email')
+    .addSelect('user.emailVerified')
+    .addSelect('user.freeTrialExpiration')
+    .addSelect('user.isPublic')
+    .addSelect('user.membershipExpiration')
+    .addSelect('user.name')
+    .addSelect('user.subscribedPlaylistIds')
+    .addSelect('user.historyItems')
+    .addSelect('user.queueItems')
+    .where('user.id = :id', { id: 'WLZduWLY7P' })
+
+  if (includeMediaRefs) {
+    qb.leftJoinAndMapMany(
+      'user.mediaRefs',
+      'user.mediaRefs',
+      'mediaRef',
+      '"mediaRef"."ownerId" = user.id'
+    )
+  }
+
+  if (includePlaylists) {
+    qb.leftJoinAndMapMany(
+      'user.playlists',
+      'user.playlists',
+      'playlist',
+      '"playlist"."ownerId" = user.id'
+    )
+  }
+
+  try {
+    const user = await qb.getOne()
+
+    if (!user) {
+      throw new createError.NotFound('User not found.')
+    }
+
+    return user
+  } catch (error) {
+    console.log(error)
+    return
+  }
 }
 
 const getUserByEmail = async (email) => {
   const repository = getRepository(User)
-  const user = await repository.findOne({ email }, { relations })
+  const user = await repository.findOne({ email })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
@@ -94,7 +153,7 @@ const getUserByResetPasswordToken = async (resetPasswordToken) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne({ resetPasswordToken }, { relations })
+  const user = await repository.findOne({ resetPasswordToken })
 
   if (!user) {
     throw new createError.NotFound('Invalid password reset token.')
@@ -109,25 +168,13 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne({ emailVerificationToken }, { relations })
+  const user = await repository.findOne({ emailVerificationToken })
 
   if (!user) {
     throw new createError.NotFound('Invalid verify email token.')
   }
 
   return user
-}
-
-const getUsers = (query, options) => {
-  const repository = getRepository(User)
-
-  return repository.find({
-    where: {
-      ...query
-    },
-    relations,
-    ...options
-  })
 }
 
 const updateUser = async (obj, loggedInUserId) => {
@@ -343,11 +390,11 @@ export {
   createUser,
   deleteUser,
   getCompleteUserDataAsJSON,
-  getUser,
+  getLoggedInUser,
+  getPublicUser,
   getUserByEmail,
   getUserByResetPasswordToken,
   getUserByVerificationToken,
-  getUsers,
   updateQueueItems,
   updateUser,
   updateUserEmailVerificationToken,

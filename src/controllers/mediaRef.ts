@@ -1,18 +1,19 @@
 import { getRepository } from 'typeorm'
 import { MediaRef } from 'entities'
 import { validateClassOrThrow } from 'lib/errors'
-import { getQueryOrderColumn } from 'lib/utility';
-// import { createQueryOrderObject } from 'lib/utility'
+import { getQueryOrderColumn } from 'lib/utility'
 const createError = require('http-errors')
 
 const relations = [
   'authors', 'categories', 'episode', 'episode.podcast', 'owner'
 ]
 
-const createMediaRef = async (obj) => {
+const createMediaRef = async obj => {
   const repository = getRepository(MediaRef)
   const mediaRef = new MediaRef()
   const newMediaRef = Object.assign(mediaRef, obj)
+  newMediaRef.episode = newMediaRef.episodeId
+  delete newMediaRef.episodeId
 
   await validateClassOrThrow(newMediaRef)
 
@@ -113,6 +114,8 @@ const updateMediaRef = async (obj, loggedInUserId) => {
   }
 
   const newMediaRef = Object.assign(mediaRef, obj)
+  newMediaRef.episode = newMediaRef.episodeId
+  delete newMediaRef.episodeId
 
   await validateClassOrThrow(newMediaRef)
 
