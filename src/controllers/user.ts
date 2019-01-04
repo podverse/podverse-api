@@ -1,10 +1,10 @@
 import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
-import { User } from 'entities'
+import { MediaRef, Playlist, User } from 'entities'
 import { saltRounds } from 'lib/constants'
 import { validateClassOrThrow } from 'lib/errors'
-import { validatePassword } from 'lib/utility'
-import { validateEmail } from 'lib/utility/validation';
+import { getQueryOrderColumn, validatePassword } from 'lib/utility'
+import { validateEmail } from 'lib/utility/validation'
 
 const createError = require('http-errors')
 
@@ -46,32 +46,21 @@ const deleteUser = async (id, loggedInUserId) => {
   return result
 }
 
-const getPublicUser = async (id, includeMediaRefs, includePlaylists) => {
+const getPrivateUser = async id => {
   const repository = getRepository(User)
 
   let qb = repository
     .createQueryBuilder('user')
     .select('user.id')
+    .addSelect('user.email')
+    .addSelect('user.emailVerified')
+    .addSelect('user.freeTrialExpiration')
+    .addSelect('user.isPublic')
+    .addSelect('user.membershipExpiration')
     .addSelect('user.name')
-    .where('user.id = :id', { id: 'WLZduWLY7P' })
-
-  if (includeMediaRefs) {
-    qb.leftJoinAndMapMany(
-      'user.mediaRefs',
-      'user.mediaRefs',
-      'mediaRef',
-      '"mediaRef"."ownerId" = user.id AND "mediaRef"."isPublic" = true'
-    )
-  }
-
-  if (includePlaylists) {
-    qb.leftJoinAndMapMany(
-      'user.playlists',
-      'user.playlists',
-      'playlist',
-      '"playlist"."ownerId" = user.id AND "playlist"."isPublic" = true'
-    )
-  }
+    .addSelect('user.subscribedPlaylistIds')
+    .addSelect('user.queueItems')
+    .where('user.id = :id', { id })
 
   try {
     const user = await qb.getOne()
@@ -87,40 +76,14 @@ const getPublicUser = async (id, includeMediaRefs, includePlaylists) => {
   }
 }
 
-const getLoggedInUser = async (id, includeMediaRefs, includePlaylists) => {
+const getPublicUser = async id => {
   const repository = getRepository(User)
 
   let qb = repository
     .createQueryBuilder('user')
     .select('user.id')
-    .addSelect('user.email')
-    .addSelect('user.emailVerified')
-    .addSelect('user.freeTrialExpiration')
-    .addSelect('user.isPublic')
-    .addSelect('user.membershipExpiration')
     .addSelect('user.name')
-    .addSelect('user.subscribedPlaylistIds')
-    .addSelect('user.historyItems')
-    .addSelect('user.queueItems')
-    .where('user.id = :id', { id: 'WLZduWLY7P' })
-
-  if (includeMediaRefs) {
-    qb.leftJoinAndMapMany(
-      'user.mediaRefs',
-      'user.mediaRefs',
-      'mediaRef',
-      '"mediaRef"."ownerId" = user.id'
-    )
-  }
-
-  if (includePlaylists) {
-    qb.leftJoinAndMapMany(
-      'user.playlists',
-      'user.playlists',
-      'playlist',
-      '"playlist"."ownerId" = user.id'
-    )
-  }
+    .where('user.id = :id', { id })
 
   try {
     const user = await qb.getOne()
@@ -134,6 +97,55 @@ const getLoggedInUser = async (id, includeMediaRefs, includePlaylists) => {
     console.log(error)
     return
   }
+}
+
+const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0, take = 20) => {
+  const repository = getRepository(MediaRef)
+  const orderColumn = getQueryOrderColumn('mediaRef', sort, 'createdAt')
+  const episodeJoinAndSelect = `${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}`
+
+  const mediaRefs = await repository
+    .createQueryBuilder('mediaRef')
+    .innerJoinAndSelect(
+      'mediaRef.episode',
+      'episode',
+      episodeJoinAndSelect,
+      {
+        isExplicit: !!includeNSFW
+      }
+    )
+    .innerJoinAndSelect('episode.podcast', 'podcast')
+    .where(
+      {
+        ...(includePrivate ? {} : { isPublic: true }),
+        ownerId: id
+      }
+    )
+    .skip(skip)
+    .take(take)
+    .orderBy(orderColumn, 'ASC')
+    .getMany()
+
+  return mediaRefs
+}
+
+const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
+  const repository = getRepository(Playlist)
+
+  const playlists = await repository
+    .createQueryBuilder('playlist')
+    .where(
+      {
+        ...(includePrivate ? {} : { isPublic: true }),
+        ownerId: id
+      }
+    )
+    .skip(skip)
+    .take(take)
+    .orderBy('title', 'ASC')
+    .getMany()
+
+  return playlists
 }
 
 const getUserByEmail = async (email) => {
@@ -390,11 +402,13 @@ export {
   createUser,
   deleteUser,
   getCompleteUserDataAsJSON,
-  getLoggedInUser,
+  getPrivateUser,
   getPublicUser,
   getUserByEmail,
   getUserByResetPasswordToken,
   getUserByVerificationToken,
+  getUserMediaRefs,
+  getUserPlaylists,
   updateQueueItems,
   updateUser,
   updateUserEmailVerificationToken,

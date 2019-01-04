@@ -267,6 +267,7 @@ const seedDatabase = async (connection: Connection) => {
   playlist1.itemCount = 3
   playlist1.mediaRefs = [mediaRef2, mediaRef3, mediaRef3b]
   playlist1.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis rhoncus metus, non commodo elit. Nunc sed felis non lacus vestibulum pharetra vel a erat.'
+  playlist1.isPublic = true
 
   let playlist2 = new Playlist()
   playlist2.owner = user1

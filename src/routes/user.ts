@@ -3,7 +3,9 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
-  getPublicUser, updateQueueItems, updateUser } from 'controllers/user'
+  getPublicUser, getUserMediaRefs, getUserPlaylists, updateQueueItems, updateUser
+  } from 'controllers/user'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/queryValidation/create'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from 'middleware/queryValidation/update'
@@ -14,12 +16,52 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/use
 
 router.use(bodyParser())
 
-// Get
+// Get Public User
 router.get('/:id',
   async ctx => {
     try {
-      const user = await getPublicUser(ctx.params.id, true, true)
+      const user = await getPublicUser(ctx.params.id)
       ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Public User's MediaRefs
+router.get('/:id/mediaRefs',
+  parseQueryPageOptions,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const mediaRefs = await getUserMediaRefs(
+        ctx.params.id,
+        includeNSFW,
+        false,
+        query.sort,
+        query.skip,
+        query.take
+      )
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Public User's Playlists
+router.get('/:id/playlists',
+  parseQueryPageOptions,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+
+      const playlists = await getUserPlaylists(
+        ctx.params.id,
+        false,
+        query.skip,
+        query.take
+      )
+      ctx.body = playlists
     } catch (error) {
       emitRouterError(error, ctx)
     }

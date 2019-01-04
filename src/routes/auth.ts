@@ -7,7 +7,7 @@ import { authenticate, emailNotExists, localAuth, logOut, optionalJwtAuth,
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from 'middleware/queryValidation/auth'
-import { getPublicUser } from 'controllers/user'
+import { getPrivateUser } from 'controllers/user'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -18,8 +18,9 @@ router.post('/get-authenticated-user-info',
   async ctx => {
     try {
       const { user: jwtUserData } = ctx.state
+
       if (jwtUserData && jwtUserData.id) {
-        const user = await getPublicUser(jwtUserData.id, true, true)
+        const user = await getPrivateUser(jwtUserData.id)
         if (user) {
           ctx.body = {
             email: user.email,
