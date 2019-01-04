@@ -1,13 +1,15 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
-import { authenticate, emailNotExists, localAuth, logOut, optionalJwtAuth,
+import { emitRouterError } from 'lib/errors'
+import { authenticate, emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth,
   resetPassword, sendResetPassword, sendVerification, signUpUser, validEmail,
   verifyEmail } from 'middleware/auth'
+import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from 'middleware/queryValidation/auth'
-import { getPrivateUser } from 'controllers/user'
+import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from 'controllers/user'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -20,7 +22,7 @@ router.post('/get-authenticated-user-info',
       const { user: jwtUserData } = ctx.state
 
       if (jwtUserData && jwtUserData.id) {
-        const user = await getPrivateUser(jwtUserData.id)
+        const user = await getLoggedInUser(jwtUserData.id)
         if (user) {
           ctx.body = {
             email: user.email,
@@ -41,6 +43,48 @@ router.post('/get-authenticated-user-info',
     } catch (error) {
       ctx.body = {}
       ctx.status = 403
+    }
+  })
+
+// Get Logged In User's MediaRefs
+router.get('/mediaRefs',
+  parseQueryPageOptions,
+  jwtAuth,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const mediaRefs = await getUserMediaRefs(
+        ctx.state.user.id,
+        includeNSFW,
+        true,
+        query.sort,
+        query.skip,
+        query.take
+      )
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Logged In User's Playlists
+router.get('/playlists',
+  parseQueryPageOptions,
+  jwtAuth,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+
+      const playlists = await getUserPlaylists(
+        ctx.state.user.id,
+        true,
+        query.skip,
+        query.take
+      )
+      ctx.body = playlists
+    } catch (error) {
+      emitRouterError(error, ctx)
     }
   })
 

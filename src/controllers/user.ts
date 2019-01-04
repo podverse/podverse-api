@@ -46,7 +46,7 @@ const deleteUser = async (id, loggedInUserId) => {
   return result
 }
 
-const getPrivateUser = async id => {
+const getLoggedInUser = async id => {
   const repository = getRepository(User)
 
   let qb = repository
@@ -402,7 +402,7 @@ export {
   createUser,
   deleteUser,
   getCompleteUserDataAsJSON,
-  getPrivateUser,
+  getLoggedInUser,
   getPublicUser,
   getUserByEmail,
   getUserByResetPasswordToken,
