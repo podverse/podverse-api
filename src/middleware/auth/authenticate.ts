@@ -19,12 +19,14 @@ export function authenticate (ctx: Context, next) {
           freeTrialExpiration: user.freeTrialExpiration,
           historyItems: user.historyItems,
           id: user.id,
+          isPublic: user.isPublic,
           membershipExpiration: user.membershipExpiration,
           name: user.name,
           playlists: user.playlists,
           queueItems: user.queueItems,
           subscribedPlaylistIds: user.subscribedPlaylistIds,
-          subscribedPodcastIds: user.subscribedPodcastIds
+          subscribedPodcastIds: user.subscribedPodcastIds,
+          subscribedUserIds: user.subscribedUserIds
         }
         ctx.status = 200
       } else {

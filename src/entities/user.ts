@@ -93,6 +93,12 @@ export class User {
   })
   subscribedPodcastIds: string[]
 
+  @Column('varchar', {
+    array: true,
+    select: false
+  })
+  subscribedUserIds: string[]
+
   @Column('simple-json', { select: false })
   historyItems: NowPlayingItem[]
 
@@ -121,8 +127,9 @@ export class User {
   beforeInsert () {
     this.id = shortid.generate()
 
-    this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
+    this.subscribedPodcastIds = this.subscribedPodcastIds || []
+    this.subscribedUserIds = this.subscribedUserIds || []
 
     this.historyItems = this.historyItems || []
     if (this.historyItems.length > 2) {
@@ -133,12 +140,13 @@ export class User {
 
   @BeforeUpdate()
   beforeUpdate () {
-    this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
+    this.subscribedPodcastIds = this.subscribedPodcastIds || []
+    this.subscribedUserIds = this.subscribedUserIds || []
 
     this.historyItems = this.historyItems || []
-    if (this.historyItems.length > 1000) {
-      const totalToRemove = (this.historyItems.length - 1000)
+    if (this.historyItems.length > 500) {
+      const totalToRemove = (this.historyItems.length - 500)
       this.historyItems.splice(0, totalToRemove)
     }
   }

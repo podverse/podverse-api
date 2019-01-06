@@ -72,7 +72,7 @@ const getPodcasts = async (query, includeNSFW) => {
       where: {
         ...query,
         isPublic: true,
-        ...!includeNSFW && { isExplicit: true }
+        ...!includeNSFW && { isExplicit: false }
       },
       order,
       skip: parseInt(skip, 10),

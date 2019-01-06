@@ -29,12 +29,14 @@ router.post('/get-authenticated-user-info',
             freeTrialExpiration: user.freeTrialExpiration,
             historyItems: user.historyItems,
             id: user.id,
+            isPublic: user.isPublic,
             membershipExpiration: user.membershipExpiration,
             name: user.name,
             playlists: user.playlists,
             queueItems: user.queueItems,
             subscribedPlaylistIds: user.subscribedPlaylistIds,
-            subscribedPodcastIds: user.subscribedPodcastIds
+            subscribedPodcastIds: user.subscribedPodcastIds,
+            subscribedUserIds: user.subscribedUserIds
           }
         }
       }

@@ -46,7 +46,8 @@ const validateUserCreate = async (ctx, next) => {
     name: Joi.string(),
     playlists: Joi.array().items(Joi.string()),
     subscribedPlaylistIds: Joi.array().items(Joi.string()),
-    subscribedPodcastIds: Joi.array().items(Joi.string())
+    subscribedPodcastIds: Joi.array().items(Joi.string()),
+    subscribedUserIds: Joi.array().items(Joi.string())
   })
 
   await validateBaseBody(schema, ctx, next)

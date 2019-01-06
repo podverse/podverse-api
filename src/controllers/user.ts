@@ -55,11 +55,22 @@ const getLoggedInUser = async id => {
     .addSelect('user.email')
     .addSelect('user.emailVerified')
     .addSelect('user.freeTrialExpiration')
+    .addSelect('user.historyItems')
     .addSelect('user.isPublic')
     .addSelect('user.membershipExpiration')
     .addSelect('user.name')
-    .addSelect('user.subscribedPlaylistIds')
     .addSelect('user.queueItems')
+    .addSelect('user.subscribedPlaylistIds')
+    .addSelect('user.subscribedPodcastIds')
+    .addSelect('user.subscribedUserIds')
+    .innerJoinAndSelect(
+      'user.playlists',
+      'playlists',
+      'playlists.owner = :ownerId',
+      {
+        ownerId: id
+      }
+    )
     .where('user.id = :id', { id })
 
   try {
@@ -83,6 +94,7 @@ const getPublicUser = async id => {
     .createQueryBuilder('user')
     .select('user.id')
     .addSelect('user.name')
+    .addSelect('user.subscribedPodcastIds')
     .where('user.id = :id', { id })
 
   try {
@@ -118,7 +130,7 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
     .where(
       {
         ...(includePrivate ? {} : { isPublic: true }),
-        ownerId: id
+        owner: id
       }
     )
     .skip(skip)
@@ -137,13 +149,13 @@ const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
     .where(
       {
         ...(includePrivate ? {} : { isPublic: true }),
-        ownerId: id
+        owner: id
       }
-    )
-    .skip(skip)
-    .take(take)
-    .orderBy('title', 'ASC')
-    .getMany()
+      )
+      .skip(skip)
+      .take(take)
+      .orderBy('title', 'ASC')
+      .getMany()
 
   return playlists
 }
@@ -189,6 +201,43 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   return user
 }
 
+const toggleSubscribeToUser = async (userId, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this profile.')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'subscribedUserIds'
+      ]
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found')
+  }
+
+  // If no userIds match the filter, add the userId.
+  // Else, remove the userId.
+  const filteredUsers = user.subscribedUserIds.filter(x => x !== userId)
+  if (filteredUsers.length === user.subscribedUserIds.length) {
+    user.subscribedUserIds.push(userId)
+  } else {
+    user.subscribedUserIds = filteredUsers
+  }
+
+  const updatedUser = await repository.save(user)
+
+  return updatedUser.subscribedUserIds
+}
+
 const updateUser = async (obj, loggedInUserId) => {
 
   if (!obj.id) {
@@ -212,6 +261,7 @@ const updateUser = async (obj, loggedInUserId) => {
 
   const cleanedObj = {
     ...(obj.email ? { email: obj.email } : {}),
+    ...(obj.isPublic || obj.isPublic === false ? { isPublic: obj.isPublic } : {}),
     ...(obj.name || obj.name === '' ? { name: obj.name } : {})
   }
 
@@ -220,6 +270,7 @@ const updateUser = async (obj, loggedInUserId) => {
   return {
     email: obj.email,
     id: obj.id,
+    isPublic: obj.isPublic,
     name: obj.name
   }
 }
@@ -385,10 +436,11 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
       select: [
         'id',
         'email',
+        'historyItems',
         'name',
         'subscribedPlaylistIds',
         'subscribedPodcastIds',
-        'historyItems'
+        'subscribedUserIds'
       ],
       relations: ['mediaRefs', 'playlists']
     }
@@ -409,6 +461,7 @@ export {
   getUserByVerificationToken,
   getUserMediaRefs,
   getUserPlaylists,
+  toggleSubscribeToUser,
   updateQueueItems,
   updateUser,
   updateUserEmailVerificationToken,

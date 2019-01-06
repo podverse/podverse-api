@@ -3,8 +3,8 @@ import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
-  getPublicUser, getUserMediaRefs, getUserPlaylists, updateQueueItems, updateUser
-  } from 'controllers/user'
+  getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
+  updateQueueItems, updateUser } from 'controllers/user'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/queryValidation/create'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
@@ -83,7 +83,8 @@ router.post('/',
         playlists: user.playlists,
         queueItems: user.queueItems,
         subscribedPlaylistIds: user.subscribedPlaylistIds,
-        subscribedPodcastIds: user.subscribedPodcastIds
+        subscribedPodcastIds: user.subscribedPodcastIds,
+        subscribedUserIds: user.subscribedUserIds
       }
 
       ctx.body = filteredUser
@@ -152,13 +153,26 @@ router.patch('/add-or-update-history-item',
     }
   })
 
-// Get
+// Download user data
 router.get('/download/:id',
   jwtAuth,
   async ctx => {
     try {
       const userJSON = await getCompleteUserDataAsJSON(ctx.params.id, ctx.state.user.id)
       ctx.body = userJSON
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Toggle subscribe to user
+router.get('/toggle-subscribe/:id',
+  jwtAuth,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const subscribedUserIds = await toggleSubscribeToUser(ctx.params.id, ctx.state.user.id)
+      ctx.body = subscribedUserIds
     } catch (error) {
       emitRouterError(error, ctx)
     }

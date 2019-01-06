@@ -55,6 +55,7 @@ const validateUserUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string(),
     id: Joi.string().min(7).max(14).required(),
+    isPublic: Joi.boolean(),
     name: Joi.string().allow(null).allow('')
   })
 

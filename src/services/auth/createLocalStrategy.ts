@@ -26,7 +26,8 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
               'password',
               'queueItems',
               'subscribedPlaylistIds',
-              'subscribedPodcastIds'
+              'subscribedPodcastIds',
+              'subscribedUserIds'
             ],
             relations
           }
