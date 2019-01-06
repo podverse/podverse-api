@@ -150,11 +150,10 @@ const validatePodcastSearch = async (ctx, next) => {
 
 const validateUserSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    id: Joi.string().min(7).max(14),
-    name: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    take: Joi.number().integer().min(0),
+    userIds: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)

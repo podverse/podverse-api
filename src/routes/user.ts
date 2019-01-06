@@ -4,13 +4,17 @@ import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
 import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
   getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
-  updateQueueItems, updateUser } from 'controllers/user'
+  updateQueueItems, updateUser, getPublicUsers } from 'controllers/user'
+import { delimitQueryValues } from 'lib/utility'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validateUserCreate } from 'middleware/queryValidation/create'
+import { validateUserSearch } from 'middleware/queryValidation/search'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from 'middleware/queryValidation/update'
 import { hasValidMembership } from 'middleware/hasValidMembership'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
+
+const delimitKeys = []
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user` })
 
@@ -22,6 +26,20 @@ router.get('/:id',
     try {
       const user = await getPublicUser(ctx.params.id)
       ctx.body = user
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Search Public Users
+router.get('/',
+  parseQueryPageOptions,
+  validateUserSearch,
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+      const users = await getPublicUsers(ctx.request.query)
+      ctx.body = users
     } catch (error) {
       emitRouterError(error, ctx)
     }

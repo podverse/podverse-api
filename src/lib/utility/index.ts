@@ -41,7 +41,7 @@ export const lastHour = () => {
 }
 
 export const convertSecondsToDaysText = (seconds) => {
-  const totalDays = Math.round(parseInt(seconds) / 86400)
+  const totalDays = Math.round(parseInt(seconds, 10) / 86400)
   return `${totalDays > 1 ? `${totalDays} days` : '24 hours'}`
 }
 

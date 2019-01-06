@@ -63,7 +63,7 @@ const getLoggedInUser = async id => {
     .addSelect('user.subscribedPlaylistIds')
     .addSelect('user.subscribedPodcastIds')
     .addSelect('user.subscribedUserIds')
-    .innerJoinAndSelect(
+    .leftJoinAndSelect(
       'user.playlists',
       'playlists',
       'playlists.owner = :ownerId',
@@ -109,6 +109,24 @@ const getPublicUser = async id => {
     console.log(error)
     return
   }
+}
+
+const getPublicUsers = async (query) => {
+  const repository = getRepository(User)
+  let userIds = query.userIds && query.userIds.split(',') || []
+  console.log(userIds)
+  const users = await repository
+    .createQueryBuilder('user')
+    .where({
+      isPublic: true
+    })
+    .andWhere('user.id IN (:...userIds)', { userIds })
+    .skip(query.skip)
+    .take(50)
+    .orderBy('user.name', 'ASC')
+    .getMany()
+
+  return users
 }
 
 const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0, take = 20) => {
@@ -456,6 +474,7 @@ export {
   getCompleteUserDataAsJSON,
   getLoggedInUser,
   getPublicUser,
+  getPublicUsers,
   getUserByEmail,
   getUserByResetPasswordToken,
   getUserByVerificationToken,
