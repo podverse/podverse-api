@@ -114,7 +114,11 @@ const getPublicUser = async id => {
 const getPublicUsers = async (query) => {
   const repository = getRepository(User)
   let userIds = query.userIds && query.userIds.split(',') || []
-  console.log(userIds)
+
+  if (!userIds || userIds.length < 1) {
+    return []
+  }
+
   const users = await repository
     .createQueryBuilder('user')
     .where({
