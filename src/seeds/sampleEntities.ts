@@ -40,6 +40,7 @@ const seedDatabase = async (connection: Connection) => {
   user1.historyItems = []
   user1.queueItems = []
   user1.freeTrialExpiration = addSeconds(new Date(), freeTrialExpiration)
+  user1.isPublic = true
 
   let user2 = new User()
   user2.email = 'sylvester@looney.tunes'
@@ -49,6 +50,7 @@ const seedDatabase = async (connection: Connection) => {
   user2.queueItems = []
   user2.freeTrialExpiration = addSeconds(new Date(), 0)
   user2.membershipExpiration = addSeconds(new Date(), membershipExpiration)
+  user2.isPublic = true
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'
@@ -58,6 +60,7 @@ const seedDatabase = async (connection: Connection) => {
   user3.queueItems = []
   user3.freeTrialExpiration = addSeconds(new Date(), 0)
   user3.membershipExpiration = addSeconds(new Date(), 0)
+  user3.isPublic = true
 
   let user4 = new User()
   user4.email = 'wile@looney.tunes'
@@ -66,6 +69,7 @@ const seedDatabase = async (connection: Connection) => {
   user4.historyItems = []
   user4.queueItems = []
   user4.freeTrialExpiration = addSeconds(new Date(), 259200)
+  user4.isPublic = true
 
   let user5 = new User()
   user5.email = 'roadrunner@looney.tunes'
@@ -74,6 +78,7 @@ const seedDatabase = async (connection: Connection) => {
   user5.historyItems = []
   user5.queueItems = []
   user5.membershipExpiration = addSeconds(new Date(), 259200)
+  user5.isPublic = true
 
   let user6 = new User()
   user6.email = 'daffy@looney.tunes'
@@ -82,6 +87,7 @@ const seedDatabase = async (connection: Connection) => {
   user6.historyItems = []
   user6.queueItems = []
   user6.freeTrialExpiration = addSeconds(new Date(), 0)
+  user6.isPublic = false
 
   let podcast = new Podcast()
   podcast.title = 'The James Altucher Show'
