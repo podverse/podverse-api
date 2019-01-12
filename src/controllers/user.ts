@@ -95,7 +95,8 @@ const getPublicUser = async id => {
     .select('user.id')
     .addSelect('user.name')
     .addSelect('user.subscribedPodcastIds')
-    .where('user.id = :id', { id })
+    .where({ isPublic: true })
+    .andWhere('user.id = :id', { id })
 
   try {
     const user = await qb.getOne()

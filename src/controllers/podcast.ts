@@ -1,11 +1,8 @@
-import { In, getRepository, Like } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { Podcast, User } from 'entities'
-import { createQueryOrderObject } from 'lib/utility'
-const createError = require('http-errors')
+import { getQueryOrderColumn } from 'lib/utility'
 
-const relations = [
-  'authors', 'categories', 'episodes', 'feedUrls'
-]
+const createError = require('http-errors')
 
 const getPodcast = (id) => {
   const repository = getRepository(Podcast)
@@ -29,58 +26,69 @@ const getPodcast = (id) => {
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
 
-  const order = createQueryOrderObject(query.sort, 'createdAt')
-  delete query.sort
+  let qb = repository
+    .createQueryBuilder('podcast')
+    .select('podcast.id')
+    .addSelect('podcast.feedLastUpdated')
+    .addSelect('podcast.imageUrl')
+    .addSelect('podcast.isExplicit')
+    .addSelect('podcast.lastEpisodePubDate')
+    .addSelect('podcast.lastEpisodeTitle')
+    .addSelect('podcast.linkUrl')
+    .addSelect('podcast.title')
 
-  const skip = query.skip
-  delete query.skip
-
-  const take = query.take
-  delete query.take
-
-  // handle queries on a ManyToMany relationship with query builder
-  // TODO: how can we allow filtering by multiple category ids?
   if (query.categories && query.categories.length > 0) {
-    const podcasts = await repository
-      .createQueryBuilder('podcast')
-      .innerJoinAndSelect(
-        'podcast.categories', 'category', 'category.id = :id',
-        { id: query.categories[0] }
+    qb.innerJoinAndSelect(
+      'podcast.categories',
+      'category',
+      'category.id = :id',
+      { id: query.categories[0] }
+    )
+  } else {
+    if (query.searchTitle) {
+      const title = `%${query.searchTitle.toLowerCase()}%`
+      qb.where(
+        'LOWER(podcast.title) LIKE :title',
+        { title }
       )
-      .where({
-        isPublic: true,
-        ...!includeNSFW && { isExplicit: false }
-      })
-      .skip(skip)
-      .take(take)
+    } else if (query.searchAuthor) {
+      const name = `%${query.searchAuthor.toLowerCase()}%`
+      qb.innerJoinAndSelect(
+        'podcast.authors',
+        'author',
+        'LOWER(author.name) LIKE :name',
+        { name }
+      )
+    } else if (query.podcastId && query.podcastId.split(',').length > 0) {
+      const podcastIds = query.podcastId.split(',')
+      qb.where(
+        'id IN (:podcastIds)',
+        { podcastIds }
+      )
+    }
+  }
+
+  if (!includeNSFW) {
+    qb.andWhere('"isExplicit" = false')
+  }
+
+  qb.andWhere('"isPublic" = true')
+
+  if (query.sort) {
+    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'createdAt')
+    qb.orderBy(orderColumn, 'ASC')
+  }
+
+  try {
+    const podcasts = await qb
+      .skip(query.skip)
+      .take(2)
       .getMany()
 
     return podcasts
-  } else {
-    if (query.searchTitle) {
-      query.title = Like(`%${query.searchTitle}%`)
-      delete query.searchTitle
-    } else if (query.searchAuthor) {
-      //
-    } else if (query.podcastId && query.podcastId.split(',').length > 1) {
-      query.id = In(query.podcastId.split(','))
-    } else if (query.podcastId) {
-      query.id = query.podcastId
-    }
-
-    const podcasts = await repository.find({
-      where: {
-        ...query,
-        isPublic: true,
-        ...!includeNSFW && { isExplicit: false }
-      },
-      order,
-      skip: parseInt(skip, 10),
-      take: parseInt(take, 10),
-      relations
-    })
-
-    return podcasts
+  } catch (error) {
+    console.log(error)
+    return
   }
 }
 
