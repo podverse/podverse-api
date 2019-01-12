@@ -1,12 +1,17 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
-  UpdateDateColumn
-} from 'typeorm'
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
+  UpdateDateColumn } from 'typeorm'
 import { User } from 'entities'
+
+const shortid = require('shortid')
+const uuidv4 = require('uuid/v4')
 
 @Entity('coingateOrder')
 export class CoingateOrder {
 
-  @PrimaryColumn('varchar')
+  @PrimaryColumn('varchar', {
+    default: shortid.generate(),
+    length: 14
+  })
   id: string
 
   @Column({ nullable: true })
@@ -30,7 +35,7 @@ export class CoingateOrder {
   @Column({ nullable: true })
   status: string
 
-  @Column({ nullable: true })
+  @Column({ unique: true })
   token: string
 
   @ManyToOne(type => User, user => user.coingateOrders, {
@@ -44,4 +49,10 @@ export class CoingateOrder {
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @BeforeInsert()
+  beforeInsert () {
+    this.id = shortid.generate()
+    this.token = uuidv4()
+  }
 }

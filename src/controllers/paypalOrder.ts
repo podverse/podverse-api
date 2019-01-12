@@ -40,35 +40,6 @@ const getPayPalOrder = async (id, loggedInUserId) => {
   }
 }
 
-const updatePayPalOrder = async (obj, loggedInUserId) => {
-  const repository = getRepository(PayPalOrder)
-  const paypalOrder = await repository.findOne({
-    where: {
-      paymentID: obj.paymentID
-    },
-    relations: ['owner']
-  })
-
-  if (!paypalOrder) {
-    throw new createError.NotFound('PayPalOrder not found')
-  }
-
-  if (paypalOrder.owner.id !== loggedInUserId) {
-    throw new createError.Unauthorized('Unauthorized attempt to update PayPal Order')
-  }
-
-  const cleanedObj = {
-    paymentID: obj.paymentID,
-    payerID: obj.payerID,
-    paymentToken: obj.paymentToken,
-    state: obj.state
-  }
-
-  const response = await repository.update(paypalOrder.paymentID, cleanedObj)
-
-  return response
-}
-
 const completePayPalOrder = async obj => {
   const paypalOrderRepository = getRepository(PayPalOrder)
   const paypalOrder = await paypalOrderRepository.findOne({
@@ -119,6 +90,5 @@ const completePayPalOrder = async obj => {
 export {
   completePayPalOrder,
   createPayPalOrder,
-  getPayPalOrder,
-  updatePayPalOrder
+  getPayPalOrder
 }

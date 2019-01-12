@@ -1,6 +1,12 @@
 const Joi = require('joi')
 import { validateBaseBody } from './base'
 
+const validateCoingateOrderCreate = async (ctx, next) => {
+  const schema = Joi.object().keys({})
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array().items(Joi.string()),
@@ -54,6 +60,7 @@ const validateUserCreate = async (ctx, next) => {
 }
 
 export {
+  validateCoingateOrderCreate,
   validateMediaRefCreate,
   validatePayPalOrderCreate,
   validatePlaylistCreate,

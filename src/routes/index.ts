@@ -1,6 +1,7 @@
 export { default as authRouter } from './auth'
 export { default as authorRouter } from './author'
 export { default as categoryRouter } from './category'
+export { default as coingateRouter } from './coingate'
 export { default as episodeRouter } from './episode'
 export { default as feedUrlRouter } from './feedUrl'
 export { default as mediaRefRouter } from './mediaRef'

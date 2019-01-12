@@ -9,9 +9,9 @@ import { Connection } from 'typeorm'
 
 import { config } from 'config'
 import { User } from 'entities'
-import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
-  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
-  } from 'routes'
+import { authRouter, authorRouter, categoryRouter, coingateRouter, episodeRouter,
+  feedUrlRouter, mediaRefRouter, paypalRouter, playlistRouter, podcastRouter,
+  userRouter } from 'routes'
 import { logger, loggerInstance } from 'lib/logging'
 import { createJwtStrategy, createLocalStrategy } from 'services/auth'
 
@@ -78,6 +78,9 @@ export const createApp = (conn: Connection) => {
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
+
+  app.use(coingateRouter.routes())
+  app.use(coingateRouter.allowedMethods())
 
   app.use(episodeRouter.routes())
   app.use(episodeRouter.allowedMethods())

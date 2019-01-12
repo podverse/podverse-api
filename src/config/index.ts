@@ -30,6 +30,7 @@ export interface IConfig {
   mailerUsername: string
   mailerPassword: string
   paypalConfig: any
+  coingateConfig: any
   websiteDomain: string
   websiteProtocol: string
   websiteResetPasswordPagePath: string
@@ -51,6 +52,16 @@ const paypalConfig = {
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
   mode: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
   webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
+}
+
+const coingateConfig = {
+  apiKey: process.env.COINGATE_API_PRIVATE_KEY,
+  baseUrl: process.env.NODE_ENV === 'production'
+    ? 'https://api.coingate.com/v2/' : 'https://api-sandbox.coingate.com/v2/',
+  priceCurrency: process.env.COINGATE_PREMIUM_PRICE_CURRENCY,
+  receiveCurrency: process.env.COINGATE_PREMIUM_RECEIVE_CURRENCY,
+  title: process.env.COINGATE_PREMIUM_TITLE,
+  description: process.env.COINGATE_PREMIUM_DESCRIPTION
 }
 
 const config: IConfig = {
@@ -79,6 +90,7 @@ const config: IConfig = {
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
   paypalConfig,
+  coingateConfig,
   websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
   websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',
