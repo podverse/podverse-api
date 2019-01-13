@@ -29,8 +29,9 @@ export interface IConfig {
   mailerPort: number
   mailerUsername: string
   mailerPassword: string
-  paypalConfig: any
+  bitpayConfig: any
   coingateConfig: any
+  paypalConfig: any
   websiteDomain: string
   websiteProtocol: string
   websiteResetPasswordPagePath: string
@@ -47,21 +48,31 @@ let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
 let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
 let mailerPort = process.env.MAILER_PORT || '587'
 
-const paypalConfig = {
-  clientId: process.env.PAYPAL_CLIENT_ID,
-  clientSecret: process.env.PAYPAL_CLIENT_SECRET,
-  mode: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
-  webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
+const bitpayConfig = {
+  apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
+  apiKeyPassword: process.env.BITPAY_API_KEY_PASSWORD || '',
+  currency: process.env.BITPAY_CURRENCY || 'USD',
+  notificationURL: process.env.BITPAY_NOTIFICATION_URL,
+  price: process.env.PREMIUM_MEMBERSHIP_COST,
+  redirectURL: process.env.BITPAY_REDIRECT_URL
 }
 
 const coingateConfig = {
   apiKey: process.env.COINGATE_API_PRIVATE_KEY,
   baseUrl: process.env.NODE_ENV === 'production'
     ? 'https://api.coingate.com/v2/' : 'https://api-sandbox.coingate.com/v2/',
+  priceAmount: process.env.PREMIUM_MEMBERSHIP_COST,
   priceCurrency: process.env.COINGATE_PREMIUM_PRICE_CURRENCY,
   receiveCurrency: process.env.COINGATE_PREMIUM_RECEIVE_CURRENCY,
   title: process.env.COINGATE_PREMIUM_TITLE,
   description: process.env.COINGATE_PREMIUM_DESCRIPTION
+}
+
+const paypalConfig = {
+  clientId: process.env.PAYPAL_CLIENT_ID,
+  clientSecret: process.env.PAYPAL_CLIENT_SECRET,
+  mode: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
+  webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
 }
 
 const config: IConfig = {
@@ -89,8 +100,9 @@ const config: IConfig = {
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
-  paypalConfig,
+  bitpayConfig,
   coingateConfig,
+  paypalConfig,
   websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
   websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',

@@ -14,9 +14,20 @@ const createError = require('http-errors')
 //   'refunded'
 // ]
 
-const createCoingateOrder = async () => {
+// After working on understanding Coingate payments for a few weeks,
+// I just learned they don't accept payments for US businesses :(
+// Sooo abandonning Coingate...but leaving Coingate code in the project
+// since it is mostly setup already...
+
+const createCoingateOrder = async (loggedInUserId) => {
   const repository = getRepository(CoingateOrder)
   const coingateOrder = new CoingateOrder()
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Login to create a CoingateOrder')
+  }
+
+  coingateOrder.owner = loggedInUserId
 
   await validateClassOrThrow(coingateOrder)
 

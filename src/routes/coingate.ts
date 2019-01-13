@@ -31,7 +31,7 @@ router.post('/order',
   jwtAuth,
   async ctx => {
     try {
-      const localCoingateOrder = await createCoingateOrderLocal()
+      const localCoingateOrder = await createCoingateOrderLocal(ctx.state.user.id)
       console.log(1, localCoingateOrder)
       if (localCoingateOrder) {
         const obj = {
@@ -57,8 +57,8 @@ router.post('/order',
             token: vendorCoingateOrder.token
           }
 
-          const order = await updateCoingateOrderLocal(updatedCoingateOrder)
-          ctx.body = order
+          await updateCoingateOrderLocal(updatedCoingateOrder, ctx.state.user.id)
+          ctx.body = 'Order created successfully'
         }
       }
     } catch (error) {

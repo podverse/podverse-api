@@ -1,7 +1,8 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { CoingateOrder, MediaRef, PayPalOrder, Playlist } from 'entities'
+import { BitPayInvoice, CoingateOrder, MediaRef, PayPalOrder, Playlist
+  } from 'entities'
 import { ValidatePassword } from 'entities/validation/password'
 import { NowPlayingItem } from 'lib/utility/nowPlayingItem'
 
@@ -104,6 +105,9 @@ export class User {
 
   @Column('simple-json', { select: false })
   queueItems: NowPlayingItem[]
+
+  @OneToMany(type => BitPayInvoice, bitpayInvoice => bitpayInvoice.owner)
+  bitpayInvoices: BitPayInvoice[]
 
   @OneToMany(type => CoingateOrder, coingateOrder => coingateOrder.owner)
   coingateOrders: CoingateOrder[]

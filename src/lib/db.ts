@@ -1,10 +1,11 @@
 import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from 'config'
-import { Author, Category, CoingateOrder, Episode, FeedUrl, MediaRef, PayPalOrder,
-  Playlist, Podcast, User } from 'entities'
+import { Author, BitPayInvoice, Category, CoingateOrder, Episode, FeedUrl,
+  MediaRef, PayPalOrder, Playlist, Podcast, User } from 'entities'
 
 const entities = [
   Author,
+  BitPayInvoice,
   Category,
   CoingateOrder,
   Episode,
