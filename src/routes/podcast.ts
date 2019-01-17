@@ -7,6 +7,7 @@ import { jwtAuth } from 'middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
 import { validatePodcastSearch } from 'middleware/queryValidation/search'
 import { hasValidMembership } from 'middleware/hasValidMembership'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/podcast` })
 
@@ -39,7 +40,15 @@ router.get('/:id',
   })
 
 // Toggle subscribe to podcast
+const toggleSubscribeLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 15,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'get/toggle-subscribe'
+})
+
 router.get('/toggle-subscribe/:id',
+  toggleSubscribeLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {

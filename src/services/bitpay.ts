@@ -22,9 +22,9 @@ client.on('error', err => {
 // Client will take a second to automatically load your tokens,
 // after which it will emit this ready event.
 // You must wait for the ready event before issuing requests
-client.on('ready', () => {
-  console.log('bitpay client ready')
-})
+// client.on('ready', () => {
+//   console.log('bitpay client ready')
+// })
 
 export const createBitPayInvoice = email => {
   return new Promise((resolve, reject) => {

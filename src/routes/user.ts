@@ -2,17 +2,17 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from 'config'
 import { emitRouterError } from 'lib/errors'
-import { addOrUpdateHistoryItem, createUser, deleteUser, getCompleteUserDataAsJSON,
+import { addOrUpdateHistoryItem, deleteUser, getCompleteUserDataAsJSON,
   getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
   updateQueueItems, updateUser, getPublicUsers } from 'controllers/user'
 import { delimitQueryValues } from 'lib/utility'
 import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateUserCreate } from 'middleware/queryValidation/create'
 import { validateUserSearch } from 'middleware/queryValidation/search'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from 'middleware/queryValidation/update'
 import { hasValidMembership } from 'middleware/hasValidMembership'
 import { jwtAuth } from 'middleware/auth/jwtAuth'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
 const delimitKeys = []
 
@@ -85,32 +85,6 @@ router.get('/:id/playlists',
     }
   })
 
-// Create
-router.post('/',
-  validateUserCreate,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const user = await createUser(body)
-
-      const filteredUser = {
-        email: user.email,
-        historyItems: user.historyItems,
-        id: user.id,
-        name: user.name,
-        playlists: user.playlists,
-        queueItems: user.queueItems,
-        subscribedPlaylistIds: user.subscribedPlaylistIds,
-        subscribedPodcastIds: user.subscribedPodcastIds,
-        subscribedUserIds: user.subscribedUserIds
-      }
-
-      ctx.body = filteredUser
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
 // Delete
 router.delete('/:id',
   jwtAuth,
@@ -124,8 +98,16 @@ router.delete('/:id',
   })
 
 // Update
+const updateUserLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 5,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/user'
+})
+
 router.patch('/',
   validateUserUpdate,
+  updateUserLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {
@@ -139,8 +121,16 @@ router.patch('/',
   })
 
 // Update queueItems
+const updateQueueUserLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 30,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/user/update-queue'
+})
+
 router.patch('/update-queue',
   validateUserUpdateQueue,
+  updateQueueUserLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {
@@ -172,7 +162,15 @@ router.patch('/add-or-update-history-item',
   })
 
 // Download user data
+const downloadUserLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 5 minutes.`,
+  prefixKey: 'get/user/download'
+})
+
 router.get('/download/:id',
+downloadUserLimiter,
   jwtAuth,
   async ctx => {
     try {
@@ -184,7 +182,15 @@ router.get('/download/:id',
   })
 
 // Toggle subscribe to user
+const toggleSubscribeUserLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 10,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'get/toggle-subscribe'
+})
+
 router.get('/toggle-subscribe/:id',
+  toggleSubscribeUserLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {

@@ -11,6 +11,7 @@ import { validateMediaRefCreate } from 'middleware/queryValidation/create'
 import { validateMediaRefSearch } from 'middleware/queryValidation/search'
 import { validateMediaRefUpdate } from 'middleware/queryValidation/update'
 import { hasValidMembershipIfJwt } from 'middleware/hasValidMembership'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
 const delimitKeys = ['authors', 'categories']
 
@@ -45,10 +46,18 @@ router.get('/:id',
   })
 
 // Create
+const createMediaRefLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/mediaRef'
+})
+
 router.post('/',
   validateMediaRefCreate,
   optionalJwtAuth,
   hasValidMembershipIfJwt,
+  createMediaRefLimiter,
   async ctx => {
     try {
       let body: any = ctx.request.body
@@ -65,9 +74,17 @@ router.post('/',
   })
 
 // Update
+const updateMediaRefLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/mediaRef'
+})
+
 router.patch('/',
   validateMediaRefUpdate,
   jwtAuth,
+  updateMediaRefLimiter,
   async ctx => {
     try {
       const body = ctx.request.body

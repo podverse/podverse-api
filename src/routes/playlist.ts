@@ -11,6 +11,7 @@ import { validatePlaylistCreate } from 'middleware/queryValidation/create'
 import { validatePlaylistSearch } from 'middleware/queryValidation/search'
 import { validatePlaylistUpdate } from 'middleware/queryValidation/update'
 import { hasValidMembership } from 'middleware/hasValidMembership'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
 
@@ -44,8 +45,16 @@ router.get('/:id',
   })
 
 // Create
+const createPlaylistLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/playlist'
+})
+
 router.post('/',
   validatePlaylistCreate,
+  createPlaylistLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {
@@ -61,8 +70,16 @@ router.post('/',
   })
 
 // Update
+const updatePlaylistLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/playlist'
+})
+
 router.patch('/',
   validatePlaylistUpdate,
+  updatePlaylistLimiter,
   jwtAuth,
   async ctx => {
     try {
@@ -87,7 +104,15 @@ router.delete('/:id',
   })
 
 // Add/remove mediaRef/episode to/from playlist
+const addOrRemovePlaylistLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 30,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/add-or-remove'
+})
+
 router.patch('/add-or-remove',
+  addOrRemovePlaylistLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {
@@ -107,7 +132,15 @@ router.patch('/add-or-remove',
   })
 
 // Toggle subscribe to playlist
+const toggleSubscribeLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 15,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'get/playlist/toggle-subscribe'
+})
+
 router.get('/toggle-subscribe/:id',
+  toggleSubscribeLimiter,
   jwtAuth,
   hasValidMembership,
   async ctx => {

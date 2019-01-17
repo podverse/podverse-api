@@ -10,6 +10,7 @@ import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPass
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from 'middleware/queryValidation/auth'
 import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from 'controllers/user'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -90,18 +91,81 @@ router.get('/playlists',
     }
   })
 
-router.post('/login', validateAuthLogin, localAuth, authenticate)
+const loginLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 5,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/login'
+})
+
+router.post('/login',
+  validateAuthLogin,
+  loginLimiter,
+  localAuth,
+  authenticate)
 
 router.post('/log-out', logOut)
 
-router.post('/reset-password', validateAuthResetPassword, resetPassword)
+const resetPasswordLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/reset-password'
+})
 
-router.post('/send-reset-password', validateAuthSendResetPassword, sendResetPassword)
+router.post('/reset-password',
+  validateAuthResetPassword,
+  resetPasswordLimiter,
+  resetPassword)
 
-router.post('/send-verification', validateAuthSendVerification, sendVerification)
+const sendResetPasswordLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/reset-password'
+})
 
-router.post('/sign-up', validateAuthSignUp, validEmail, emailNotExists, signUpUser)
+router.post('/send-reset-password',
+  validateAuthSendResetPassword,
+  sendResetPasswordLimiter,
+  sendResetPassword)
 
-router.get('/verify-email', validateAuthVerifyEmail, verifyEmail)
+const sendVerificationLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/reset-password'
+})
+
+router.post('/send-verification',
+  validateAuthSendVerification,
+  sendVerificationLimiter,
+  sendVerification)
+
+const signUpLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/reset-password'
+})
+
+router.post('/sign-up',
+  validateAuthSignUp,
+  validEmail,
+  signUpLimiter,
+  emailNotExists,
+  signUpUser)
+
+const verifyEmailLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/verify-email'
+})
+
+router.get('/verify-email',
+  validateAuthVerifyEmail,
+  verifyEmailLimiter,
+  verifyEmail)
 
 export default router
