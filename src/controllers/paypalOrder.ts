@@ -41,6 +41,11 @@ const getPayPalOrder = async (id, loggedInUserId) => {
 }
 
 const completePayPalOrder = async obj => {
+
+  if (!obj.resource || !obj.resource.update_time) {
+    throw new createError.BadRequest('New PayPalOrder date missing')
+  }
+
   const paypalOrderRepository = getRepository(PayPalOrder)
   const paypalOrder = await paypalOrderRepository.findOne({
     where: {
@@ -51,6 +56,10 @@ const completePayPalOrder = async obj => {
 
   if (!paypalOrder) {
     throw new createError.NotFound('PayPalOrder not found')
+  }
+
+  if (paypalOrder.updatedAt >= new Date(obj.resource.update_time)) {
+    throw new createError.BadRequest('New PayPalOrder date is before or equal to the current PayPalOrder date')
   }
 
   if (paypalOrder && paypalOrder.state === 'completed') {

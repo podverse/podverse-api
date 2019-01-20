@@ -87,13 +87,10 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
     if (data) {
       const rows = data.rows || []
-      let rawSQLSearch = ''
+      let rawSQLUpdate = ''
 
       for (const row of rows) {
         const pathName = row.dimensions[0]
-        if (pathName.indexOf('login-redirect') > -1) {
-          continue
-        }
 
         // remove all characters in the url path before the id, then put in an array
         const idStartIndex = pathName.indexOf(`${pagePath}/`) + (pagePath.length + 1)
@@ -106,13 +103,12 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
         const values = row.metrics[0].values[0]
         const tableName = TableNames[pagePath]
-        rawSQLSearch += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
+        rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
       }
 
-      const result = await getConnection()
+      await getConnection()
         .createEntityManager()
-        .query(rawSQLSearch)
-
+        .query(rawSQLUpdate)
     }
   }
 }
