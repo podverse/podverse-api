@@ -4,23 +4,23 @@ import { lastHour, offsetDate } from 'lib/utility'
 import { queryGoogleAnalyticsData } from './google'
 
 enum PagePaths {
-  clips = '~/clips',
-  episodes = '~/episodes',
-  podcasts = '~/podcasts'
+  clip = '~/clip',
+  episode = '~/episode',
+  podcast = '~/podcast'
 }
 
 enum StartDateOffset {
   hour = -60,
   day = -1440,
-  week = 10080,
+  week = -10080,
   month = -43800,
   year = -525600
 }
 
 const TableNames = {
-  clips: 'mediaRef',
-  episodes: 'episode',
-  podcasts: 'podcast'
+  clip: 'mediaRef',
+  episode: 'episode',
+  podcast: 'podcast'
 }
 
 enum TimeRanges {
@@ -37,13 +37,13 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 
   if (!Object.keys(PagePaths).includes(pagePath)) {
     console.log('A valid pagePath must be provided in the first parameter.')
-    console.log('Valid options are: ~/podcasts, ~/episodes, ~/clips')
+    console.log('Valid options are: podcasts, episodes, clips')
     return
   }
 
   if (!Object.keys(TimeRanges).includes(timeRange)) {
     console.log('A valid timeRange must be provided in the second parameter.')
-    console.log('Valid options are: pastHourTotalUniquePageviews, pastDayTotalUniquePageviews, pastWeekTotalUniquePageviews, pastMonthTotalUniquePageviews, pastYearTotalUniquePageviews, pastAllTimeTotalUniquePageviews')
+    console.log('Valid options are: hour, day, week, month, year, allTime')
     return
   }
 
