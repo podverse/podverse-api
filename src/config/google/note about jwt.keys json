@@ -1,0 +1,2 @@
+When deploying on a server, this configuration file is provided during the docker-compose process.
+Search for jwt.keys.json in podverse-ops for an example.

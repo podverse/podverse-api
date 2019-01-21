@@ -1,3 +1,4 @@
+.git
 node_modules
 .env
 /src/config/google/jwt.keys.json

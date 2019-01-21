@@ -38,7 +38,11 @@ export interface IConfig {
   websiteVerifyEmailPagePath: string
 }
 
-const apiHost = process.env.NODE_ENV === 'production' ? 'https://podverse.fm' : 'http://localhost:3000'
+const apiHost = (
+  (process.env.NODE_ENV === 'production' && 'https://podverse.fm') ||
+  (process.env.NODE_ENV === 'stage' && 'https://stage.podverse.fm') ||
+  'http://localhost:3000'
+)
 
 let port = process.env.PORT || '3000'
 let dbPort = process.env.DB_PORT || '5432'
@@ -75,6 +79,12 @@ const paypalConfig = {
   webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
 }
 
+const websiteDomain =
+  process.env.WEBSITE_DOMAIN ||
+  (process.env.NODE_ENV === 'production' && 'podverse.fm') ||
+  (process.env.NODE_ENV === 'stage' && 'stage.podverse.fm') ||
+  'localhost:8765'
+
 const config: IConfig = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
@@ -103,7 +113,7 @@ const config: IConfig = {
   bitpayConfig,
   coingateConfig,
   paypalConfig,
-  websiteDomain: process.env.WEBSITE_DOMAIN || (process.env.NODE_ENV === 'production' ? 'podverse.fm' : 'localhost:8765'),
+  websiteDomain,
   websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',
   websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '/verify-email?token='

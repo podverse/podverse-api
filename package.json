@@ -4,7 +4,7 @@
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "main": "dist/server.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p --progress --colors --display-error-details",
     "scripts:addAllFeedsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllFeedsToQueue.ts",
     "scripts:parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts",
     "scripts:parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",
@@ -13,8 +13,8 @@
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts",
-    "watch-server-dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.ts"
+    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts",
+    "watch-server-dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",
@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@koa/cors": "^2.2.2",
+    "awesome-typescript-loader": "^5.2.1",
     "aws-sdk": "^2.315.0",
     "bcryptjs": "^2.4.3",
     "bitauth": "^0.3.2",
@@ -87,7 +88,9 @@
     "reflect-metadata": "^0.1.12",
     "request": "^2.88.0",
     "shortid": "^2.2.13",
+    "ts-loader": "^5.3.3",
     "tsconfig-paths": "^3.6.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "typeorm": "^0.2.7",
     "uuid": "^3.3.2",
     "validator": "^10.7.1",
