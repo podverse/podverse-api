@@ -33,8 +33,6 @@ const connectionOptions: ConnectionOptions = {
   }
 }
 
-console.log(connectionOptions)
-
 export const connectToDb = () => {
   return createConnection(connectionOptions)
     .then(connection => connection)
