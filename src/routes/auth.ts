@@ -1,15 +1,15 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
 import { authenticate, emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth,
   resetPassword, sendResetPassword, sendVerification, signUpUser, validEmail,
-  verifyEmail } from 'middleware/auth'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
+  verifyEmail } from '~/middleware/auth'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
-  } from 'middleware/queryValidation/auth'
-import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from 'controllers/user'
+  } from '~/middleware/queryValidation/auth'
+import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
@@ -168,4 +168,4 @@ router.get('/verify-email',
   verifyEmailLimiter,
   verifyEmail)
 
-export default router
+export const authRouter = router

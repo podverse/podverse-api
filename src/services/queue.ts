@@ -1,11 +1,12 @@
 import { getRepository, getConnection } from 'typeorm'
-import { awsConfig } from 'config/aws'
-import { FeedUrl } from 'entities'
-import { chunkArray } from 'lib/utility'
-import { connectToDb } from 'lib/db'
-import { sqs } from 'services/aws'
-import { generateFeedMessageAttributes } from 'services/parser'
+import { config } from '~/config'
+import { FeedUrl } from '~/entities'
+import { chunkArray } from '~/lib/utility'
+import { connectToDb } from '~/lib/db'
+import { sqs } from '~/services/aws'
+import { generateFeedMessageAttributes } from '~/services/parser'
 
+const { awsConfig } = config
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 
 export const addAllFeedsToQueue = async () => {
@@ -25,7 +26,7 @@ export const addAllFeedsToQueue = async () => {
 
   let attributes = []
   for (const feed of allFeeds) {
-    const attribute = generateFeedMessageAttributes(feed)
+    const attribute = generateFeedMessageAttributes(feed) as never
     attributes.push(attribute)
   }
 
@@ -35,7 +36,7 @@ export const addAllFeedsToQueue = async () => {
       Id: String(index),
       MessageAttributes: key,
       MessageBody: 'aws sqs requires a message body - podverse rules'
-    }
+    } as never
     entries.push(entry)
   }
 
@@ -106,7 +107,7 @@ export const deleteMessage = async receiptHandle => {
   }
 }
 
-const purgeQueue = async () => {
+export const purgeQueue = async () => {
   const params = { QueueUrl: feedsToParseUrl }
 
   await sqs.purgeQueue(params)

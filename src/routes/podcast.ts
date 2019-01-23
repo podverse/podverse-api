@@ -1,12 +1,12 @@
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { delimitQueryValues } from 'lib/utility'
-import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from 'controllers/podcast'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validatePodcastSearch } from 'middleware/queryValidation/search'
-import { hasValidMembership } from 'middleware/hasValidMembership'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
+import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validatePodcastSearch } from '~/middleware/queryValidation/search'
+import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/podcast` })
@@ -60,4 +60,4 @@ router.get('/toggle-subscribe/:id',
     }
   })
 
-export default router
+export const podcastRouter = router

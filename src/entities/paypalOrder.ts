@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
-import { User } from 'entities'
+import { User } from '~/entities'
 
 @Entity('paypalOrder')
 export class PayPalOrder {

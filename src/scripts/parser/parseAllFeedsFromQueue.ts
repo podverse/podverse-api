@@ -1,3 +1,3 @@
-import { parseAllFeedsFromQueue } from 'services/parser'
+import { parseAllFeedsFromQueue } from '~/services/parser'
 
 parseAllFeedsFromQueue(true)

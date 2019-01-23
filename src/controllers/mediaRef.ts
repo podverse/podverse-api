@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
-import { MediaRef } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
-import { getQueryOrderColumn } from 'lib/utility'
+import { MediaRef } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
+import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [

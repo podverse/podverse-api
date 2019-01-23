@@ -1,3 +1,3 @@
-import { addAllFeedsToQueue } from 'services/queue'
+import { addAllFeedsToQueue } from '~/services/queue'
 
 addAllFeedsToQueue()

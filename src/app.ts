@@ -4,16 +4,16 @@ import * as helmet from 'koa-helmet'
 import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
-import * as swagger from 'koa2-swagger-ui'
+// import * as swagger from 'koa2-swagger-ui'
 import { Connection } from 'typeorm'
 
-import { config } from 'config'
-import { User } from 'entities'
-import { authRouter, authorRouter, bitpayRouter, categoryRouter, coingateRouter,
-  episodeRouter, feedUrlRouter, mediaRefRouter, paypalRouter, playlistRouter,
-  podcastRouter, userRouter } from 'routes'
-import { logger, loggerInstance } from 'lib/logging'
-import { createJwtStrategy, createLocalStrategy } from 'services/auth'
+import { config } from '~/config'
+import { User } from '~/entities'
+import { logger, loggerInstance } from '~/lib/logging'
+import { authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
+  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
+  } from '~/routes'
+import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
 const cookie = require('cookie')
 const cors = require('@koa/cors')
@@ -63,27 +63,24 @@ export const createApp = (conn: Connection) => {
     `/public`, koaStatic(__dirname + '/public/samples')
   ))
 
-  app.use(swagger({
-    routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
-    swaggerOptions: {
-      url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
-    }
-  }))
+  // app.use(swagger({
+  //   routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
+  //   swaggerOptions: {
+  //     url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
+  //   }
+  // }))
 
-  app.use(authRouter.routes())
-  app.use(authRouter.allowedMethods())
+  // app.use(authRouter.routes())
+  // app.use(authRouter.allowedMethods())
 
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
 
-  app.use(bitpayRouter.routes())
-  app.use(bitpayRouter.allowedMethods())
+  // app.use(bitpayRouter.routes())
+  // app.use(bitpayRouter.allowedMethods())
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
-
-  app.use(coingateRouter.routes())
-  app.use(coingateRouter.allowedMethods())
 
   app.use(episodeRouter.routes())
   app.use(episodeRouter.allowedMethods())

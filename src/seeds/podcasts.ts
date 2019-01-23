@@ -1,5 +1,5 @@
-import { parseFeed } from 'services/parser'
-import { connectToDb } from 'lib/db';
+import { parseFeed } from '~/services/parser'
+import { connectToDb } from '~/lib/db';
 
 const parseFeeds = async () => {
 

@@ -1,16 +1,16 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { delimitQueryValues } from 'lib/utility'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
-  from 'controllers/mediaRef'
-import { jwtAuth, optionalJwtAuth } from 'middleware/auth/jwtAuth'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateMediaRefCreate } from 'middleware/queryValidation/create'
-import { validateMediaRefSearch } from 'middleware/queryValidation/search'
-import { validateMediaRefUpdate } from 'middleware/queryValidation/update'
-import { hasValidMembershipIfJwt } from 'middleware/hasValidMembership'
+  from '~/controllers/mediaRef'
+import { jwtAuth, optionalJwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateMediaRefCreate } from '~/middleware/queryValidation/create'
+import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
+import { validateMediaRefUpdate } from '~/middleware/queryValidation/update'
+import { hasValidMembershipIfJwt } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const delimitKeys = ['authors', 'categories']
@@ -107,4 +107,4 @@ router.delete('/:id',
     }
   })
 
-export default router
+export const mediaRefRouter = router

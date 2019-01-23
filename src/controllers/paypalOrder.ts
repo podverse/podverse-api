@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
-import { PayPalOrder, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { PayPalOrder, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 const createPayPalOrder = async (obj) => {

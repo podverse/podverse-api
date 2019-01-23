@@ -1,7 +1,7 @@
 import { getUserByEmail, getUserByResetPasswordToken,
-  updateUserPassword, updateUserResetPasswordToken} from 'controllers/user'
-import { emitRouterError } from 'lib/errors'
-import { sendResetPasswordEmail } from 'services/auth/sendResetPasswordEmail'
+  updateUserPassword, updateUserResetPasswordToken} from '~/controllers/user'
+import { emitRouterError } from '~/lib/errors'
+import { sendResetPasswordEmail } from '~/services/auth/sendResetPasswordEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 

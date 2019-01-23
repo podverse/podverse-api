@@ -1,4 +1,4 @@
-import { Episode, MediaRef, User } from 'entities'
+import { Episode, MediaRef, User } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'

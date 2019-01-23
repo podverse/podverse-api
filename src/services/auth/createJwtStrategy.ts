@@ -1,5 +1,5 @@
 import { ExtractJwt, Strategy as JwtStrategy, StrategyOptions } from 'passport-jwt'
-import { config } from 'config'
+import { config } from '~/config'
 const { jwtSecret } = config
 
 export const createJwtStrategy = () => {

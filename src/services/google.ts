@@ -1,5 +1,5 @@
 const { google } = require('googleapis')
-import googleConfig from 'config/google'
+import googleConfig from '~/config/google'
 const path = require('path')
 
 export const queryGoogleAnalyticsData = async queryObj => {

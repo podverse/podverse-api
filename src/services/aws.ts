@@ -1,4 +1,6 @@
-import { awsConfig } from 'config/aws'
+import { config } from '~/config'
+
+const { awsConfig } = config
 const awsRegion = awsConfig.region
 
 const aws = require('aws-sdk')

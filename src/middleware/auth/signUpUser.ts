@@ -1,9 +1,9 @@
 import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
-import { User } from 'entities'
-import { CustomStatusError, emitRouterError } from 'lib/errors'
-import { createUser } from 'controllers/user'
-import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
+import { User } from '~/entities'
+import { CustomStatusError, emitRouterError } from '~/lib/errors'
+import { createUser } from '~/controllers/user'
+import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 

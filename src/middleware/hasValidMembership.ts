@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
-import { User } from 'entities'
-import { isBeforeDate } from 'lib/utility'
+import { User } from '~/entities'
+import { isBeforeDate } from '~/lib/utility'
 const createError = require('http-errors')
 
 export const hasValidMembership = async (ctx, next) => {

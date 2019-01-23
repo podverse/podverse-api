@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { FeedUrl } from 'entities'
+import { FeedUrl } from '~/entities'
 const createError = require('http-errors')
 
 const relations = [

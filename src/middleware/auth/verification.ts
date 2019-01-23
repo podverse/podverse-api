@@ -1,7 +1,7 @@
 import { getUserByEmail, getUserByVerificationToken,
-  updateUserEmailVerificationToken } from 'controllers/user'
-import { emitRouterError } from 'lib/errors'
-import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
+  updateUserEmailVerificationToken } from '~/controllers/user'
+import { emitRouterError } from '~/lib/errors'
+import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 

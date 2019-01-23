@@ -2,7 +2,7 @@ import { IsInt, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
-import { Author, Category, Episode, User } from 'entities'
+import { Author, Category, Episode, User } from '~/entities'
 
 const shortid = require('shortid')
 

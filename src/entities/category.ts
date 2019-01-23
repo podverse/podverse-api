@@ -1,7 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
-import { Podcast } from 'entities'
+import { Podcast } from '~/entities'
 const shortid = require('shortid')
 
 @Entity('categories')

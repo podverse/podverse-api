@@ -1,10 +1,10 @@
 import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
-import { MediaRef, Playlist, User } from 'entities'
-import { saltRounds } from 'lib/constants'
-import { validateClassOrThrow } from 'lib/errors'
-import { getQueryOrderColumn, validatePassword } from 'lib/utility'
-import { validateEmail } from 'lib/utility/validation'
+import { MediaRef, Playlist, User } from '~/entities'
+import { saltRounds } from '~/lib/constants'
+import { validateClassOrThrow } from '~/lib/errors'
+import { getQueryOrderColumn, validatePassword } from '~/lib/utility'
+import { validateEmail } from '~/lib/utility/validation'
 
 const createError = require('http-errors')
 

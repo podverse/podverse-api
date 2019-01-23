@@ -1,10 +1,10 @@
-require('dotenv').config({ path: './env' })
+require('dotenv').config()
 
 import 'reflect-metadata'
-import { createApp } from 'app'
-import { connectToDb } from 'lib/db'
+import { createApp } from '~/app'
+import { connectToDb } from '~/lib/db'
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 1234
 
 connectToDb()
   .then(async connection => {

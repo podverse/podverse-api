@@ -1,6 +1,6 @@
 import { getRepository, In } from 'typeorm'
-import { Episode } from 'entities'
-import { createQueryOrderObject } from 'lib/utility'
+import { Episode } from '~/entities'
+import { createQueryOrderObject } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [

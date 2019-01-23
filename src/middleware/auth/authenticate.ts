@@ -1,8 +1,7 @@
-import { Context } from 'koa'
-import { generateToken } from 'services/auth/generateToken'
-import { authExpires } from 'lib/constants'
+import { generateToken } from '~/services/auth/generateToken'
+import { authExpires } from '~/lib/constants'
 
-export function authenticate (ctx: Context, next) {
+export function authenticate (ctx, next) {
   return generateToken(ctx.state.user)
     .then(token => {
       if (token) {

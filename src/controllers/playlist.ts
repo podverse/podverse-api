@@ -1,6 +1,6 @@
 import { getRepository, In } from 'typeorm'
-import { Episode, Playlist, MediaRef, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { Episode, Playlist, MediaRef, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 const relations = [

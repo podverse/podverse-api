@@ -1,7 +1,7 @@
 import { Connection } from 'typeorm'
-import { validCategories } from 'config/categories'
-import { Category } from 'entities'
-import { connectToDb } from 'lib/db'
+import { validCategories } from '~/config/categories'
+import { Category } from '~/entities'
+import { connectToDb } from '~/lib/db'
 
 const generateCategories = async (
   connection: Connection,

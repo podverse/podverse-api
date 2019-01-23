@@ -1,4 +1,4 @@
-import { config } from 'config'
+import { config } from '~/config'
 const { paypalConfig } = config
 const { clientId, clientSecret, mode, webhookIdPaymentSaleCompleted } = paypalConfig
 const paypal = require('paypal-rest-sdk')

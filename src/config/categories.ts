@@ -117,7 +117,7 @@ export const validCategories = [
   }
 ]
 
-let categoryTitles = []
+let categoryTitles: string[] = []
 for (const category of validCategories) {
   categoryTitles.push(category.title)
   for (const subCategory of category.categories) {

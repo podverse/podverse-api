@@ -1,12 +1,12 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
 import { completePayPalOrder, createPayPalOrder, getPayPalOrder
-  } from 'controllers/paypalOrder'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
-import { validatePayPalOrderCreate } from 'middleware/queryValidation/create'
-import { verifyWebhookSignature, getPayPalResponseHeaders } from 'services/paypal'
+  } from '~/controllers/paypalOrder'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { validatePayPalOrderCreate } from '~/middleware/queryValidation/create'
+import { verifyWebhookSignature, getPayPalResponseHeaders } from '~/services/paypal'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/paypal` })
@@ -76,4 +76,4 @@ router.post('/webhooks/payment-completed',
   }
 )
 
-export default router
+export const paypalRouter = router

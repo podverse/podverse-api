@@ -1,12 +1,13 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request'
 import { getRepository, In } from 'typeorm'
-import { awsConfig } from 'config/aws'
-import { connectToDb } from 'lib/db'
-import { Author, Category, Episode, FeedUrl, Podcast } from 'entities'
+import { config } from '~/config'
+import { connectToDb } from '~/lib/db'
+import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue }
-  from 'services/queue'
+from '~/services/queue'
 
+const { awsConfig } = config
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 const feedsToParseErrorsUrl = awsConfig.queueUrls.feedsToParseErrors
 
@@ -25,7 +26,7 @@ export const parseNextFeedFromQueue = async (shouldConnectToDb = false) => {
 
   if (feed && feed.url && feed.podcast.id) {
     try {
-      let res = await parseFeed(feed.url, feed.podcast.id, 'false')
+      await parseFeed(feed.url, feed.podcast.id, 'false')
     } catch (error) {
       console.error('parseNextFeedFromQueue:parseFeed', error)
       const attrs = generateFeedMessageAttributes(feed)
@@ -87,6 +88,7 @@ export const parseFeed = async (url, id, shouldCreate = 'false') => {
 
         let authors = []
         if (data.author) {
+          // @ts-ignore
           authors = await findOrGenerateAuthors(data.author)
         }
         podcast.authors = authors
@@ -142,7 +144,7 @@ const findOrGenerateAuthors = async (authorNames) => {
   let newAuthorNames = allAuthorNames.filter(x => !existingAuthorNames.includes(x))
 
   for (const name of newAuthorNames) {
-    let author = generateAuthor(name)
+    let author = generateAuthor(name) as never
     newAuthors.push(author)
   }
 
@@ -182,7 +184,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
 
   let authors = []
   if (parsedEpisode.author) {
-    authors = await findOrGenerateAuthors(parsedEpisode.author)
+    authors = await findOrGenerateAuthors(parsedEpisode.author) as never[]
   }
   episode.authors = authors
 
@@ -218,12 +220,14 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       x => x.enclosure.url === existingEpisode.mediaUrl
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
+    // @ts-ignore
     allEpisodes.push(existingEpisode)
   }
 
   for (const newParsedEpisode of newParsedEpisodes) {
     let episode = new Episode()
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
+    // @ts-ignore
     allEpisodes.push(episode)
   }
 

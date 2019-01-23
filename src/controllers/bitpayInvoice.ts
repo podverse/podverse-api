@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
-import { BitPayInvoice, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { BitPayInvoice, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 /*

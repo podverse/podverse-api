@@ -1,16 +1,16 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { delimitQueryValues } from 'lib/utility'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
-  toggleSubscribeToPlaylist, updatePlaylist } from 'controllers/playlist'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validatePlaylistCreate } from 'middleware/queryValidation/create'
-import { validatePlaylistSearch } from 'middleware/queryValidation/search'
-import { validatePlaylistUpdate } from 'middleware/queryValidation/update'
-import { hasValidMembership } from 'middleware/hasValidMembership'
+  toggleSubscribeToPlaylist, updatePlaylist } from '~/controllers/playlist'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validatePlaylistCreate } from '~/middleware/queryValidation/create'
+import { validatePlaylistSearch } from '~/middleware/queryValidation/search'
+import { validatePlaylistUpdate } from '~/middleware/queryValidation/update'
+import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
@@ -152,4 +152,4 @@ router.get('/toggle-subscribe/:id',
     }
   })
 
-export default router
+export const playlistRouter = router

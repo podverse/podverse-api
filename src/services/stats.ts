@@ -1,6 +1,6 @@
 import { getConnection } from 'typeorm'
-import { connectToDb } from 'lib/db'
-import { lastHour, offsetDate } from 'lib/utility'
+import { connectToDb } from '~/lib/db'
+import { lastHour, offsetDate } from '~/lib/utility'
 import { queryGoogleAnalyticsData } from './google'
 
 enum PagePaths {

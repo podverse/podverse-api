@@ -1,4 +1,4 @@
-import { parseFeed } from 'services/parser'
+import { parseFeed } from '~/services/parser'
 
 parseFeed(
   process.env.PARSE_FEED_URL,

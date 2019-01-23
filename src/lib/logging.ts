@@ -1,6 +1,6 @@
 import * as Koa from 'koa'
 import * as winston from 'winston'
-import { config } from 'config'
+import { config } from '~/config'
 
 export const loggerInstance = winston.createLogger({
   level: config.debugLogging ? 'debug' : 'info',

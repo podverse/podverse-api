@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { Author } from 'entities'
+import { Author } from '~/entities'
 const createError = require('http-errors')
 
 const relations = []

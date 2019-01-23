@@ -1,9 +1,9 @@
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { getAuthor, getAuthors } from 'controllers/author'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateAuthorSearch } from 'middleware/queryValidation/search'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { getAuthor, getAuthors } from '~/controllers/author'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateAuthorSearch } from '~/middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/author` })
 
@@ -32,4 +32,4 @@ router.get('/:id',
     }
   })
 
-export default router
+export const authorRouter = router

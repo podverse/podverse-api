@@ -1,17 +1,17 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
 import { addOrUpdateHistoryItem, deleteUser, getCompleteUserDataAsJSON,
   getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
-  updateQueueItems, updateUser, getPublicUsers } from 'controllers/user'
-import { delimitQueryValues } from 'lib/utility'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateUserSearch } from 'middleware/queryValidation/search'
+  updateQueueItems, updateUser, getPublicUsers } from '~/controllers/user'
+import { delimitQueryValues } from '~/lib/utility'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateUserSearch } from '~/middleware/queryValidation/search'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
-  validateUserUpdateQueue } from 'middleware/queryValidation/update'
-import { hasValidMembership } from 'middleware/hasValidMembership'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
+  validateUserUpdateQueue } from '~/middleware/queryValidation/update'
+import { hasValidMembership } from '~/middleware/hasValidMembership'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const delimitKeys = []
@@ -202,4 +202,4 @@ router.get('/toggle-subscribe/:id',
     }
   })
 
-export default router
+export const userRouter = router

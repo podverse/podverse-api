@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
-import { Podcast, User } from 'entities'
-import { getQueryOrderColumn } from 'lib/utility'
+import { Podcast, User } from '~/entities'
+import { getQueryOrderColumn } from '~/lib/utility'
 
 const createError = require('http-errors')
 

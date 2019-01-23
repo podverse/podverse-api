@@ -1,4 +1,4 @@
-export const awsConfig = {
+export default {
   queueUrls: {
     feedsToParse: process.env.AWS_QUEUE_FEED_PARSER_URL,
     feedsToParseErrors: process.env.AWS_QUEUE_FEED_PARSER_ERRORS_URL

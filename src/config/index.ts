@@ -1,6 +1,4 @@
-import * as dotenv from 'dotenv'
-
-dotenv.config({ path: '.env' })
+import awsConfig from '~/config/aws'
 
 export interface DbConfig {
   type: string
@@ -9,12 +7,12 @@ export interface DbConfig {
   username: string
   password: string
   database: string
+  sslConnection: boolean
 }
 
 export interface IConfig {
   port: number
   debugLogging: boolean
-  dbsslconn: boolean
   dbConfig: DbConfig
   apiHost: string
   apiPrefix: string
@@ -29,8 +27,8 @@ export interface IConfig {
   mailerPort: number
   mailerUsername: string
   mailerPassword: string
+  awsConfig: any
   bitpayConfig: any
-  coingateConfig: any
   paypalConfig: any
   websiteDomain: string
   websiteProtocol: string
@@ -38,13 +36,9 @@ export interface IConfig {
   websiteVerifyEmailPagePath: string
 }
 
-const apiHost = (
-  (process.env.NODE_ENV === 'production' && 'https://podverse.fm') ||
-  (process.env.NODE_ENV === 'stage' && 'https://stage.podverse.fm') ||
-  'http://localhost:3000'
-)
+const apiHost = process.env.API_HOST || 'http://localhost:1234'
 
-let port = process.env.PORT || '3000'
+let port = process.env.PORT || '1234'
 let dbPort = process.env.DB_PORT || '5432'
 let resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
 let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
@@ -61,46 +55,31 @@ const bitpayConfig = {
   redirectURL: process.env.BITPAY_REDIRECT_URL
 }
 
-const coingateConfig = {
-  apiKey: process.env.COINGATE_API_PRIVATE_KEY,
-  baseUrl: process.env.NODE_ENV === 'production'
-    ? 'https://api.coingate.com/v2/' : 'https://api-sandbox.coingate.com/v2/',
-  priceAmount: process.env.PREMIUM_MEMBERSHIP_COST,
-  priceCurrency: process.env.COINGATE_PREMIUM_PRICE_CURRENCY,
-  receiveCurrency: process.env.COINGATE_PREMIUM_RECEIVE_CURRENCY,
-  title: process.env.COINGATE_PREMIUM_TITLE,
-  description: process.env.COINGATE_PREMIUM_DESCRIPTION
-}
-
 const paypalConfig = {
   clientId: process.env.PAYPAL_CLIENT_ID,
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
-  mode: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
+  mode: process.env.PAYPAL_MODE,
   webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
 }
 
-const websiteDomain =
-  process.env.WEBSITE_DOMAIN ||
-  (process.env.NODE_ENV === 'production' && 'podverse.fm') ||
-  (process.env.NODE_ENV === 'stage' && 'stage.podverse.fm') ||
-  'localhost:8765'
+const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
 const config: IConfig = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
-  dbsslconn: process.env.NODE_ENV !== 'development',
   dbConfig: {
-    type: 'postgres',
-    host: process.env.DB_HOST || '127.0.0.1',
+    type: process.env.DB_TYPE || '',
+    host: process.env.DB_HOST || '',
     port: parseInt(dbPort, 10),
-    username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'mysecretpw',
-    database: process.env.DB_DATABASE || 'postgres'
+    username: process.env.DB_USERNAME || '',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_DATABASE || '',
+    sslConnection: process.env.DB_SSL_CONNECTION === 'true'
   },
   apiHost,
-  apiPrefix: process.env.API_PREFIX || '/api',
-  apiVersion: process.env.API_VERSION || '/v1',
-  jwtSecret: process.env.JWT_SECRET || 'mysecretjwt',
+  apiPrefix: process.env.API_PREFIX || '',
+  apiVersion: process.env.API_VERSION || '',
+  jwtSecret: process.env.JWT_SECRET || '',
   resetPasswordTokenExpiration: parseInt(resetPasswordTokenExpiration, 10),
   emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),
   freeTrialExpiration: parseInt(freeTrialExpiration, 10),
@@ -110,13 +89,13 @@ const config: IConfig = {
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
+  awsConfig,
   bitpayConfig,
-  coingateConfig,
   paypalConfig,
   websiteDomain,
-  websiteProtocol: process.env.WEBSITE_PROTOCOL || (process.env.NODE_ENV === 'production' ? 'https' : 'http'),
-  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '/reset-password?token=',
-  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '/verify-email?token='
+  websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
+  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
+  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || ''
 }
 
 export { config }

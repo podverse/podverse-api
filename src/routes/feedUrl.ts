@@ -1,9 +1,9 @@
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { getFeedUrl, getFeedUrls } from 'controllers/feedUrl'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateFeedUrlSearch } from 'middleware/queryValidation/search'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { getFeedUrl, getFeedUrls } from '~/controllers/feedUrl'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateFeedUrlSearch } from '~/middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/feedUrl` })
 
@@ -32,4 +32,4 @@ router.get('/:id',
     }
   })
 
-export default router
+export const feedUrlRouter = router

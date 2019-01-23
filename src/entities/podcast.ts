@@ -1,5 +1,5 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Author, Category, Episode, FeedUrl } from 'entities'
+import { Author, Category, Episode, FeedUrl } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
 
