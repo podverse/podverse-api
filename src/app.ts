@@ -10,7 +10,7 @@ import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
-import { authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
+import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
   } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
@@ -70,8 +70,8 @@ export const createApp = (conn: Connection) => {
   //   }
   // }))
 
-  // app.use(authRouter.routes())
-  // app.use(authRouter.allowedMethods())
+  app.use(authRouter.routes())
+  app.use(authRouter.allowedMethods())
 
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
