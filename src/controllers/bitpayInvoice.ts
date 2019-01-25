@@ -15,7 +15,7 @@ invoiceStates = [
 // Sooo abandonning BitPay...but leaving BitPay code in the project
 // since it is mostly setup already...
 
-const createBitPayInvoice = async (data, loggedInUserId) => {
+const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to create a BitPayInvoice')
   }
@@ -49,7 +49,7 @@ const createBitPayInvoice = async (data, loggedInUserId) => {
   return bitpayInvoice
 }
 
-const getBitPayInvoiceStatus = async (orderId, loggedInUserId) => {
+const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
   const repository = getRepository(BitPayInvoice)
   let select = [
     'orderId',
@@ -79,7 +79,7 @@ const getBitPayInvoiceStatus = async (orderId, loggedInUserId) => {
   }
 }
 
-const updateBitPayInvoice = async data => {
+const updateBitPayInvoiceLocal = async data => {
   const { amountPaid, currency, exceptionStatus, id, price, status,
     transactionCurrency, transactionSpeed, url } = data
 
@@ -148,7 +148,7 @@ const updateBitPayInvoice = async data => {
 }
 
 export {
-  createBitPayInvoice,
-  getBitPayInvoiceStatus,
-  updateBitPayInvoice
+  createBitPayInvoiceLocal,
+  getBitPayInvoiceStatusLocal,
+  updateBitPayInvoiceLocal
 }

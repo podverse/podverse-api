@@ -1,6 +1,6 @@
 export { authRouter } from '~/routes/auth'
 export { authorRouter } from '~/routes/author'
-// export { bitpayRouter } from '~/routes/bitpay'
+export { bitpayRouter } from '~/routes/bitpay'
 export { categoryRouter } from '~/routes/category'
 export { episodeRouter } from '~/routes/episode'
 export { feedUrlRouter } from '~/routes/feedUrl'

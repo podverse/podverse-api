@@ -28,7 +28,7 @@ module.exports = {
     rules: [
       {
         test: /\.ts$/,
-        loader: 'ts-loader',
+        loader: 'babel-loader?presets[]=es2015!ts-loader',
         exclude: /node_modules/
       }      
     ]

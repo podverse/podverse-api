@@ -2,14 +2,12 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { createBitPayInvoice as createBitPayInvoiceLocal, getBitPayInvoiceStatus as
-  getBitPayInvoiceStatusLocal, updateBitPayInvoice as updateBitPayInvoiceLocal
-  } from '~/controllers/bitpayInvoice'
+import { createBitPayInvoiceLocal, getBitPayInvoiceStatusLocal,
+  updateBitPayInvoiceLocal } from '~/controllers/bitpayInvoice'
 import { getLoggedInUser } from '~/controllers/user'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateBitPayInvoiceCreate } from '~/middleware/queryValidation/create'
-import { createBitPayInvoice as createBitPayInvoiceVendor, getBitPayInvoice
-  as getBitPayInvoiceVendor } from '~/services/bitpay'
+import { createBitPayInvoiceVendor, getBitPayInvoiceVendor } from '~/services/bitpay'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/bitpay` })
