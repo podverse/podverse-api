@@ -13,7 +13,9 @@
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
-    "start": "node dist/bundle.js",
+    "start": "ts-node -r tsconfig-paths/register src/server.ts",
+    "start:dist": "node dist/bundle.js",
+    "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts",
     "watch-server-dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },

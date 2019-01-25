@@ -10,7 +10,7 @@ import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
-import { authRouter, authorRouter, categoryRouter, episodeRouter, feedUrlRouter,
+import { authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
   mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
   } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
@@ -29,12 +29,10 @@ export const createApp = (conn: Connection) => {
   const app = new Koa()
   app.context.db = conn
 
-  if (process.env.NODE_ENV === 'development') {
-    app.use(cors({
-      credentials: true
-    }))
-  }
-
+  app.use(cors({
+    credentials: true
+  }))
+  
   passport.use(createLocalStrategy(conn.getRepository(User)))
   passport.use(createJwtStrategy())
 
@@ -76,8 +74,8 @@ export const createApp = (conn: Connection) => {
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
 
-  // app.use(bitpayRouter.routes())
-  // app.use(bitpayRouter.allowedMethods())
+  app.use(bitpayRouter.routes())
+  app.use(bitpayRouter.allowedMethods())
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
