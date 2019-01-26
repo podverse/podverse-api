@@ -4,7 +4,7 @@ import { getQueryOrderColumn } from '~/lib/utility'
 
 const createError = require('http-errors')
 
-const getPodcast = (id) => {
+const getPodcast = id => {
   const repository = getRepository(Podcast)
   const podcast = repository.findOne(
     {
@@ -92,6 +92,8 @@ const getPodcasts = async (query, includeNSFW) => {
     return
   }
 }
+
+
 
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 

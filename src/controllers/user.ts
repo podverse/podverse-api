@@ -112,7 +112,7 @@ const getPublicUser = async id => {
   }
 }
 
-const getPublicUsers = async (query) => {
+const getPublicUsers = async query => {
   const repository = getRepository(User)
   let userIds = query.userIds && query.userIds.split(',') || []
 

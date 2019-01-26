@@ -118,10 +118,10 @@ export class User {
   @OneToMany(type => Playlist, playlist => playlist.owner)
   playlists: Playlist[]
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedAt: Date
 
   @BeforeInsert()

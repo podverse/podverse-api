@@ -17,6 +17,10 @@ const createPayPalOrder = async (obj) => {
 const getPayPalOrder = async (id, loggedInUserId) => {
   const repository = getRepository(PayPalOrder)
 
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Login to get PayPalOrder by id')
+  }
+  
   const paypalOrder = await repository.findOne(
     {
       paymentID: id
@@ -30,9 +34,6 @@ const getPayPalOrder = async (id, loggedInUserId) => {
     throw new createError.NotFound('PayPalOrder not found')
   }
 
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Login to get PayPalOrder by id')
-  }
   if (paypalOrder.owner.id === loggedInUserId) {
     return paypalOrder
   } else {
