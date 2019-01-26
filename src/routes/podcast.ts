@@ -5,6 +5,7 @@ import { delimitQueryValues } from '~/lib/utility'
 import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validatePodcastSearch } from '~/middleware/queryValidation/search'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
@@ -15,13 +16,14 @@ const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
 
 // Search
 router.get('/',
+  parseNSFWHeader,
   parseQueryPageOptions,
   validatePodcastSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
-      const podcasts = await getPodcasts(ctx.request.query, includeNSFW)
+      const podcasts = await getPodcasts(ctx.request.query, ctx.state.includeNSFW)
+
       ctx.body = podcasts
     } catch (error) {
       emitRouterError(error, ctx)
@@ -30,9 +32,11 @@ router.get('/',
 
 // Get
 router.get('/:id',
+  parseNSFWHeader,
   async ctx => {
     try {
       const podcast = await getPodcast(ctx.params.id)
+
       ctx.body = podcast
     } catch (error) {
       emitRouterError(error, ctx)

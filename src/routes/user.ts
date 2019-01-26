@@ -6,12 +6,13 @@ import { addOrUpdateHistoryItem, deleteUser, getCompleteUserDataAsJSON,
   getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
   updateQueueItems, updateUser, getPublicUsers } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from '~/middleware/queryValidation/update'
-import { hasValidMembership } from '~/middleware/hasValidMembership'
-import { jwtAuth } from '~/middleware/auth/jwtAuth'
 const RateLimit = require('koa2-ratelimit').RateLimit
 
 const delimitKeys = []
@@ -22,9 +23,11 @@ router.use(bodyParser())
 
 // Get Public User
 router.get('/:id',
+  parseNSFWHeader,
   async ctx => {
     try {
       const user = await getPublicUser(ctx.params.id)
+
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
@@ -33,12 +36,14 @@ router.get('/:id',
 
 // Search Public Users
 router.get('/',
+  parseNSFWHeader,
   parseQueryPageOptions,
   validateUserSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const users = await getPublicUsers(ctx.request.query)
+
       ctx.body = users
     } catch (error) {
       emitRouterError(error, ctx)
@@ -47,14 +52,15 @@ router.get('/',
 
 // Get Public User's MediaRefs
 router.get('/:id/mediaRefs',
+  parseNSFWHeader,
   parseQueryPageOptions,
   async ctx => {
     try {
       const { query } = ctx.request
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+
       const mediaRefs = await getUserMediaRefs(
         ctx.params.id,
-        includeNSFW,
+        ctx.state.includeNSFW,
         false,
         query.sort,
         query.skip,
@@ -68,6 +74,7 @@ router.get('/:id/mediaRefs',
 
 // Get Public User's Playlists
 router.get('/:id/playlists',
+  parseNSFWHeader,
   parseQueryPageOptions,
   async ctx => {
     try {

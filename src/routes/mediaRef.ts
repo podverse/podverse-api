@@ -6,6 +6,7 @@ import { delimitQueryValues } from '~/lib/utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from '~/controllers/mediaRef'
 import { jwtAuth, optionalJwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from '~/middleware/queryValidation/create'
 import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
@@ -21,13 +22,14 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
+  parseNSFWHeader,
   parseQueryPageOptions,
   validateMediaRefSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
-      const mediaRefs = await getMediaRefs(ctx.request.query, includeNSFW)
+      const mediaRefs = await getMediaRefs(ctx.request.query, ctx.state.includeNSFW)
+
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
@@ -36,9 +38,11 @@ router.get('/',
 
 // Get
 router.get('/:id',
+  parseNSFWHeader,
   async ctx => {
     try {
       const mediaRef = await getMediaRef(ctx.params.id)
+
       ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)

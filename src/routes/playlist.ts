@@ -6,6 +6,7 @@ import { delimitQueryValues } from '~/lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
   toggleSubscribeToPlaylist, updatePlaylist } from '~/controllers/playlist'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from '~/middleware/queryValidation/create'
 import { validatePlaylistSearch } from '~/middleware/queryValidation/search'
@@ -21,12 +22,14 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
+  parseNSFWHeader,
   parseQueryPageOptions,
   validatePlaylistSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const playlists = await getPlaylists(ctx.request.query, ctx.state.queryPageOptions)
+
       ctx.body = playlists
     } catch (error) {
       emitRouterError(error, ctx)
@@ -35,9 +38,11 @@ router.get('/',
 
 // Get
 router.get('/:id',
+  parseNSFWHeader,
   async ctx => {
     try {
       const playlist = await getPlaylist(ctx.params.id)
+
       ctx.body = playlist
     } catch (error) {
       emitRouterError(error, ctx)
