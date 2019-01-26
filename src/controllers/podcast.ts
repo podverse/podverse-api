@@ -61,7 +61,6 @@ const getPodcasts = async (query, includeNSFW) => {
       )
     } else if (query.podcastId && query.podcastId.split(',').length > 0) {
       const podcastIds = query.podcastId.split(',')
-      console.log(podcastIds)
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }
