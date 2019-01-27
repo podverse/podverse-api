@@ -44,7 +44,7 @@ const deleteMediaRef = async (id, loggedInUserId) => {
   return result
 }
 
-const getMediaRef = (id) => {
+const getMediaRef = id => {
   const repository = getRepository(MediaRef)
   const mediaRef = repository.findOne({ id }, { relations })
 
