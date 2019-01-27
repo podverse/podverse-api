@@ -39,9 +39,9 @@ const deletePlaylist = async (id, loggedInUserId) => {
   return result
 }
 
-const getPlaylist = async (id) => {
+const getPlaylist = id => {
   const repository = getRepository(Playlist)
-  const playlist = await repository.findOne({ id }, { relations })
+  const playlist = repository.findOne({ id }, { relations })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
