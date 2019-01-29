@@ -43,4 +43,3 @@ connectToDb()
       await generateCategories(connection, validCategories, null, true)
     }
   })
-
