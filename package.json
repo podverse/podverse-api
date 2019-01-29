@@ -13,6 +13,7 @@
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
+    "seeds:stage": "npm run seeds:categories && npm run seeds:podcasts",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:dist": "node dist/bundle.js",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
