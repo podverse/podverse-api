@@ -26,7 +26,6 @@ const parseFeeds = async () => {
         'http://grumpyoldgeeks.libsyn.com/rss',
         'http://fifthcolumn.podbean.com/feed/',
         'http://feeds.feedburner.com/freakonomicsradio',
-        'http://grumpyoldgeeks.libsyn.com/rss',
         'https://feeds.megaphone.fm/LM9233046886',
         'https://feeds.megaphone.fm/recodedecode',
         'https://www.npr.org/rss/podcast.php?id=381444908',

@@ -217,7 +217,8 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   const allEpisodes = []
   for (let existingEpisode of existingEpisodes) {
     let parsedEpisode = parsedEpisodes.find(
-      x => x.enclosure.url === existingEpisode.mediaUrl
+      x => x.enclosure && existingEpisode.mediaUrl
+        && x.enclosure.url === existingEpisode.mediaUrl
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
     // @ts-ignore
