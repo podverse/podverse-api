@@ -4,7 +4,7 @@ import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue
-  } from '~/services/queue'
+} from '~/services/queue'
 
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
@@ -97,7 +97,7 @@ export const parsePublicFeedUrlsLocally = async () => {
       }
     )
     .leftJoinAndSelect('podcast.episodes', 'episodes')
-    .where('feedUrl.isAuthority = true')
+    .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
 
   try {
     const feedUrls = await qb.getMany()
@@ -155,7 +155,7 @@ export const parseNextFeedFromQueue = async priority => {
 
   if (feedUrl && feedUrl.url && feedUrl.podcast.id) {
     try {
-      await parseFeedUrl(feedUrl.url)
+      await parseFeedUrl(feedUrl)
     } catch (error) {
       console.error('parseNextFeedFromQueue:parseFeed', error)
       const attrs = generateFeedMessageAttributes(feedUrl)
