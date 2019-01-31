@@ -1,11 +1,11 @@
-import { parseFeed } from '~/services/parser'
+import { parseFeedUrl } from '~/services/parser'
 import { connectToDb } from '~/lib/db'
 
-const parseFeeds = async () => {
+const parseFeedUrls = async () => {
 
   connectToDb()
     .then(async () => {
-      const sampleFeeds = [
+      const sampleFeedUrls = [
         'http://feeds.megaphone.fm/wethepeoplelive',
         'http://joeroganexp.joerogan.libsynpro.com/rss',
         'http://feeds.feedburner.com/dancarlin/history?format=xml',
@@ -37,10 +37,10 @@ const parseFeeds = async () => {
         'https://rss.art19.com/oprah-supersoul-conversations'
       ]
 
-      for (const feed of sampleFeeds) {
-        await parseFeed(feed, null, 'true')
+      for (const feedUrl of sampleFeedUrls) {
+        await parseFeedUrl(feedUrl)
       }
     })
 }
 
-parseFeeds()
+parseFeedUrls()

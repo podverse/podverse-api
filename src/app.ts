@@ -32,7 +32,7 @@ export const createApp = (conn: Connection) => {
   app.use(cors({
     credentials: true
   }))
-  
+
   passport.use(createLocalStrategy(conn.getRepository(User)))
   passport.use(createJwtStrategy())
 

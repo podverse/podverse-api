@@ -174,11 +174,11 @@ const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
         ...(includePrivate ? {} : { isPublic: true }),
         owner: id
       }
-      )
-      .skip(skip)
-      .take(take)
-      .orderBy('title', 'ASC')
-      .getMany()
+    )
+    .skip(skip)
+    .take(take)
+    .orderBy('title', 'ASC')
+    .getMany()
 
   return playlists
 }
@@ -259,6 +259,42 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
   const updatedUser = await repository.save(user)
 
   return updatedUser.subscribedUserIds
+}
+
+const updateRoleSuperUser = async (id, isSuperUser) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne(
+    {
+      id
+    },
+    {
+      select: ['roles']
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  if (isSuperUser && !user.roles.includes('superUser')) {
+    user.roles.push('superUser')
+  }
+
+  if (!isSuperUser && user.roles.includes('superUser')) {
+    user.roles = user.roles.filter(x => x !== 'superUser')
+  }
+
+  const cleanedObj = {
+    roles: user.roles
+  }
+
+  const newUser = Object.assign(user, cleanedObj)
+
+  await validateClassOrThrow(newUser)
+
+  await repository.update(id, cleanedObj)
+
+  return newUser
 }
 
 const updateUser = async (obj, loggedInUserId) => {
@@ -487,6 +523,7 @@ export {
   getUserPlaylists,
   toggleSubscribeToUser,
   updateQueueItems,
+  updateRoleSuperUser,
   updateUser,
   updateUserEmailVerificationToken,
   updateUserPassword,

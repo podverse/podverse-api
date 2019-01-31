@@ -1,6 +1,17 @@
 const Joi = require('joi')
 import { validateBaseBody } from './base'
 
+const validateFeedUrlUpdate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    id: Joi.string().min(7).max(14).required(),
+    isAuthority: Joi.boolean(),
+    podcastId: Joi.string(),
+    url: Joi.string()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array().items(Joi.string()),
@@ -79,6 +90,7 @@ const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
 }
 
 export {
+  validateFeedUrlUpdate,
   validateMediaRefUpdate,
   validatePayPalOrderUpdate,
   validatePlaylistUpdate,

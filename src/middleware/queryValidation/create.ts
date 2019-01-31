@@ -7,6 +7,16 @@ const validateBitPayInvoiceCreate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validateFeedUrlCreate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    isAuthority: Joi.boolean(),
+    podcastId: Joi.string(),
+    url: Joi.string().required()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array().items(Joi.string()),
@@ -61,6 +71,7 @@ const validateUserCreate = async (ctx, next) => {
 
 export {
   validateBitPayInvoiceCreate,
+  validateFeedUrlCreate,
   validateMediaRefCreate,
   validatePayPalOrderCreate,
   validatePlaylistCreate,

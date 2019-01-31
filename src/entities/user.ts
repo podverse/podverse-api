@@ -1,8 +1,11 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { BitPayInvoice, MediaRef, PayPalOrder, Playlist
-  } from '~/entities'
+import {
+  BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  OneToMany, PrimaryColumn, UpdateDateColumn
+} from 'typeorm'
+import {
+  BitPayInvoice, MediaRef, PayPalOrder, Playlist
+} from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
 
@@ -55,6 +58,12 @@ export class User {
   isPublic: boolean
 
   @Column({
+    default: false,
+    select: false
+  })
+  isSuperUser: boolean
+
+  @Column({
     nullable: true,
     select: false
   })
@@ -81,6 +90,12 @@ export class User {
     select: false
   })
   resetPasswordTokenExpiration: Date
+
+  @Column('varchar', {
+    array: true,
+    select: false
+  })
+  roles: string[]
 
   @Column('varchar', {
     array: true,
@@ -125,7 +140,7 @@ export class User {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = shortid.generate()
 
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
@@ -140,7 +155,7 @@ export class User {
   }
 
   @BeforeUpdate()
-  beforeUpdate () {
+  beforeUpdate() {
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []

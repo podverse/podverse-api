@@ -1,4 +1,4 @@
-import { getRepository, getConnection } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { FeedUrl } from '~/entities'
 import { chunkArray } from '~/lib/utility'
@@ -9,23 +9,57 @@ import { generateFeedMessageAttributes } from '~/services/parser'
 const { awsConfig } = config
 const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
 
-export const addAllFeedsToQueue = async () => {
+export const addAllPublicFeedUrlsToQueue = async () => {
 
   await connectToDb()
 
-  // await purgeQueue()
+  try {
+    const feedUrlRepo = await getRepository(FeedUrl)
 
-  const feedUrlRepo = await getRepository(FeedUrl)
+    let feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect(
+        'feedUrl.podcast',
+        'podcast',
+        'podcast.isPublic = :isPublic',
+        {
+          isPublic: true
+        }
+      )
+      .leftJoinAndSelect('podcast.episodes', 'episodes')
+      .where('feedUrl.isAuthority = true')
 
-  const allFeeds = await feedUrlRepo.find({
-    where: {
-      isAuthority: true
-    },
-    relations: ['podcast']
-  })
+    await sendFeedUrlsToParsingQueue(feedUrls)
+  } catch (error) {
+    console.log('queue:addAllPublicFeedUrlsToQueue', error)
+  }
+}
 
+export const addAllOrphanFeedUrlsToQueue = async () => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = await getRepository(FeedUrl)
+
+    let feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
+
+    await sendFeedUrlsToParsingQueue(feedUrls)
+  } catch (error) {
+    console.log('queue:addAllOrphanFeedUrlsToQueue', error)
+  }
+}
+
+export const sendFeedUrlsToParsingQueue = async feedUrls => {
   let attributes = []
-  for (const feed of allFeeds) {
+  for (const feed of feedUrls) {
     const attribute = generateFeedMessageAttributes(feed) as never
     attributes.push(attribute)
   }
@@ -52,8 +86,18 @@ export const addAllFeedsToQueue = async () => {
         console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
       })
   }
+}
 
-  await getConnection().close()
+export const sendMessageToQueue = async (attrs, queue) => {
+  const message = {
+    MessageAttributes: attrs,
+    MessageBody: 'aws sqs requires a message body - podverse rules',
+    QueueUrl: queue
+  }
+
+  await sqs.sendMessage(message)
+    .promise()
+    .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
 export const receiveMessageFromQueue = async (queue) => {
@@ -78,18 +122,6 @@ export const receiveMessageFromQueue = async (queue) => {
     })
 
   return message
-}
-
-export const sendMessageToQueue = async (attrs, queue) => {
-  const message = {
-    MessageAttributes: attrs,
-    MessageBody: 'aws sqs requires a message body - podverse rules',
-    QueueUrl: queue
-  }
-
-  await sqs.sendMessage(message)
-    .promise()
-    .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
 export const deleteMessage = async receiptHandle => {

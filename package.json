@@ -5,7 +5,14 @@
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack --progress --colors",
+    "dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev:scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
+    "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
+    "dev:scripts:createFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/createFeedUrls.ts",
+    "dev:scripts:parseOrphanFeedUrlsLocally": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrlsLocally.ts",
+    "dev:scripts:parsePublicFeedUrlsLocally": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrlsLocally.ts",
     "scripts:addAllFeedsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllFeedsToQueue.ts",
+    "scripts:createFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/createFeedUrls.ts",
     "scripts:parseFeed": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeed.ts",
     "scripts:parseAllFeedsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseAllFeedsFromQueue.ts",
     "scripts:queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
@@ -17,8 +24,7 @@
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:dist": "node dist/bundle.js",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts",
-    "watch-server-dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
+    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",
@@ -92,7 +98,7 @@
     "paypal-rest-sdk": "^1.8.1",
     "pg": "^7.4.3",
     "reflect-metadata": "^0.1.12",
-    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
     "shortid": "^2.2.13",
     "ts-loader": "^5.3.3",
     "tsconfig-paths": "^3.6.0",

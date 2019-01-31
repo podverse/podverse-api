@@ -27,14 +27,12 @@ export const hasValidMembership = async (ctx, next) => {
       || (user.freeTrialExpiration && isBeforeDate(user.freeTrialExpiration))
     ) {
       await next()
-    } else {
-      ctx.status = 401
-      ctx.body = 'Premium Membership Required'
+      return
     }
-  } else {
-    ctx.status = 401
-    ctx.body = 'Premium Membership Required'
   }
+
+  ctx.status = 401
+  ctx.body = 'Premium Membership Required'
 }
 
 export const hasValidMembershipIfJwt = async (ctx, next) => {
