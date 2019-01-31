@@ -84,6 +84,10 @@ export class Podcast {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @IsInt()
+  @Column({ default: 1 })
+  priority: number
+
   @Column({ nullable: true })
   title?: string
 
