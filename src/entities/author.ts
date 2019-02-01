@@ -1,6 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
-
 const shortid = require('shortid')
 
 @Entity('authors')

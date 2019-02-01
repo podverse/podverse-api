@@ -21,7 +21,7 @@ export class Episode {
   @ValidateIf(a => a.duration != null)
   @IsInt()
   @Min(0)
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   duration?: number
 
   @Column({ nullable: true })

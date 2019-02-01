@@ -1,4 +1,5 @@
-import { addAllOrphanFeedUrlsToQueue } from '~/services/queue'
+import { connectToDb } from '~/lib/db'
+import { parseFeedUrlsFromQueue } from '~/services/parser'
 
 (async function () {
   try {
@@ -9,7 +10,8 @@ import { addAllOrphanFeedUrlsToQueue } from '~/services/queue'
       return
     }
 
-    await addAllOrphanFeedUrlsToQueue(priority)
+    await connectToDb()
+    await parseFeedUrlsFromQueue(parseInt(priority, 10))
   } catch (error) {
     console.log(error)
   }

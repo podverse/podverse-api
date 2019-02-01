@@ -1,15 +1,15 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
-import { getRepository, In } from 'typeorm'
+import { getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue
 } from '~/services/queue'
+import { getPodcast } from '~/controllers/podcast'
 
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-// Handle try/catch in whatever calls parseFeed
 export const parseFeedUrl = async feedUrl => {
   const response = await request(feedUrl.url)
 
@@ -21,62 +21,91 @@ export const parseFeedUrl = async feedUrl => {
         return
       }
 
-      const podcastRepo = await getRepository(Podcast)
-      let podcast = feedUrl.podcast || new Podcast()
-      const isNewPodcast = !!feedUrl.podcast
-      podcast.isPublic = true
+      try {
+        let podcast = new Podcast()
+        if (feedUrl.podcast) {
+          const savedPodcast = await getPodcast(feedUrl.podcast.id)
+          if (!savedPodcast) throw Error('Invalid podcast id provided.')
+          podcast = savedPodcast
+        }
 
-      let authors = []
-      if (data.author) {
-        authors = await findOrGenerateAuthors(data.author) as never
+        podcast.isPublic = true
+
+        let authors = []
+        if (data.author) {
+          authors = await findOrGenerateAuthors(data.author) as never
+        }
+
+        let categories = []
+        if (data.categories) {
+          categories = await findCategories(data.categories)
+        }
+
+        const { newEpisodes, updatedSavedEpisodes } =
+          await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
+
+        let latestEpisode
+        const latestNewEpisode = newEpisodes.reduce((r, a) => {
+          return r.pubDate > a.pubDate ? r : a
+        }, [])
+        const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
+          return r.pubDate > a.pubDate ? r : a
+        }, [])
+        latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
+
+        podcast.lastEpisodePubDate = latestEpisode.pubDate
+        podcast.lastEpisodeTitle = latestEpisode.title
+
+        if (data.description && data.description.long) {
+          podcast.description = data.description.long
+        }
+
+        podcast.feedLastUpdated = data.updated
+        podcast.imageUrl = data.image
+        podcast.isExplicit = !!data.explicit
+        podcast.guid = data.guid
+        podcast.language = data.language
+        podcast.linkUrl = data.link
+        podcast.title = data.title
+        podcast.type = data.type
+
+        await getManager().transaction(async transactionalEntityManager => {
+          delete podcast.createdAt
+          delete podcast.updatedAt
+          delete podcast.episodes
+
+          await transactionalEntityManager.save(authors)
+          await transactionalEntityManager.save(categories)
+
+          podcast.authors = authors
+          podcast.categories = categories
+
+          await transactionalEntityManager.save(podcast)
+
+          await transactionalEntityManager
+            .createQueryBuilder()
+            .update(Episode)
+            .set({ isPublic: false })
+            .where('podcastId = :id', { id: podcast.id })
+
+          await transactionalEntityManager.save(updatedSavedEpisodes, Episode)
+          await transactionalEntityManager.save(newEpisodes, Episode)
+        })
+
+        const feedUrlRepo = await getRepository(FeedUrl)
+
+        const cleanedFeedUrl = {
+          id: feedUrl.id,
+          url: feedUrl.url,
+          podcast
+        }
+
+        await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
+
+        resolve()
+      } catch (error) {
+        throw error
       }
-      podcast.authors = authors
-
-      let categories = []
-      if (data.categories) {
-        categories = await findCategories(data.categories)
-      }
-      podcast.categories = categories
-
-      podcast.episodes = await findOrGenerateParsedEpisodes(data.episodes, podcast)
-
-      const latestEpisode = podcast.episodes.reduce((r, a) => {
-        return r.pubDate > a.pubDate ? r : a
-      })
-
-      podcast.lastEpisodePubDate = latestEpisode.pubDate
-      podcast.lastEpisodeTitle = latestEpisode.title
-
-      if (data.description && data.description.long) {
-        podcast.description = data.description.long
-      }
-
-      podcast.feedLastUpdated = data.updated
-      podcast.imageUrl = data.image
-      podcast.isExplicit = data.explicit
-      podcast.guid = data.guid
-      podcast.language = data.language
-      podcast.linkUrl = data.link
-      podcast.title = data.title
-      podcast.type = data.type
-
-      if (isNewPodcast) {
-        await podcastRepo.save(podcast)
-      } else {
-        await podcastRepo.update(podcast.id, podcast)
-      }
-
-      const feedUrlRepo = await getRepository(FeedUrl)
-
-      const cleanedFeedUrl = {
-        id: feedUrl.id,
-        url: feedUrl.url,
-        podcast: podcast.id
-      }
-
-      await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-
-      resolve()
     })
   })
 }
@@ -135,10 +164,10 @@ export const parseOrphanFeedUrlsLocally = async () => {
   }
 }
 
-export const parseAllFeedUrlsFromQueue = async priority => {
+export const parseFeedUrlsFromQueue = async priority => {
   const shouldContinue = await parseNextFeedFromQueue(priority)
   if (shouldContinue) {
-    await parseAllFeedUrlsFromQueue(priority)
+    await parseFeedUrlsFromQueue(priority)
   }
 }
 
@@ -151,19 +180,37 @@ export const parseNextFeedFromQueue = async priority => {
     return false
   }
 
-  const feedUrl = extractFeedMessage(message)
+  const feedUrlMsg = extractFeedMessage(message)
 
-  if (feedUrl && feedUrl.url && feedUrl.podcast.id) {
-    try {
+  try {
+    const feedUrlRepo = await getRepository(FeedUrl)
+
+    let feedUrl = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect(
+        'feedUrl.podcast',
+        'podcast'
+      )
+      .leftJoinAndSelect('podcast.episodes', 'episodes')
+      .where('feedUrl.id = :id', { id: feedUrlMsg.id })
+      .getOne()
+
+    if (feedUrl) {
       await parseFeedUrl(feedUrl)
-    } catch (error) {
-      console.error('parseNextFeedFromQueue:parseFeed', error)
-      const attrs = generateFeedMessageAttributes(feedUrl)
-      await sendMessageToQueue(attrs, errorsQueueUrl)
+    } else {
+      await parseFeedUrl(feedUrlMsg)
     }
 
-    await deleteMessage(feedUrl.receiptHandle)
+  } catch (error) {
+    console.error('parseNextFeedFromQueue:parseFeed', error)
+    const attrs = generateFeedMessageAttributes(feedUrlMsg)
+    await sendMessageToQueue(attrs, errorsQueueUrl)
   }
+
+  await deleteMessage(priority, feedUrlMsg
+    .receiptHandle)
 
   return true
 }
@@ -209,13 +256,16 @@ const findCategories = async categories => {
 }
 
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
+  episode.isPublic = true
   episode.description = parsedEpisode.description
   episode.duration = parsedEpisode.duration
+    ? parseInt(parsedEpisode.duration, 10) : 0
   episode.episodeType = parsedEpisode.episodeType
   episode.guid = parsedEpisode.guid
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
   episode.mediaFilesize = parsedEpisode.enclosure.filesize
+    ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
   episode.pubDate = parsedEpisode.published
@@ -241,74 +291,97 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
 const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   const episodeRepo = await getRepository(Episode)
 
-  // Parsed episodes are only valid if they have enclosure tags
+  // Parsed episodes are only valid if they have enclosure.url tags,
+  // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
     if (x.enclosure && x.enclosure.url) {
       result.push(x)
     }
     return result
   }, [])
-
+  // Create an array of only the episode media URLs from the parsed object
   const parsedEpisodeMediaUrls = validParsedEpisodes.map(x => x.enclosure.url)
 
+  // Find episodes in the database that have matching episode media URLs to
+  // those found in the parsed object, then store an array of just those URLs.
   const savedEpisodes = await episodeRepo.find({
     where: {
       mediaUrl: In(parsedEpisodeMediaUrls)
     }
   })
+
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
+  // Create an array of only the parsed episodes that do not have a match
+  // already saved in the database.
   const newParsedEpisodes = validParsedEpisodes.filter(
     x => !savedEpisodeMediaUrls.includes(x.enclosure.url)
   )
 
-  const allEpisodes = []
-  // If episode is already saved, then update the existing episode
+  const updatedSavedEpisodes = []
+  const newEpisodes = []
+  // If episode is already saved, then merge the matching episode found in
+  // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
     let parsedEpisode = validParsedEpisodes.find(
       x => x.enclosure.url === existingEpisode.mediaUrl
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
     // @ts-ignore
-    allEpisodes.push(existingEpisode)
+    updatedSavedEpisodes.push(existingEpisode)
   }
 
-  // If episode is new (not already saved), then create a new episode
+  // If episode from the parsed object is new (not already saved),
+  // then create a new episode.
   for (const newParsedEpisode of newParsedEpisodes) {
     let episode = new Episode()
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
     // @ts-ignore
-    allEpisodes.push(episode)
+    newEpisodes.push(episode)
   }
 
-  return allEpisodes
+  return {
+    updatedSavedEpisodes,
+    newEpisodes
+  }
 }
 
-export const generateFeedMessageAttributes = feed => {
+export const generateFeedMessageAttributes = feedUrl => {
   return {
+    'id': {
+      DataType: 'String',
+      StringValue: feedUrl.id
+    },
     'url': {
       DataType: 'String',
-      StringValue: feed.url
+      StringValue: feedUrl.url
     },
-    'podcastId': {
-      DataType: 'String',
-      StringValue: feed.podcast.id
-    },
-    'podcastTitle': {
-      DataType: 'String',
-      StringValue: feed.podcast.title
-    }
+    ...(feedUrl.podcast && feedUrl.podcast.id ? {
+      'podcastId': {
+        DataType: 'String',
+        StringValue: feedUrl.podcast && feedUrl.podcast.id
+      }
+    } : {}),
+    ...(feedUrl.podcast && feedUrl.podcast.title ? {
+      'podcastTitle': {
+        DataType: 'String',
+        StringValue: feedUrl.podcast && feedUrl.podcast.title
+      }
+    } : {})
   }
 }
 
 const extractFeedMessage = message => {
   const attrs = message.MessageAttributes
   return {
-    url: attrs.feedUrl.StringValue,
-    podcast: {
-      id: attrs.podcastId.StringValue,
-      title: attrs
-    },
+    id: attrs.id.StringValue,
+    url: attrs.url.StringValue,
+    ...(attrs.podcastId && attrs.podcastTitle ? {
+      podcast: {
+        id: attrs.podcastId.StringValue,
+        title: attrs.podcastTitle.StringValue
+      }
+    } : {}),
     receiptHandle: message.ReceiptHandle
-  }
+  } as any
 }

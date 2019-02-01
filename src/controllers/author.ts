@@ -15,15 +15,14 @@ const getAuthor = id => {
   return author
 }
 
-const getAuthors = async (query, options) => {
+const getAuthors = async query => {
   const repository = getRepository(Author)
-  
+
   return repository.find({
     where: {
       ...query
     },
-    relations,
-    ...options
+    relations
   })
 }
 

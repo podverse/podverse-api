@@ -7,9 +7,9 @@ import { sqs } from '~/services/aws'
 import { generateFeedMessageAttributes } from '~/services/parser'
 
 const { awsConfig } = config
-const feedsToParseUrl = awsConfig.queueUrls.feedsToParse
+const queueUrls = awsConfig.queueUrls
 
-export const addAllPublicFeedUrlsToQueue = async () => {
+export const addAllPublicFeedUrlsToQueue = async priority => {
 
   await connectToDb()
 
@@ -29,15 +29,16 @@ export const addAllPublicFeedUrlsToQueue = async () => {
         }
       )
       .leftJoinAndSelect('podcast.episodes', 'episodes')
-      .where('feedUrl.isAuthority = true')
+      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+      .getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls)
+    await sendFeedUrlsToParsingQueue(feedUrls, priority)
   } catch (error) {
     console.log('queue:addAllPublicFeedUrlsToQueue', error)
   }
 }
 
-export const addAllOrphanFeedUrlsToQueue = async () => {
+export const addAllOrphanFeedUrlsToQueue = async priority => {
 
   await connectToDb()
 
@@ -50,17 +51,20 @@ export const addAllOrphanFeedUrlsToQueue = async () => {
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
+      .getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls)
+    await sendFeedUrlsToParsingQueue(feedUrls, priority)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToQueue', error)
   }
 }
 
-export const sendFeedUrlsToParsingQueue = async feedUrls => {
+export const sendFeedUrlsToParsingQueue = async (feedUrls, priority) => {
+  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+
   let attributes = []
-  for (const feed of feedUrls) {
-    const attribute = generateFeedMessageAttributes(feed) as never
+  for (const feedUrl of feedUrls) {
+    const attribute = generateFeedMessageAttributes(feedUrl) as never
     attributes.push(attribute)
   }
 
@@ -78,13 +82,18 @@ export const sendFeedUrlsToParsingQueue = async feedUrls => {
   for (const entryChunk of entryChunks) {
     const chunkParams = {
       Entries: entryChunk,
-      QueueUrl: feedsToParseUrl
+      QueueUrl: queueUrl
     }
-    await sqs.sendMessageBatch(chunkParams)
-      .promise()
-      .catch(error => {
-        console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
-      })
+    try {
+      await sqs.sendMessageBatch(chunkParams)
+        .promise()
+        // .then() should add better handling here
+        .catch(error => {
+          console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
+        })
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
@@ -100,7 +109,7 @@ export const sendMessageToQueue = async (attrs, queue) => {
     .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
-export const receiveMessageFromQueue = async (queue) => {
+export const receiveMessageFromQueue = async queue => {
   let params = {
     QueueUrl: queue,
     MessageAttributeNames: ['All'],
@@ -124,10 +133,12 @@ export const receiveMessageFromQueue = async (queue) => {
   return message
 }
 
-export const deleteMessage = async receiptHandle => {
+export const deleteMessage = async (priority, receiptHandle) => {
+  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+
   if (receiptHandle) {
     const params = {
-      QueueUrl: feedsToParseUrl,
+      QueueUrl: queueUrl,
       ReceiptHandle: receiptHandle
     }
 
@@ -139,8 +150,9 @@ export const deleteMessage = async receiptHandle => {
   }
 }
 
-export const purgeQueue = async () => {
-  const params = { QueueUrl: feedsToParseUrl }
+export const purgeQueue = async priority => {
+  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+  const params = { QueueUrl: queueUrl }
 
   await sqs.purgeQueue(params)
     .promise()
