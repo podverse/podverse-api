@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { createFeedUrls, getFeedUrl, getFeedUrls, updateFeedUrl }
+import { addFeedUrls, getFeedUrl, getFeedUrls, updateFeedUrl }
   from '~/controllers/feedUrl'
 import { isSuperUser } from '~/middleware/isSuperUser'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -44,7 +44,7 @@ router.post('/',
     try {
       let body: any = ctx.request.body
 
-      const mediaRef = await createFeedUrls([body])
+      const mediaRef = await addFeedUrls([body])
       ctx.body = mediaRef
     } catch (error) {
       emitRouterError(error, ctx)

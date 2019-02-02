@@ -110,7 +110,7 @@ export const parseFeedUrl = async feedUrl => {
   })
 }
 
-export const parsePublicFeedUrlsLocally = async () => {
+export const parsePublicFeedUrls = async () => {
   const repository = getRepository(FeedUrl)
 
   let qb = repository
@@ -141,7 +141,7 @@ export const parsePublicFeedUrlsLocally = async () => {
   }
 }
 
-export const parseOrphanFeedUrlsLocally = async () => {
+export const parseOrphanFeedUrls = async () => {
   const repository = getRepository(FeedUrl)
 
   let qb = repository

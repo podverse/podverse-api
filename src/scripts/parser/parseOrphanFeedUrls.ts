@@ -1,10 +1,10 @@
 import { connectToDb } from '~/lib/db'
-import { parseOrphanFeedUrlsLocally } from '~/services/parser'
+import { parseOrphanFeedUrls } from '~/services/parser'
 
 (async function () {
   try {
     await connectToDb()
-    await parseOrphanFeedUrlsLocally()
+    await parseOrphanFeedUrls()
   } catch (error) {
     console.log(error)
   }

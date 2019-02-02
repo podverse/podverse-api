@@ -1,10 +1,10 @@
 import { connectToDb } from '~/lib/db'
-import { parsePublicFeedUrlsLocally } from '~/services/parser'
+import { parsePublicFeedUrls } from '~/services/parser'
 
 (async function () {
   try {
     await connectToDb()
-    await parsePublicFeedUrlsLocally()
+    await parsePublicFeedUrls()
   } catch (error) {
     console.log(error)
   }

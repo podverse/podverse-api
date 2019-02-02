@@ -1,134 +1,114 @@
-import { getRepository } from 'typeorm'
-import { MediaRef } from '~/entities'
-import { validateClassOrThrow } from '~/lib/errors'
-import { getQueryOrderColumn } from '~/lib/utility'
-const createError = require('http-errors')
+import * as bodyParser from 'koa-bodyparser'
+import * as Router from 'koa-router'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
+import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
+  from '~/controllers/mediaRef'
+import { jwtAuth, optionalJwtAuth } from '~/middleware/auth/jwtAuth'
+import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateMediaRefCreate } from '~/middleware/queryValidation/create'
+import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
+import { validateMediaRefUpdate } from '~/middleware/queryValidation/update'
+import { hasValidMembershipIfJwt } from '~/middleware/hasValidMembership'
+const RateLimit = require('koa2-ratelimit').RateLimit
 
-const relations = [
-  'authors', 'categories', 'episode', 'episode.podcast', 'owner'
-]
+const delimitKeys = ['authors', 'categories']
 
-const createMediaRef = async obj => {
-  const repository = getRepository(MediaRef)
-  const mediaRef = new MediaRef()
-  const newMediaRef = Object.assign(mediaRef, obj)
-  newMediaRef.episode = newMediaRef.episodeId
-  // owner id optionally added in route
-  delete newMediaRef.episodeId
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
 
-  await validateClassOrThrow(newMediaRef)
+router.use(bodyParser())
 
-  await repository.save(newMediaRef)
-  return newMediaRef
-}
+// Search
+router.get('/',
+  parseNSFWHeader,
+  parseQueryPageOptions,
+  validateMediaRefSearch,
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+      const mediaRefs = await getMediaRefs(ctx.request.query, ctx.state.includeNSFW)
 
-const deleteMediaRef = async (id, loggedInUserId) => {
-  const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({
-    where: { id },
-    relations: ['owner']
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   })
 
-  if (!mediaRef) {
-    throw new createError.NotFound('MediaRef not found')
-  }
+// Get
+router.get('/:id',
+  parseNSFWHeader,
+  async ctx => {
+    try {
+      const mediaRef = await getMediaRef(ctx.params.id)
 
-  if (!mediaRef.owner) {
-    throw new createError.Unauthorized('Cannot delete an anonymous media ref')
-  }
+      ctx.body = mediaRef
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
-  if (mediaRef.owner && mediaRef.owner.id !== loggedInUserId) {
-    throw new createError.Unauthorized('Log in to delete this media ref')
-  }
+// Create
+const createMediaRefLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/mediaRef'
+})
 
-  const result = await repository.remove(mediaRef)
-  return result
-}
+router.post('/',
+  validateMediaRefCreate,
+  optionalJwtAuth,
+  hasValidMembershipIfJwt,
+  createMediaRefLimiter,
+  async ctx => {
+    try {
+      let body: any = ctx.request.body
 
-const getMediaRef = id => {
-  const repository = getRepository(MediaRef)
-  const mediaRef = repository.findOne({ id }, { relations })
-
-  if (!mediaRef) {
-    throw new createError.NotFound('MediaRef not found')
-  }
-
-  return mediaRef
-}
-
-const getMediaRefs = async (query, includeNSFW) => {
-  const repository = getRepository(MediaRef)
-
-  const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
-  let podcastIds = query.podcastId && query.podcastId.split(',') || []
-  let episodeIds = query.episodeId && query.episodeId.split(',') || []
-
-  const episodeJoinAndSelect = `
-    ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
-    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
-    ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
-  `
-
-  const mediaRefs = await repository
-    .createQueryBuilder('mediaRef')
-    .innerJoinAndSelect(
-      'mediaRef.episode',
-      'episode',
-      episodeJoinAndSelect,
-      {
-        isExplicit: !!includeNSFW,
-        podcastId: query.podcastId,
-        podcastIds: podcastIds,
-        episodeId: query.episodeId,
-        episodeIds: episodeIds
+      if (ctx.state.user && ctx.state.user.id) {
+        body.owner = ctx.state.user.id
       }
-    )
-    .innerJoinAndSelect('episode.podcast', 'podcast')
-    .where({ isPublic: true })
-    .skip(query.skip)
-    .take(query.take)
-    .orderBy(orderColumn, 'ASC')
-    .getMany()
 
-  return mediaRefs
-}
-
-const updateMediaRef = async (obj, loggedInUserId) => {
-  const repository = getRepository(MediaRef)
-  const mediaRef = await repository.findOne({
-    where: {
-      id: obj.id
-    },
-    relations
+      const mediaRef = await createMediaRef(body)
+      ctx.body = mediaRef
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   })
 
-  if (!mediaRef) {
-    throw new createError.NotFound('MediaRef not found')
-  }
+// Update
+const updateMediaRefLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 3,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/mediaRef'
+})
 
-  if (!mediaRef.owner) {
-    throw new createError.Unauthorized('Cannot update an anonymous media ref')
-  }
+router.patch('/',
+  validateMediaRefUpdate,
+  jwtAuth,
+  updateMediaRefLimiter,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const mediaRef = await updateMediaRef(body, ctx.state.user.id)
+      ctx.body = mediaRef
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
-  if (mediaRef.owner && mediaRef.owner.id !== loggedInUserId) {
-    throw new createError.Unauthorized('Log in to edit this media ref')
-  }
+// Delete
+router.delete('/:id',
+  jwtAuth,
+  async ctx => {
+    try {
+      await deleteMediaRef(ctx.params.id, ctx.state.user.id)
+      ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
-  const newMediaRef = Object.assign(mediaRef, obj)
-  newMediaRef.owner = loggedInUserId
-  newMediaRef.episode = newMediaRef.episodeId
-  delete newMediaRef.episodeId
-
-  await validateClassOrThrow(newMediaRef)
-
-  await repository.save(newMediaRef)
-  return newMediaRef
-}
-
-export {
-  createMediaRef,
-  deleteMediaRef,
-  getMediaRef,
-  getMediaRefs,
-  updateMediaRef
-}
+export const mediaRefRouter = router

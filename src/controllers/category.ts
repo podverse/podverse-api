@@ -15,14 +15,15 @@ const getCategory = id => {
   return category
 }
 
-const getCategories = query => {
+const getCategories = (query, options) => {
   const repository = getRepository(Category)
 
   return repository.find({
     where: {
       ...query
     },
-    relations: ['category', 'categories']
+    relations: ['category', 'categories'],
+    ...options
   })
 }
 

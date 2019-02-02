@@ -1,4 +1,7 @@
 .git
 node_modules
 .env
+/src/public/samples
+/src/config/bitpay/api.key
 /src/config/google/jwt.keys.json
+/src/config/parser/addFeedUrlsList.json

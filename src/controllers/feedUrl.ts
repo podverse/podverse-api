@@ -7,7 +7,7 @@ const relations = [
   'podcast'
 ]
 
-const createFeedUrls = async (urls: any[] = []) => {
+const addFeedUrls = async (urls: any[] = []) => {
   const repository = getRepository(FeedUrl)
 
   for (const url of urls) {
@@ -85,7 +85,7 @@ const updateFeedUrl = async obj => {
 }
 
 export {
-  createFeedUrls,
+  addFeedUrls,
   deleteFeedUrl,
   getFeedUrl,
   getFeedUrls,
