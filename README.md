@@ -79,13 +79,13 @@ each with a different priority number 1-5. You can pass a priority argument
 to:
 
 ```
-npm run dev:scripts:addAllOrphanFeedUrlsToQueue <priority>
+npm run dev:scripts:addAllOrphanFeedUrlsToQueue -- <priority>
 ```
 
 or:
 
 ```
-npm run dev:scripts:addAllPublicFeedUrlsToQueue <priority>
+npm run dev:scripts:addAllPublicFeedUrlsToQueue -- <priority>
 ```
 
 and only podcasts with that priority value will be added to the queue.
@@ -94,5 +94,5 @@ After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
 ```
-npm run dev:scripts:parseFeedUrlsFromQueue
+npm run dev:scripts:parseFeedUrlsFromQueue -- <priority>
 ```
