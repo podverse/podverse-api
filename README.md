@@ -51,7 +51,7 @@ database, and then run the podcast parser with those feed urls.
 You can pass multiple feed urls as a comma-delimited string parameter to the
 `npm run scripts:addFeedUrls` command.
 
-A list of sample podcast feed urls can be found at
+A list of sample podcast feed urls can be found in
 [podverse-api/docs/sampleFeedUrls.txt](https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
 
 ```
