@@ -11,7 +11,7 @@ const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async feedUrl => {
-  const response = await request(feedUrl.url)
+  const response = await request(feedUrl.url, { timeout: 2000 })
 
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
