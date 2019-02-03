@@ -164,10 +164,15 @@ export const parseOrphanFeedUrls = async () => {
   }
 }
 
-export const parseFeedUrlsFromQueue = async priority => {
+export const parseFeedUrlsFromQueue = async (priority, restartTimeOut) => {
   const shouldContinue = await parseNextFeedFromQueue(priority)
   if (shouldContinue) {
-    await parseFeedUrlsFromQueue(priority)
+    await parseFeedUrlsFromQueue(priority, restartTimeOut)
+  } else if (restartTimeOut) {
+    // @ts-ignore
+    setTimeout(() => {
+      parseFeedUrlsFromQueue(priority, restartTimeOut)
+    }, restartTimeOut)
   }
 }
 
