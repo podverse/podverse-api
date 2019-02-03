@@ -71,3 +71,28 @@ To parse all non-orphan and public feed urls, you can run:
 ```
 npm run scripts:parsePublicFeedUrls
 ```
+
+### Use SQS to add feed urls to a queue, then parse them
+
+This project uses AWS SQS for its remote queue. There are 5 possible queues,
+each with a different priority number 1-5. You can pass a priority argument
+to:
+
+```
+npm run dev:scripts:addAllOrphanFeedUrlsToQueue <priority>
+```
+
+or:
+
+```
+npm run dev:scripts:addAllPublicFeedUrlsToQueue <priority>
+```
+
+and only podcasts with that priority value will be added to the queue.
+
+After you have added feed urls to a queue, you can retrieve and then parse
+the feed urls by running:
+
+```
+npm run dev:scripts:parseFeedUrlsFromQueue
+```
