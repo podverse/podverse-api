@@ -96,3 +96,19 @@ the feed urls by running:
 ```
 npm run dev:scripts:parseFeedUrlsFromQueue -- <priority>
 ```
+
+### Request Google Analytics pageview data and save to database
+
+Below are sample commands for requesting unique pageview data from Google
+Analytics, which is used throughout the site for sorting by popularity (not a
+great/accurate system for popularity sorting...).
+
+```
+npm run dev:scripts:queryUniquePageviews -- clips month
+npm run dev:scripts:queryUniquePageviews -- episodes week
+npm run dev:scripts:queryUniquePageviews -- podcasts allTime
+```
+
+See the [podverse-ops repo](https://github.com/podverse/podverse-ops) for a sample
+cron configuration for querying the Google API on a timer.
+```
