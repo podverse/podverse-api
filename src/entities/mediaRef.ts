@@ -23,12 +23,6 @@ export class MediaRef {
   @Column({ default: false })
   isPublic: boolean
 
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -58,6 +52,12 @@ export class MediaRef {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
+
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @IsInt()
   @Min(0)

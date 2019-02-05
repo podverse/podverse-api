@@ -48,12 +48,6 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -83,6 +77,12 @@ export class Podcast {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
+
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @IsInt()
   @Column({ default: 1 })

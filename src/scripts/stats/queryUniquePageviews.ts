@@ -1,6 +1,11 @@
 import { queryUniquePageviews } from '~/services/stats'
 
-const pagePath = process.env.STATS_PAGE_TYPE
-const timeRange = process.env.STATS_TIME_RANGE
-
-queryUniquePageviews(pagePath, timeRange)
+(async function () {
+  try {
+    const pagePath = process.argv.length > 2 ? process.argv[2] : ''
+    const timeRange = process.argv.length > 3 ? process.argv[3] : ''
+    queryUniquePageviews(pagePath, timeRange)
+  } catch (error) {
+    console.log(error)
+  }
+})()

@@ -4,9 +4,9 @@ import { lastHour, offsetDate } from '~/lib/utility'
 import { queryGoogleAnalyticsData } from './google'
 
 enum PagePaths {
-  clip = '~/clip',
-  episode = '~/episode',
-  podcast = '~/podcast'
+  clips = '~/clip',
+  episodes = '~/episode',
+  podcasts = '~/podcast'
 }
 
 enum StartDateOffset {
@@ -18,9 +18,9 @@ enum StartDateOffset {
 }
 
 const TableNames = {
-  clip: 'mediaRef',
-  episode: 'episode',
-  podcast: 'podcast'
+  clips: 'mediaRef',
+  episodes: 'episode',
+  podcasts: 'podcast'
 }
 
 enum TimeRanges {
