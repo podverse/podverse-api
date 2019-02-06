@@ -278,9 +278,7 @@ const updateRoleSuperUser = async (id, isSuperUser) => {
 
   if (isSuperUser && !user.roles.includes('superUser')) {
     user.roles.push('superUser')
-  }
-
-  if (!isSuperUser && user.roles.includes('superUser')) {
+  } else if (!isSuperUser && user.roles.includes('superUser')) {
     user.roles = user.roles.filter(x => x !== 'superUser')
   }
 

@@ -58,12 +58,6 @@ export class User {
   isPublic: boolean
 
   @Column({
-    default: false,
-    select: false
-  })
-  isSuperUser: boolean
-
-  @Column({
     nullable: true,
     select: false
   })
@@ -93,24 +87,28 @@ export class User {
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::integer[]',
     select: false
   })
   roles: string[]
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::integer[]',
     select: false
   })
   subscribedPlaylistIds: string[]
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::integer[]',
     select: false
   })
   subscribedPodcastIds: string[]
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::integer[]',
     select: false
   })
   subscribedUserIds: string[]
@@ -140,7 +138,7 @@ export class User {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert() {
+  beforeInsert () {
     this.id = shortid.generate()
 
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
@@ -155,7 +153,7 @@ export class User {
   }
 
   @BeforeUpdate()
-  beforeUpdate() {
+  beforeUpdate () {
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
