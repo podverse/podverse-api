@@ -15,7 +15,7 @@ const getCategory = id => {
   return category
 }
 
-const getCategories = (query, options) => {
+const getCategories = (query, options = {}) => {
   const repository = getRepository(Category)
 
   return repository.find({

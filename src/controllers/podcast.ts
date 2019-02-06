@@ -36,12 +36,19 @@ const getPodcasts = async (query, includeNSFW) => {
     .addSelect('podcast.lastEpisodeTitle')
     .addSelect('podcast.linkUrl')
     .addSelect('podcast.title')
+    .addSelect('podcast.pastHourTotalUniquePageviews')
+    .addSelect('podcast.pastWeekTotalUniquePageviews')
+    .addSelect('podcast.pastDayTotalUniquePageviews')
+    .addSelect('podcast.pastMonthTotalUniquePageviews')
+    .addSelect('podcast.pastYearTotalUniquePageviews')
+    .addSelect('podcast.pastAllTimeTotalUniquePageviews')
+    .addSelect('podcast.createdAt')
 
   if (query.categories && query.categories.length > 0) {
     qb.innerJoinAndSelect(
       'podcast.categories',
-      'category',
-      'category.id = :id',
+      'categories',
+      'categories.id = :id',
       { id: query.categories[0] }
     )
   } else {

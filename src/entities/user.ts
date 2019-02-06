@@ -87,28 +87,28 @@ export class User {
 
   @Column('varchar', {
     array: true,
-    default: () => 'array[]::integer[]',
+    default: () => 'array[]::text[]',
     select: false
   })
   roles: string[]
 
   @Column('varchar', {
     array: true,
-    default: () => 'array[]::integer[]',
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedPlaylistIds: string[]
 
   @Column('varchar', {
     array: true,
-    default: () => 'array[]::integer[]',
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedPodcastIds: string[]
 
   @Column('varchar', {
     array: true,
-    default: () => 'array[]::integer[]',
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedUserIds: string[]

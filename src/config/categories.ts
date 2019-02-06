@@ -1,128 +1,68 @@
 export const validCategories = [
-  {
-    title: 'Arts',
-    categories: [
-      { title: 'Design' },
-      { title: 'Fashion & Beauty' },
-      { title: 'Food' },
-      { title: 'Literature' },
-      { title: 'Performing Arts' },
-      { title: 'Visual Arts' }
-    ]
-  },
-  {
-    title: 'Business',
-    categories: [
-      { title: 'Business News' },
-      { title: 'Careers' },
-      { title: 'Investing' },
-      { title: 'Management & Marketing' },
-      { title: 'Shopping' }
-    ]
-  },
-  {
-    title: 'Comedy',
-    categories: []
-  },
-  {
-    title: 'Education',
-    categories: [
-      { title: 'Higher Education' },
-      { title: 'K-12' },
-      { title: 'Language Courses' },
-      { title: 'Training' }
-    ]
-  },
-  {
-    title: 'Games & Hobbies',
-    categories: [
-      { title: 'Automotive' },
-      { title: 'Aviation' },
-      { title: 'Hobbies' },
-      { title: 'Other Games' },
-      { title: 'Video Games' }
-    ]
-  },
-  {
-    title: 'Government & Organizations',
-    categories: [
-      { title: 'Local' },
-      { title: 'National' },
-      { title: 'Non-Profit' },
-      { title: 'Regional' }
-    ]
-  },
-  {
-    title: 'Health',
-    categories: [
-      { title: 'Alternative Health' },
-      { title: 'Fitness & Nutrition' },
-      { title: 'Kids & Family' },
-      { title: 'Self-Help' },
-      { title: 'Sexuality' }
-    ]
-  },
-  {
-    title: 'Music',
-    categories: []
-  },
-  {
-    title: 'News & Politics',
-    categories: [
-      { title: 'Religion & Spirituality' },
-      { title: 'Buddhism' },
-      { title: 'Christianity' },
-      { title: 'Hinduism' },
-      { title: 'Islam' },
-      { title: 'Judaism' },
-      { title: 'Other' },
-      { title: 'Spirituality' }
-    ]
-  },
-  {
-    title: 'Science & Medicine',
-    categories: [
-      { title: 'Medicine' },
-      { title: 'Natural Sciences' },
-      { title: 'Social Sciences' }
-    ]
-  },
-  {
-    title: 'Society & Culture',
-    categories: [
-      { title: 'History' },
-      { title: 'Personal Journals' },
-      { title: 'Philosophy' },
-      { title: 'Places & Travel' }
-    ]
-  },
-  {
-    title: 'Sports & Recreation',
-    categories: [
-      { title: 'Amateur' },
-      { title: 'College & High School' },
-      { title: 'Outdoor' },
-      { title: 'Professional' },
-      { title: 'TV & Film' }
-    ]
-  },
-  {
-    title: 'Technology',
-    categories: [
-      { title: 'Gadgets' },
-      { title: 'Podcasting' },
-      { title: 'Software How-To' },
-      { title: 'Tech News' }
-    ]
-  }
+  'Arts',
+  'Arts>Design',
+  'Arts>Fashion & Beauty',
+  'Arts>Food',
+  'Arts>Literature',
+  'Arts>Performing Arts',
+  'Arts>Visual Arts',
+  'Business',
+  'Business>Business News',
+  'Business>Careers',
+  'Business>Investing',
+  'Business>Management & Marketing',
+  'Business>Shopping',
+  'Comedy',
+  'Education',
+  'Education>Higher Education',
+  'Education>K-12',
+  'Education>Language Courses',
+  'Education>Training',
+  'Games & Hobbies',
+  'Games & Hobbies>Automotive',
+  'Games & Hobbies>Aviation',
+  'Games & Hobbies>Hobbies',
+  'Games & Hobbies>Other Games',
+  'Games & Hobbies>Video Games',
+  'Government & Organizations',
+  'Government & Organizations>Local',
+  'Government & Organizations>National',
+  'Government & Organizations>Non-Profit',
+  'Government & Organizations>Regional',
+  'Health',
+  'Health>Alternative Health',
+  'Health>Fitness & Nutrition',
+  'Health>Kids & Family',
+  'Health>Self-Help',
+  'Health>Sexuality',
+  'Music',
+  'News & Politics',
+  'Religion & Spirituality',
+  'Religion & Spirituality>Buddhism',
+  'Religion & Spirituality>Christianity',
+  'Religion & Spirituality>Hinduism',
+  'Religion & Spirituality>Islam',
+  'Religion & Spirituality>Judaism',
+  'Religion & Spirituality>Other',
+  'Religion & Spirituality>Spirituality',
+  'Science & Medicine',
+  'Science & Medicine>Medicine',
+  'Science & Medicine>Natural Sciences',
+  'Science & Medicine>Social Sciences',
+  'Society & Culture',
+  'Society & Culture>History',
+  'Society & Culture>Personal Journals',
+  'Society & Culture>Philosophy',
+  'Society & Culture>Places & Travel',
+  'Sports & Recreation',
+  'Sports & Recreation>Amateur',
+  'Sports & Recreation>College & High School',
+  'Sports & Recreation>Outdoor',
+  'Sports & Recreation>Professional',
+  'Sports & Recreation>TV & Film',
+  'Technology',
+  'Technology>Gadgets',
+  'Technology>Podcasting',
+  'Technology>Software How-To',
+  'Technology>Tech News'
 ]
-
-let categoryTitles: string[] = []
-for (const category of validCategories) {
-  categoryTitles.push(category.title)
-  for (const subCategory of category.categories) {
-    categoryTitles.push(subCategory.title)
-  }
-}
-
-export const validCategoryTitles = categoryTitles
