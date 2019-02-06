@@ -82,8 +82,8 @@ const getPodcasts = async (query, includeNSFW) => {
   qb.andWhere('"isPublic" = true')
 
   if (query.sort) {
-    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'createdAt')
-    qb.orderBy(orderColumn, 'ASC')
+    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
+    qb.orderBy(orderColumn, 'DESC')
   }
 
   try {
