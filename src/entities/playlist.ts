@@ -75,5 +75,8 @@ export class Playlist {
     if (this.mediaRefs) {
       this.itemCount = this.mediaRefs.length
     }
+    if (this.episodes) {
+      this.itemCount = this.itemCount + this.episodes.length
+    }
   }
 }

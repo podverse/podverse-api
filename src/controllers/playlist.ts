@@ -4,7 +4,9 @@ import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 const relations = [
-  'episodes', 'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast', 'owner'
+  'episodes', 'episodes.podcast',
+  'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+  'owner'
 ]
 
 const createPlaylist = async (obj) => {
@@ -143,7 +145,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
     if (filteredEpisodes.length === playlist.episodes.length) {
       const episodeRepository = getRepository(Episode)
-      let episode = await episodeRepository.findOne({ id: mediaRefId })
+      let episode = await episodeRepository.findOne({ id: episodeId })
       if (episode) {
         playlist.episodes.push(episode)
       } else {
