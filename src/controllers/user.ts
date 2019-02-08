@@ -247,18 +247,20 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedUserIds = user.subscribedUserIds
+
   // If no userIds match the filter, add the userId.
   // Else, remove the userId.
   const filteredUsers = user.subscribedUserIds.filter(x => x !== userId)
   if (filteredUsers.length === user.subscribedUserIds.length) {
-    user.subscribedUserIds.push(userId)
+    subscribedUserIds.push(userId)
   } else {
-    user.subscribedUserIds = filteredUsers
+    subscribedUserIds = filteredUsers
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedUserIds })
 
-  return updatedUser.subscribedUserIds
+  return subscribedUserIds
 }
 
 const updateRoleSuperUser = async (id, isSuperUser) => {

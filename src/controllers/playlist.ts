@@ -190,18 +190,20 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedPlaylistIds = user.subscribedPlaylistIds
+
   // If no playlistIds match the filter, add the playlistId.
   // Else, remove the playlistId.
   const filteredPlaylists = user.subscribedPlaylistIds.filter(x => x !== playlistId)
   if (filteredPlaylists.length === user.subscribedPlaylistIds.length) {
-    user.subscribedPlaylistIds.push(playlistId)
+    subscribedPlaylistIds.push(playlistId)
   } else {
-    user.subscribedPlaylistIds = filteredPlaylists
+    subscribedPlaylistIds = filteredPlaylists
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedPlaylistIds })
 
-  return updatedUser.subscribedPlaylistIds
+  return subscribedPlaylistIds
 }
 
 export {

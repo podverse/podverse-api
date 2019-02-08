@@ -124,18 +124,20 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedPodcastIds = user.subscribedPodcastIds
+
   // If no podcastIds match the filter, add the podcastId.
   // Else, remove the podcastId.
   const filteredPodcasts = user.subscribedPodcastIds.filter(x => x !== podcastId)
   if (filteredPodcasts.length === user.subscribedPodcastIds.length) {
-    user.subscribedPodcastIds.push(podcastId)
+    subscribedPodcastIds.push(podcastId)
   } else {
-    user.subscribedPodcastIds = filteredPodcasts
+    subscribedPodcastIds = filteredPodcasts
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedPodcastIds })
 
-  return updatedUser.subscribedPodcastIds
+  return subscribedPodcastIds
 }
 
 export {
