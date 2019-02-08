@@ -41,7 +41,7 @@ const validatePayPalOrderUpdate = async (ctx, next) => {
 
 const validatePlaylistUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    description: Joi.string().allow(null),
+    description: Joi.string().allow(null).allow(''),
     id: Joi.string().min(7).max(14).required(),
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
