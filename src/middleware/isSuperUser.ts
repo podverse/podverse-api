@@ -7,6 +7,7 @@ export const isSuperUser = async (ctx, next) => {
     const repository = getRepository(User)
     let user = await repository.findOne(
       {
+        // @ts-ignore
         where: {
           id: ctx.state.user.id
         },
