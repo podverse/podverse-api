@@ -1,6 +1,6 @@
-import { getRepository, In } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { Episode } from '~/entities'
-import { createQueryOrderObject } from '~/lib/utility'
+import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
@@ -23,37 +23,45 @@ const getEpisode = (id) => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
+  const { podcastId, searchAllFields, skip, sort, take } = query
+  let podcastIds = podcastId && podcastId.split(',') || []
 
-  if (query.podcastId && query.podcastId.split(',').length > 1) {
-    query.podcast = In(query.podcastId.split(','))
-  } else if (query.podcastId) {
-    query.podcast = query.podcastId
+  const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+  includeNSFW = false
+  const podcastJoinAndSelect = `
+    ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
+    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+  `
+
+  let qb = repository
+    .createQueryBuilder('episode')
+    .innerJoinAndSelect(
+      'episode.podcast',
+      'podcast',
+      podcastJoinAndSelect,
+      { podcastIds }
+    )
+    .where({ isPublic: true })
+
+  if (searchAllFields) {
+    qb.andWhere(
+      `LOWER(episode.title) LIKE :searchAllFields OR
+       LOWER(podcast.title) LIKE :searchAllFields`,
+       { searchAllFields: `%${searchAllFields.toLowerCase()}%` }
+    )
   }
-  delete query.podcastId
 
-  const order = createQueryOrderObject(query.sort, 'pubDate')
-  delete query.sort
+  qb.skip(skip)
 
-  const skip = query.skip
-  delete query.skip
+  // If only searching for one podcast and beyond the first page,
+  // then return all remaining episodes.
+  if (podcastIds.length !== 1 || parseInt(skip, 10) === 0) {
+    qb.take(take)
+  }
 
-  const take = query.take
-  delete query.take
-
-  const episodes = await repository.find({
-    where: {
-      ...query,
-      ...query.podcast && {
-        podcast: { id: query.podcast }
-      },
-      ...!includeNSFW && { isExplicit: false },
-      isPublic: true
-    },
-    order,
-    skip: parseInt(skip, 10),
-    take: parseInt(take, 10),
-    relations
-  })
+  const episodes = await qb
+    .orderBy(orderColumn, 'DESC')
+    .getMany()
 
   return episodes
 }

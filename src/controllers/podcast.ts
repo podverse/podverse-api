@@ -25,6 +25,7 @@ const getPodcast = id => {
 
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
+  const { categories, podcastId, searchAuthor, searchTitle } = query
 
   let qb = repository
     .createQueryBuilder('podcast')
@@ -44,30 +45,30 @@ const getPodcasts = async (query, includeNSFW) => {
     .addSelect('podcast.pastAllTimeTotalUniquePageviews')
     .addSelect('podcast.createdAt')
 
-  if (query.categories && query.categories.length > 0) {
+  if (categories && categories.length > 0) {
     qb.innerJoinAndSelect(
       'podcast.categories',
       'categories',
       'categories.id = :id',
-      { id: query.categories[0] }
+      { id: categories[0] }
     )
   } else {
-    if (query.searchTitle) {
-      const title = `%${query.searchTitle.toLowerCase()}%`
+    if (searchTitle) {
+      const title = `%${searchTitle.toLowerCase()}%`
       qb.where(
         'LOWER(podcast.title) LIKE :title',
         { title }
       )
-    } else if (query.searchAuthor) {
-      const name = `%${query.searchAuthor.toLowerCase()}%`
+    } else if (searchAuthor) {
+      const name = `%${searchAuthor.toLowerCase()}%`
       qb.innerJoinAndSelect(
         'podcast.authors',
         'author',
         'LOWER(author.name) LIKE :name',
         { name }
       )
-    } else if (query.podcastId && query.podcastId.split(',').length > 0) {
-      const podcastIds = query.podcastId.split(',')
+    } else if (podcastId && podcastId.split(',').length > 0) {
+      const podcastIds = podcastId.split(',')
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }

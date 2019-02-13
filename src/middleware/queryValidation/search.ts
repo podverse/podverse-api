@@ -47,10 +47,11 @@ const validateEpisodeSearch = async (ctx, next) => {
     mediaRefs: Joi.string(),
     podcastId: Joi.string(),
     pubDate: Joi.date().iso(),
-    title: Joi.string(),
+    searchAllFields: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    take: Joi.number().integer().min(0),
+    title: Joi.string()
   })
 
   await validateBaseQuery(schema, ctx, next)
@@ -94,6 +95,7 @@ const validateMediaRefSearch = async (ctx, next) => {
     podcastImageUrl: Joi.string().uri(),
     podcastIsExplicit: Joi.boolean(),
     podcastTitle: Joi.string(),
+    searchAllFields: Joi.string(),
     startTime: Joi.number().integer().min(0),
     title: Joi.string(),
     skip: Joi.number().integer().min(0),

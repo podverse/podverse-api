@@ -61,6 +61,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
   let podcastIds = query.podcastId && query.podcastId.split(',') || []
   let episodeIds = query.episodeId && query.episodeId.split(',') || []
+  const { searchAllFields } = query
 
   const episodeJoinAndSelect = `
     ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
@@ -68,7 +69,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
 
-  const mediaRefs = await repository
+  let qb = repository
     .createQueryBuilder('mediaRef')
     .innerJoinAndSelect(
       'mediaRef.episode',
@@ -76,14 +77,25 @@ const getMediaRefs = async (query, includeNSFW) => {
       episodeJoinAndSelect,
       {
         isExplicit: !!includeNSFW,
-        podcastId: query.podcastId,
         podcastIds: podcastIds,
-        episodeId: query.episodeId,
         episodeIds: episodeIds
       }
     )
     .innerJoinAndSelect('episode.podcast', 'podcast')
-    .where({ isPublic: true })
+
+  qb.where({ isPublic: true })
+
+  if (searchAllFields) {
+    qb
+      .andWhere(
+        `LOWER(mediaRef.title) LIKE :searchAllFields OR
+         LOWER(episode.title) LIKE :searchAllFields OR
+         LOWER(podcast.title) LIKE :searchAllFields`,
+         { searchAllFields: searchAllFields.toLowerCase() }
+      )
+  }
+
+  const mediaRefs = await qb
     .skip(query.skip)
     .take(query.take)
     .orderBy(orderColumn, 'ASC')
