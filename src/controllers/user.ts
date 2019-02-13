@@ -114,6 +114,7 @@ const getPublicUser = async id => {
 
 const getPublicUsers = async query => {
   const repository = getRepository(User)
+  const { skip, take } = query
   let userIds = query.userIds && query.userIds.split(',') || []
 
   if (!userIds || userIds.length < 1) {
@@ -126,8 +127,8 @@ const getPublicUsers = async query => {
       isPublic: true
     })
     .andWhere('user.id IN (:...userIds)', { userIds })
-    .skip(query.skip)
-    .take(50)
+    .skip(skip)
+    .take(take)
     .orderBy('user.name', 'ASC')
     .getMany()
 

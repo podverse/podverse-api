@@ -61,7 +61,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
   let podcastIds = query.podcastId && query.podcastId.split(',') || []
   let episodeIds = query.episodeId && query.episodeId.split(',') || []
-  const { searchAllFields } = query
+  const { searchAllFields, skip, take } = query
 
   const episodeJoinAndSelect = `
     ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
@@ -96,8 +96,8 @@ const getMediaRefs = async (query, includeNSFW) => {
   }
 
   const mediaRefs = await qb
-    .skip(query.skip)
-    .take(query.take)
+    .skip(skip)
+    .take(take)
     .orderBy(orderColumn, 'ASC')
     .getMany()
 
