@@ -23,7 +23,7 @@ const getEpisode = (id) => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
-  const { podcastId, searchAllFields, skip, sort, take } = query
+  const { podcastId, searchAllFieldsText, skip, sort, take } = query
   let podcastIds = podcastId && podcastId.split(',') || []
 
   const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
@@ -43,11 +43,11 @@ const getEpisodes = async (query, includeNSFW) => {
     )
     .where({ isPublic: true })
 
-  if (searchAllFields) {
+  if (searchAllFieldsText) {
     qb.andWhere(
-      `LOWER(episode.title) LIKE :searchAllFields OR
-       LOWER(podcast.title) LIKE :searchAllFields`,
-       { searchAllFields: `%${searchAllFields.toLowerCase()}%` }
+      `LOWER(episode.title) LIKE :searchAllFieldsText OR
+       LOWER(podcast.title) LIKE :searchAllFieldsText`,
+       { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
     )
   }
 

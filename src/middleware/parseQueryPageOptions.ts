@@ -1,7 +1,7 @@
 export const parseQueryPageOptions = async (ctx, next) => {
 
   const query = ctx.request.query
-  const { categories, episodeId, playlistId, podcastId, searchAllFields,
+  const { categories, episodeId, playlistId, podcastId, searchAllFieldsText,
     searchAuthor, searchTitle, userIds } = query
 
   let options = {
@@ -12,7 +12,7 @@ export const parseQueryPageOptions = async (ctx, next) => {
     ...(episodeId ? { episodeId } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
-    ...(searchAllFields ? { searchAllFields } : {}),
+    ...(searchAllFieldsText ? { searchAllFieldsText } : {}),
     ...(searchAuthor ? { searchAuthor } : {}),
     ...(searchTitle ? { searchTitle } : {}),
     ...(userIds ? { userIds } : {})

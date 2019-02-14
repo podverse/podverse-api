@@ -61,7 +61,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
   let podcastIds = query.podcastId && query.podcastId.split(',') || []
   let episodeIds = query.episodeId && query.episodeId.split(',') || []
-  const { searchAllFields, skip, take } = query
+  const { searchAllFieldsText, skip, take } = query
 
   const episodeJoinAndSelect = `
     ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
@@ -85,14 +85,17 @@ const getMediaRefs = async (query, includeNSFW) => {
 
   qb.where({ isPublic: true })
 
-  if (searchAllFields) {
-    qb
-      .andWhere(
-        `LOWER(mediaRef.title) LIKE :searchAllFields OR
-         LOWER(episode.title) LIKE :searchAllFields OR
-         LOWER(podcast.title) LIKE :searchAllFields`,
-         { searchAllFields: searchAllFields.toLowerCase() }
+  if (searchAllFieldsText) {
+    qb.andWhere(
+        `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
+         LOWER(episode.title) LIKE :searchAllFieldsText OR
+         LOWER(podcast.title) LIKE :searchAllFieldsText`,
+         { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
       )
+    qb.andWhere(`
+      mediaRef.title IS NOT NULL AND
+      mediaRef.title <> ''
+    `)
   }
 
   const mediaRefs = await qb
