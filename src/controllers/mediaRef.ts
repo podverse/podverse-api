@@ -83,19 +83,20 @@ const getMediaRefs = async (query, includeNSFW) => {
     )
     .innerJoinAndSelect('episode.podcast', 'podcast')
 
-  qb.where({ isPublic: true })
-
   if (searchAllFieldsText) {
-    qb.andWhere(
-        `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
-         LOWER(episode.title) LIKE :searchAllFieldsText OR
-         LOWER(podcast.title) LIKE :searchAllFieldsText`,
-         { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
-      )
+    qb.where(
+      `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
+      LOWER(episode.title) LIKE :searchAllFieldsText OR
+      LOWER(podcast.title) LIKE :searchAllFieldsText`,
+      { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
+    )
     qb.andWhere(`
       mediaRef.title IS NOT NULL AND
       mediaRef.title <> ''
     `)
+    qb.andWhere('"mediaRef"."isPublic" = true')
+  } else {
+    qb.where({ isPublic: true })
   }
 
   const mediaRefs = await qb

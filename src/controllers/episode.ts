@@ -41,14 +41,16 @@ const getEpisodes = async (query, includeNSFW) => {
       podcastJoinAndSelect,
       { podcastIds }
     )
-    .where({ isPublic: true })
 
   if (searchAllFieldsText) {
-    qb.andWhere(
+    qb.where(
       `LOWER(episode.title) LIKE :searchAllFieldsText OR
        LOWER(podcast.title) LIKE :searchAllFieldsText`,
        { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
     )
+    qb.andWhere('episode."isPublic" = true')
+  } else {
+    qb.where({ isPublic: true })
   }
 
   qb.skip(skip)
