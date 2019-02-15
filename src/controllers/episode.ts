@@ -35,8 +35,8 @@ const getEpisodes = async (query, includeNSFW) => {
 
   let qb = repository
     .createQueryBuilder('episode')
-    .select('episode.id')
-    .addSelect('SUBSTR(episode.description, 1, 400)', 'description')
+    .select('episode.id', 'id')
+    .addSelect('SUBSTR(episode.description, 1, 500)', 'description')
     .addSelect('episode.duration', 'duration')
     .addSelect('episode.episodeType', 'episodeType')
     .addSelect('episode.guid', 'guid')
@@ -83,12 +83,12 @@ const getEpisodes = async (query, includeNSFW) => {
     qb.where({ isPublic: true })
   }
 
-  qb.skip(skip)
+  qb.offset(skip)
 
   // If only searching for one podcast and beyond the first page,
   // then return all remaining episodes.
   if (podcastIds.length !== 1 || parseInt(skip, 10) === 0) {
-    qb.take(take)
+    qb.limit(take)
   }
 
   const episodes = await qb
