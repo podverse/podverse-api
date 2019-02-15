@@ -40,6 +40,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     guid: Joi.string(),
     id: Joi.string().min(7).max(14),
     imageUrl: Joi.string().uri(),
+    includePodcast: Joi.boolean(),
     isExplicit: Joi.boolean(),
     isPublic: Joi.boolean(),
     linkUrl: Joi.string().uri(),

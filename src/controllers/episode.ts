@@ -23,24 +23,54 @@ const getEpisode = (id) => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
-  const { podcastId, searchAllFieldsText, skip, sort, take } = query
+  const { includePodcast, podcastId, searchAllFieldsText, skip, sort,
+    take } = query
   let podcastIds = podcastId && podcastId.split(',') || []
 
   const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-  includeNSFW = false
-  const podcastJoinAndSelect = `
+  const podcastJoinConditions = `
     ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
   `
 
   let qb = repository
     .createQueryBuilder('episode')
-    .innerJoinAndSelect(
+    .select('episode.id')
+    .addSelect('SUBSTR(episode.description, 1, 400)', 'description')
+    .addSelect('episode.duration', 'duration')
+    .addSelect('episode.episodeType', 'episodeType')
+    .addSelect('episode.guid', 'guid')
+    .addSelect('episode.imageUrl', 'imageUrl')
+    .addSelect('episode.isExplicit', 'isExplicit')
+    .addSelect('episode.isPublic', 'isPublic')
+    .addSelect('episode.linkUrl', 'linkUrl')
+    .addSelect('episode.mediaFilesize', 'mediaFilesize')
+    .addSelect('episode.mediaType', 'mediaType')
+    .addSelect('episode.mediaUrl', 'mediaUrl')
+    .addSelect('episode.pastHourTotalUniquePageviews', 'pastHourTotalUniquePageviews')
+    .addSelect('episode.pastDayTotalUniquePageviews', 'pastDayTotalUniquePageviews')
+    .addSelect('episode.pastWeekTotalUniquePageviews', 'pastWeekTotalUniquePageviews')
+    .addSelect('episode.pastMonthTotalUniquePageviews', 'pastMonthTotalUniquePageviews')
+    .addSelect('episode.pastYearTotalUniquePageviews', 'pastYearTotalUniquePageviews')
+    .addSelect('episode.pastAllTimeTotalUniquePageviews', 'pastAllTimeTotalUniquePageviews')
+    .addSelect('episode.pubDate', 'pubDate')
+    .addSelect('episode.title', 'title')
+
+  if (includePodcast) {
+    qb.innerJoinAndSelect(
       'episode.podcast',
       'podcast',
-      podcastJoinAndSelect,
+      podcastJoinConditions,
       { podcastIds }
     )
+  } else {
+    qb.innerJoin(
+      'episode.podcast',
+      'podcast',
+        podcastJoinConditions,
+      { podcastIds }
+    )
+  }
 
   if (searchAllFieldsText) {
     qb.where(
@@ -63,7 +93,7 @@ const getEpisodes = async (query, includeNSFW) => {
 
   const episodes = await qb
     .orderBy(orderColumn, 'DESC')
-    .getMany()
+    .getRawMany()
 
   return episodes
 }
