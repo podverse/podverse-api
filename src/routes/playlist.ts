@@ -52,7 +52,7 @@ router.get('/:id',
 // Create
 const createPlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max: 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/playlist'
 })
