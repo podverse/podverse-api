@@ -77,7 +77,7 @@ router.post('/',
 // Update
 const updatePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max: 20,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/playlist'
 })
