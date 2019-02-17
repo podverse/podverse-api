@@ -1,9 +1,11 @@
 import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
 import { User } from '~/entities'
+import { authExpires } from '~/lib/constants'
 import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
+import { generateToken } from '~/services/auth';
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
@@ -34,12 +36,12 @@ export const emailNotExists = async (ctx, next) => {
 export const signUpUser = async (ctx, next) => {
   const emailVerificationExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
   const freeTrialExpiration = addSeconds(new Date(), process.env.FREE_TRIAL_EXPIRATION)
-  const token = uuidv4()
+  const emailVerificationToken = uuidv4()
 
   const user = {
     email: ctx.request.body.email,
     emailVerified: false,
-    emailVerificationToken: token,
+    emailVerificationToken,
     emailVerificationTokenExpiration: emailVerificationExpiration,
     freeTrialExpiration,
     name: ctx.request.body.name,
@@ -51,9 +53,11 @@ export const signUpUser = async (ctx, next) => {
     const { id, email, emailVerificationToken, name } = await createUser(user)
 
     await sendVerificationEmail(email, name, emailVerificationToken)
-    let expires = new Date()
-    expires.setDate(expires.getDate() + 365)
-    ctx.cookies.set('Authorization', `Bearer ${token}`, {
+
+    const bearerToken = await generateToken({ id })
+
+    const expires = authExpires()
+    ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
       expires,
       httpOnly: true,
       overwrite: true
