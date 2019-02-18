@@ -165,7 +165,7 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
   return mediaRefs
 }
 
-const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
+const getUserPlaylists = async (id, includePrivate, skip, take) => {
   const repository = getRepository(Playlist)
 
   const playlists = await repository

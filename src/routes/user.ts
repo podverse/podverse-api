@@ -54,7 +54,6 @@ router.get('/',
 router.get('/:id/mediaRefs',
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  parseQueryPageOptions,
   async ctx => {
     try {
       const { query } = ctx.request
@@ -77,7 +76,6 @@ router.get('/:id/mediaRefs',
 router.get('/:id/playlists',
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  parseQueryPageOptions,
   async ctx => {
     try {
       const { query } = ctx.request
