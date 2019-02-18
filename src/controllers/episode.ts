@@ -103,10 +103,7 @@ const getEpisodes = async (query, includeNSFW) => {
   qb.offset(skip)
 
   // If only searching for one podcast and beyond the first page,
-  // then return all remaining episodes.
-  if (podcastIds.length !== 1 || parseInt(skip, 10) === 0) {
-    qb.limit(take)
-  }
+  qb.limit(take)
 
   const episodes = await qb
     .orderBy(orderColumn, 'DESC')
