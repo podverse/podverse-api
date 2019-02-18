@@ -130,7 +130,7 @@ const getPublicUsers = async query => {
     .skip(skip)
     .take(take)
     .orderBy('user.name', 'ASC')
-    .getMany()
+    .getManyAndCount()
 
   return users
 }
