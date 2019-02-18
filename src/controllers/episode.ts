@@ -101,8 +101,6 @@ const getEpisodes = async (query, includeNSFW) => {
   }
 
   qb.offset(skip)
-
-  // If only searching for one podcast and beyond the first page,
   qb.limit(take)
 
   const episodes = await qb
