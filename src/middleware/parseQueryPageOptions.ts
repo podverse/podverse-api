@@ -29,6 +29,8 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     options.take = config.queryEpisodesLimit
   } else if (type === 'mediaRefs') {
     options.take = config.queryMediaRefsLimit
+  } else if (type === 'playlists') {
+    options.take = config.queryPlaylistsLimit
   } else if (type === 'podcasts') {
     options.take = config.queryPodcastsLimit
   } else if (type === 'users') {

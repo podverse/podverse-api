@@ -53,6 +53,7 @@ router.get('/',
 // Get Public User's MediaRefs
 router.get('/:id/mediaRefs',
   parseNSFWHeader,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   parseQueryPageOptions,
   async ctx => {
     try {
@@ -75,6 +76,7 @@ router.get('/:id/mediaRefs',
 // Get Public User's Playlists
 router.get('/:id/playlists',
   parseNSFWHeader,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   parseQueryPageOptions,
   async ctx => {
     try {

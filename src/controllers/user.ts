@@ -160,7 +160,7 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
     .skip(skip)
     .take(take)
     .orderBy(orderColumn, 'ASC')
-    .getMany()
+    .getManyAndCount()
 
   return mediaRefs
 }
@@ -179,7 +179,7 @@ const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
     .skip(skip)
     .take(take)
     .orderBy('title', 'ASC')
-    .getMany()
+    .getManyAndCount()
 
   return playlists
 }

@@ -51,7 +51,7 @@ router.post('/get-authenticated-user-info',
 
 // Get Logged In User's MediaRefs
 router.get('/mediaRefs',
-  parseQueryPageOptions,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   jwtAuth,
   async ctx => {
     try {
@@ -73,7 +73,7 @@ router.get('/mediaRefs',
 
 // Get Logged In User's Playlists
 router.get('/playlists',
-  parseQueryPageOptions,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   jwtAuth,
   async ctx => {
     try {
