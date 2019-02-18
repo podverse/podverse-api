@@ -17,6 +17,10 @@ export interface IConfig {
   apiHost: string
   apiPrefix: string
   apiVersion: string
+  queryEpisodesLimit: number
+  queryMediaRefsLimit: number
+  queryPodcastsLimit: number
+  queryUsersLimit: number
   jwtSecret: string
   resetPasswordTokenExpiration: number
   emailVerificationTokenExpiration: number
@@ -45,6 +49,10 @@ let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPI
 let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
 let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
 let mailerPort = process.env.MAILER_PORT || '587'
+let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '20'
+let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '20'
+let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '20'
+let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '20'
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -79,6 +87,10 @@ const config: IConfig = {
   apiHost,
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
+  queryEpisodesLimit: parseInt(queryEpisodesLimit, 10),
+  queryMediaRefsLimit: parseInt(queryMediaRefsLimit, 10),
+  queryPodcastsLimit: parseInt(queryPodcastsLimit, 10),
+  queryUsersLimit: parseInt(queryUsersLimit, 10),
   jwtSecret: process.env.JWT_SECRET || '',
   resetPasswordTokenExpiration: parseInt(resetPasswordTokenExpiration, 10),
   emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),

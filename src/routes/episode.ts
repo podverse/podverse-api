@@ -14,11 +14,17 @@ const delimitKeys = ['authors', 'categories', 'mediaRefs']
 // Search
 router.get('/',
   parseNSFWHeader,
-  parseQueryPageOptions,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'episodes'),
   validateEpisodeSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
+
+      const { query } = ctx.request
+      query.take = config.queryEpisodesLimit
+      if (query.page > 1) {
+        query.skip = (((parseInt(query.page, 10) - 1) * query.take))
+      }
       const episodes = await getEpisodes(ctx.request.query, ctx.state.includeNSFW)
 
       ctx.body = episodes

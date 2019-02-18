@@ -23,7 +23,7 @@ router.use(bodyParser())
 // Search
 router.get('/',
   parseNSFWHeader,
-  parseQueryPageOptions,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   validateMediaRefSearch,
   async ctx => {
     try {

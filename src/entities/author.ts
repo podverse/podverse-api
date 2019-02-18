@@ -1,5 +1,6 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+  ManyToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Podcast } from '~/entities'
 const shortid = require('shortid')
 
 @Entity('authors')
@@ -16,6 +17,9 @@ export class Author {
 
   @Column({ unique: true })
   slug: string
+
+  @ManyToMany(type => Podcast, podcast => podcast.authors)
+  podcasts: Podcast[]
 
   @CreateDateColumn()
   createdAt: Date

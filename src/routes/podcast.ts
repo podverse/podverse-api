@@ -17,7 +17,7 @@ const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
 // Search
 router.get('/',
   parseNSFWHeader,
-  parseQueryPageOptions,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   async ctx => {
     try {

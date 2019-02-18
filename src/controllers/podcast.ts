@@ -64,8 +64,8 @@ const getPodcasts = async (query, includeNSFW) => {
       const name = `%${searchAuthor.toLowerCase()}%`
       qb.innerJoinAndSelect(
         'podcast.authors',
-        'author',
-        'LOWER(author.name) LIKE :name',
+        'authors',
+        'LOWER(authors.name) LIKE :name',
         { name }
       )
     } else if (podcastId && podcastId.split(',').length > 0) {
@@ -92,7 +92,7 @@ const getPodcasts = async (query, includeNSFW) => {
     const podcasts = await qb
       .skip(skip)
       .take(take)
-      .getMany()
+      .getManyAndCount()
 
     return podcasts
   } catch (error) {
@@ -100,8 +100,6 @@ const getPodcasts = async (query, includeNSFW) => {
     return
   }
 }
-
-
 
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 

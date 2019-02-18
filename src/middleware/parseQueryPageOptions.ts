@@ -1,8 +1,10 @@
-export const parseQueryPageOptions = async (ctx, next) => {
+import { config } from '~/config'
+
+export const parseQueryPageOptions = async (ctx, next, type = '') => {
 
   const query = ctx.request.query
-  const { categories, episodeId, includePodcast, playlistId, podcastId,
-    searchAllFieldsText, searchAuthor, searchTitle, userIds } = query
+  const { categories, episodeId, playlistId, podcastId, searchAuthor,
+    searchTitle, userIds } = query
 
   let options = {
     sort: 'top-past-week',
@@ -10,10 +12,8 @@ export const parseQueryPageOptions = async (ctx, next) => {
     take: 20,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
-    ...(includePodcast ? { includePodcast } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
-    ...(searchAllFieldsText ? { searchAllFieldsText } : {}),
     ...(searchAuthor ? { searchAuthor } : {}),
     ...(searchTitle ? { searchTitle } : {}),
     ...(userIds ? { userIds } : {})
@@ -23,6 +23,16 @@ export const parseQueryPageOptions = async (ctx, next) => {
 
   if (sort) {
     options.sort = sort
+  }
+
+  if (type === 'episodes') {
+    options.take = config.queryEpisodesLimit
+  } else if (type === 'mediaRefs') {
+    options.take = config.queryMediaRefsLimit
+  } else if (type === 'podcasts') {
+    options.take = config.queryPodcastsLimit
+  } else if (type === 'users') {
+    options.take = config.queryUsersLimit
   }
 
   if (page > 1) {
