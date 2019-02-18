@@ -3,7 +3,7 @@ import { config } from '~/config'
 export const parseQueryPageOptions = async (ctx, next, type = '') => {
 
   const query = ctx.request.query
-  const { categories, episodeId, playlistId, podcastId, searchAuthor,
+  const { categories, episodeId, includePodcast, playlistId, podcastId, searchAuthor,
     searchTitle, userIds } = query
 
   let options = {
@@ -12,6 +12,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     take: 20,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
+    ...(includePodcast ? { includePodcast } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
     ...(searchAuthor ? { searchAuthor } : {}),

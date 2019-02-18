@@ -103,7 +103,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     .skip(skip)
     .take(take)
     .orderBy(orderColumn, 'ASC')
-    .getMany()
+    .getManyAndCount()
 
   return mediaRefs
 }
