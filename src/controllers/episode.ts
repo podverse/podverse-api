@@ -33,15 +33,22 @@ const getEpisodes = async (query, includeNSFW) => {
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
   `
 
+  const episodeWhereConditions = `
+    LOWER(episode.title) LIKE :searchAllFieldsText
+    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+  `
+
   // Is there a better way to do this? I'm not sure how to get the count
   // with getRawMany...
   let countQB = repository
     .createQueryBuilder('episode')
   if (searchAllFieldsText) {
     countQB.where(
-      `LOWER(episode.title) LIKE :searchAllFieldsText OR
-       LOWER(podcast.title) LIKE :searchAllFieldsText`,
-       { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
+      episodeWhereConditions,
+      {
+        podcastIds,
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
+      }
     )
     countQB.andWhere('episode."isPublic" = true')
   } else {
@@ -91,9 +98,11 @@ const getEpisodes = async (query, includeNSFW) => {
 
   if (searchAllFieldsText) {
     qb.where(
-      `LOWER(episode.title) LIKE :searchAllFieldsText OR
-       LOWER(podcast.title) LIKE :searchAllFieldsText`,
-       { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
+      episodeWhereConditions,
+      {
+        podcastIds,
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
+      }
     )
     qb.andWhere('episode."isPublic" = true')
   } else {

@@ -3,8 +3,8 @@ import { config } from '~/config'
 export const parseQueryPageOptions = async (ctx, next, type = '') => {
 
   const query = ctx.request.query
-  const { categories, episodeId, includePodcast, playlistId, podcastId, searchAuthor,
-    searchTitle, userIds } = query
+  const { categories, episodeId, includePodcast, playlistId, podcastId,
+    searchAllFieldsText, searchAuthor, searchTitle, userIds } = query
 
   let options = {
     sort: 'top-past-week',
@@ -15,6 +15,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     ...(includePodcast ? { includePodcast } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
+    ...(searchAllFieldsText ? { searchAllFieldsText } : {}),
     ...(searchAuthor ? { searchAuthor } : {}),
     ...(searchTitle ? { searchTitle } : {}),
     ...(userIds ? { userIds } : {})
