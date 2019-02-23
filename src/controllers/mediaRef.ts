@@ -5,7 +5,8 @@ import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'episode', 'episode.podcast', 'owner'
+  'authors', 'categories', 'episode', 'episode.podcast', 'owner',
+  'episode.podcast.authors', 'episode.podcast.categories'
 ]
 
 const createMediaRef = async obj => {
