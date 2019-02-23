@@ -13,6 +13,8 @@ export type NowPlayingItem = {
   ownerId?: string
   ownerIsPublic?: boolean
   ownerName?: string
+  podcastAuthors?: string
+  podcastCategories?: string
   podcastId?: string
   podcastImageUrl?: string
   podcastTitle?: string
@@ -35,7 +37,7 @@ export const convertToNowPlayingItem = (data, userPlaybackPosition = 0) => {
     nowPlayingItem.podcastId = data.podcast_id
     nowPlayingItem.podcastTitle = data.podcast_title
     nowPlayingItem.userPlaybackPosition = userPlaybackPosition || 0
-  // If it has a pubDate field, assume it is an Episode
+    // If it has a pubDate field, assume it is an Episode
   } else if (data.pubDate) {
     nowPlayingItem.episodeDescription = data.description
     nowPlayingItem.episodeId = data.id
@@ -46,8 +48,8 @@ export const convertToNowPlayingItem = (data, userPlaybackPosition = 0) => {
     nowPlayingItem.podcastId = data.podcast && data.podcast.id
     nowPlayingItem.podcastTitle = data.podcast && data.podcast.title
     nowPlayingItem.userPlaybackPosition = userPlaybackPosition || 0
-  // Else assume it is a MediaRef
-  } else { 
+    // Else assume it is a MediaRef
+  } else {
     nowPlayingItem.clipEndTime = data.endTime
     nowPlayingItem.clipId = data.id
     nowPlayingItem.clipStartTime = data.startTime
@@ -62,6 +64,8 @@ export const convertToNowPlayingItem = (data, userPlaybackPosition = 0) => {
     nowPlayingItem.ownerId = data.owner && data.owner.id
     nowPlayingItem.ownerIsPublic = data.owner && data.owner.isPublic
     nowPlayingItem.ownerName = data.owner && data.owner.name
+    nowPlayingItem.podcastAuthors = data.episode.podcast.authors
+    nowPlayingItem.podcastCategories = data.episode.podcast.categories
     nowPlayingItem.podcastImageUrl = data.episode.podcast.imageUrl
     nowPlayingItem.podcastId = data.episode.podcast.id
     nowPlayingItem.podcastTitle = data.episode.podcast.title
