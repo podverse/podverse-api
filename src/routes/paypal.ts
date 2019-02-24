@@ -71,7 +71,8 @@ router.post('/webhooks/payment-completed',
 
       ctx.status = 200
     } catch (error) {
-      emitRouterError(error, ctx)
+      console.log(error)
+      ctx.status = 200
     }
   }
 )

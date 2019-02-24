@@ -7,8 +7,7 @@ const validateAuthorSearch = async (ctx, next) => {
     name: Joi.string(),
     slug: Joi.string(),
     skip: Joi.number().integer().min(0),
-    sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    sort: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
@@ -22,8 +21,7 @@ const validateCategorySearch = async (ctx, next) => {
     slug: Joi.string(),
     title: Joi.string(),
     skip: Joi.number().integer().min(0),
-    sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    sort: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
@@ -42,7 +40,6 @@ const validateEpisodeSearch = async (ctx, next) => {
     imageUrl: Joi.string().uri(),
     includePodcast: Joi.boolean(),
     isExplicit: Joi.boolean(),
-    isPublic: Joi.boolean(),
     linkUrl: Joi.string().uri(),
     mediaUrl: Joi.string().uri(),
     mediaRefs: Joi.string(),
@@ -51,7 +48,6 @@ const validateEpisodeSearch = async (ctx, next) => {
     searchAllFieldsText: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0),
     title: Joi.string()
   })
 
@@ -63,10 +59,9 @@ const validateFeedUrlSearch = async (ctx, next) => {
     id: Joi.string(),
     isAuthority: Joi.boolean(),
     podcastId: Joi.string(),
-    url: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    url: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
@@ -88,8 +83,6 @@ const validateMediaRefSearch = async (ctx, next) => {
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     id: Joi.string().min(7).max(14),
-    isNowPlayingItem: Joi.boolean(),
-    isPublic: Joi.boolean(),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),
@@ -97,11 +90,10 @@ const validateMediaRefSearch = async (ctx, next) => {
     podcastIsExplicit: Joi.boolean(),
     podcastTitle: Joi.string(),
     searchAllFieldsText: Joi.string(),
-    startTime: Joi.number().integer().min(0),
-    title: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    startTime: Joi.number().integer().min(0),
+    title: Joi.string()
   })
 
   await validateBaseQuery(schema, ctx, next)
@@ -109,15 +101,9 @@ const validateMediaRefSearch = async (ctx, next) => {
 
 const validatePlaylistSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    description: Joi.string(),
-    id: Joi.string().min(7).max(14),
-    isPublic: Joi.boolean(),
-    mediaRefs: Joi.string(),
     playlistId: Joi.string(),
-    title: Joi.string(),
     skip: Joi.number().integer().min(0),
-    sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    sort: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
@@ -125,27 +111,12 @@ const validatePlaylistSearch = async (ctx, next) => {
 
 const validatePodcastSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    authors: Joi.string(),
     categories: Joi.string(),
-    description: Joi.string(),
-    episodes: Joi.string(),
-    feedLastUpdated: Joi.date().iso(),
-    feedUrls: Joi.string(),
-    guid: Joi.string(),
-    id: Joi.string().min(7).max(14),
-    imageUrl: Joi.string().uri(),
-    isExplicit: Joi.boolean(),
-    isPublic: Joi.boolean(),
-    language: Joi.string(),
-    linkUrl: Joi.string().uri(),
     podcastId: Joi.string(),
     searchAuthor: Joi.string(),
     searchTitle: Joi.string(),
-    title: Joi.string(),
-    type: Joi.string(),
     skip: Joi.number().integer().min(0),
-    sort: Joi.string(),
-    take: Joi.number().integer().min(0)
+    sort: Joi.string()
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
@@ -155,7 +126,6 @@ const validateUserSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    take: Joi.number().integer().min(0),
     userIds: Joi.string()
   }).min(1)
 

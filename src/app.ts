@@ -4,7 +4,7 @@ import * as helmet from 'koa-helmet'
 import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
-// import * as swagger from 'koa2-swagger-ui'
+import * as swagger from 'koa2-swagger-ui'
 import { Connection } from 'typeorm'
 
 import { config } from '~/config'
@@ -61,12 +61,13 @@ export const createApp = (conn: Connection) => {
     `/public`, koaStatic(__dirname + '/public/samples')
   ))
 
-  // app.use(swagger({
-  //   routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
-  //   swaggerOptions: {
-  //     url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
-  //   }
-  // }))
+  // @ts-ignore
+  app.use(swagger({
+    routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
+    swaggerOptions: {
+      url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
+    }
+  }))
 
   app.use(authRouter.routes())
   app.use(authRouter.allowedMethods())

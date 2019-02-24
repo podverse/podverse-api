@@ -16,81 +16,6 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/aut
 
 router.use(bodyParser())
 
-router.post('/get-authenticated-user-info',
-  optionalJwtAuth,
-  async ctx => {
-    try {
-      const { user: jwtUserData } = ctx.state
-
-      if (jwtUserData && jwtUserData.id) {
-        const user = await getLoggedInUser(jwtUserData.id)
-        if (user) {
-          ctx.body = {
-            email: user.email,
-            freeTrialExpiration: user.freeTrialExpiration,
-            historyItems: user.historyItems,
-            id: user.id,
-            isPublic: user.isPublic,
-            membershipExpiration: user.membershipExpiration,
-            name: user.name,
-            playlists: user.playlists,
-            queueItems: user.queueItems,
-            subscribedPlaylistIds: user.subscribedPlaylistIds,
-            subscribedPodcastIds: user.subscribedPodcastIds,
-            subscribedUserIds: user.subscribedUserIds
-          }
-        }
-      }
-
-      ctx.status = 200
-    } catch (error) {
-      ctx.body = {}
-      ctx.status = 403
-    }
-  })
-
-// Get Logged In User's MediaRefs
-router.get('/mediaRefs',
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  jwtAuth,
-  async ctx => {
-    try {
-      const { query } = ctx.request
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
-      const mediaRefs = await getUserMediaRefs(
-        ctx.state.user.id,
-        includeNSFW,
-        true,
-        query.sort,
-        query.skip,
-        query.take
-      )
-      ctx.body = mediaRefs
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Get Logged In User's Playlists
-router.get('/playlists',
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  jwtAuth,
-  async ctx => {
-    try {
-      const { query } = ctx.request
-
-      const playlists = await getUserPlaylists(
-        ctx.state.user.id,
-        true,
-        query.skip,
-        query.take
-      )
-      ctx.body = playlists
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
 const loginLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
   max: 5,
@@ -167,5 +92,80 @@ router.get('/verify-email',
   validateAuthVerifyEmail,
   verifyEmailLimiter,
   verifyEmail)
+
+router.post('/get-authenticated-user-info',
+  optionalJwtAuth,
+  async ctx => {
+    try {
+      const { user: jwtUserData } = ctx.state
+
+      if (jwtUserData && jwtUserData.id) {
+        const user = await getLoggedInUser(jwtUserData.id)
+        if (user) {
+          ctx.body = {
+            email: user.email,
+            freeTrialExpiration: user.freeTrialExpiration,
+            historyItems: user.historyItems,
+            id: user.id,
+            isPublic: user.isPublic,
+            membershipExpiration: user.membershipExpiration,
+            name: user.name,
+            playlists: user.playlists,
+            queueItems: user.queueItems,
+            subscribedPlaylistIds: user.subscribedPlaylistIds,
+            subscribedPodcastIds: user.subscribedPodcastIds,
+            subscribedUserIds: user.subscribedUserIds
+          }
+        }
+      }
+
+      ctx.status = 200
+    } catch (error) {
+      ctx.body = {}
+      ctx.status = 401
+    }
+  })
+
+// Get Logged In User's MediaRefs
+router.get('/mediaRefs',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
+  jwtAuth,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const mediaRefs = await getUserMediaRefs(
+        ctx.state.user.id,
+        includeNSFW,
+        true,
+        query.sort,
+        query.skip,
+        query.take
+      )
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Logged In User's Playlists
+router.get('/playlists',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
+  jwtAuth,
+  async ctx => {
+    try {
+      const { query } = ctx.request
+
+      const playlists = await getUserPlaylists(
+        ctx.state.user.id,
+        true,
+        query.skip,
+        query.take
+      )
+      ctx.body = playlists
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 export const authRouter = router
