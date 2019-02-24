@@ -5,6 +5,7 @@ const validateAuthorSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     id: Joi.string().min(7).max(14),
     name: Joi.string(),
+    page: Joi.number().integer().min(0),
     slug: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string()
@@ -18,6 +19,7 @@ const validateCategorySearch = async (ctx, next) => {
     category: Joi.string(),
     categories: Joi.string(),
     id: Joi.string().min(7).max(14),
+    page: Joi.number().integer().min(0),
     slug: Joi.string(),
     title: Joi.string(),
     skip: Joi.number().integer().min(0),
@@ -43,6 +45,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     linkUrl: Joi.string().uri(),
     mediaUrl: Joi.string().uri(),
     mediaRefs: Joi.string(),
+    page: Joi.number().integer().min(0),
     podcastId: Joi.string(),
     pubDate: Joi.date().iso(),
     searchAllFieldsText: Joi.string(),
@@ -58,6 +61,7 @@ const validateFeedUrlSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     id: Joi.string(),
     isAuthority: Joi.boolean(),
+    page: Joi.number().integer().min(0),
     podcastId: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
@@ -83,6 +87,7 @@ const validateMediaRefSearch = async (ctx, next) => {
     episodeSummary: Joi.string(),
     episodeTitle: Joi.string(),
     id: Joi.string().min(7).max(14),
+    page: Joi.number().integer().min(0),
     podcastFeedUrl: Joi.string().uri(),
     podcastGuid: Joi.string(),
     podcastId: Joi.string(),
@@ -101,6 +106,7 @@ const validateMediaRefSearch = async (ctx, next) => {
 
 const validatePlaylistSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
+    page: Joi.number().integer().min(0),
     playlistId: Joi.string(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string()
@@ -112,6 +118,7 @@ const validatePlaylistSearch = async (ctx, next) => {
 const validatePodcastSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     categories: Joi.string(),
+    page: Joi.number().integer().min(0),
     podcastId: Joi.string(),
     searchAuthor: Joi.string(),
     searchTitle: Joi.string(),
@@ -124,6 +131,7 @@ const validatePodcastSearch = async (ctx, next) => {
 
 const validateUserSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
+    page: Joi.number().integer().min(0),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
     userIds: Joi.string()

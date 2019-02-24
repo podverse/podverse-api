@@ -22,8 +22,8 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  parseNSFWHeader,
   parseQueryPageOptions,
+  parseNSFWHeader,
   validatePlaylistSearch,
   async ctx => {
     try {

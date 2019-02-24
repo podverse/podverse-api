@@ -22,9 +22,9 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
+  validateMediaRefSearch,
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  validateMediaRefSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

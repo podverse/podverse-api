@@ -13,8 +13,8 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/fee
 
 // Search
 router.get('/',
-  parseQueryPageOptions,
   validateFeedUrlSearch,
+  parseQueryPageOptions,
   async ctx => {
     try {
       const feedUrls = await getFeedUrls(ctx.request.query, ctx.state.queryPageOptions)

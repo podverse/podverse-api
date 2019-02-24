@@ -12,8 +12,8 @@ const delimitKeys = ['categories']
 
 // Search
 router.get('/',
-  parseQueryPageOptions,
-  validateCategorySearch,
+validateCategorySearch,
+parseQueryPageOptions,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

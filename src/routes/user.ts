@@ -36,9 +36,9 @@ router.get('/:id',
 
 // Search Public Users
 router.get('/',
+  validateUserSearch,
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
-  validateUserSearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

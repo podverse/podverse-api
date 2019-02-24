@@ -9,8 +9,8 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/aut
 
 // Search
 router.get('/',
-  parseQueryPageOptions,
   validateAuthorSearch,
+  parseQueryPageOptions,
   async ctx => {
     try {
       const authors = await getAuthors(ctx.request.query, ctx.state.queryPageOptions)
