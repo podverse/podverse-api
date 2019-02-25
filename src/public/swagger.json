@@ -63,6 +63,41 @@
     "https"
   ],
   "paths": {
+    "/auth/sign-up": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign up new user",
+        "description": "Create a new user, and send verification email",
+        "operationId": "authSignUp",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "name": "string",
+                "password": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/auth/login": {
       "post": {
         "tags": [
@@ -172,44 +207,6 @@
           },
           "404": {
             "description": "User not found"
-          }
-        }
-      }
-    },
-    "/auth/sign-up": {
-      "post": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Sign up new user",
-        "description": "Create a new user, and send verification email",
-        "operationId": "authSignUp",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "example": {
-                "email": "string",
-                "name": "string",
-                "password": "string"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -399,6 +396,9 @@
             "schema": {
               "$ref": "#/definitions/Author"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
@@ -734,10 +734,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Episode"
-            }
+            "description": "Bad request"
           }
         }
       }
@@ -821,10 +818,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Episode"
-            }
+            "description": "Bad request"
           }
         }
       }
@@ -1010,10 +1004,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/MediaRef"
-            }
+            "description": "Bad request"
           }
         }
       },
@@ -1107,10 +1098,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/MediaRef"
-            }
+            "description": "Bad request"
           },
           "401": {
             "description": "Unauthorized"

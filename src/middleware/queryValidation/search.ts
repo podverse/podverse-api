@@ -20,11 +20,11 @@ const validateCategorySearch = async (ctx, next) => {
     categories: Joi.string(),
     id: Joi.string().min(7).max(14),
     page: Joi.number().integer().min(0),
-    slug: Joi.string(),
-    title: Joi.string(),
     skip: Joi.number().integer().min(0),
-    sort: Joi.string()
-  }).min(1)
+    sort: Joi.string(),
+    slug: Joi.string(),
+    title: Joi.string()
+  })
 
   await validateBaseQuery(schema, ctx, next)
 }
