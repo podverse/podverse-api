@@ -37,6 +37,7 @@ const getPodcasts = async (query, includeNSFW) => {
     .addSelect('podcast.lastEpisodePubDate')
     .addSelect('podcast.lastEpisodeTitle')
     .addSelect('podcast.linkUrl')
+    .addSelect('podcast.sortableTitle')
     .addSelect('podcast.title')
     .addSelect('podcast.pastHourTotalUniquePageviews')
     .addSelect('podcast.pastWeekTotalUniquePageviews')
