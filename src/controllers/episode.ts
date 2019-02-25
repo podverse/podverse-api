@@ -4,7 +4,8 @@ import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'mediaRefs', 'podcast'
+  'authors', 'categories', 'mediaRefs', 'podcast',
+  'podcast.authors', 'podcast.categories'
 ]
 
 const getEpisode = (id) => {
