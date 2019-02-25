@@ -159,7 +159,8 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
     )
     .skip(skip)
     .take(take)
-    .orderBy(orderColumn, 'ASC')
+    // @ts-ignore
+    .orderBy(orderColumn[0], orderColumn[1])
     .getManyAndCount()
 
   return mediaRefs

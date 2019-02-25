@@ -113,7 +113,8 @@ const getEpisodes = async (query, includeNSFW) => {
   qb.limit(take)
 
   const episodes = await qb
-    .orderBy(orderColumn, 'DESC')
+    // @ts-ignore
+    .orderBy(orderColumn[0], orderColumn[1])
     .getRawMany()
 
   return [episodes, count]

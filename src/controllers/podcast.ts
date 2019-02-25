@@ -85,7 +85,8 @@ const getPodcasts = async (query, includeNSFW) => {
 
   if (query.sort) {
     const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-    qb.orderBy(orderColumn, 'DESC')
+    // @ts-ignore
+    qb.orderBy(orderColumn[0], orderColumn[1])
   }
 
   try {

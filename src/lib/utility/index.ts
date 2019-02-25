@@ -102,6 +102,8 @@ export const createQueryOrderObject = (sort, sortDateKey) => {
     order.pastAllTimeTotalUniquePageviews = 'DESC'
   } else if (sort === 'most-recent') {
     order[sortDateKey] = 'DESC'
+  } else if (sort === 'alphabetical') {
+    order.sortableTitle = 'ASC'
   } else { // sort = top-past-week
     order.pastWeekTotalUniquePageviews = 'DESC'
   }
@@ -111,19 +113,21 @@ export const createQueryOrderObject = (sort, sortDateKey) => {
 
 export const getQueryOrderColumn = (type, sort, sortDateKey) => {
   if (sort === 'top-past-hour') {
-    return `${type}.pastHourTotalUniquePageviews`
+    return [`${type}.pastHourTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-past-day') {
-    return `${type}.pastDayTotalUniquePageviews`
+    return [`${type}.pastDayTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-past-month') {
-    return `${type}.pastMonthTotalUniquePageviews`
+    return [`${type}.pastMonthTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-past-year') {
-    return `${type}.pastYearTotalUniquePageviews`
+    return [`${type}.pastYearTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-all-time') {
-    return `${type}.pastAllTimeTotalUniquePageviews`
+    return [`${type}.pastAllTimeTotalUniquePageviews`, 'DESC']
   } else if (sort === 'most-recent') {
-    return `${type}.${sortDateKey}`
+    return [`${type}.${sortDateKey}`, 'DESC']
+  } else if (sort === 'alphabetical') {
+    return [`${type}.sortableTitle`, 'ASC']
   } else { // sort = top-past-week
-    return `${type}.pastWeekTotalUniquePageviews`
+    return [`${type}.pastWeekTotalUniquePageviews`, 'DESC']
   }
 }
 

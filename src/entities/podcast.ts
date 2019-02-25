@@ -89,6 +89,9 @@ export class Podcast {
   priority: number
 
   @Column({ nullable: true })
+  sortableTitle?: string
+
+  @Column({ nullable: true })
   title?: string
 
   @Column({ nullable: true })

@@ -66,6 +66,7 @@ export const parseFeedUrl = async feedUrl => {
         podcast.guid = data.guid
         podcast.language = data.language
         podcast.linkUrl = data.link
+        podcast.sortableTitle = data.title ? data.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '') : ''
         podcast.title = data.title
         podcast.type = data.type
 
