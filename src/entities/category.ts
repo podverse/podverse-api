@@ -13,6 +13,9 @@ export class Category {
   })
   id: string
 
+  @Column({ unique: true })
+  fullPath: string
+
   @Column()
   slug: string
 

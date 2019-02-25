@@ -15,7 +15,9 @@ const generateCategories = async (
       title = category.split('>')[1]
       const parentTitle = category.split('>')[0]
 
-      const categories = await getCategories({ title: parentTitle })
+      const categories = await getCategories({
+        title: parentTitle
+      })
       if (categories.length > 0) {
         parentId = categories[0].id
       }
@@ -23,14 +25,15 @@ const generateCategories = async (
       title = category
     }
 
-    const newCategory = generateCategory(title, parentId)
+    const newCategory = generateCategory(category, title, parentId)
 
     await connection.manager.save(newCategory)
   }
 }
 
-const generateCategory = (title, parentId) => {
+const generateCategory = (fullPath, title, parentId) => {
   let category = new Category()
+  category.fullPath = fullPath
   category.title = title
   category.category = parentId
   return category

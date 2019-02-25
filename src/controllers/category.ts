@@ -22,6 +22,9 @@ const getCategories = (query, options = {}) => {
     where: {
       ...query
     },
+    order: {
+      title: 'ASC'
+    },
     relations: ['category', 'categories'],
     ...options
   })

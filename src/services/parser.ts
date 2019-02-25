@@ -36,7 +36,7 @@ export const parseFeedUrl = async feedUrl => {
           authors = await findOrGenerateAuthors(data.author) as never
         }
 
-        let categories = []
+        let categories: Category[] = []
         if (data.categories) {
           categories = await findCategories(data.categories)
         }
@@ -250,14 +250,23 @@ const generateAuthor = name => {
   return author
 }
 
-const findCategories = async categories => {
+const findCategories = async (categories: string[]) => {
+  let c: string[] = []
+
+  for (const category of categories) {
+    if (category.indexOf('>') > 0) {
+      c.push(category.substr(0, category.indexOf('>')))
+    }
+    c.push(category)
+  }
+
   const categoryRepo = await getRepository(Category)
-  categories = await categoryRepo.find({
+  const matchedCategories = await categoryRepo.find({
     where: {
-      title: In(categories)
+      fullPath: In(c)
     }
   })
-  return categories
+  return matchedCategories
 }
 
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
@@ -282,7 +291,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   }
   episode.authors = authors
 
-  let categories = []
+  let categories: Category[] = []
   if (parsedEpisode.categories) {
     categories = await findCategories(parsedEpisode.categories)
   }
