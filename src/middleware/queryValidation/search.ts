@@ -134,7 +134,7 @@ const validateUserSearch = async (ctx, next) => {
     page: Joi.number().integer().min(0),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
-    userIds: Joi.string()
+    userIds: Joi.string().allow('')
   }).min(1)
 
   await validateBaseQuery(schema, ctx, next)
