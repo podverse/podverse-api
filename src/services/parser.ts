@@ -105,7 +105,7 @@ export const parseFeedUrl = async feedUrl => {
 
         resolve()
       } catch (error) {
-        throw error
+        reject(error)
       }
     })
   })
@@ -342,8 +342,12 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       x => x.enclosure.url === existingEpisode.mediaUrl
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
+
     // @ts-ignore
-    updatedSavedEpisodes.push(existingEpisode)
+    if (!updatedSavedEpisodes.some(x => x.mediaUrl === existingEpisode.mediaUrl)) {
+      // @ts-ignore
+      updatedSavedEpisodes.push(existingEpisode)
+    }
   }
 
   // If episode from the parsed object is new (not already saved),
@@ -351,8 +355,12 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   for (const newParsedEpisode of newParsedEpisodes) {
     let episode = new Episode()
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
+
     // @ts-ignore
-    newEpisodes.push(episode)
+    if (!newEpisodes.some(x => x.mediaUrl === episode.mediaUrl)) {
+      // @ts-ignore
+      newEpisodes.push(episode)
+    }
   }
 
   return {
