@@ -1,5 +1,6 @@
 import { generateToken } from '~/services/auth/generateToken'
 import { authExpires } from '~/lib/constants'
+import { config } from '~/config'
 
 export function authenticate (ctx, next) {
   return generateToken(ctx.state.user)
@@ -7,9 +8,11 @@ export function authenticate (ctx, next) {
       if (token) {
         const expires = authExpires()
         ctx.cookies.set('Authorization', `Bearer ${token}`, {
+          domain: config.cookieDomain,
           expires,
           httpOnly: true,
-          overwrite: true
+          overwrite: true,
+          secure: config.cookieIsSecure
         })
 
         const { user } = ctx.state

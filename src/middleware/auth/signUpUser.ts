@@ -1,11 +1,12 @@
 import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
+import { config } from '~/config'
 import { User } from '~/entities'
 import { authExpires } from '~/lib/constants'
 import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
+import { generateToken } from '~/services/auth'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
-import { generateToken } from '~/services/auth';
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
@@ -58,9 +59,11 @@ export const signUpUser = async (ctx, next) => {
 
     const expires = authExpires()
     ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
+      domain: config.cookieDomain,
       expires,
       httpOnly: true,
-      overwrite: true
+      overwrite: true,
+      secure: config.cookieIsSecure
     })
 
     ctx.body = { id, email }

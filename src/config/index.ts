@@ -16,6 +16,8 @@ export interface IConfig {
   dbConfig: DbConfig
   apiPrefix: string
   apiVersion: string
+  cookieDomain: string
+  cookieIsSecure: boolean
   queryEpisodesLimit: number
   queryMediaRefsLimit: number
   queryPlaylistsLimit: number
@@ -47,6 +49,8 @@ let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPI
 let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
 let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
 let mailerPort = process.env.MAILER_PORT || '587'
+let cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
+let cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
 let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '20'
 let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '20'
 let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '20'
@@ -85,6 +89,8 @@ const config: IConfig = {
   },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
+  cookieDomain,
+  cookieIsSecure,
   queryEpisodesLimit: parseInt(queryEpisodesLimit, 10),
   queryMediaRefsLimit: parseInt(queryMediaRefsLimit, 10),
   queryPlaylistsLimit: parseInt(queryPlaylistsLimit, 10),
