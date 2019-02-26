@@ -14,7 +14,6 @@ export interface IConfig {
   port: number
   debugLogging: boolean
   dbConfig: DbConfig
-  apiHost: string
   apiPrefix: string
   apiVersion: string
   queryEpisodesLimit: number
@@ -40,8 +39,6 @@ export interface IConfig {
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
 }
-
-const apiHost = process.env.API_HOST || 'http://localhost:1234'
 
 let port = process.env.PORT || '1234'
 let dbPort = process.env.DB_PORT || '5432'
@@ -86,7 +83,6 @@ const config: IConfig = {
     database: process.env.DB_DATABASE || '',
     sslConnection: process.env.DB_SSL_CONNECTION === 'true'
   },
-  apiHost,
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
   queryEpisodesLimit: parseInt(queryEpisodesLimit, 10),
