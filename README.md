@@ -37,7 +37,7 @@ npm install
 npm run dev
 ```
 
-### Add categories to the database
+### Add podcast categories to the database
 
 ```
 npm run seeds:categories
