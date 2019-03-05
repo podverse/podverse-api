@@ -21,6 +21,22 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/use
 
 router.use(bodyParser())
 
+// Search Public Users
+router.get('/',
+  validateUserSearch,
+  parseNSFWHeader,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+      const users = await getPublicUsers(ctx.request.query)
+
+      ctx.body = users
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
 // Get Public User
 router.get('/:id',
   parseNSFWHeader,
@@ -34,17 +50,36 @@ router.get('/:id',
     }
   })
 
-// Search Public Users
-router.get('/',
-  validateUserSearch,
-  parseNSFWHeader,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
+// Delete
+router.delete('/:id',
+  jwtAuth,
   async ctx => {
     try {
-      ctx = delimitQueryValues(ctx, delimitKeys)
-      const users = await getPublicUsers(ctx.request.query)
+      await deleteUser(ctx.params.id, ctx.state.user.id)
+      ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
-      ctx.body = users
+// Update
+const updateUserLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: 5,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'patch/user'
+})
+
+router.patch('/',
+  validateUserUpdate,
+  updateUserLimiter,
+  jwtAuth,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const body = ctx.request.body
+      const user = await updateUser(body, ctx.state.user.id)
+      ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
     }
@@ -87,41 +122,6 @@ router.get('/:id/playlists',
         query.take
       )
       ctx.body = playlists
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Delete
-router.delete('/:id',
-  jwtAuth,
-  async ctx => {
-    try {
-      await deleteUser(ctx.params.id, ctx.state.user.id)
-      ctx.status = 200
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Update
-const updateUserLimiter = RateLimit.middleware({
-  interval: 1 * 60 * 1000,
-  max: 5,
-  message: `You're doing that too much. Please try again in a minute.`,
-  prefixKey: 'patch/user'
-})
-
-router.patch('/',
-  validateUserUpdate,
-  updateUserLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const user = await updateUser(body, ctx.state.user.id)
-      ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)
     }

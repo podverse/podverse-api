@@ -16,6 +16,20 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/aut
 
 router.use(bodyParser())
 
+const signUpLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/reset-password'
+})
+
+router.post('/sign-up',
+  validateAuthSignUp,
+  validEmail,
+  signUpLimiter,
+  emailNotExists,
+  signUpUser)
+
 const loginLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
   max: 5,
@@ -66,20 +80,6 @@ router.post('/send-verification',
   validateAuthSendVerification,
   sendVerificationLimiter,
   sendVerification)
-
-const signUpLimiter = RateLimit.middleware({
-  interval: 5 * 60 * 1000,
-  max: 2,
-  message: `You're doing that too much. Please try again in 2 minutes.`,
-  prefixKey: 'post/reset-password'
-})
-
-router.post('/sign-up',
-  validateAuthSignUp,
-  validEmail,
-  signUpLimiter,
-  emailNotExists,
-  signUpUser)
 
 const verifyEmailLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,

@@ -30,9 +30,11 @@ const seedDatabase = async (connection: Connection) => {
   author4.name = 'Josh Szeps'
 
   let category1 = new Category()
+  category1.fullPath = 'test-category1'
   category1.title = 'Test Category 1'
 
   let category2 = new Category()
+  category2.fullPath = 'test-category2'
   category2.title = 'Test Category 2'
 
   let user1 = new User()
@@ -333,10 +335,12 @@ const seedDatabase = async (connection: Connection) => {
   await connection.manager.save([playlist1, playlist2, playlist3, playlist4])
 
   let nestedCategory1 = new Category()
+  nestedCategory1.fullPath = 'nested-category-1'
   nestedCategory1.title = 'Nested Category 1'
   nestedCategory1.category = category1
 
   let nestedCategory2 = new Category()
+  nestedCategory1.fullPath = 'nested-category-2'
   nestedCategory2.title = 'Nested Category 2'
   nestedCategory2.category = category2
 

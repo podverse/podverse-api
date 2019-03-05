@@ -49,7 +49,7 @@
     },
     {
       "name": "playlist",
-      "description": "lists of mediaRefs"
+      "description": "lists of mediaRefs and episodes"
     },
     {
       "name": "podcast"
@@ -131,6 +131,24 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "description": "Clears the authorization cookie",
+        "operationId": "authLogout",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
           }
         }
       }
@@ -1485,6 +1503,87 @@
         ]
       }
     },
+    "/playlist/add-or-remove": {
+      "patch": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Add or remove mediaRef or episode to playlist",
+        "description": "Adds or removes mediaRef or episode to playlist",
+        "operationId": "playlistAddOrRemove",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "episodeId": "string",
+                "mediaRefId": "string",
+                "playlistId": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/playlist/toggle-subscribe/{playlistId}": {
+      "get": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Toggle subscribe to playlist",
+        "description": "Subscribe or unsubscribe from playlist.",
+        "operationId": "playlistToggleSubscribe",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "playlistId",
+            "in": "path",
+            "description": "ID of playlist to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/podcast": {
       "get": {
         "tags": [
@@ -1575,6 +1674,41 @@
             "description": "Podcast not found"
           }
         }
+      }
+    },
+    "/podcast/toggle-subscribe/{podcastId}": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Toggle subscribe to podcast",
+        "description": "Subscribe or unsubscribe from podcast.",
+        "operationId": "podcastToggleSubscribe",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "podcastId",
+            "in": "path",
+            "description": "ID of podcast to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/user": {

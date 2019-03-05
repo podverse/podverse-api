@@ -37,10 +37,18 @@ npm install
 npm run dev
 ```
 
+### Sample database data
+
+If you want to add entities to the database quickly for development purposes only, run the following:
+
+```
+npm run dev:seeds:sampleEntities
+```
+
 ### Add podcast categories to the database
 
 ```
-npm run seeds:categories
+npm run dev:seeds:categories
 ```
 
 ### Add feed urls to the database
@@ -49,7 +57,7 @@ To add podcasts to the database, you first need to add feed urls to the
 database, and then run the podcast parser with those feed urls.
 
 You can pass multiple feed urls as a comma-delimited string parameter to the
-`npm run scripts:addFeedUrls` command.
+`npm run dev:scripts:addFeedUrls` command.
 
 A list of sample podcast feed urls can be found in
 [podverse-api/docs/sampleFeedUrls.txt](https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
