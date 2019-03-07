@@ -1,7 +1,7 @@
-import createError from 'http-errors'
 import { config } from '~/config'
 import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
+const createError = require('http-errors')
 
 const { mailerUsername } = config
 

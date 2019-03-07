@@ -66,7 +66,11 @@ export const signUpUser = async (ctx, next) => {
       secure: config.cookieIsSecure
     })
 
-    ctx.body = { id, email }
+    ctx.body = {
+      id,
+      email,
+      token: `Bearer ${bearerToken}`
+    }
     next()
   } catch (error) {
     emitRouterError(error, ctx)
