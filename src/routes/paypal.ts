@@ -8,6 +8,7 @@ import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validatePayPalOrderCreate } from '~/middleware/queryValidation/create'
 import { verifyWebhookSignature, getPayPalResponseHeaders } from '~/services/paypal'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/paypal` })
 
@@ -28,7 +29,7 @@ router.get('/order/:id',
 // Create
 const createOrderLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max:  rateLimiterMaxOverride || 3,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/paypal/order'
 })

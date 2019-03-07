@@ -9,6 +9,7 @@ import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validatePodcastSearch } from '~/middleware/queryValidation/search'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/podcast` })
 
@@ -46,7 +47,7 @@ router.get('/:id',
 // Toggle subscribe to podcast
 const toggleSubscribeLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 15,
+  max:  rateLimiterMaxOverride || 15,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/toggle-subscribe'
 })

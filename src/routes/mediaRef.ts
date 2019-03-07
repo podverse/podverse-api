@@ -13,6 +13,7 @@ import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
 import { validateMediaRefUpdate } from '~/middleware/queryValidation/update'
 import { hasValidMembershipIfJwt } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const delimitKeys = ['authors', 'categories']
 
@@ -52,7 +53,7 @@ router.get('/:id',
 // Create
 const createMediaRefLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max:  rateLimiterMaxOverride || 3,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/mediaRef'
 })
@@ -80,7 +81,7 @@ router.post('/',
 // Update
 const updateMediaRefLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max:  rateLimiterMaxOverride || 3,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/mediaRef'
 })

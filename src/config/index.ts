@@ -40,6 +40,7 @@ export interface IConfig {
   websiteProtocol: string
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
+  rateLimiterMaxOverride: any
 }
 
 let port = process.env.PORT || '1234'
@@ -56,6 +57,7 @@ let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '20'
 let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '20'
 let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '20'
 let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '20'
+let rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -112,7 +114,8 @@ const config: IConfig = {
   websiteDomain,
   websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
-  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || ''
+  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '',
+  rateLimiterMaxOverride
 }
 
 export { config }

@@ -13,6 +13,7 @@ import { validatePlaylistSearch } from '~/middleware/queryValidation/search'
 import { validatePlaylistUpdate } from '~/middleware/queryValidation/update'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/playlist` })
 
@@ -52,7 +53,7 @@ router.get('/:id',
 // Create
 const createPlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 10,
+  max:  rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/playlist'
 })
@@ -77,7 +78,7 @@ router.post('/',
 // Update
 const updatePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 20,
+  max:  rateLimiterMaxOverride || 20,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/playlist'
 })
@@ -111,7 +112,7 @@ router.delete('/:id',
 // Add/remove mediaRef/episode to/from playlist
 const addOrRemovePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 30,
+  max:  rateLimiterMaxOverride || 30,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/add-or-remove'
 })
@@ -139,7 +140,7 @@ router.patch('/add-or-remove',
 // Toggle subscribe to playlist
 const toggleSubscribeLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 15,
+  max:  rateLimiterMaxOverride || 15,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/playlist/toggle-subscribe'
 })

@@ -14,6 +14,7 @@ import { validateUserSearch } from '~/middleware/queryValidation/search'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
   validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const delimitKeys = []
 
@@ -65,7 +66,7 @@ router.delete('/:id',
 // Update
 const updateUserLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 5,
+  max:  rateLimiterMaxOverride || 5,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/user'
 })
@@ -130,7 +131,7 @@ router.get('/:id/playlists',
 // Update queueItems
 const updateQueueUserLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 30,
+  max:  rateLimiterMaxOverride || 30,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/user/update-queue'
 })
@@ -171,7 +172,7 @@ router.patch('/add-or-update-history-item',
 // Download user data
 const downloadUserLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
-  max: 2,
+  max:  rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 5 minutes.`,
   prefixKey: 'get/user/download'
 })
@@ -191,7 +192,7 @@ downloadUserLimiter,
 // Toggle subscribe to user
 const toggleSubscribeUserLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 10,
+  max:  rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/toggle-subscribe'
 })

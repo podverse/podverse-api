@@ -11,6 +11,7 @@ import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPass
   } from '~/middleware/queryValidation/auth'
 import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/auth` })
 
@@ -18,7 +19,7 @@ router.use(bodyParser())
 
 const signUpLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
-  max: 2,
+  max:  rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/reset-password'
 })
@@ -32,7 +33,7 @@ router.post('/sign-up',
 
 const loginLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 5,
+  max:  rateLimiterMaxOverride || 5,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/login'
 })
@@ -47,7 +48,7 @@ router.post('/log-out', logOut)
 
 const resetPasswordLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 3,
+  max:  rateLimiterMaxOverride || 3,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/reset-password'
 })
@@ -59,7 +60,7 @@ router.post('/reset-password',
 
 const sendResetPasswordLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
-  max: 2,
+  max:  rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/reset-password'
 })
@@ -71,7 +72,7 @@ router.post('/send-reset-password',
 
 const sendVerificationLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
-  max: 2,
+  max:  rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/reset-password'
 })
@@ -83,7 +84,7 @@ router.post('/send-verification',
 
 const verifyEmailLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
-  max: 2,
+  max:  rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/verify-email'
 })

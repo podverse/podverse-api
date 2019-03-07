@@ -9,6 +9,7 @@ import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateBitPayInvoiceCreate } from '~/middleware/queryValidation/create'
 import { createBitPayInvoiceVendor, getBitPayInvoiceVendor } from '~/services/bitpay'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/bitpay` })
 
@@ -28,7 +29,7 @@ router.get('/invoice/:id',
 
 const createInvoiceLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 5,
+  max:  rateLimiterMaxOverride || 5,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/bitpay/invoice'
 })
