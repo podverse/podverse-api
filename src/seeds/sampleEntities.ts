@@ -340,7 +340,7 @@ const seedDatabase = async (connection: Connection) => {
   nestedCategory1.category = category1
 
   let nestedCategory2 = new Category()
-  nestedCategory1.fullPath = 'nested-category-2'
+  nestedCategory2.fullPath = 'nested-category-2'
   nestedCategory2.title = 'Nested Category 2'
   nestedCategory2.category = category2
 
