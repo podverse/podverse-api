@@ -1,6 +1,7 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getPodcast, getPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
+import { getLatestEpisodeInfo, getPodcast, getPodcasts, toggleSubscribeToPodcast
+  } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -14,6 +15,22 @@ const { rateLimiterMaxOverride } = config
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/podcast` })
 
 const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
+
+// Get only the podcasts most recent info to determine if new episodes are available
+router.get('/latest-episode-info',
+  validatePodcastSearch,
+  parseNSFWHeader,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+      const podcasts = await getLatestEpisodeInfo(ctx.request.query)
+
+      ctx.body = podcasts
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 // Search
 router.get('/',

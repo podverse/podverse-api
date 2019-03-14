@@ -103,6 +103,41 @@ const getPodcasts = async (query, includeNSFW) => {
   }
 }
 
+const getLatestEpisodeInfo = async query => {
+  const repository = getRepository(Podcast)
+  const { podcastId } = query
+
+  if (!podcastId) {
+    return []
+  }
+
+  const podcastIds = podcastId.split(',')
+
+  let qb = repository
+    .createQueryBuilder('podcast')
+    .select('podcast.id')
+    .addSelect('podcast.feedLastUpdated')
+    .addSelect('podcast.lastEpisodePubDate')
+    .addSelect('podcast.lastEpisodeTitle')
+    .addSelect('podcast.title')
+    .where(
+      'podcast.id IN (:...podcastIds)',
+      { podcastIds }
+    )
+    .andWhere('"isPublic" = true')
+
+  try {
+    const podcasts = await qb
+      .take(500)
+      .getManyAndCount()
+
+    return podcasts
+  } catch (error) {
+    console.log(error)
+    return
+  }
+}
+
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 
   if (!loggedInUserId) {
@@ -145,5 +180,6 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 export {
   getPodcast,
   getPodcasts,
+  getLatestEpisodeInfo,
   toggleSubscribeToPodcast
 }

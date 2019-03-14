@@ -1711,6 +1711,37 @@
         ]
       }
     },
+    "/podcast/latest-episode-info": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Find the latest episode info for a list of podcasts",
+        "description": "Accepts a list of podcast ids and returns an array of only the latest episode info from those podcasts.",
+        "operationId": "getPodcastsLatestEpisodeInfo",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "podcastId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Podcast"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/user": {
       "get": {
         "tags": [
