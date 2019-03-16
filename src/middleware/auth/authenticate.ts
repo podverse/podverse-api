@@ -7,13 +7,6 @@ export function authenticate (ctx, next) {
     .then(bearerToken => {
       if (bearerToken) {
         const expires = authExpires()
-        ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
-          domain: config.cookieDomain,
-          expires,
-          httpOnly: true,
-          overwrite: true,
-          secure: config.cookieIsSecure
-        })
 
         const { user } = ctx.state
         ctx.body = {
@@ -29,8 +22,20 @@ export function authenticate (ctx, next) {
           subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds,
           subscribedUserIds: user.subscribedUserIds,
-          token: `Bearer ${bearerToken}`
         }
+
+        if (ctx.query.includeBodyToken) {
+          ctx.body.token = `Bearer ${bearerToken}`
+        } else {
+          ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
+            domain: config.cookieDomain,
+            expires,
+            httpOnly: true,
+            overwrite: true,
+            secure: config.cookieIsSecure
+          })
+        }
+
         ctx.status = 200
       } else {
         ctx.status = 500

@@ -58,19 +58,26 @@ export const signUpUser = async (ctx, next) => {
     const bearerToken = await generateToken({ id })
 
     const expires = authExpires()
-    ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
-      domain: config.cookieDomain,
-      expires,
-      httpOnly: true,
-      overwrite: true,
-      secure: config.cookieIsSecure
-    })
 
     ctx.body = {
       id,
-      email,
-      token: `Bearer ${bearerToken}`
+      email
     }
+
+    if (ctx.query.includeBodyToken) {
+      ctx.body.token = `Bearer ${bearerToken}`
+    } else {
+      ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
+        domain: config.cookieDomain,
+        expires,
+        httpOnly: true,
+        overwrite: true,
+        secure: config.cookieIsSecure
+      })
+    }
+
+    ctx.status = 200
+
     next()
   } catch (error) {
     emitRouterError(error, ctx)
