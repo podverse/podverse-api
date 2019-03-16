@@ -103,7 +103,7 @@ const getPodcasts = async (query, includeNSFW) => {
   }
 }
 
-const getLatestEpisodeInfo = async query => {
+const getMetadata = async query => {
   const repository = getRepository(Podcast)
   const { podcastId } = query
 
@@ -180,6 +180,6 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 export {
   getPodcast,
   getPodcasts,
-  getLatestEpisodeInfo,
+  getMetadata,
   toggleSubscribeToPodcast
 }

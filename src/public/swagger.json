@@ -1718,7 +1718,7 @@
         ],
         "summary": "Find the latest metadata for a list of podcasts",
         "description": "Accepts a list of podcast ids and returns an array of only the latest metadata for those podcasts.",
-        "operationId": "getPodcastsMetaData",
+        "operationId": "getPodcastsMetadata",
         "produces": [
           "application/json"
         ],

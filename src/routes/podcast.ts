@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getLatestEpisodeInfo, getPodcast, getPodcasts, toggleSubscribeToPodcast
+import { getMetadata, getPodcast, getPodcasts, toggleSubscribeToPodcast
   } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -24,7 +24,7 @@ router.get('/metadata',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getLatestEpisodeInfo(ctx.request.query)
+      const podcasts = await getMetadata(ctx.request.query)
 
       ctx.body = podcasts
     } catch (error) {
