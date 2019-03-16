@@ -69,7 +69,7 @@
           "auth"
         ],
         "summary": "Sign up new user",
-        "description": "Creates a new user, sends a verification email, sets an HTTPOnly Authentication cookie, and returns the user's info in the response body, including the bearer token.",
+        "description": "Creates a new user, sends a verification email, and returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
         "operationId": "authSignUp",
         "produces": [
           "application/json"
@@ -104,7 +104,7 @@
           "auth"
         ],
         "summary": "Login as user",
-        "description": "Sets an HTTPOnly Authentication cookie, and returns user information in the response body, including the bearer token.",
+        "description": "Returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
         "operationId": "authLogin",
         "produces": [
           "application/json"

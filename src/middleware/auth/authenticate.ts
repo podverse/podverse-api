@@ -21,7 +21,7 @@ export function authenticate (ctx, next) {
           queueItems: user.queueItems,
           subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds,
-          subscribedUserIds: user.subscribedUserIds,
+          subscribedUserIds: user.subscribedUserIds
         }
 
         if (ctx.query.includeBodyToken) {
