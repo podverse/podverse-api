@@ -4,10 +4,10 @@ import { config } from '~/config'
 
 export function authenticate (ctx, next) {
   return generateToken(ctx.state.user)
-    .then(token => {
-      if (token) {
+    .then(bearerToken => {
+      if (bearerToken) {
         const expires = authExpires()
-        ctx.cookies.set('Authorization', `Bearer ${token}`, {
+        ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
           domain: config.cookieDomain,
           expires,
           httpOnly: true,
@@ -28,7 +28,8 @@ export function authenticate (ctx, next) {
           queueItems: user.queueItems,
           subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds,
-          subscribedUserIds: user.subscribedUserIds
+          subscribedUserIds: user.subscribedUserIds,
+          token: `Bearer ${bearerToken}`
         }
         ctx.status = 200
       } else {
