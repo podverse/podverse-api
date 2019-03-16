@@ -16,8 +16,8 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/pod
 
 const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
 
-// Get only the podcasts most recent info to determine if new episodes are available
-router.get('/latest-episode-info',
+// Get only the podcasts most recent metadata to determine if new episodes are available
+router.get('/metadata',
   validatePodcastSearch,
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),

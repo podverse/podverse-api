@@ -63,39 +63,33 @@
     "https"
   ],
   "paths": {
-    "/auth/sign-up": {
+    "/auth/get-authenticated-user-info": {
       "post": {
         "tags": [
           "auth"
         ],
-        "summary": "Sign up new user",
-        "description": "Creates a new user, sends a verification email, and returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
-        "operationId": "authSignUp",
+        "summary": "Get the currently logged-in user's info",
+        "description": "Returns an object with the currently logged-in user's info",
+        "operationId": "getAuthenticatedUserInfo",
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "example": {
-                "email": "string",
-                "name": "string",
-                "password": "string"
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           },
-          "400": {
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/auth/login": {
@@ -151,6 +145,58 @@
             "description": "Successful operation"
           }
         }
+      }
+    },
+    "/auth/mediaRefs": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get the currently logged-in user's mediaRefs",
+        "description": "Returns an array of the currently logged-in user's mediaRefs",
+        "operationId": "getAuthMediaRefs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/auth/playlists": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get the currently logged-in user's playlists",
+        "description": "Returns an array of the currently logged-in user's playlists",
+        "operationId": "getAuthPlaylists",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/auth/reset-password": {
@@ -265,6 +311,41 @@
         }
       }
     },
+    "/auth/sign-up": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign up new user",
+        "description": "Creates a new user, sends a verification email, and returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
+        "operationId": "authSignUp",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "name": "string",
+                "password": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/auth/verify-email": {
       "get": {
         "tags": [
@@ -297,87 +378,6 @@
             "description": "User not found or invalid verification token"
           }
         }
-      }
-    },
-    "/auth/get-authenticated-user-info": {
-      "post": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the currently logged-in user's info",
-        "description": "Returns an object with the currently logged-in user's info",
-        "operationId": "getAuthenticatedUserInfo",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/mediaRefs": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the currently logged-in user's mediaRefs",
-        "description": "Returns an array of the currently logged-in user's mediaRefs",
-        "operationId": "getAuthMediaRefs",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/playlists": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the currently logged-in user's playlists",
-        "description": "Returns an array of the currently logged-in user's playlists",
-        "operationId": "getAuthPlaylists",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
       }
     },
     "/author": {
@@ -1711,14 +1711,14 @@
         ]
       }
     },
-    "/podcast/latest-episode-info": {
+    "/podcast/metadata": {
       "get": {
         "tags": [
           "podcast"
         ],
-        "summary": "Find the latest episode info for a list of podcasts",
-        "description": "Accepts a list of podcast ids and returns an array of only the latest episode info from those podcasts.",
-        "operationId": "getPodcastsLatestEpisodeInfo",
+        "summary": "Find the latest metadata for a list of podcasts",
+        "description": "Accepts a list of podcast ids and returns an array of only the latest metadata for those podcasts.",
+        "operationId": "getPodcastsMetaData",
         "produces": [
           "application/json"
         ],
