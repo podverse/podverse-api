@@ -44,7 +44,7 @@ router.post('/login',
   localAuth,
   authenticate)
 
-router.post('/log-out', logOut)
+router.post('/logout', logOut)
 
 const resetPasswordLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
