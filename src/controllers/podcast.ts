@@ -4,9 +4,9 @@ import { getQueryOrderColumn } from '~/lib/utility'
 
 const createError = require('http-errors')
 
-const getPodcast = id => {
+const getPodcast = async id => {
   const repository = getRepository(Podcast)
-  const podcast = repository.findOne(
+  const podcast = await repository.findOne(
     {
       id,
       isPublic: true

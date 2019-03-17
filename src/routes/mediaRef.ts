@@ -23,9 +23,9 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   validateMediaRefSearch,
   parseNSFWHeader,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

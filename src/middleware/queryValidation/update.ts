@@ -16,7 +16,6 @@ const validateMediaRefUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array().items(Joi.string()),
     categories: Joi.array().items(Joi.string()),
-    description: Joi.string(),
     endTime: Joi.number().integer().min(1).allow(null).allow(''),
     episodeId: Joi.string(),
     id: Joi.string(),
@@ -31,7 +30,6 @@ const validateMediaRefUpdate = async (ctx, next) => {
 const validatePayPalOrderUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     paymentID: Joi.string(),
-    payerID: Joi.string(),
     paymentToken: Joi.string(),
     state: Joi.string()
   })

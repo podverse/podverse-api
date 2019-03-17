@@ -18,9 +18,9 @@ const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
 
 // Get only the podcasts most recent metadata to determine if new episodes are available
 router.get('/metadata',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   parseNSFWHeader,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -34,9 +34,9 @@ router.get('/metadata',
 
 // Search
 router.get('/',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   parseNSFWHeader,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

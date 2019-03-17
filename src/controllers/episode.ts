@@ -8,9 +8,9 @@ const relations = [
   'podcast.authors', 'podcast.categories'
 ]
 
-const getEpisode = (id) => {
+const getEpisode = async id => {
   const repository = getRepository(Episode)
-  const episode = repository.findOne({
+  const episode = await repository.findOne({
     id,
     isPublic: true
   }, { relations })

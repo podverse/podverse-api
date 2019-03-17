@@ -23,9 +23,9 @@ router.use(bodyParser())
 
 // Search
 router.get('/',
-  parseQueryPageOptions,
-  parseNSFWHeader,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   validatePlaylistSearch,
+  parseNSFWHeader,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)

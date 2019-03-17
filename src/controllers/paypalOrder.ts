@@ -20,7 +20,7 @@ const getPayPalOrder = async (id, loggedInUserId) => {
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to get PayPalOrder by id')
   }
-  
+
   const paypalOrder = await repository.findOne(
     {
       paymentID: id

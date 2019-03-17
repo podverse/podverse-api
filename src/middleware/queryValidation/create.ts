@@ -19,14 +19,13 @@ const validateFeedUrlCreate = async (ctx, next) => {
 
 const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    authors: Joi.array().items(Joi.string()),
-    categories: Joi.array().items(Joi.string()),
-    description: Joi.string(),
-    endTime: Joi.number().integer().min(1).allow(null).allow(''),
+    authors: Joi.array(),
+    categories: Joi.array(),
+    endTime: Joi.number().integer().min(1),
     episodeId: Joi.string(),
     isPublic: Joi.boolean(),
-    startTime: Joi.number().integer().min(0).required(),
-    title: Joi.string().allow(null).allow('')
+    startTime: Joi.number().integer().min(0),
+    title: Joi.string()
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -34,10 +33,7 @@ const validateMediaRefCreate = async (ctx, next) => {
 
 const validatePayPalOrderCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    paymentID: Joi.string(),
-    payerID: Joi.string(),
-    paymentToken: Joi.string(),
-    state: Joi.string()
+    paymentID: Joi.string()
   })
 
   await validateBaseBody(schema, ctx, next)

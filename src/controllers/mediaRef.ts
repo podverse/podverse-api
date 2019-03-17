@@ -45,9 +45,9 @@ const deleteMediaRef = async (id, loggedInUserId) => {
   return result
 }
 
-const getMediaRef = id => {
+const getMediaRef = async id => {
   const repository = getRepository(MediaRef)
-  const mediaRef = repository.findOne({ id }, { relations })
+  const mediaRef = await repository.findOne({ id }, { relations })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')

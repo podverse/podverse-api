@@ -2,17 +2,14 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { addOrUpdateHistoryItem, deleteUser, getCompleteUserDataAsJSON,
-  getPublicUser, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser,
-  updateQueueItems, updateUser, getPublicUsers } from '~/controllers/user'
+import { getPublicUser, getPublicUsers, getUserMediaRefs, getUserPlaylists,
+  toggleSubscribeToUser } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserUpdate,
-  validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -24,9 +21,9 @@ router.use(bodyParser())
 
 // Search Public Users
 router.get('/',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
   validateUserSearch,
   parseNSFWHeader,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -51,45 +48,10 @@ router.get('/:id',
     }
   })
 
-// Delete
-router.delete('/:id',
-  jwtAuth,
-  async ctx => {
-    try {
-      await deleteUser(ctx.params.id, ctx.state.user.id)
-      ctx.status = 200
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Update
-const updateUserLimiter = RateLimit.middleware({
-  interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 5,
-  message: `You're doing that too much. Please try again in a minute.`,
-  prefixKey: 'patch/user'
-})
-
-router.patch('/',
-  validateUserUpdate,
-  updateUserLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const user = await updateUser(body, ctx.state.user.id)
-      ctx.body = user
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
 // Get Public User's MediaRefs
 router.get('/:id/mediaRefs',
-  parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
+  parseNSFWHeader,
   async ctx => {
     try {
       const { query } = ctx.request
@@ -110,8 +72,8 @@ router.get('/:id/mediaRefs',
 
 // Get Public User's Playlists
 router.get('/:id/playlists',
-  parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
+  parseNSFWHeader,
   async ctx => {
     try {
       const { query } = ctx.request
@@ -123,67 +85,6 @@ router.get('/:id/playlists',
         query.take
       )
       ctx.body = playlists
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Update queueItems
-const updateQueueUserLimiter = RateLimit.middleware({
-  interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 30,
-  message: `You're doing that too much. Please try again in a minute.`,
-  prefixKey: 'patch/user/update-queue'
-})
-
-router.patch('/update-queue',
-  validateUserUpdateQueue,
-  updateQueueUserLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      const user = await updateQueueItems(body.queueItems, ctx.state.user.id)
-
-      ctx.body = user.queueItems
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Add or update history item
-router.patch('/add-or-update-history-item',
-  validateUserAddOrUpdateHistoryItem,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      await addOrUpdateHistoryItem(body.historyItem, ctx.state.user.id)
-
-      ctx.status = 200
-      ctx.body = 'Updated user history'
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Download user data
-const downloadUserLimiter = RateLimit.middleware({
-  interval: 5 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 2,
-  message: `You're doing that too much. Please try again in 5 minutes.`,
-  prefixKey: 'get/user/download'
-})
-
-router.get('/download/:id',
-downloadUserLimiter,
-  jwtAuth,
-  async ctx => {
-    try {
-      const userJSON = await getCompleteUserDataAsJSON(ctx.params.id, ctx.state.user.id)
-      ctx.body = userJSON
     } catch (error) {
       emitRouterError(error, ctx)
     }

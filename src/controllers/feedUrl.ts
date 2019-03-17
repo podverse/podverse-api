@@ -39,9 +39,9 @@ const deleteFeedUrl = async id => {
   return result
 }
 
-const getFeedUrl = (id) => {
+const getFeedUrl = async id => {
   const repository = getRepository(FeedUrl)
-  const feedUrl = repository.findOne({ id }, { relations })
+  const feedUrl = await repository.findOne({ id }, { relations })
 
   if (!feedUrl) {
     throw new createError.NotFound('FeedUrl not found')
@@ -50,15 +50,18 @@ const getFeedUrl = (id) => {
   return feedUrl
 }
 
-const getFeedUrls = (query, options) => {
+const getFeedUrls = (query) => {
   const repository = getRepository(FeedUrl)
+
+  if (query.podcastId) {
+    query.podcast = query.podcastId
+  }
 
   return repository.find({
     where: {
       ...query
     },
-    relations,
-    ...options
+    relations
   })
 }
 

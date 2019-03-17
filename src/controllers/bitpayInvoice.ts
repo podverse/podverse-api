@@ -4,18 +4,14 @@ import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 /*
-invoiceStates = [
-  'new', 'paid', 'confirmed', 'complete', 'expired', 'invalid',
-  'false', 'paidPartial', 'paidOver'
-]
+  invoiceStates = [
+    'new', 'paid', 'confirmed', 'complete', 'expired', 'invalid',
+    'false', 'paidPartial', 'paidOver'
+  ]
 */
 
-// After working on understanding BitPay payments for a few weeks,
-// I just learned they don't accept payments for US businesses :(
-// Sooo abandonning BitPay...but leaving BitPay code in the project
-// since it is mostly setup already...
-
 const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
+  console.log(data)
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to create a BitPayInvoice')
   }
@@ -49,15 +45,15 @@ const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
   return bitpayInvoice
 }
 
-const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
+const getBitPayInvoiceStatusLocal = async (id, loggedInUserId) => {
   const repository = getRepository(BitPayInvoice)
   let select = [
-    'orderId',
+    'id',
     'status'
   ]
 
   const bitpayInvoice = await repository.findOne(
-    { orderId },
+    { id },
     // @ts-ignore
     {
       relations: ['owner'],

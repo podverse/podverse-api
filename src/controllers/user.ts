@@ -98,18 +98,13 @@ const getPublicUser = async id => {
     .where({ isPublic: true })
     .andWhere('user.id = :id', { id })
 
-  try {
-    const user = await qb.getOne()
+  const user = await qb.getOne()
 
-    if (!user) {
-      throw new createError.NotFound('User not found.')
-    }
-
-    return user
-  } catch (error) {
-    console.log(error)
-    return
+  if (!user) {
+    throw new createError.NotFound('User not found.')
   }
+
+  return user
 }
 
 const getPublicUsers = async query => {
@@ -123,6 +118,8 @@ const getPublicUsers = async query => {
 
   const users = await repository
     .createQueryBuilder('user')
+    .select('user.id')
+    .addSelect('user.name')
     .where({
       isPublic: true
     })
@@ -233,7 +230,7 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  let loggedInUser = await repository.findOne(
     {
       where: {
         id: loggedInUserId
@@ -245,16 +242,32 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
     }
   )
 
-  if (!user) {
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  let userToSubscribe = await repository.findOne(
+    {
+      where: {
+        id: userId
+      },
+      select: [
+        'id',
+        'subscribedUserIds'
+      ]
+    }
+  )
+
+  if (!userToSubscribe) {
     throw new createError.NotFound('User not found')
   }
 
-  let subscribedUserIds = user.subscribedUserIds
+  let subscribedUserIds = loggedInUser.subscribedUserIds
 
   // If no userIds match the filter, add the userId.
   // Else, remove the userId.
-  const filteredUsers = user.subscribedUserIds.filter(x => x !== userId)
-  if (filteredUsers.length === user.subscribedUserIds.length) {
+  const filteredUsers = loggedInUser.subscribedUserIds.filter(x => x !== userId)
+  if (filteredUsers.length === loggedInUser.subscribedUserIds.length) {
     subscribedUserIds.push(userId)
   } else {
     subscribedUserIds = filteredUsers

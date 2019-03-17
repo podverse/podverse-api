@@ -12,8 +12,8 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/fee
 
 // Search
 router.get('/',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'feedUrls'),
   validateFeedUrlSearch,
-  parseQueryPageOptions,
   async ctx => {
     try {
       const feedUrls = await getFeedUrls(ctx.request.query, ctx.state.queryPageOptions)
