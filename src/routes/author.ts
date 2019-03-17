@@ -13,7 +13,7 @@ router.get('/',
   validateAuthorSearch,
   async ctx => {
     try {
-      const authors = await getAuthors(ctx.request.query, ctx.state.queryPageOptions)
+      const authors = await getAuthors(ctx.request.query)
       ctx.body = authors
     } catch (error) {
       emitRouterError(error, ctx)

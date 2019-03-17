@@ -15,7 +15,7 @@ const getCategory = async id => {
   return category
 }
 
-const getCategories = async (query, options = {}) => {
+const getCategories = async query => {
   const repository = getRepository(Category)
   let categoryIds = query.id && query.id.split(',') || []
   const { skip, slug, take, title } = query
