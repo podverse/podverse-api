@@ -6,7 +6,7 @@ import { authExpires } from '~/lib/constants'
 import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
 import { generateToken } from '~/services/auth'
-// import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
+import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
@@ -35,6 +35,7 @@ export const emailNotExists = async (ctx, next) => {
 }
 
 export const signUpUser = async (ctx, next) => {
+
   const emailVerificationExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
   const freeTrialExpiration = addSeconds(new Date(), process.env.FREE_TRIAL_EXPIRATION)
   const emailVerificationToken = uuidv4()
@@ -51,9 +52,9 @@ export const signUpUser = async (ctx, next) => {
   }
 
   try {
-    const { id, email /* emailVerificationToken, name */ } = await createUser(user)
+    const { id, email, emailVerificationToken, name } = await createUser(user)
 
-    // await sendVerificationEmail(email, name, emailVerificationToken)
+    await sendVerificationEmail(email, name, emailVerificationToken)
 
     const bearerToken = await generateToken({ id })
 

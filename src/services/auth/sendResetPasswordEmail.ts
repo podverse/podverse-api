@@ -4,14 +4,14 @@ import { emailTemplate } from '~/lib/emailTemplate'
 import { convertSecondsToDaysText } from '~/lib/utility';
 const createError = require('http-errors')
 
-const { resetPasswordTokenExpiration } = config
+const { mailerUsername, resetPasswordTokenExpiration } = config
 
 export const sendResetPasswordEmail = async (email, name, token) => {
   const transporter = createTransporter()
   const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
 
   const emailFields = {
-    preheader: '',
+    preheader: 'Hello podcast fan,',
     greeting: `${name ? `Hi ${name},` : ''}`,
     topMessage: `Please click the button below to reset your Podverse password.`,
     button: 'Reset Password',
@@ -26,7 +26,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.MAILER_USERNAME,
+      from: `Podverse <${mailerUsername}>`,
       to: email,
       subject: 'Reset your Podverse password',
       html: emailTemplate(emailFields)
