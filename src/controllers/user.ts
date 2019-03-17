@@ -214,7 +214,17 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne({ emailVerificationToken })
+  const user = await repository.findOne(
+    {
+      where: { emailVerificationToken },
+      select: [
+        'emailVerificationToken',
+        'emailVerificationTokenExpiration',
+        'emailVerified',
+        'id'
+      ]
+    }
+  )
 
   if (!user) {
     throw new createError.NotFound('Invalid verify email token.')
@@ -349,7 +359,7 @@ const updateLoggedInUser = async (obj, loggedInUserId) => {
   }
 }
 
-const updateUserEmailVerificationToken = async (obj) => {
+const updateUserEmailVerificationToken = async obj => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -363,13 +373,9 @@ const updateUserEmailVerificationToken = async (obj) => {
     emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration
   }
 
-  const newUser = Object.assign(user, cleanedObj)
-
-  await validateClassOrThrow(newUser)
-
   await repository.update(obj.id, cleanedObj)
 
-  return newUser
+  return
 }
 
 const updateUserPassword = async (obj) => {

@@ -18,7 +18,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
     bottomMessage: `This link will expire in ${daysToExpire}.`,
     closing: 'Have a nice day :)',
-    name: '-Podverse',
+    name: '',
     address: '',
     unsubscribeLink: '',
     buttonColor: '#2968B1'

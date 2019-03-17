@@ -16,7 +16,7 @@ export const sendVerificationEmail = async (email, name, token) => {
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
     bottomMessage: `We will never share your email or data without your permission.`,
     closing: 'Have a nice day :)',
-    name: '-Podverse',
+    name: '',
     address: '',
     unsubscribeLink: '',
     buttonColor: '#2968B1'
