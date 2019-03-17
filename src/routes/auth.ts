@@ -143,9 +143,16 @@ const sendVerificationLimiter = RateLimit.middleware({
 })
 
 router.post('/send-verification',
+  jwtAuth,
   sendVerificationLimiter,
   validateAuthSendVerification,
-  sendVerification)
+  async ctx => {
+    try {
+      await sendVerification(ctx, ctx.state.user.id)
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
 
 const signUpLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,

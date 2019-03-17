@@ -184,7 +184,14 @@ const getUserPlaylists = async (id, includePrivate, skip, take) => {
 
 const getUserByEmail = async (email) => {
   const repository = getRepository(User)
-  const user = await repository.findOne({ email })
+  const user = await repository.findOne({
+    where: { email },
+    select: [
+      'emailVerified',
+      'id',
+      'name'
+    ]
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
