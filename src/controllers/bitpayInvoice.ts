@@ -11,7 +11,7 @@ const createError = require('http-errors')
 */
 
 const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
-  console.log(data)
+
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to create a BitPayInvoice')
   }
