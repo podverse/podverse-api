@@ -12,8 +12,8 @@ import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPass
   } from '~/middleware/queryValidation/auth'
 import { validateUserAddOrUpdateHistoryItem, validateUserUpdate, validateUserUpdateQueue
   } from '~/middleware/queryValidation/update'
-import { addOrUpdateHistoryItem, deleteUser, getCompleteUserDataAsJSON, getLoggedInUser,
-  getUserMediaRefs, getUserPlaylists, updateQueueItems, updateUser } from '~/controllers/user'
+import { addOrUpdateHistoryItem, deleteLoggedInUser, getCompleteUserDataAsJSON, getLoggedInUser,
+  getUserMediaRefs, getUserPlaylists, updateQueueItems, updateLoggedInUser } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -166,7 +166,7 @@ router.delete('/user',
   jwtAuth,
   async ctx => {
     try {
-      await deleteUser(ctx.state.user.id, ctx.state.user.id)
+      await deleteLoggedInUser(ctx.state.user.id, ctx.state.user.id)
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
@@ -189,7 +189,7 @@ router.patch('/user',
   async ctx => {
     try {
       const body = ctx.request.body
-      const user = await updateUser(body, ctx.state.user.id)
+      const user = await updateLoggedInUser(body, ctx.state.user.id)
       ctx.body = user
     } catch (error) {
       emitRouterError(error, ctx)

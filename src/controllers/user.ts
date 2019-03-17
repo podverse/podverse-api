@@ -29,7 +29,7 @@ const createUser = async (obj) => {
   return newUser
 }
 
-const deleteUser = async (id, loggedInUserId) => {
+const deleteLoggedInUser = async (id, loggedInUserId) => {
 
   if (id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this user')
@@ -312,7 +312,7 @@ const updateRoleSuperUser = async (id, isSuperUser) => {
   return newUser
 }
 
-const updateUser = async (obj, loggedInUserId) => {
+const updateLoggedInUser = async (obj, loggedInUserId) => {
 
   if (!obj.id) {
     throw new createError.NotFound('Must provide a user id.')
@@ -526,7 +526,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 export {
   addOrUpdateHistoryItem,
   createUser,
-  deleteUser,
+  deleteLoggedInUser,
   getCompleteUserDataAsJSON,
   getLoggedInUser,
   getPublicUser,
@@ -539,7 +539,7 @@ export {
   toggleSubscribeToUser,
   updateQueueItems,
   updateRoleSuperUser,
-  updateUser,
+  updateLoggedInUser,
   updateUserEmailVerificationToken,
   updateUserPassword,
   updateUserResetPasswordToken
