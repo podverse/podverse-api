@@ -11,14 +11,14 @@ export const sendResetPasswordEmail = async (email, name, token) => {
   const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
 
   const emailFields = {
-    preheader: 'Hello podcast fan,',
-    greeting: `${name ? `Hi ${name},` : ''}`,
+    preheader: '',
+    greeting: `${name ? `Hi ${name},` : 'Hello podcast fan,'}`,
     topMessage: `Please click the button below to reset your Podverse password.`,
     button: 'Reset Password',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
-    bottomMessage: `This link will expire in ${daysToExpire }.`,
+    bottomMessage: `This link will expire in ${daysToExpire}.`,
     closing: 'Have a nice day :)',
-    name: '',
+    name: '-Podverse',
     address: '',
     unsubscribeLink: '',
     buttonColor: '#2968B1'
