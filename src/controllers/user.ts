@@ -385,7 +385,7 @@ const updateUserEmailVerificationToken = async obj => {
   return
 }
 
-const updateUserPassword = async (obj) => {
+const updateUserPassword = async obj => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -411,8 +411,6 @@ const updateUserPassword = async (obj) => {
 
   const newUser = Object.assign(user, cleanedObj)
 
-  await validateClassOrThrow(newUser)
-
   await repository.update(obj.id, cleanedObj)
 
   return newUser
@@ -432,8 +430,6 @@ const updateUserResetPasswordToken = async (obj) => {
   }
 
   const newUser = Object.assign(user, cleanedObj)
-
-  await validateClassOrThrow(newUser)
 
   await repository.update(obj.id, cleanedObj)
 

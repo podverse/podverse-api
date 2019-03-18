@@ -10,7 +10,7 @@ export const sendVerificationEmail = async (email, name, token) => {
 
   const emailFields = {
     preheader: '',
-    greeting: `${name ? `Hi ${name},` : 'Hello podcast fan,'}`,
+    greeting: `${name ? `Hi ${name},` : 'Hello!'}`,
     topMessage: 'Please click the button below to verify your email address with podverse.fm.',
     button: 'Verify Email',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,

@@ -12,7 +12,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   const emailFields = {
     preheader: '',
-    greeting: `${name ? `Hi ${name},` : 'Hello podcast fan,'}`,
+    greeting: `${name ? `Hi ${name},` : 'Hello!'}`,
     topMessage: `Please click the button below to reset your Podverse password.`,
     button: 'Reset Password',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
