@@ -1,46 +1,22 @@
 import { config } from '~/config'
 const { paypalConfig } = config
-const { clientId, clientSecret, mode, webhookIdPaymentSaleCompleted } = paypalConfig
+const { clientId, clientSecret } = paypalConfig
 const paypal = require('paypal-rest-sdk')
+const payments = paypal.v1.payments
 
-paypal.configure({
-  mode,
-  'client_id': clientId,
-  'client_secret': clientSecret
-})
+let env
+if (process.env.NODE_ENV === 'production') {
+  env = new paypal.core.LiveEnvironment(clientId, clientSecret)
+} else {
+  env = new paypal.core.SandboxEnvironment(clientId, clientSecret)
+}
 
-export const getPayPalResponseHeaders = (ctx) => ({
-  authAlgo: ctx.headers['paypal-auth-algo'],
-  certURL: ctx.headers['paypal-cert-url'],
-  transmissionId: ctx.headers['paypal-transmission-id'],
-  transmissionSig: ctx.headers['paypal-transmission-sig'],
-  transmissionTime: ctx.headers['paypal-transmission-time']
-})
+let client = new paypal.core.PayPalHttpClient(env)
 
-export const verifyWebhookSignature = (headers, webhookEvent) => {
+export const getPayPalPaymentInfo = paymentId => {
+  let request = new payments.PaymentGetRequest(paymentId)
 
-  const requestHeaders = {
-    'paypal-auth-algo': headers.authAlgo,
-    'paypal-cert-url': headers.certURL,
-    'paypal-transmission-id': headers.transmissionId,
-    'paypal-transmission-sig': headers.transmissionSignature,
-    'paypal-transmission-time': headers.transmissionTimestamp
-  }
-
-  return paypal.notification.webhookEvent.verify(
-    requestHeaders,
-    webhookEvent,
-    webhookIdPaymentSaleCompleted,
-    (error, response) => {
-      if (error) {
-        console.log('PayPal: invalid webhook signature')
-        console.log(error)
-      } else {
-        if (response.verification_status === 'SUCCESS') {
-          return true
-        }
-      }
-
-      return false
-    })
+  return client.execute(request).then((response) => {
+    return response.result
+  })
 }

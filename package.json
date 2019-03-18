@@ -99,7 +99,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "password-validator": "^4.1.1",
-    "paypal-rest-sdk": "^1.8.1",
+    "paypal-rest-sdk": "^2.0.0-rc.2",
     "pg": "^7.4.3",
     "reflect-metadata": "^0.1.12",
     "request-promise-native": "^1.0.5",
