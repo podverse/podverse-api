@@ -25,6 +25,8 @@ const getCategories = async query => {
     .select('category.id')
     .addSelect('category.slug')
     .addSelect('category.title')
+    .leftJoinAndSelect('category.category', 'categoryId')
+    .leftJoinAndSelect('category.categories', 'categories')
 
   if (categoryIds.length > 0) {
     qb.where(
