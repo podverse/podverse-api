@@ -126,7 +126,11 @@ const updateBitPayInvoiceLocal = async data => {
   const user = await userRepository.findOne({
     where: {
       id: bitpayInvoice.owner.id
-    }
+    },
+    select: [
+      'id',
+      'membershipExpiration'
+    ]
   })
 
   if (!user) {
