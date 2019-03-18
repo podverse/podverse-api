@@ -1,12 +1,11 @@
 {
   "name": "podverse-api",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack --progress --colors",
     "dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
-    "dev:scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
@@ -16,7 +15,6 @@
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "dev:seeds:sampleEntities": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
-    "scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "scripts:addAllPublicFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
