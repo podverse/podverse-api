@@ -11,16 +11,17 @@ const generateCategories = async (
   for (let category of data) {
     let title
     let parentId
+
     if (category.indexOf('>') > 0) {
       title = category.split('>')[1]
       const parentTitle = category.split('>')[0]
-
-      const categories = await getCategories({
+      const categoriesAndCount = await getCategories({
         title: parentTitle
       })
+      const categories = categoriesAndCount[0]
+
       if (categories.length > 0) {
-        let c = categories[0] as any
-        parentId = c.id
+        parentId = categories[0].id
       }
     } else {
       title = category
