@@ -18,7 +18,7 @@ const getCategory = async id => {
 const getCategories = async query => {
   const repository = getRepository(Category)
   let categoryIds = query.id && query.id.split(',') || []
-  const { skip, slug, take, title } = query
+  const { slug, title } = query
 
   let qb = repository
     .createQueryBuilder('category')
@@ -48,8 +48,7 @@ const getCategories = async query => {
   }
 
   const categories = await qb
-    .skip(skip)
-    .take(take)
+    .orderBy('category.title', 'ASC')
     .getManyAndCount()
 
   return categories
