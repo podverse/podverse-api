@@ -13,7 +13,7 @@ export const emailTemplate = (obj) => {
       <title>Verify your Podverse account</title>
       <style>
 
-        .im {
+        p {
           color: #222 !important;
         }
 
