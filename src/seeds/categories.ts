@@ -19,7 +19,8 @@ const generateCategories = async (
         title: parentTitle
       })
       if (categories.length > 0) {
-        parentId = categories[0].id
+        let c = categories[0] as any
+        parentId = c.id
       }
     } else {
       title = category
