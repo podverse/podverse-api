@@ -67,7 +67,11 @@ const completePayPalOrder = async (paymentID, state) => {
   const user = await userRepository.findOne({
     where: {
       id: paypalOrder.owner.id
-    }
+    },
+    select: [
+      'id',
+      'membershipExpiration'
+    ]
   })
 
   if (!user) {
