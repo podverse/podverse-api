@@ -45,7 +45,7 @@ const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
   return bitpayInvoice
 }
 
-const getBitPayInvoiceStatusLocal = async (id, loggedInUserId) => {
+const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
   const repository = getRepository(BitPayInvoice)
   let select = [
     'id',
@@ -53,7 +53,7 @@ const getBitPayInvoiceStatusLocal = async (id, loggedInUserId) => {
   ]
 
   const bitpayInvoice = await repository.findOne(
-    { id },
+    { orderId },
     // @ts-ignore
     {
       relations: ['owner'],
