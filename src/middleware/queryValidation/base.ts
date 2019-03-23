@@ -24,6 +24,6 @@ export const validateBaseBody = async (schema, ctx, next) => {
 }
 
 export const validateBaseQuery = async (schema, ctx, next) => {
-  const query = ctx.query
+  const query = ctx.state.query
   await validateBase(query, schema, ctx, next)
 }

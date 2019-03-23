@@ -16,7 +16,7 @@ router.get('/',
   validateFeedUrlSearch,
   async ctx => {
     try {
-      const feedUrls = await getFeedUrls(ctx.request.query)
+      const feedUrls = await getFeedUrls(ctx.state.query)
       ctx.body = feedUrls
     } catch (error) {
       emitRouterError(error, ctx)

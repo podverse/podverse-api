@@ -27,7 +27,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const users = await getPublicUsers(ctx.request.query)
+      const users = await getPublicUsers(ctx.state.query)
 
       ctx.body = users
     } catch (error) {

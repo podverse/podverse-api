@@ -1,7 +1,7 @@
 export { validatePassword } from '~/lib/utility/validation'
 
 export const delimitQueryValues = (ctx, keys) => {
-  let query = ctx.request.query
+  let query = ctx.state.query
 
   for (const key of keys) {
     if (query[key]) {
@@ -9,7 +9,7 @@ export const delimitQueryValues = (ctx, keys) => {
     }
   }
 
-  ctx.request.query = query
+  ctx.state.query = query
   return ctx
 }
 

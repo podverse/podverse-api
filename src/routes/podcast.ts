@@ -24,7 +24,7 @@ router.get('/metadata',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getMetadata(ctx.request.query)
+      const podcasts = await getMetadata(ctx.state.query)
 
       ctx.body = podcasts
     } catch (error) {
@@ -40,7 +40,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getPodcasts(ctx.request.query, ctx.state.includeNSFW)
+      const podcasts = await getPodcasts(ctx.state.query, ctx.state.includeNSFW)
 
       ctx.body = podcasts
     } catch (error) {

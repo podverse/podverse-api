@@ -18,7 +18,7 @@ const getCategory = async id => {
 const getCategories = async query => {
   const repository = getRepository(Category)
   let categoryIds = query.id && query.id.split(',') || []
-  const { slug, title } = query
+  const { slug, title, topLevelCategories } = query
 
   let qb = repository
     .createQueryBuilder('category')
@@ -45,6 +45,8 @@ const getCategories = async query => {
       'LOWER(category.title) LIKE :title',
       { title: titleLowerCase }
     )
+  } else if (topLevelCategories) {
+    qb.where(`category.category IS NULL`)
   }
 
   const categories = await qb

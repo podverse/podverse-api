@@ -17,7 +17,7 @@ validateCategorySearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const categories = await getCategories(ctx.request.query)
+      const categories = await getCategories(ctx.state.query)
       ctx.body = categories
     } catch (error) {
       emitRouterError(error, ctx)

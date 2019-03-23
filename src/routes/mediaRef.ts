@@ -29,7 +29,7 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(ctx.request.query, ctx.state.includeNSFW)
+      const mediaRefs = await getMediaRefs(ctx.state.query, ctx.state.includeNSFW)
 
       ctx.body = mediaRefs
     } catch (error) {

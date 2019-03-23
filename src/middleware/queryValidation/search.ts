@@ -24,6 +24,7 @@ const validateCategorySearch = async (ctx, next) => {
     title: Joi.string(),
     page: Joi.number().integer().min(0),
     skip: Joi.number().integer().min(0),
+    topLevelCategories: Joi.boolean(),
     sort: Joi.string(),
     take: Joi.number().integer().min(0)
   })
