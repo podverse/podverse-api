@@ -22,14 +22,13 @@ export const resetPassword = async ctx => {
         resetPasswordTokenExpiration: null
       })
 
-      ctx.body = 'Password reset successful.'
+      ctx.body = { message: 'Password reset successful.' }
       ctx.status = 200
     } else {
-      ctx.body = `Invalid password reset token.`
+      ctx.body = { message: `Invalid password reset token.` }
       ctx.status = 401
     }
   } catch (error) {
-    console.log(error)
     emitRouterError(error, ctx)
   }
 }
@@ -50,10 +49,10 @@ export const sendResetPassword = async ctx => {
     })
 
     await sendResetPasswordEmail(email, name, resetPasswordToken)
-    ctx.body = 'A reset password email will be sent to this address if it exists in our system.'
+    ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
     ctx.status = 200
   } catch (error) {
-    ctx.body = 'A reset password email will be sent to this address if it exists in our system.'
+    ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
     ctx.status = 200
   }
 }

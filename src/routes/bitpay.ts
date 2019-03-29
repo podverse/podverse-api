@@ -76,15 +76,15 @@ router.post('/notification',
           } catch (error) {
             console.log(error)
             ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-            ctx.body = 'Could not update this invoice'
+            ctx.body = { message: 'Could not update this invoice' }
           }
         } else {
           ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-          ctx.body = 'No invoice matching that id found'
+          ctx.body = { message: 'No invoice matching that id found' }
         }
       } else {
         ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-        ctx.body = 'No invoice id provided'
+        ctx.body = { message: 'No invoice id provided' }
       }
     } catch (error) {
       emitRouterError(error, ctx)

@@ -8,7 +8,6 @@ export const localAuth = async (ctx, next) => {
       ctx.body = {
         message: 'Invalid username or password'
       }
-      ctx.type = 'json'
       next()
     } else {
       ctx.state.user = user

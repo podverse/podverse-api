@@ -11,7 +11,7 @@ export const sendVerification = async (ctx, loggedInUserId) => {
     const user = await getLoggedInUser(loggedInUserId)
 
     if (!user) {
-      ctx.body = 'User not found'
+      ctx.body = { message: 'User not found' }
       ctx.status = '404'
     }
 

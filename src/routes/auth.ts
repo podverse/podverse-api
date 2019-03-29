@@ -213,7 +213,7 @@ router.patch('/user/add-or-update-history-item',
       await addOrUpdateHistoryItem(body.historyItem, ctx.state.user.id)
 
       ctx.status = 200
-      ctx.body = 'Updated user history'
+      ctx.body = { message: 'Updated user history' }
     } catch (error) {
       emitRouterError(error, ctx)
     }

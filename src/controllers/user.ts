@@ -209,7 +209,7 @@ const getUserByResetPasswordToken = async (resetPasswordToken) => {
   const user = await repository.findOne({ resetPasswordToken })
 
   if (!user) {
-    throw new createError.NotFound('Invalid password reset token.')
+    throw new createError.BadRequest('Invalid password reset token.')
   }
 
   return user

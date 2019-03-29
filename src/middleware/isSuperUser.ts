@@ -28,5 +28,4 @@ export const isSuperUser = async (ctx, next) => {
   }
 
   ctx.status = 401
-  ctx.body = 'Unauthorized'
 }
