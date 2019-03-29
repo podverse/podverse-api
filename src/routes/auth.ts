@@ -2,7 +2,7 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { authenticate, emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth,
+import { emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth,
   resetPassword, sendResetPassword, sendVerification, signUpUser, validEmail,
   verifyEmail } from '~/middleware/auth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -64,8 +64,7 @@ const loginLimiter = RateLimit.middleware({
 router.post('/login',
   loginLimiter,
   validateAuthLogin,
-  localAuth,
-  authenticate)
+  localAuth)
 
 router.post('/logout', logOut)
 

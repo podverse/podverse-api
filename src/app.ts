@@ -37,7 +37,6 @@ export const createApp = (conn: Connection) => {
   passport.use(createJwtStrategy())
 
   app.use(helmet())
-  app.use(logger())
   app.use(bodyParser())
 
   app.use(passport.initialize())
@@ -102,18 +101,10 @@ export const createApp = (conn: Connection) => {
   app.use(userRouter.routes())
   app.use(userRouter.allowedMethods())
 
+  app.use(logger())
+
   app.on('error', async (error, ctx) => {
-    if (ctx.status >= 500) {
-      loggerInstance.log('error', error.message)
-      ctx.body = 'Internal Server Error'
-    } else if (ctx.status >= 404) {
-      ctx.body = error.message || 'Not found'
-    } else if (ctx.status >= 400) {
-      ctx.body = error.message
-    } else {
-      loggerInstance.log('error', error.message)
-      ctx.body = 'Something went wrong :('
-    }
+    loggerInstance.log('error', error.message)
   })
 
   return app

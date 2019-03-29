@@ -20,8 +20,6 @@ export function logger () {
   return async (ctx: Koa.Context, next: () => Promise<any>) => {
     const start = new Date().getMilliseconds()
 
-    await next()
-
     const ms = new Date().getMilliseconds() - start
 
     let logLevel = ''
@@ -36,6 +34,8 @@ export function logger () {
     const msg: string = `${ctx.method} ${ctx.originalUrl} ${ctx.status} ${ms}ms`
 
     loggerInstance.log(logLevel, msg)
+
+    await next()
   }
 
 }
