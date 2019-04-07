@@ -729,6 +729,11 @@
             "type": "string"
           },
           {
+            "name": "topLevelCategories",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
             "name": "page",
             "in": "query",
             "type": "integer"
@@ -2196,6 +2201,12 @@
           "type": "boolean"
         },
         "language": {
+          "type": "string"
+        },
+        "lastEpisodePubDate": {
+          "type": "string"
+        },
+        "lastEpisodeTitle": {
           "type": "string"
         },
         "linkUrl": {
