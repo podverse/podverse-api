@@ -3,12 +3,6 @@ import { Episode, Playlist, MediaRef, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
-const relations = [
-  'episodes', 'episodes.podcast',
-  'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
-  'owner'
-]
-
 const createPlaylist = async (obj) => {
   const repository = getRepository(Playlist)
   const playlist = new Playlist()
@@ -42,6 +36,11 @@ const deletePlaylist = async (id, loggedInUserId) => {
 }
 
 const getPlaylist = async id => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id }, { relations })
 
@@ -59,6 +58,8 @@ const getPlaylists = (query) => {
     query.id = In(query.playlistId.split(','))
   } else if (query.playlistId) {
     query.id = query.playlistId
+  } else {
+    return
   }
 
   delete query.sort
@@ -69,7 +70,7 @@ const getPlaylists = (query) => {
     where: {
       ...query
     },
-    relations
+    relations: ['owner']
   })
 }
 
@@ -99,6 +100,11 @@ const updatePlaylist = async (obj, loggedInUserId) => {
 }
 
 const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, loggedInUserId) => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   let playlist = await repository.findOne(
     {
