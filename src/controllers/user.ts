@@ -174,6 +174,7 @@ const getUserPlaylists = async (id, includePrivate, skip, take) => {
         owner: id
       }
     )
+    .innerJoinAndSelect('playlist.owner', 'owner')
     .skip(skip)
     .take(take)
     .orderBy('title', 'ASC')
