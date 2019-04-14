@@ -178,6 +178,12 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
     throw new createError.Unauthorized('Log in to subscribe to this playlist')
   }
 
+  const playlist = await getPlaylist(playlistId)
+
+  if (playlist.owner.id === loggedInUserId) {
+    throw new createError.BadRequest('Cannot subscribe to your own playlist')
+  }
+
   const repository = getRepository(User)
   let user = await repository.findOne(
     {
