@@ -113,7 +113,7 @@ const getPublicUsers = async query => {
   let userIds = query.userIds && query.userIds.split(',') || []
 
   if (!userIds || userIds.length < 1) {
-    return []
+    return [[], 0]
   }
 
   const users = await repository
