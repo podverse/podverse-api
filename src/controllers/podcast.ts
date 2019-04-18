@@ -25,7 +25,7 @@ const getPodcast = async id => {
 
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
-  const { categories, podcastId, searchAuthor, searchTitle, skip, take
+  const { categories, includeAuthors, includeCategories, podcastId, searchAuthor, searchTitle, skip, take
     } = query
 
   let qb = repository
@@ -79,6 +79,14 @@ const getPodcasts = async (query, includeNSFW) => {
         { podcastIds }
       )
     }
+  }
+
+  if (includeAuthors) {
+    qb.innerJoinAndSelect('podcast.authors', 'authors')
+  }
+
+  if (includeCategories) {
+    qb.innerJoinAndSelect('podcast.categories', 'categories')
   }
 
   if (!includeNSFW) {

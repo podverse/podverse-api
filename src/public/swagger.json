@@ -1553,7 +1553,7 @@
           "podcast"
         ],
         "summary": "Find podcasts by query",
-        "description": "Returns an array of podcasts",
+        "description": "Returns an array of podcasts. Set includeAuthors or includeCategories to true if needed.",
         "operationId": "getPodcasts",
         "produces": [
           "application/json"
@@ -1566,6 +1566,16 @@
             "items": {
               "type": "string"
             }
+          },
+          {
+            "name": "includeAuthors",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "includeCategories",
+            "in": "query",
+            "type": "boolean"
           },
           {
             "name": "podcastId",

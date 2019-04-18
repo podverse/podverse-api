@@ -24,8 +24,7 @@ const getEpisode = async id => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
-  const { includePodcast, podcastId, searchAllFieldsText, skip, sort,
-    take } = query
+  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
   let podcastIds = podcastId && podcastId.split(',') || []
 
   const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')

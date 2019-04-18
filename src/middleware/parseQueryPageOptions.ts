@@ -2,9 +2,9 @@ import { config } from '~/config'
 
 export const parseQueryPageOptions = async (ctx, next, type = '') => {
   const query = ctx.request.query
-  const { categories, episodeId, id, includePodcast, name, page, playlistId, podcastId,
-    searchAllFieldsText, searchAuthor, searchTitle, slug, sort, title, topLevelCategories,
-    userIds } = query
+  const { categories, episodeId, id, includeAuthors, includeCategories, includePodcast,
+    name, page, playlistId, podcastId, searchAllFieldsText, searchAuthor, searchTitle,
+    slug, sort, title, topLevelCategories, userIds } = query
 
   let options = {
     sort: 'top-past-week',
@@ -12,6 +12,8 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     take: 20,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
+    ...(includeAuthors ? { includeAuthors: includeAuthors === 'true' } : {}),
+    ...(includeCategories ? { includeCategories: includeCategories === 'true' } : {}),
     ...(includePodcast ? { includePodcast: includePodcast === 'true' } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
