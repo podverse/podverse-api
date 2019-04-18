@@ -54,7 +54,7 @@ router.get('/:id/mediaRefs',
   parseNSFWHeader,
   async ctx => {
     try {
-      const { query } = ctx.request
+      const { query } = ctx.state
 
       const mediaRefs = await getUserMediaRefs(
         ctx.params.id,
@@ -76,7 +76,7 @@ router.get('/:id/playlists',
   parseNSFWHeader,
   async ctx => {
     try {
-      const { query } = ctx.request
+      const { query } = ctx.state
 
       const playlists = await getUserPlaylists(
         ctx.params.id,
