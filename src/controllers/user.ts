@@ -168,16 +168,16 @@ const getUserPlaylists = async (id, includePrivate, skip, take) => {
 
   const playlists = await repository
     .createQueryBuilder('playlist')
+    .innerJoinAndSelect('playlist.owner', 'owner')
     .where(
       {
         ...(includePrivate ? {} : { isPublic: true }),
         owner: id
       }
     )
-    .innerJoinAndSelect('playlist.owner', 'owner')
     .skip(skip)
     .take(take)
-    .orderBy('title', 'ASC')
+    .orderBy('playlist.title', 'ASC')
     .getManyAndCount()
 
   return playlists
