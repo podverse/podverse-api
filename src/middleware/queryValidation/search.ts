@@ -79,6 +79,8 @@ const validateFeedUrlSearch = async (ctx, next) => {
 const validateMediaRefSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     episodeId: Joi.string(),
+    includeEpisode: Joi.boolean(),
+    includePodcast: Joi.boolean(),
     podcastId: Joi.string(),
     searchAllFieldsText: Joi.string(),
     page: Joi.number().integer().min(0),

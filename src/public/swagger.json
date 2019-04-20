@@ -943,7 +943,7 @@
           "mediaRef"
         ],
         "summary": "Find mediaRefs by query",
-        "description": "Returns an array of mediaRefs. Pass a string to searchAllFieldsText to filter based on clip, episode, or podcast title.",
+        "description": "Returns an array of mediaRefs. Pass a string to searchAllFieldsText to filter based on clip, episode, or podcast title. Set includeEpisode to true if you want episode data returned, or includePodcast to true if you want episode and podcast data returned.",
         "operationId": "getMediaRefs",
         "produces": [
           "application/json"
@@ -953,6 +953,16 @@
             "name": "episodeId",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "includeEpisode",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "includePodcast",
+            "in": "query",
+            "type": "boolean"
           },
           {
             "name": "podcastId",
