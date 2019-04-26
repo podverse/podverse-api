@@ -75,12 +75,17 @@ const getPlaylists = (query) => {
 }
 
 const updatePlaylist = async (obj, loggedInUserId) => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({
     where: {
       id: obj.id
     },
-    relations: ['owner']
+    relations
   })
 
   if (!playlist) {
