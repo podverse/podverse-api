@@ -10,10 +10,10 @@ import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from '~/middleware/queryValidation/auth'
-import { validateUserAddOrUpdateHistoryItem, validateUserUpdate, validateUserUpdateQueue
-  } from '~/middleware/queryValidation/update'
+import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove, validateUserUpdate,
+  validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 import { addOrUpdateHistoryItem, deleteLoggedInUser, getCompleteUserDataAsJSON, getLoggedInUser,
-  getUserMediaRefs, getUserPlaylists, updateQueueItems, updateLoggedInUser } from '~/controllers/user'
+  getUserMediaRefs, getUserPlaylists, updateQueueItems, updateLoggedInUser, removeHistoryItem } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -214,6 +214,29 @@ router.patch('/user/add-or-update-history-item',
 
       ctx.status = 200
       ctx.body = { message: 'Updated user history' }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Remove history item
+router.delete('/user/history-item',
+  jwtAuth,
+  async (ctx, next) => {
+    const { episodeId, mediaRefId } = ctx.query
+    ctx.state.query = {
+      ...(episodeId ? { episodeId } : {}),
+      ...(mediaRefId ? { mediaRefId } : {})
+    }
+    await next()
+  },
+  validateUserHistoryItemRemove,
+  hasValidMembership,
+  async ctx => {
+    try {
+      await removeHistoryItem(ctx.query.episodeId, ctx.query.mediaRefId, ctx.state.user.id)
+      ctx.status = 200
+      ctx.body = { message: 'Removed history item.' }
     } catch (error) {
       emitRouterError(error, ctx)
     }

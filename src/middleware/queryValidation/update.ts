@@ -1,5 +1,5 @@
 const Joi = require('joi')
-import { validateBaseBody } from './base'
+import { validateBaseBody, validateBaseQuery } from './base'
 
 const validateFeedUrlUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
@@ -87,12 +87,22 @@ const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validateUserHistoryItemRemove = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeId: Joi.string(),
+    mediaRefId: Joi.string()
+  }).min(1).max(1)
+
+  await validateBaseQuery(schema, ctx, next)
+}
+
 export {
   validateFeedUrlUpdate,
   validateMediaRefUpdate,
   validatePayPalOrderUpdate,
   validatePlaylistUpdate,
   validateUserAddOrUpdateHistoryItem,
+  validateUserHistoryItemRemove,
   validateUserMembershipUpdate,
   validateUserUpdate,
   validateUserUpdateQueue

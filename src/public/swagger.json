@@ -446,6 +446,39 @@
         ]
       }
     },
+    "/auth/user/history-item": {
+      "delete": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Remove episode or mediaRef from logged-in user's history items.",
+        "description": "Must provide an episodeId or mediaRefId.",
+        "operationId": "authUserHistoryItemRemove",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "episodeId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefId",
+            "in": "query",
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/auth/user/download": {
       "get": {
         "tags": [

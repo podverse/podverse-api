@@ -465,7 +465,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
-
+  nowPlayingItem.episodeDescription = ''
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to add history items')
   }
@@ -488,21 +488,70 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
 
   let historyItems = user.historyItems || []
 
-  // Remove historyItem if it already exists in the array, then append it to the end.
+  // Remove historyItem if it already exists in the array, then prepend it to the array.
   historyItems = historyItems.filter(x => {
-    if (x) {
-      if (x.clipId && nowPlayingItem.clipId && x.clipId !== nowPlayingItem.clipId) {
-        return x
-      } else if (x.episodeId !== nowPlayingItem.episodeId) {
-        return x
-      }
+    x.episodeDescription = ''
+    if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
+      return
+    } else {
+      return x
     }
-
-    return
   })
-  historyItems.push(nowPlayingItem)
+  historyItems.unshift(nowPlayingItem)
 
   return repository.update(loggedInUserId, { historyItems })
+}
+
+const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to remove history items')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'historyItems'
+      ]
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  let historyItems = user.historyItems || []
+
+  const hasMatchingHistoryItem = historyItems.some(x => hasHistoryItemWithMatchingId(episodeId, mediaRefId, x))
+
+  if (!hasMatchingHistoryItem) {
+    throw new createError.NotFound('History item not found.')
+  }
+
+  historyItems = historyItems.filter(x => {
+    if (hasHistoryItemWithMatchingId(episodeId, mediaRefId, x)) {
+      return
+    } else {
+      return x
+    }
+  })
+
+  return repository.update(loggedInUserId, { historyItems })
+}
+
+const hasHistoryItemWithMatchingId = (episodeId: string, mediaRefId: string, item: any) => {
+  if (mediaRefId && item.clipId === mediaRefId) {
+    return true
+  } else if (!mediaRefId && !item.clipId && item.episodeId === episodeId) {
+    return true
+  } else {
+    return false
+  }
 }
 
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
@@ -546,6 +595,7 @@ export {
   getUserByVerificationToken,
   getUserMediaRefs,
   getUserPlaylists,
+  removeHistoryItem,
   toggleSubscribeToUser,
   updateQueueItems,
   updateRoleSuperUser,
