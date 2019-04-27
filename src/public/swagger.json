@@ -479,6 +479,25 @@
         }
       }
     },
+    "/auth/user/history-item/clear-all": {
+      "delete": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Removes all of a logged-in user's history items.",
+        "description": "Removes all of a logged-in user's history items.",
+        "operationId": "authUserHistoryItemClearAll",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
     "/auth/user/download": {
       "get": {
         "tags": [

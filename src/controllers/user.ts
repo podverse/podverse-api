@@ -554,6 +554,29 @@ const hasHistoryItemWithMatchingId = (episodeId: string, mediaRefId: string, ite
   }
 }
 
+const clearAllHistoryItems = async (loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to remove history items')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: ['id']
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  return repository.update(loggedInUserId, { historyItems: [] })
+}
+
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
   if (id !== loggedInUserId) {
@@ -584,6 +607,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
 export {
   addOrUpdateHistoryItem,
+  clearAllHistoryItems,
   createUser,
   deleteLoggedInUser,
   getCompleteUserDataAsJSON,

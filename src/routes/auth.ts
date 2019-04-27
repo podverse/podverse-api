@@ -12,7 +12,7 @@ import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPass
   } from '~/middleware/queryValidation/auth'
 import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove, validateUserUpdate,
   validateUserUpdateQueue } from '~/middleware/queryValidation/update'
-import { addOrUpdateHistoryItem, deleteLoggedInUser, getCompleteUserDataAsJSON, getLoggedInUser,
+import { addOrUpdateHistoryItem, clearAllHistoryItems, deleteLoggedInUser, getCompleteUserDataAsJSON, getLoggedInUser,
   getUserMediaRefs, getUserPlaylists, updateQueueItems, updateLoggedInUser, removeHistoryItem } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
@@ -214,6 +214,21 @@ router.patch('/user/add-or-update-history-item',
 
       ctx.status = 200
       ctx.body = { message: 'Updated user history' }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Remove all history items
+router.delete('/user/history-item/clear-all',
+  jwtAuth,
+  validateUserHistoryItemRemove,
+  hasValidMembership,
+  async ctx => {
+    try {
+      await clearAllHistoryItems(ctx.state.user.id)
+      ctx.status = 200
+      ctx.body = { message: 'Cleared all history items.' }
     } catch (error) {
       emitRouterError(error, ctx)
     }
