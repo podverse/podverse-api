@@ -476,7 +476,12 @@
           "400": {
             "description": "Bad request"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/auth/user/history-item/clear-all": {
@@ -495,7 +500,12 @@
           "200": {
             "description": "Successful operation"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/auth/user/download": {
