@@ -346,226 +346,6 @@
         }
       }
     },
-    "/auth/user": {
-      "delete": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Delete logged-in user",
-        "description": "Returns success or error message",
-        "operationId": "authUserDelete",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Update logged-in user",
-        "description": "Returns the updated user object",
-        "operationId": "authUpdateuser",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "example": {
-                "email": "string",
-                "id": "string - required",
-                "isPublic": "boolean",
-                "name": "string"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/user/add-or-update-history-item": {
-      "patch": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Add or update a logged-in user's history item",
-        "description": "Returns a success message",
-        "operationId": "authUserAddOrUpdateHistoryItem",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/user/history-item": {
-      "delete": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Remove episode or mediaRef from logged-in user's history items.",
-        "description": "Must provide an episodeId or mediaRefId.",
-        "operationId": "authUserHistoryItemRemove",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "episodeId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "mediaRefId",
-            "in": "query",
-            "type": "boolean"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/user/history-item/clear-all": {
-      "delete": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Removes all of a logged-in user's history items.",
-        "description": "Removes all of a logged-in user's history items.",
-        "operationId": "authUserHistoryItemClearAll",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/user/download": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the logged-in user's full user profile",
-        "description": "Returns the logged-in user's full user profile.",
-        "operationId": "authUserDownload",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/user/update-queue": {
-      "patch": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Update the logged-in user's queue",
-        "description": "Returns an array of the logged-in user's queueItems",
-        "operationId": "authUserUpdateQueue",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
     "/auth/verify-email": {
       "get": {
         "tags": [
@@ -1817,6 +1597,75 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete logged-in user",
+        "description": "Returns success or error message",
+        "operationId": "authUserDelete",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update logged-in user",
+        "description": "Returns the updated user object",
+        "operationId": "userUpdate",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "id": "string - required",
+                "isPublic": "boolean",
+                "name": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
     "/user/:id": {
@@ -1932,6 +1781,155 @@
           },
           "404": {
             "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/add-or-update-history-item": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add or update a logged-in user's history item",
+        "description": "Returns a success message",
+        "operationId": "userAddOrUpdateHistoryItem",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/history-item": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Remove episode or mediaRef from logged-in user's history items.",
+        "description": "Must provide an episodeId or mediaRefId.",
+        "operationId": "userHistoryItemRemove",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "episodeId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefId",
+            "in": "query",
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/history-item/clear-all": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Removes all of a logged-in user's history items.",
+        "description": "Removes all of a logged-in user's history items.",
+        "operationId": "userHistoryItemClearAll",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/download": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the logged-in user's full user profile",
+        "description": "Returns the logged-in user's full user profile.",
+        "operationId": "userDownload",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/update-queue": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update the logged-in user's queue",
+        "description": "Returns an array of the logged-in user's queueItems",
+        "operationId": "userUpdateQueue",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
