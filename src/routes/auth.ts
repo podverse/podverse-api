@@ -4,11 +4,10 @@ import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth, resetPassword, sendResetPassword,
   sendVerification, signUpUser, validEmail, verifyEmail } from '~/middleware/auth'
-import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from '~/middleware/queryValidation/auth'
-import { getLoggedInUser, getUserMediaRefs, getUserPlaylists } from '~/controllers/user'
+import { getLoggedInUser } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -62,48 +61,6 @@ router.post('/login',
   localAuth)
 
 router.post('/logout', logOut)
-
-// Get Logged In User's MediaRefs
-router.get('/mediaRefs',
-  jwtAuth,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  async ctx => {
-    try {
-      const { query } = ctx.request
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
-      const mediaRefs = await getUserMediaRefs(
-        ctx.state.user.id,
-        includeNSFW,
-        true,
-        query.sort,
-        query.skip,
-        query.take
-      )
-      ctx.body = mediaRefs
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Get Logged In User's Playlists
-router.get('/playlists',
-  jwtAuth,
-  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  async ctx => {
-    try {
-      const { query } = ctx.request
-
-      const playlists = await getUserPlaylists(
-        ctx.state.user.id,
-        true,
-        query.skip,
-        query.take
-      )
-      ctx.body = playlists
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
 
 const resetPasswordLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,

@@ -147,58 +147,6 @@
         }
       }
     },
-    "/auth/mediaRefs": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the currently logged-in user's mediaRefs",
-        "description": "Returns an array of the currently logged-in user's mediaRefs",
-        "operationId": "getAuthMediaRefs",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/auth/playlists": {
-      "get": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Get the currently logged-in user's playlists",
-        "description": "Returns an array of the currently logged-in user's playlists",
-        "operationId": "getAuthPlaylists",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
     "/auth/reset-password": {
       "post": {
         "tags": [
@@ -1700,6 +1648,58 @@
         }
       }
     },
+    "/user/mediaRefs": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the currently logged-in user's mediaRefs",
+        "description": "Returns an array of the currently logged-in user's mediaRefs",
+        "operationId": "getUserMediaRefs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/playlists": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the currently logged-in user's playlists",
+        "description": "Returns an array of the currently logged-in user's playlists",
+        "operationId": "getUserPlaylists",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/user/:id/mediaRefs": {
       "get": {
         "tags": [
@@ -1707,7 +1707,7 @@
         ],
         "summary": "Get a public user's mediaRefs",
         "description": "Returns an array of the public user's mediaRefs. If user not found, returns an empty array.",
-        "operationId": "getUserMediaRefs",
+        "operationId": "getPublicUserMediaRefs",
         "produces": [
           "application/json"
         ],
@@ -1733,7 +1733,7 @@
         ],
         "summary": "Get a public user's playlists",
         "description": "Returns an array of the public user's playlists. If user not found, returns an empty array.",
-        "operationId": "getUserPlaylists",
+        "operationId": "getPublicUserPlaylists",
         "produces": [
           "application/json"
         ],

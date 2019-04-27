@@ -153,6 +153,48 @@ router.get('/download',
     }
   })
 
+// Get Logged In User's MediaRefs
+router.get('/mediaRefs',
+  jwtAuth,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
+  async ctx => {
+    try {
+      const { query } = ctx.request
+      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+      const mediaRefs = await getUserMediaRefs(
+        ctx.state.user.id,
+        includeNSFW,
+        true,
+        query.sort,
+        query.skip,
+        query.take
+      )
+      ctx.body = mediaRefs
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Logged In User's Playlists
+router.get('/playlists',
+  jwtAuth,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
+  async ctx => {
+    try {
+      const { query } = ctx.request
+
+      const playlists = await getUserPlaylists(
+        ctx.state.user.id,
+        true,
+        query.skip,
+        query.take
+      )
+      ctx.body = playlists
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
 // Update queueItems
 const updateQueueUserLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
