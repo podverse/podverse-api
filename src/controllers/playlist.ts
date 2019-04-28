@@ -129,6 +129,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
   }
 
   let itemsOrder = playlist.itemsOrder
+  let actionTaken = 'removed'
 
   if (mediaRefId) {
     // If no mediaRefs match filter, add the playlist item.
@@ -140,6 +141,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
       let mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
       if (mediaRef) {
         playlist.mediaRefs.push(mediaRef)
+        actionTaken = 'added'
       } else {
         throw new createError.NotFound('MediaRef not found')
       }
@@ -158,6 +160,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
       let episode = await episodeRepository.findOne({ id: episodeId })
       if (episode) {
         playlist.episodes.push(episode)
+        actionTaken = 'added'
       } else {
         throw new createError.NotFound('Episode not found')
       }
@@ -174,7 +177,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
   const saved = await repository.save(playlist)
 
-  return saved
+  return [saved, actionTaken]
 }
 
 const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {

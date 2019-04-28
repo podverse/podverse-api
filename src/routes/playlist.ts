@@ -126,11 +126,13 @@ router.patch('/add-or-remove',
       const body: any = ctx.request.body
       const { episodeId, mediaRefId, playlistId } = body
 
-      const updatedPlaylist = await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, ctx.state.user.id)
-
+      const results = await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, ctx.state.user.id)
+      const updatedPlaylist = results[0] as any
+      const actionTaken = results[1]
       ctx.body = {
         playlistId: updatedPlaylist.id,
-        playlistItemCount: updatedPlaylist.itemCount
+        playlistItemCount: updatedPlaylist.itemCount,
+        actionTaken
       }
     } catch (error) {
       emitRouterError(error, ctx)
