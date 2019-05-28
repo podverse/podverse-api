@@ -95,6 +95,7 @@ const getPublicUser = async id => {
     .select('user.id')
     .addSelect('user.name')
     .addSelect('user.subscribedPodcastIds')
+    .addSelect('user.isPublic')
     .where({ isPublic: true })
     .andWhere('user.id = :id', { id })
 
@@ -132,7 +133,8 @@ const getPublicUsers = async query => {
   return users
 }
 
-const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0, take = 20) => {
+const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => {
+  const { skip, sort, take } = query
   const repository = getRepository(MediaRef)
   const orderColumn = getQueryOrderColumn('mediaRef', sort, 'createdAt')
   const episodeJoinAndSelect = `${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}`
@@ -151,7 +153,7 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
     .where(
       {
         ...(includePrivate ? {} : { isPublic: true }),
-        owner: id
+        owner: ownerId
       }
     )
     .skip(skip)
@@ -163,7 +165,8 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
   return mediaRefs
 }
 
-const getUserPlaylists = async (id, includePrivate, skip, take) => {
+const getUserPlaylists = async (query, ownerId, includePrivate) => {
+  const { skip, take } = query
   const repository = getRepository(Playlist)
 
   const playlists = await repository
@@ -171,8 +174,8 @@ const getUserPlaylists = async (id, includePrivate, skip, take) => {
     .innerJoinAndSelect('playlist.owner', 'owner')
     .where(
       {
-        // ...(includePrivate ? {} : { isPublic: true }),
-        owner: id
+        ...(includePrivate ? {} : { isPublic: true }),
+        owner: ownerId
       }
     )
     .skip(skip)

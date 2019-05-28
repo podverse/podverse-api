@@ -162,12 +162,10 @@ router.get('/mediaRefs',
       const { query } = ctx.request
       const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
       const mediaRefs = await getUserMediaRefs(
+        query,
         ctx.state.user.id,
         includeNSFW,
-        true,
-        query.sort,
-        query.skip,
-        query.take
+        true
       )
       ctx.body = mediaRefs
     } catch (error) {
@@ -184,10 +182,9 @@ router.get('/playlists',
       const { query } = ctx.request
 
       const playlists = await getUserPlaylists(
+        query,
         ctx.state.user.id,
-        true,
-        query.skip,
-        query.take
+        true
       )
       ctx.body = playlists
     } catch (error) {
@@ -257,12 +254,10 @@ router.get('/:id/mediaRefs',
       const { query } = ctx.state
 
       const mediaRefs = await getUserMediaRefs(
+        query,
         ctx.params.id,
         ctx.state.includeNSFW,
-        false,
-        query.sort,
-        query.skip,
-        query.take
+        false
       )
       ctx.body = mediaRefs
     } catch (error) {
@@ -279,10 +274,9 @@ router.get('/:id/playlists',
       const { query } = ctx.state
 
       const playlists = await getUserPlaylists(
+        query,
         ctx.params.id,
-        false,
-        query.skip,
-        query.take
+        false
       )
       ctx.body = playlists
     } catch (error) {
