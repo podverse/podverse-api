@@ -159,8 +159,9 @@ router.get('/mediaRefs',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   async ctx => {
     try {
-      const { query } = ctx.request
+      const { query } = ctx.state
       const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
+
       const mediaRefs = await getUserMediaRefs(
         query,
         ctx.state.user.id,
@@ -179,7 +180,7 @@ router.get('/playlists',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   async ctx => {
     try {
-      const { query } = ctx.request
+      const { query } = ctx.state
 
       const playlists = await getUserPlaylists(
         query,
