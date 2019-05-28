@@ -806,7 +806,6 @@
               "example": {
                 "authors": ["string"],
                 "categories": ["string"],
-                "description": "string",
                 "endTime": "integer",
                 "episodeId": "string",
                 "episodeImageUrl": "url",
