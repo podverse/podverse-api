@@ -32,7 +32,10 @@ export const hasValidMembership = async (ctx, next) => {
   }
 
   ctx.status = 401
-  ctx.body = { message: 'Premium Membership Required' }
+  ctx.body = {
+    message: 'Premium Membership Required',
+    code: 123
+  }
 }
 
 export const hasValidMembershipIfJwt = async (ctx, next) => {
