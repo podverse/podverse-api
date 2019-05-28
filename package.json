@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "1.0.52",
+  "version": "1.0.53",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "main": "dist/bundle.js",
   "scripts": {
