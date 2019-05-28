@@ -279,6 +279,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.guid = parsedEpisode.guid
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
+  podcast.linkUrl = parsedEpisode.link
   episode.mediaFilesize = parsedEpisode.enclosure.filesize
     ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
