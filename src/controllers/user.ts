@@ -174,7 +174,7 @@ const getUserPlaylists = async (query, ownerId, includePrivate) => {
     .innerJoinAndSelect('playlist.owner', 'owner')
     .where(
       {
-        ...(includePrivate ? {} : { isPublic: true }),
+        // ...(includePrivate ? {} : { isPublic: true }),
         owner: ownerId
       }
     )
