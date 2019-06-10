@@ -18,9 +18,6 @@ export class Playlist {
   description?: string
 
   @Column({ default: false })
-  isMyClips: boolean
-
-  @Column({ default: false })
   isPublic: boolean
 
   @Column({ default: 0 })
