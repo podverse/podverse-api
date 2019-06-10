@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
-@Entity('paypalOrder')
+@Entity('paypalOrders')
 export class PayPalOrder {
 
   @PrimaryColumn('varchar')
