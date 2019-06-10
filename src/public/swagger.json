@@ -2231,9 +2231,6 @@
         "description": {
           "type": "string"
         },
-        "isMyClips": {
-          "type": "boolean"
-        },
         "isPublic": {
           "type": "boolean"
         },
