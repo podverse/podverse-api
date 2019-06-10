@@ -1,11 +1,7 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
-import {
-  BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  OneToMany, PrimaryColumn, UpdateDateColumn
-} from 'typeorm'
-import {
-  BitPayInvoice, MediaRef, PayPalOrder, Playlist
-} from '~/entities'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
 
