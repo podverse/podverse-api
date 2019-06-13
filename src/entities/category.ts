@@ -40,7 +40,8 @@ export class Category {
   @BeforeInsert()
   @BeforeUpdate()
   addSlug () {
-    this.slug = this.title.replace(/\s+/g, '-').toLowerCase()
+    let slug = this.title.replace(/\s+/g, '-').toLowerCase()
+    this.slug = slug.replace(/\W/g, '')
   }
 
   @BeforeInsert()
