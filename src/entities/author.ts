@@ -30,7 +30,8 @@ export class Author {
   @BeforeInsert()
   @BeforeUpdate()
   beforeAll () {
-    this.slug = this.name.replace(/\s+/g, '-').toLowerCase()
+    let slug = this.name.replace(/\s+/g, '-').toLowerCase()
+    this.slug = slug.replace(/\W/g, '')
     this.name = this.name.trim()
   }
 
@@ -38,5 +39,4 @@ export class Author {
   beforeInsert () {
     this.id = shortid.generate()
   }
-
 }
