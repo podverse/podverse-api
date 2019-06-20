@@ -24,10 +24,10 @@ const getEpisode = async id => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
-  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
-  let podcastIds = podcastId && podcastId.split(',') || []
+  const { includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
+  let { sincePubDate } = query
 
-  const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+  let podcastIds = podcastId && podcastId.split(',') || []
   const podcastJoinConditions = `
     ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
@@ -36,18 +36,25 @@ const getEpisodes = async (query, includeNSFW) => {
   const episodeWhereConditions = `
     LOWER(episode.title) LIKE :searchAllFieldsText
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+    ${sincePubDate ? 'AND episode.pubDate >= :sincePubDate' : ''}
+  `
+
+  const episodeWhereSincePubDateConditions = `
+    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds) AND' : ''}
+    ${sincePubDate ? 'episode.pubDate >= :sincePubDate' : ''}
   `
 
   // Is there a better way to do this? I'm not sure how to get the count
   // with getRawMany...
   let countQB = repository
     .createQueryBuilder('episode')
-  if (searchAllFieldsText) {
+  if (searchAllFieldsText || sincePubDate) {
     countQB.where(
-      episodeWhereConditions,
+      sincePubDate ? episodeWhereSincePubDateConditions : episodeWhereConditions,
       {
         podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`,
+        sincePubDate
       }
     )
     countQB.andWhere('episode."isPublic" = true')
@@ -105,19 +112,44 @@ const getEpisodes = async (query, includeNSFW) => {
       }
     )
     qb.andWhere('episode."isPublic" = true')
+  } else if (sincePubDate) {
+    if (podcastIds.length === 0) return [[], 0]
+
+    qb.where(
+      episodeWhereSincePubDateConditions,
+      {
+        podcastIds,
+        sincePubDate
+      }
+    )
+    qb.andWhere('episode."isPublic" = true')
   } else {
     qb.where({ isPublic: true })
   }
 
-  qb.offset(skip)
-  qb.limit(take)
+  if (sincePubDate) {
+    qb.offset(0)
+    qb.limit(50)
 
-  const episodes = await qb
-    // @ts-ignore
-    .orderBy(orderColumn[0], orderColumn[1])
-    .getRawMany()
+    let orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
+    const episodes = await qb
+      // @ts-ignore
+      .orderBy(orderColumn[0], orderColumn[1])
+      .getRawMany()
 
-  return [episodes, count]
+    return [episodes, count]
+  } else {
+    qb.offset(skip)
+    qb.limit(take)
+
+    let orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+    const episodes = await qb
+      // @ts-ignore
+      .orderBy(orderColumn[0], orderColumn[1])
+      .getRawMany()
+
+    return [episodes, count]
+  }
 }
 
 export {

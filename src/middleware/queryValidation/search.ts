@@ -53,6 +53,7 @@ const validateEpisodeSearch = async (ctx, next) => {
     searchAllFieldsText: Joi.string(),
     title: Joi.string(),
     page: Joi.number().integer().min(0),
+    sincePubDate: Joi.date().iso(),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
     take: Joi.number().integer().min(0)
