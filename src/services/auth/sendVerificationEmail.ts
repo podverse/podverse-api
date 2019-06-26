@@ -1,7 +1,7 @@
-import createError from 'http-errors'
-import { config } from 'config'
-import { createTransporter } from 'services/mailer'
-import { emailTemplate } from 'lib/emailTemplate'
+import { config } from '~/config'
+import { createTransporter } from '~/services/mailer'
+import { emailTemplate } from '~/lib/emailTemplate'
+const createError = require('http-errors')
 
 const { mailerUsername } = config
 
@@ -10,13 +10,13 @@ export const sendVerificationEmail = async (email, name, token) => {
 
   const emailFields = {
     preheader: '',
-    greeting: `${name ? `Hi ${name},` : ''}`,
-    topMessage: 'Please click the button below to verify your account.',
+    greeting: `${name ? `Hi ${name},` : 'Hello!'}`,
+    topMessage: 'Please click the button below to verify your email address with podverse.fm.',
     button: 'Verify Email',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
-    bottomMessage: `We will never send emails or share your data without your permission.`,
-    closing: 'Thank you!',
-    name: 'Podverse',
+    bottomMessage: `We will never share your email or data without your permission.`,
+    closing: 'Have a nice day :)',
+    name: '',
     address: '',
     unsubscribeLink: '',
     buttonColor: '#2968B1'
@@ -24,7 +24,7 @@ export const sendVerificationEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: mailerUsername,
+      from: `Podverse <${mailerUsername}>`,
       to: email,
       subject: 'Verify your Podverse account',
       html: emailTemplate(emailFields)

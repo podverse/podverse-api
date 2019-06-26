@@ -1,11 +1,12 @@
 import { getRepository } from 'typeorm'
-import { MediaRef } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
-import { getQueryOrderColumn } from 'lib/utility'
+import { MediaRef } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
+import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'episode', 'episode.podcast', 'owner'
+  'authors', 'categories', 'episode', 'episode.podcast', 'owner',
+  'episode.podcast.authors', 'episode.podcast.categories'
 ]
 
 const createMediaRef = async obj => {
@@ -44,9 +45,9 @@ const deleteMediaRef = async (id, loggedInUserId) => {
   return result
 }
 
-const getMediaRef = (id) => {
+const getMediaRef = async id => {
   const repository = getRepository(MediaRef)
-  const mediaRef = repository.findOne({ id }, { relations })
+  const mediaRef = await repository.findOne({ id }, { relations })
 
   if (!mediaRef) {
     throw new createError.NotFound('MediaRef not found')
@@ -57,37 +58,74 @@ const getMediaRef = (id) => {
 
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
-
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
   let podcastIds = query.podcastId && query.podcastId.split(',') || []
   let episodeIds = query.episodeId && query.episodeId.split(',') || []
+  const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
-  const episodeJoinAndSelect = `
+  const queryConditions = `
     ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
 
-  const mediaRefs = await repository
-    .createQueryBuilder('mediaRef')
-    .innerJoinAndSelect(
+  let qb = repository.createQueryBuilder('mediaRef')
+
+  if (includePodcast) {
+    qb.innerJoinAndSelect(
       'mediaRef.episode',
       'episode',
-      episodeJoinAndSelect,
+      queryConditions,
       {
         isExplicit: !!includeNSFW,
-        podcastId: query.podcastId,
         podcastIds: podcastIds,
-        episodeId: query.episodeId,
         episodeIds: episodeIds
-      }
+      })
+    qb.innerJoinAndSelect('episode.podcast', 'podcast')
+  } else if (includeEpisode) {
+    qb.innerJoinAndSelect(
+        'mediaRef.episode',
+        'episode',
+        queryConditions,
+      {
+        isExplicit: !!includeNSFW,
+        podcastIds: podcastIds,
+        episodeIds: episodeIds
+      })
+  } else {
+    qb.innerJoin(
+      'mediaRef.episode',
+      'episode',
+      queryConditions,
+      {
+        isExplicit: !!includeNSFW,
+        podcastIds: podcastIds,
+        episodeIds: episodeIds
+      })
+  }
+
+  if (searchAllFieldsText) {
+    qb.where(
+      `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
+      LOWER(episode.title) LIKE :searchAllFieldsText OR
+      LOWER(podcast.title) LIKE :searchAllFieldsText`,
+      { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
     )
-    .innerJoinAndSelect('episode.podcast', 'podcast')
-    .where({ isPublic: true })
-    .skip(query.skip)
-    .take(query.take)
-    .orderBy(orderColumn, 'ASC')
-    .getMany()
+    qb.andWhere(`
+      mediaRef.title IS NOT NULL AND
+      mediaRef.title <> ''
+    `)
+    qb.andWhere('"mediaRef"."isPublic" = true')
+  } else {
+    qb.where({ isPublic: true })
+  }
+
+  const mediaRefs = await qb
+    .skip(skip)
+    .take(take)
+    // @ts-ignore
+    .orderBy(orderColumn[0], orderColumn[1])
+    .getManyAndCount()
 
   return mediaRefs
 }

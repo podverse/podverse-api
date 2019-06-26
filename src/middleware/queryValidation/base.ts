@@ -1,5 +1,5 @@
 const Joi = require('joi')
-import { emitRouterError, JoiCustomValidationError } from 'lib/errors'
+import { emitRouterError, JoiCustomValidationError } from '~/lib/errors'
 
 const validateBase = async (body, schema, ctx, next) => {
   const result = Joi.validate(body, schema)
@@ -24,6 +24,6 @@ export const validateBaseBody = async (schema, ctx, next) => {
 }
 
 export const validateBaseQuery = async (schema, ctx, next) => {
-  const query = ctx.query
+  const query = ctx.state.query
   await validateBase(query, schema, ctx, next)
 }

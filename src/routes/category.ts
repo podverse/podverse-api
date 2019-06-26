@@ -1,10 +1,10 @@
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { delimitQueryValues } from 'lib/utility'
-import { getCategory, getCategories } from 'controllers/category'
-import { parseQueryPageOptions } from 'middleware/parseQueryPageOptions'
-import { validateCategorySearch } from 'middleware/queryValidation/search'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
+import { getCategory, getCategories } from '~/controllers/category'
+import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
+import { validateCategorySearch } from '~/middleware/queryValidation/search'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/category` })
 
@@ -12,12 +12,12 @@ const delimitKeys = ['categories']
 
 // Search
 router.get('/',
-  parseQueryPageOptions,
-  validateCategorySearch,
+(ctx, next) => parseQueryPageOptions(ctx, next, 'categories'),
+validateCategorySearch,
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const categories = await getCategories(ctx.request.query, ctx.state.queryPageOptions)
+      const categories = await getCategories(ctx.state.query)
       ctx.body = categories
     } catch (error) {
       emitRouterError(error, ctx)
@@ -36,4 +36,4 @@ router.get('/:id',
     }
   })
 
-export default router
+export const categoryRouter = router

@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Data API, database migration scripts, and backend services for all Podverse models.",
-    "version": "1.0.0",
+    "version": "1.0.7",
     "title": "Podverse API",
     "termsOfService": "https://podverse.fm/terms/",
     "contact": {
@@ -13,7 +13,7 @@
       "url": "https://www.gnu.org/licenses/agpl-3.0.en.html"
     }
   },
-  "host": "localhost:3000",
+  "host": "localhost:1234",
   "basePath": "/api/v1",
   "tags": [
     {
@@ -23,6 +23,10 @@
     {
       "name": "author",
       "description": "podcast hosts, co-hosts, and guests"
+    },
+    {
+      "name": "bitpayInvoice",
+      "description": "the BitPay order object"
     },
     {
       "name": "category",
@@ -40,8 +44,12 @@
       "description": "references to sections of audio/video"
     },
     {
+      "name": "paypalOrder",
+      "description": "the PayPal order object"
+    },
+    {
       "name": "playlist",
-      "description": "lists of mediaRefs"
+      "description": "lists of mediaRefs and episodes"
     },
     {
       "name": "podcast"
@@ -55,13 +63,42 @@
     "https"
   ],
   "paths": {
+    "/auth/get-authenticated-user-info": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get the currently logged-in user's info",
+        "description": "Returns an object with the currently logged-in user's info",
+        "operationId": "getAuthenticatedUserInfo",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "tags": [
           "auth"
         ],
         "summary": "Login as user",
-        "description": "Sets a bearer token in the Authentication cookie",
+        "description": "Returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
         "operationId": "authLogin",
         "produces": [
           "application/json"
@@ -88,6 +125,24 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "description": "Clears the authorization cookie",
+        "operationId": "authLogout",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
           }
         }
       }
@@ -168,44 +223,6 @@
         }
       }
     },
-    "/auth/sign-up": {
-      "post": {
-        "tags": [
-          "auth"
-        ],
-        "summary": "Sign up new user",
-        "description": "Create a new user, and send verification email",
-        "operationId": "authSignUp",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "example": {
-                "email": "string",
-                "name": "string",
-                "password": "string"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/auth/send-verification": {
       "post": {
         "tags": [
@@ -238,6 +255,41 @@
           },
           "404": {
             "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/sign-up": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign up new user",
+        "description": "Creates a new user, sends a verification email, and returns user information in the response body. If query param includeBodyToken=true is provided, then it will return the bearer token in the response body, else it will set the bearer token as an HTTPOnly cookie named \"Authorization\".",
+        "operationId": "authSignUp",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "email": "string",
+                "name": "string",
+                "password": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -281,7 +333,7 @@
         "tags": [
           "author"
         ],
-        "summary": "Find authors by fields",
+        "summary": "Find authors by query",
         "description": "Returns an array of authors",
         "operationId": "getAuthors",
         "produces": [
@@ -302,6 +354,11 @@
             "name": "slug",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer"
           }
         ],
         "responses": {
@@ -310,17 +367,20 @@
             "schema": {
               "$ref": "#/definitions/Author"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
     },
-    "/author/{authorId}": {
+    "/author/:id": {
       "get": {
         "tags": [
           "author"
         ],
-        "summary": "Find author by ID",
-        "description": "Returns a single author",
+        "summary": "Get author by ID",
+        "description": "Returns an author object",
         "operationId": "getAuthorById",
         "produces": [
           "application/json"
@@ -329,7 +389,6 @@
           {
             "name": "authorId",
             "in": "path",
-            "description": "ID of author to return",
             "required": true,
             "type": "string"
           }
@@ -347,23 +406,103 @@
         }
       }
     },
+    "/bitpay/invoice": {
+      "post": {
+        "tags": [
+          "bitpayInvoice"
+        ],
+        "summary": "Create a bitpayInvoice",
+        "description": "Returns a new bitpayInvoice object",
+        "operationId": "createBitPayInvoice",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/BitPayInvoice"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/bitpay/invoice/:id": {
+      "get": {
+        "tags": [
+          "bitpayInvoice"
+        ],
+        "summary": "Get the status of a bitpayInvoice by ID",
+        "description": "Returns the status of a bitpayInvoice by ID",
+        "operationId": "getBitPayInvoice",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the bitpayInvoice",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "BitPayInvoice not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/bitpay/notification": {
+      "post": {
+        "tags": [
+          "bitpayInvoice"
+        ],
+        "summary": "Handle webhook notifications to update a BitPayInvoice object",
+        "description": "When a request is made to this endpoint, it takes the invoiceID from the request and makes a request to BitPay to get the latest status for invoice with that id. If the invoice returned from BitPay was updated more recently than the version stored locally, then the local version is updated. Always returns status 200 so that BitPay stops sending the notification.",
+        "operationId": "notificationBitPayInvoice",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
     "/category": {
       "get": {
         "tags": [
           "category"
         ],
-        "summary": "Find categories by fields",
+        "summary": "Find categories by query",
         "description": "Returns an array of categories",
         "operationId": "getCategories",
         "produces": [
           "application/json"
         ],
         "parameters": [
-          {
-            "name": "category",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "id",
             "in": "query",
@@ -378,6 +517,16 @@
             "name": "title",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "topLevelCategories",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer"
           }
         ],
         "responses": {
@@ -390,13 +539,13 @@
         }
       }
     },
-    "/category/{categoryId}": {
+    "/category/:id": {
       "get": {
         "tags": [
           "category"
         ],
-        "summary": "Find category by ID",
-        "description": "Returns a single category",
+        "summary": "Get category by ID",
+        "description": "Returns a category object",
         "operationId": "getCategoryById",
         "produces": [
           "application/json"
@@ -405,7 +554,6 @@
           {
             "name": "categoryId",
             "in": "path",
-            "description": "ID of category to return",
             "required": true,
             "type": "string"
           }
@@ -428,100 +576,35 @@
         "tags": [
           "episode"
         ],
-        "summary": "Find episodes by fields",
-        "description": "Returns an array of episodes",
+        "summary": "Find episodes by query",
+        "description": "Returns an array of episodes. Set includePodcast = true if you want the podcast included in the response. Pass a string to searchAllFieldsText to filter based on episode title.",
         "operationId": "getEpisodes",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "authors",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "category",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "categories",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "duration",
-            "in": "query",
-            "type": "integer"
-          },
-          {
-            "name": "episodeType",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "guid",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "imageUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "isExplicit",
+            "name": "includePodcast",
             "in": "query",
             "type": "boolean"
           },
           {
-            "name": "linkUrl",
+            "name": "podcastId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "mediaUrl",
+            "name": "searchAllFieldsText",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "mediaRefs",
+            "name": "page",
             "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "type": "integer"
           },
           {
-            "name": "podcast",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "pubDate",
-            "in": "query",
-            "type": "string",
-            "format": "date"
-          },
-          {
-            "name": "title",
+            "name": "sort",
             "in": "query",
             "type": "string"
           }
@@ -532,17 +615,20 @@
             "schema": {
               "$ref": "#/definitions/Episode"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
     },
-    "/episode/{episodeId}": {
+    "/episode/:id": {
       "get": {
         "tags": [
           "episode"
         ],
-        "summary": "Find episode by ID",
-        "description": "Returns a single episode",
+        "summary": "Get episode by ID",
+        "description": "Returns an episode object",
         "operationId": "getEpisodeById",
         "produces": [
           "application/json"
@@ -551,7 +637,6 @@
           {
             "name": "episodeId",
             "in": "path",
-            "description": "ID of episode to return",
             "required": true,
             "type": "string"
           }
@@ -574,7 +659,7 @@
         "tags": [
           "feedUrl"
         ],
-        "summary": "Find feedUrls by fields",
+        "summary": "Find feedUrls by query",
         "description": "Returns an array of feedUrls",
         "operationId": "getFeedUrls",
         "produces": [
@@ -582,17 +667,17 @@
         ],
         "parameters": [
           {
-            "name": "isAuthority",
-            "in": "query",
-            "type": "boolean"
-          },
-          {
-            "name": "podcast",
+            "name": "podcastId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "url",
+            "name": "page",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "sort",
             "in": "query",
             "type": "string"
           }
@@ -603,17 +688,20 @@
             "schema": {
               "$ref": "#/definitions/FeedUrl"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
     },
-    "/feedUrl/{feedUrlId}": {
+    "/feedUrl/:id": {
       "get": {
         "tags": [
           "feedUrl"
         ],
-        "summary": "Find feedUrl by ID",
-        "description": "Returns a single feedUrl",
+        "summary": "Get feedUrl by ID",
+        "description": "Returns a single feedUrl object",
         "operationId": "getFeedUrlById",
         "produces": [
           "application/json"
@@ -622,7 +710,6 @@
           {
             "name": "feedUrlId",
             "in": "path",
-            "description": "ID of feedUrl to return",
             "required": true,
             "type": "string"
           }
@@ -645,112 +732,45 @@
         "tags": [
           "mediaRef"
         ],
-        "summary": "Find mediaRefs by fields",
-        "description": "Returns an array of mediaRefs",
+        "summary": "Find mediaRefs by query",
+        "description": "Returns an array of mediaRefs. Pass a string to searchAllFieldsText to filter based on clip, episode, or podcast title. Set includeEpisode to true if you want episode data returned, or includePodcast to true if you want episode and podcast data returned.",
         "operationId": "getMediaRefs",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "authors",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "categories",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "type": "integer"
-          },
-          {
-            "name": "episodeDuration",
-            "in": "query",
-            "type": "integer"
-          },
-          {
             "name": "episodeId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "episodeImageUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "episodeMediaUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "episodePubDate",
-            "in": "query",
-            "type": "string",
-            "format": "date"
-          },
-          {
-            "name": "episodeSummary",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "episodeTitle",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "podcastFeedUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "podcastGuid",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "podcastImageUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "podcastIsExplicit",
+            "name": "includeEpisode",
             "in": "query",
             "type": "boolean"
           },
           {
-            "name": "podcastTitle",
+            "name": "includePodcast",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "podcastId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "startTime",
+            "name": "searchAllFieldsText",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "page",
             "in": "query",
             "type": "integer"
           },
           {
-            "name": "title",
+            "name": "sort",
             "in": "query",
             "type": "string"
           }
@@ -761,6 +781,9 @@
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       },
@@ -768,8 +791,8 @@
         "tags": [
           "mediaRef"
         ],
-        "summary": "Add a mediaRef",
-        "description": "Returns the new mediaRef",
+        "summary": "Create a mediaRef",
+        "description": "Returns a new mediaRef object",
         "operationId": "createMediaRef",
         "produces": [
           "application/json"
@@ -781,12 +804,9 @@
             "required": true,
             "schema": {
               "example": {
-                "authors": ["id"],
-                "categories": ["id"],
-                "description": "string",
+                "authors": ["string"],
+                "categories": ["string"],
                 "endTime": "integer",
-                "episodeDuration": "integer",
-                "episodeGuid": "string",
                 "episodeId": "string",
                 "episodeImageUrl": "url",
                 "episodeLinkUrl": "url",
@@ -795,7 +815,6 @@
                 "episodeSummary": "string",
                 "episodeTitle": "string",
                 "isPublic": "boolean",
-                "ownerId": "string",
                 "podcastFeedUrl": "url",
                 "podcastGuid": "string",
                 "podcastId": "string",
@@ -814,6 +833,9 @@
             "schema": {
               "$ref": "#/definitions/MediaRef"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       },
@@ -822,7 +844,7 @@
           "mediaRef"
         ],
         "summary": "Update a mediaRef",
-        "description": "Returns the updated mediaRef",
+        "description": "Returns the updated mediaRef object",
         "operationId": "updateMediaRef",
         "produces": [
           "application/json"
@@ -851,10 +873,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/MediaRef"
-            }
+            "description": "Bad request"
           },
           "401": {
             "description": "Unauthorized"
@@ -867,22 +886,21 @@
         ]
       }
     },
-    "/mediaRef/{mediaRefId}": {
+    "/mediaRef/:id": {
       "get": {
         "tags": [
           "mediaRef"
         ],
-        "summary": "Find mediaRef by ID",
-        "description": "Returns a single mediaRef",
+        "summary": "Get mediaRef by ID",
+        "description": "Returns a single mediaRef object",
         "operationId": "getMediaRefById",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "mediaRefId",
+            "name": "id",
             "in": "path",
-            "description": "ID of mediaRef to return",
             "required": true,
             "type": "string"
           }
@@ -911,9 +929,9 @@
         ],
         "parameters": [
           {
-            "name": "mediaRefId",
+            "name": "id",
             "in": "path",
-            "description": "ID of mediaRef to return",
+            "description": "ID of mediaRef to delete",
             "required": true,
             "type": "string"
           }
@@ -939,12 +957,114 @@
         ]
       }
     },
+    "/paypal/order": {
+      "post": {
+        "tags": [
+          "paypalOrder"
+        ],
+        "summary": "Create a paypalOrder",
+        "description": "Returns a new paypalOrder object",
+        "operationId": "createPayPalOrder",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "paymentID": "string"
+              }
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/BitPayInvoice"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/paypal/order/:id": {
+      "get": {
+        "tags": [
+          "paypalOrder"
+        ],
+        "summary": "Get paypalOrder by ID",
+        "description": "Returns a logged-in user's paypalOrder object",
+        "operationId": "getPayPalOrder",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "paypalOrderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/PayPalOrder"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "PayPalOrder not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/paypal/webhooks/payment-completed": {
+      "post": {
+        "tags": [
+          "paypalOrder"
+        ],
+        "summary": "Handle webhook notifications to update a PayPalOrder object",
+        "description": "When an request is made to this endpoint, it then takes the request body and passes it into a request to PayPal to verify the order is valid. If it is, then locally we check if the notification is newer than the last updated date of the paypalOrder, and if that is true the paypalOrder is updated with the latest status. Always returns status 200 so that PayPal stops sending the notification (I haven't confirmed if that's needed actually). Check the PayPal Webhooks Simulator for the response data structure.",
+        "operationId": "webhooksPaymentCompletedPayPal",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/PayPalOrder"
+            }
+          }
+        }
+      }
+    },
     "/playlist": {
       "get": {
         "tags": [
           "playlist"
         ],
-        "summary": "Find playlists by fields",
+        "summary": "Find playlists by query",
         "description": "Returns an array of playlists",
         "operationId": "getPlaylists",
         "produces": [
@@ -952,25 +1072,17 @@
         ],
         "parameters": [
           {
-            "name": "description",
+            "name": "playlistId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "id",
+            "name": "skip",
             "in": "query",
-            "type": "string"
+            "type": "integer"
           },
           {
-            "name": "mediaRefs",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "title",
+            "name": "sort",
             "in": "query",
             "type": "string"
           }
@@ -981,6 +1093,9 @@
             "schema": {
               "$ref": "#/definitions/Playlist"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       },
@@ -988,8 +1103,8 @@
         "tags": [
           "playlist"
         ],
-        "summary": "Add a playlist",
-        "description": "Returns the new playlist",
+        "summary": "Create a playlist",
+        "description": "Returns the new playlist object",
         "operationId": "createPlaylist",
         "produces": [
           "application/json"
@@ -1003,8 +1118,8 @@
               "example": {
                 "description": "string",
                 "isPublic": "boolean",
-                "itemsOrder": ["id"],
-                "mediaRefs": ["id"],
+                "itemsOrder": ["string"],
+                "mediaRefs": ["string"],
                 "ownerId": "string",
                 "title": "string"
               }
@@ -1036,7 +1151,7 @@
           "playlist"
         ],
         "summary": "Update a playlist",
-        "description": "Returns the updated playlist",
+        "description": "Returns the updated playlist object",
         "operationId": "updatePlaylist",
         "produces": [
           "application/json"
@@ -1048,15 +1163,11 @@
             "required": true,
             "schema": {
               "example": {
+                "id": "string",
                 "description": "string",
-                "id": "string - required",
                 "isPublic": "boolean",
-                "itemsOrder": [
-                  "string"
-                ],
-                "mediaRefs": [
-                  "string"
-                ],
+                "itemsOrder": ["string"],
+                "mediaRefs": ["string"],
                 "title": "string"
               }
             }
@@ -1083,13 +1194,13 @@
         ]
       }
     },
-    "/playlist/{playlistId}": {
+    "/playlist/:id": {
       "get": {
         "tags": [
           "playlist"
         ],
-        "summary": "Find playlist by ID",
-        "description": "Returns a single playlist",
+        "summary": "Get playlist by ID",
+        "description": "Returns a playlist object",
         "operationId": "getPlaylistById",
         "produces": [
           "application/json"
@@ -1098,7 +1209,6 @@
           {
             "name": "playlistId",
             "in": "path",
-            "description": "ID of playlist to return",
             "required": true,
             "type": "string"
           }
@@ -1127,9 +1237,9 @@
         ],
         "parameters": [
           {
-            "name": "playlistId",
+            "name": "id",
             "in": "path",
-            "description": "ID of playlist to return",
+            "description": "ID of playlist to delete",
             "required": true,
             "type": "string"
           }
@@ -1155,26 +1265,99 @@
         ]
       }
     },
-    "/podcast": {
-      "get": {
+    "/playlist/add-or-remove": {
+      "patch": {
         "tags": [
-          "podcast"
+          "playlist"
         ],
-        "summary": "Find podcasts by fields",
-        "description": "Returns an array of podcasts",
-        "operationId": "getPodcasts",
+        "summary": "Add or remove mediaRef or episode to playlist",
+        "description": "Adds or removes mediaRef or episode to playlist",
+        "operationId": "playlistAddOrRemove",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "authors",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "episodeId": "string",
+                "mediaRefId": "string",
+                "playlistId": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Playlist"
             }
           },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/playlist/toggle-subscribe/:id": {
+      "get": {
+        "tags": [
+          "playlist"
+        ],
+        "summary": "Toggle subscribe to playlist",
+        "description": "Subscribe or unsubscribe from playlist.",
+        "operationId": "playlistToggleSubscribe",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of playlist to toggle subscribe",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/podcast": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Find podcasts by query",
+        "description": "Returns an array of podcasts. Set includeAuthors or includeCategories to true if needed.",
+        "operationId": "getPodcasts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
           {
             "name": "categories",
             "in": "query",
@@ -1184,61 +1367,37 @@
             }
           },
           {
-            "name": "description",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "episodes",
-            "in": "query",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "feedLastUpdated",
-            "in": "query",
-            "type": "string",
-            "format": "date"
-          },
-          {
-            "name": "guid",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "imageUrl",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "isExplicit",
+            "name": "includeAuthors",
             "in": "query",
             "type": "boolean"
           },
           {
-            "name": "language",
+            "name": "includeCategories",
+            "in": "query",
+            "type": "boolean"
+          },
+          {
+            "name": "podcastId",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "linkUrl",
+            "name": "searchAuthor",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "title",
+            "name": "searchTitle",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "type",
+            "name": "page",
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "sort",
             "in": "query",
             "type": "string"
           }
@@ -1249,17 +1408,20 @@
             "schema": {
               "$ref": "#/definitions/Podcast"
             }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
     },
-    "/podcast/{podcastId}": {
+    "/podcast/:id": {
       "get": {
         "tags": [
           "podcast"
         ],
-        "summary": "Find podcast by ID",
-        "description": "Returns a single podcast",
+        "summary": "Get podcast by ID",
+        "description": "Returns a podcast object",
         "operationId": "getPodcastById",
         "produces": [
           "application/json"
@@ -1268,7 +1430,6 @@
           {
             "name": "podcastId",
             "in": "path",
-            "description": "ID of podcast to return",
             "required": true,
             "type": "string"
           }
@@ -1286,27 +1447,93 @@
         }
       }
     },
-    "/user": {
+    "/podcast/metadata": {
       "get": {
         "tags": [
-          "user"
+          "podcast"
         ],
-        "summary": "Find users by fields",
-        "description": "Returns an array of users",
-        "operationId": "getUsers",
+        "summary": "Find the latest metadata for a list of podcasts",
+        "description": "Accepts a list of podcast ids and returns an array of only the latest metadata for those podcasts.",
+        "operationId": "getPodcastsMetadata",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "podcastId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Podcast"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/podcast/toggle-subscribe/:id": {
+      "get": {
+        "tags": [
+          "podcast"
+        ],
+        "summary": "Toggle subscribe to podcast",
+        "description": "Subscribe or unsubscribe from podcast.",
+        "operationId": "podcastToggleSubscribe",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "description": "ID of podcast to toggle subscribe",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Find public users by query",
+        "description": "Returns an array of public user objects. Must provide a userIds query param or it will return an empty array.",
+        "operationId": "getUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userIds",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "name",
+            "name": "page",
             "in": "query",
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -1318,13 +1545,37 @@
           }
         }
       },
-      "post": {
+      "delete": {
         "tags": [
           "user"
         ],
-        "summary": "Add a user",
-        "description": "Returns the new user",
-        "operationId": "createUser",
+        "summary": "Delete logged-in user",
+        "description": "Returns success or error message",
+        "operationId": "authUserDelete",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update logged-in user",
+        "description": "Returns the updated user object",
+        "operationId": "userUpdate",
         "produces": [
           "application/json"
         ],
@@ -1335,7 +1586,9 @@
             "required": true,
             "schema": {
               "example": {
-                "email": "string - required",
+                "email": "string",
+                "id": "string - required",
+                "isPublic": "boolean",
                 "name": "string"
               }
             }
@@ -1350,26 +1603,33 @@
           },
           "400": {
             "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
       }
     },
-    "/user/{userId}": {
+    "/user/:id": {
       "get": {
         "tags": [
           "user"
         ],
-        "summary": "Find user by ID",
-        "description": "Returns a single user",
+        "summary": "Get user by ID",
+        "description": "Returns a user object",
         "operationId": "getUserById",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "userId",
+            "name": "id",
             "in": "path",
-            "description": "ID of user to return",
             "required": true,
             "type": "string"
           }
@@ -1385,38 +1645,290 @@
             "description": "User not found"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/user/mediaRefs": {
+      "get": {
         "tags": [
           "user"
         ],
-        "summary": "Delete user by ID",
-        "description": "Returns success or error message",
-        "operationId": "getUserById",
+        "summary": "Get the currently logged-in user's mediaRefs",
+        "description": "Returns an array of the currently logged-in user's mediaRefs",
+        "operationId": "getUserMediaRefs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/playlists": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the currently logged-in user's playlists",
+        "description": "Returns an array of the currently logged-in user's playlists",
+        "operationId": "getUserPlaylists",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/:id/mediaRefs": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get a public user's mediaRefs",
+        "description": "Returns an array of the public user's mediaRefs. If user not found, returns an empty array.",
+        "operationId": "getPublicUserMediaRefs",
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "name": "userId",
+            "name": "id",
             "in": "path",
-            "description": "ID of user to return",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/user/:id/playlists": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get a public user's playlists",
+        "description": "Returns an array of the public user's playlists. If user not found, returns an empty array.",
+        "operationId": "getPublicUserPlaylists",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/user/toggle-subscribe/:id": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Toggle subscribe to user",
+        "description": "Subscribe or unsubscribe from user.",
+        "operationId": "userToggleSubscribe",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user to toggle subscribe",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
           },
           "401": {
             "description": "Unauthorized"
           },
           "404": {
             "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/add-or-update-history-item": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add or update a logged-in user's history item",
+        "description": "Returns a success message",
+        "operationId": "userAddOrUpdateHistoryItem",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/history-item": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Remove episode or mediaRef from logged-in user's history items.",
+        "description": "Must provide an episodeId or mediaRefId.",
+        "operationId": "userHistoryItemRemove",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "episodeId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "mediaRefId",
+            "in": "query",
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/history-item/clear-all": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Removes all of a logged-in user's history items.",
+        "description": "Removes all of a logged-in user's history items.",
+        "operationId": "userHistoryItemClearAll",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/download": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the logged-in user's full user profile",
+        "description": "Returns the logged-in user's full user profile.",
+        "operationId": "userDownload",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
+    "/user/update-queue": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update the logged-in user's queue",
+        "description": "Returns an array of the logged-in user's queueItems",
+        "operationId": "userUpdateQueue",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
@@ -1451,6 +1963,58 @@
         },
         "slug": {
           "type": "string"
+        },
+        "podcasts": {
+          "$ref": "#/definitions/Podcast"
+        }
+      }
+    },
+    "BitPayInvoice": {
+      "type": "object",
+      "required": [
+        "id",
+        "orderId",
+        "currency",
+        "price",
+        "token",
+        "url"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "orderId": {
+          "type": "string"
+        },
+        "amountPaid": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "exceptionStatus": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "transactionCurrency": {
+          "type": "string"
+        },
+        "transactionSpeed": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "owner": {
+          "$ref": "#/definitions/User"
         }
       }
     },
@@ -1590,48 +2154,11 @@
         "id": {
           "type": "string"
         },
-        "episodeMediaUrl": {
-          "type": "string"
-        },
-        "startTime": {
-          "type": "integer"
-        },
-        "description": {
-          "type": "string"
-        },
         "endTime": {
           "type": "integer"
         },
-        "episodeDuration": {
-          "type": "integer"
-        },
-        "episodeGuid": {
-          "type": "string"
-        },
-        "episodeId": {
-          "type": "string"
-        },
-        "episodeImageUrl": {
-          "type": "string"
-        },
-        "episodeLinkUrl": {
-          "type": "string"
-        },
-        "episodePubDate": {
-          "type": "string",
-          "format": "date"
-        },
-        "episodeSummary": {
-          "type": "string"
-        },
-        "episodeTitle": {
-          "type": "string"
-        },
         "isPublic": {
           "type": "boolean"
-        },
-        "ownerId": {
-          "type": "string"
         },
         "pastAllTimeTotalUniquePageviews": {
           "type": "integer"
@@ -1651,23 +2178,8 @@
         "pastYearTotalUniquePageviews": {
           "type": "integer"
         },
-        "podcastFeedUrl": {
-          "type": "string"
-        },
-        "podcastGuid": {
-          "type": "string"
-        },
-        "podcastId": {
-          "type": "string"
-        },
-        "podcastImageUrl": {
-          "type": "string"
-        },
-        "podcastIsExplicit": {
-          "type": "boolean"
-        },
-        "podcastTitle": {
-          "type": "string"
+        "startTime": {
+          "type": "integer"
         },
         "title": {
           "type": "string"
@@ -1689,6 +2201,23 @@
         }
       }
     },
+    "PayPalOrder": {
+      "type": "object",
+      "required": [
+        "paymentID"
+      ],
+      "properties": {
+        "paymentID": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "owner": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
     "Playlist": {
       "type": "object",
       "required": [
@@ -1701,9 +2230,6 @@
         },
         "description": {
           "type": "string"
-        },
-        "isMyClips": {
-          "type": "boolean"
         },
         "isPublic": {
           "type": "boolean"
@@ -1751,6 +2277,12 @@
           "type": "boolean"
         },
         "language": {
+          "type": "string"
+        },
+        "lastEpisodePubDate": {
+          "type": "string"
+        },
+        "lastEpisodeTitle": {
           "type": "string"
         },
         "linkUrl": {

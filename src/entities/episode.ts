@@ -1,5 +1,5 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Author, Category, MediaRef, Podcast } from 'entities'
+import { Author, Category, MediaRef, Podcast } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
@@ -21,7 +21,7 @@ export class Episode {
   @ValidateIf(a => a.duration != null)
   @IsInt()
   @Min(0)
-  @Column({ nullable: true })
+  @Column({ default: 0 })
   duration?: number
 
   @Column({ nullable: true })
@@ -59,12 +59,6 @@ export class Episode {
   @Column({ unique: true })
   mediaUrl: string
 
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -94,6 +88,12 @@ export class Episode {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
+
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @Column({ nullable: true })
   pubDate?: Date

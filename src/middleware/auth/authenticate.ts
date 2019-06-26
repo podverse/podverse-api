@@ -1,17 +1,12 @@
-import { Context } from 'koa'
-import { generateToken } from 'services/auth/generateToken'
-import { authExpires } from 'lib/constants'
+import { generateToken } from '~/services/auth/generateToken'
+import { authExpires } from '~/lib/constants'
+import { config } from '~/config'
 
-export function authenticate (ctx: Context, next) {
+export function authenticate (ctx, next) {
   return generateToken(ctx.state.user)
-    .then(token => {
-      if (token) {
+    .then(bearerToken => {
+      if (bearerToken) {
         const expires = authExpires()
-        ctx.cookies.set('Authorization', `Bearer ${token}`, {
-          expires,
-          httpOnly: true,
-          overwrite: true
-        })
 
         const { user } = ctx.state
         ctx.body = {
@@ -28,6 +23,19 @@ export function authenticate (ctx: Context, next) {
           subscribedPodcastIds: user.subscribedPodcastIds,
           subscribedUserIds: user.subscribedUserIds
         }
+
+        if (ctx.query.includeBodyToken) {
+          ctx.body.token = `Bearer ${bearerToken}`
+        } else {
+          ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
+            domain: config.cookieDomain,
+            expires,
+            httpOnly: true,
+            overwrite: true,
+            secure: config.cookieIsSecure
+          })
+        }
+
         ctx.status = 200
       } else {
         ctx.status = 500

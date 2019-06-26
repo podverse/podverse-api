@@ -1,5 +1,5 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Author, Category, Episode, FeedUrl } from 'entities'
+import { Author, Category, Episode, FeedUrl } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
 
@@ -48,12 +48,6 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -84,13 +78,26 @@ export class Podcast {
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
+
+  @IsInt()
+  @Column({ default: 1 })
+  priority: number
+
+  @Column({ nullable: true })
+  sortableTitle?: string
+
   @Column({ nullable: true })
   title?: string
 
   @Column({ nullable: true })
   type?: string
 
-  @ManyToMany(type => Author)
+  @ManyToMany(type => Author, author => author.podcasts)
   @JoinTable()
   authors: Author[]
 

@@ -1,10 +1,9 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { BitPayInvoice, CoingateOrder, MediaRef, PayPalOrder, Playlist
-  } from 'entities'
-import { ValidatePassword } from 'entities/validation/password'
-import { NowPlayingItem } from 'lib/utility/nowPlayingItem'
+import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
+import { ValidatePassword } from '~/entities/validation/password'
+import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
 
 const shortid = require('shortid')
 
@@ -84,18 +83,28 @@ export class User {
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::text[]',
+    select: false
+  })
+  roles: string[]
+
+  @Column('varchar', {
+    array: true,
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedPlaylistIds: string[]
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedPodcastIds: string[]
 
   @Column('varchar', {
     array: true,
+    default: () => 'array[]::text[]',
     select: false
   })
   subscribedUserIds: string[]
@@ -109,9 +118,6 @@ export class User {
   @OneToMany(type => BitPayInvoice, bitpayInvoice => bitpayInvoice.owner)
   bitpayInvoices: BitPayInvoice[]
 
-  @OneToMany(type => CoingateOrder, coingateOrder => coingateOrder.owner)
-  coingateOrders: CoingateOrder[]
-
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
   mediaRefs: MediaRef[]
 
@@ -121,10 +127,10 @@ export class User {
   @OneToMany(type => Playlist, playlist => playlist.owner)
   playlists: Playlist[]
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   updatedAt: Date
 
   @BeforeInsert()

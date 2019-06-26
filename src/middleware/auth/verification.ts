@@ -1,21 +1,29 @@
-import { getUserByEmail, getUserByVerificationToken,
-  updateUserEmailVerificationToken } from 'controllers/user'
-import { emitRouterError } from 'lib/errors'
-import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
+import { getLoggedInUser, getUserByVerificationToken, updateUserEmailVerificationToken
+  } from '~/controllers/user'
+import { emitRouterError } from '~/lib/errors'
+import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
-export const sendVerification = async ctx => {
-  const { email } = ctx.request.body
+export const sendVerification = async (ctx, loggedInUserId) => {
 
   try {
-    const { emailVerified, id, name } = await getUserByEmail(email)
+    const user = await getLoggedInUser(loggedInUserId)
+
+    if (!user) {
+      ctx.body = { message: 'User not found' }
+      ctx.status = '404'
+    }
+
+    // @ts-ignore
+    const { email, emailVerified, id, name } = user
 
     if (!emailVerified) {
       const emailVerificationToken = uuidv4()
       const emailVerificationTokenExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
 
       await updateUserEmailVerificationToken({
+        emailVerified,
         emailVerificationToken,
         emailVerificationTokenExpiration,
         id

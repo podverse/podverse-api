@@ -1,10 +1,10 @@
-import createError from 'http-errors'
-import { config } from 'config'
-import { createTransporter } from 'services/mailer'
-import { emailTemplate } from 'lib/emailTemplate'
-import { convertSecondsToDaysText } from 'lib/utility';
+import { config } from '~/config'
+import { createTransporter } from '~/services/mailer'
+import { emailTemplate } from '~/lib/emailTemplate'
+import { convertSecondsToDaysText } from '~/lib/utility';
+const createError = require('http-errors')
 
-const { resetPasswordTokenExpiration } = config
+const { mailerUsername, resetPasswordTokenExpiration } = config
 
 export const sendResetPasswordEmail = async (email, name, token) => {
   const transporter = createTransporter()
@@ -12,11 +12,11 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   const emailFields = {
     preheader: '',
-    greeting: `${name ? `Hi ${name},` : ''}`,
+    greeting: `${name ? `Hi ${name},` : 'Hello!'}`,
     topMessage: `Please click the button below to reset your Podverse password.`,
     button: 'Reset Password',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
-    bottomMessage: `This link will expire in ${daysToExpire }.`,
+    bottomMessage: `This link will expire in ${daysToExpire}.`,
     closing: 'Have a nice day :)',
     name: '',
     address: '',
@@ -26,7 +26,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.MAILER_USERNAME,
+      from: `Podverse <${mailerUsername}>`,
       to: email,
       subject: 'Reset your Podverse password',
       html: emailTemplate(emailFields)

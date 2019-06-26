@@ -1,11 +1,7 @@
 import { getRepository, In } from 'typeorm'
-import { Episode, Playlist, MediaRef, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { Episode, Playlist, MediaRef, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
-
-const relations = [
-  'episodes', 'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast', 'owner'
-]
 
 const createPlaylist = async (obj) => {
   const repository = getRepository(Playlist)
@@ -39,7 +35,12 @@ const deletePlaylist = async (id, loggedInUserId) => {
   return result
 }
 
-const getPlaylist = async (id) => {
+const getPlaylist = async id => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({ id }, { relations })
 
@@ -50,13 +51,15 @@ const getPlaylist = async (id) => {
   return playlist
 }
 
-const getPlaylists = (query, options) => {
+const getPlaylists = (query) => {
   const repository = getRepository(Playlist)
 
   if (query.playlistId && query.playlistId.split(',').length > 1) {
     query.id = In(query.playlistId.split(','))
   } else if (query.playlistId) {
     query.id = query.playlistId
+  } else {
+    return
   }
 
   delete query.sort
@@ -67,18 +70,22 @@ const getPlaylists = (query, options) => {
     where: {
       ...query
     },
-    relations,
-    ...options
+    relations: ['owner']
   })
 }
 
 const updatePlaylist = async (obj, loggedInUserId) => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   const playlist = await repository.findOne({
     where: {
       id: obj.id
     },
-    relations: ['owner']
+    relations
   })
 
   if (!playlist) {
@@ -98,6 +105,11 @@ const updatePlaylist = async (obj, loggedInUserId) => {
 }
 
 const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, loggedInUserId) => {
+  const relations = [
+    'episodes', 'episodes.podcast',
+    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'owner'
+  ]
   const repository = getRepository(Playlist)
   let playlist = await repository.findOne(
     {
@@ -117,6 +129,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
   }
 
   let itemsOrder = playlist.itemsOrder
+  let actionTaken = 'removed'
 
   if (mediaRefId) {
     // If no mediaRefs match filter, add the playlist item.
@@ -128,6 +141,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
       let mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
       if (mediaRef) {
         playlist.mediaRefs.push(mediaRef)
+        actionTaken = 'added'
       } else {
         throw new createError.NotFound('MediaRef not found')
       }
@@ -143,9 +157,10 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
     if (filteredEpisodes.length === playlist.episodes.length) {
       const episodeRepository = getRepository(Episode)
-      let episode = await episodeRepository.findOne({ id: mediaRefId })
+      let episode = await episodeRepository.findOne({ id: episodeId })
       if (episode) {
         playlist.episodes.push(episode)
+        actionTaken = 'added'
       } else {
         throw new createError.NotFound('Episode not found')
       }
@@ -162,13 +177,19 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
   const saved = await repository.save(playlist)
 
-  return saved
+  return [saved, actionTaken]
 }
 
 const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
 
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this playlist')
+  }
+
+  const playlist = await getPlaylist(playlistId)
+
+  if (playlist.owner.id === loggedInUserId) {
+    throw new createError.BadRequest('Cannot subscribe to your own playlist')
   }
 
   const repository = getRepository(User)
@@ -188,18 +209,20 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedPlaylistIds = user.subscribedPlaylistIds
+
   // If no playlistIds match the filter, add the playlistId.
   // Else, remove the playlistId.
   const filteredPlaylists = user.subscribedPlaylistIds.filter(x => x !== playlistId)
   if (filteredPlaylists.length === user.subscribedPlaylistIds.length) {
-    user.subscribedPlaylistIds.push(playlistId)
+    subscribedPlaylistIds.push(playlistId)
   } else {
-    user.subscribedPlaylistIds = filteredPlaylists
+    subscribedPlaylistIds = filteredPlaylists
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedPlaylistIds })
 
-  return updatedUser.subscribedPlaylistIds
+  return subscribedPlaylistIds
 }
 
 export {

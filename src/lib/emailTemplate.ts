@@ -12,6 +12,11 @@ export const emailTemplate = (obj) => {
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <title>Verify your Podverse account</title>
       <style>
+
+        p {
+          color: #222 !important;
+        }
+
         /* -------------------------------------
             INLINED WITH htmlemail.io/inline
         ------------------------------------- */

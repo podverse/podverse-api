@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
-import { PayPalOrder, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { PayPalOrder, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 const createPayPalOrder = async (obj) => {
@@ -17,6 +17,10 @@ const createPayPalOrder = async (obj) => {
 const getPayPalOrder = async (id, loggedInUserId) => {
   const repository = getRepository(PayPalOrder)
 
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Login to get PayPalOrder by id')
+  }
+
   const paypalOrder = await repository.findOne(
     {
       paymentID: id
@@ -30,9 +34,6 @@ const getPayPalOrder = async (id, loggedInUserId) => {
     throw new createError.NotFound('PayPalOrder not found')
   }
 
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Login to get PayPalOrder by id')
-  }
   if (paypalOrder.owner.id === loggedInUserId) {
     return paypalOrder
   } else {
@@ -40,17 +41,10 @@ const getPayPalOrder = async (id, loggedInUserId) => {
   }
 }
 
-const completePayPalOrder = async obj => {
-
-  if (!obj.resource || !obj.resource.update_time) {
-    throw new createError.BadRequest('New PayPalOrder date missing')
-  }
-
+const completePayPalOrder = async (paymentID, state) => {
   const paypalOrderRepository = getRepository(PayPalOrder)
   const paypalOrder = await paypalOrderRepository.findOne({
-    where: {
-      paymentID: obj.resource.parent_payment
-    },
+    where: { paymentID },
     relations: ['owner']
   })
 
@@ -58,33 +52,33 @@ const completePayPalOrder = async obj => {
     throw new createError.NotFound('PayPalOrder not found')
   }
 
-  if (paypalOrder.updatedAt >= new Date(obj.resource.update_time)) {
-    throw new createError.BadRequest('New PayPalOrder date is before or equal to the current PayPalOrder date')
-  }
-
-  if (paypalOrder && paypalOrder.state === 'completed') {
-    throw new createError.BadRequest('PayPalOrder has already been completed')
+  if (paypalOrder && paypalOrder.state === 'approved') {
+    throw new createError.BadRequest('PayPalOrder has already been approved.')
   }
 
   const cleanedPayPalOrderObj = {
-    paymentID: obj.resource.parent_payment,
-    state: obj.resource.state
+    paymentID,
+    state
   }
 
-  await paypalOrderRepository.update(paypalOrder.paymentID, cleanedPayPalOrderObj)
+  await paypalOrderRepository.update(paymentID, cleanedPayPalOrderObj)
 
   const userRepository = getRepository(User)
   const user = await userRepository.findOne({
     where: {
       id: paypalOrder.owner.id
-    }
+    },
+    select: [
+      'id',
+      'membershipExpiration'
+    ]
   })
 
   if (!user) {
     throw new createError.NotFound('User not found')
   }
 
-  if (user && cleanedPayPalOrderObj.state === 'completed') {
+  if (user && cleanedPayPalOrderObj.state === 'approved') {
     const newExpirationDate = user.membershipExpiration ? new Date(user.membershipExpiration) : new Date()
     newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1)
 

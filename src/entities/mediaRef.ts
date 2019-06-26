@@ -2,7 +2,7 @@ import { IsInt, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, Column, CreateDateColumn, Entity,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
-import { Author, Category, Episode, User } from 'entities'
+import { Author, Category, Episode, User } from '~/entities'
 
 const shortid = require('shortid')
 
@@ -22,12 +22,6 @@ export class MediaRef {
 
   @Column({ default: false })
   isPublic: boolean
-
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
 
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
@@ -58,6 +52,12 @@ export class MediaRef {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
+
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @IsInt()
   @Min(0)

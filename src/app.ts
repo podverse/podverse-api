@@ -7,13 +7,13 @@ import * as passport from 'koa-passport'
 import * as swagger from 'koa2-swagger-ui'
 import { Connection } from 'typeorm'
 
-import { config } from 'config'
-import { User } from 'entities'
-import { authRouter, authorRouter, bitpayRouter, categoryRouter, coingateRouter,
-  episodeRouter, feedUrlRouter, mediaRefRouter, paypalRouter, playlistRouter,
-  podcastRouter, userRouter } from 'routes'
-import { logger, loggerInstance } from 'lib/logging'
-import { createJwtStrategy, createLocalStrategy } from 'services/auth'
+import { config } from '~/config'
+import { User } from '~/entities'
+import { logger, loggerInstance } from '~/lib/logging'
+import { authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
+  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
+  } from '~/routes'
+import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
 const cookie = require('cookie')
 const cors = require('@koa/cors')
@@ -29,17 +29,14 @@ export const createApp = (conn: Connection) => {
   const app = new Koa()
   app.context.db = conn
 
-  if (process.env.NODE_ENV === 'development') {
-    app.use(cors({
-      credentials: true
-    }))
-  }
+  app.use(cors({
+    credentials: true
+  }))
 
   passport.use(createLocalStrategy(conn.getRepository(User)))
   passport.use(createJwtStrategy())
 
   app.use(helmet())
-  app.use(logger())
   app.use(bodyParser())
 
   app.use(passport.initialize())
@@ -63,6 +60,7 @@ export const createApp = (conn: Connection) => {
     `/public`, koaStatic(__dirname + '/public/samples')
   ))
 
+  // @ts-ignore
   app.use(swagger({
     routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
     swaggerOptions: {
@@ -81,9 +79,6 @@ export const createApp = (conn: Connection) => {
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
-
-  app.use(coingateRouter.routes())
-  app.use(coingateRouter.allowedMethods())
 
   app.use(episodeRouter.routes())
   app.use(episodeRouter.allowedMethods())
@@ -106,18 +101,10 @@ export const createApp = (conn: Connection) => {
   app.use(userRouter.routes())
   app.use(userRouter.allowedMethods())
 
+  app.use(logger())
+
   app.on('error', async (error, ctx) => {
-    if (ctx.status >= 500) {
-      loggerInstance.log('error', error.message)
-      ctx.body = 'Internal Server Error'
-    } else if (ctx.status >= 404) {
-      ctx.body = error.message || 'Not found'
-    } else if (ctx.status >= 400) {
-      ctx.body = error.message
-    } else {
-      loggerInstance.log('error', error.message)
-      ctx.body = 'Something went wrong :('
-    }
+    loggerInstance.log('error', error.message)
   })
 
   return app

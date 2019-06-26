@@ -1,12 +1,12 @@
 import { getRepository } from 'typeorm'
-import { Podcast, User } from 'entities'
-import { getQueryOrderColumn } from 'lib/utility'
+import { Podcast, User } from '~/entities'
+import { getQueryOrderColumn } from '~/lib/utility'
 
 const createError = require('http-errors')
 
-const getPodcast = (id) => {
+const getPodcast = async id => {
   const repository = getRepository(Podcast)
-  const podcast = repository.findOne(
+  const podcast = await repository.findOne(
     {
       id,
       isPublic: true
@@ -25,6 +25,8 @@ const getPodcast = (id) => {
 
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
+  const { categories, includeAuthors, includeCategories, podcastId, searchAuthor, searchTitle, skip, take
+    } = query
 
   let qb = repository
     .createQueryBuilder('podcast')
@@ -35,38 +37,56 @@ const getPodcasts = async (query, includeNSFW) => {
     .addSelect('podcast.lastEpisodePubDate')
     .addSelect('podcast.lastEpisodeTitle')
     .addSelect('podcast.linkUrl')
+    .addSelect('podcast.sortableTitle')
     .addSelect('podcast.title')
+    .addSelect('podcast.pastHourTotalUniquePageviews')
+    .addSelect('podcast.pastWeekTotalUniquePageviews')
+    .addSelect('podcast.pastDayTotalUniquePageviews')
+    .addSelect('podcast.pastMonthTotalUniquePageviews')
+    .addSelect('podcast.pastYearTotalUniquePageviews')
+    .addSelect('podcast.pastAllTimeTotalUniquePageviews')
+    .addSelect('podcast.createdAt')
 
-  if (query.categories && query.categories.length > 0) {
+  if (categories && categories.length > 0) {
     qb.innerJoinAndSelect(
       'podcast.categories',
-      'category',
-      'category.id = :id',
-      { id: query.categories[0] }
+      'categories',
+      'categories.id = :id',
+      { id: categories[0] }
     )
   } else {
-    if (query.searchTitle) {
-      const title = `%${query.searchTitle.toLowerCase()}%`
+    if (searchTitle) {
+      const title = `%${searchTitle.toLowerCase()}%`
       qb.where(
         'LOWER(podcast.title) LIKE :title',
         { title }
       )
-    } else if (query.searchAuthor) {
-      const name = `%${query.searchAuthor.toLowerCase()}%`
+      qb.innerJoinAndSelect('podcast.authors', 'authors')
+      qb.innerJoinAndSelect('podcast.categories', 'categories')
+    } else if (searchAuthor) {
+      const name = `%${searchAuthor.toLowerCase()}%`
       qb.innerJoinAndSelect(
         'podcast.authors',
-        'author',
-        'LOWER(author.name) LIKE :name',
+        'authors',
+        'LOWER(authors.name) LIKE :name',
         { name }
       )
-    } else if (query.podcastId && query.podcastId.split(',').length > 0) {
-      const podcastIds = query.podcastId.split(',')
-      console.log(podcastIds)
+      qb.innerJoinAndSelect('podcast.categories', 'categories')
+    } else if (podcastId && podcastId.split(',').length > 0) {
+      const podcastIds = podcastId.split(',')
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }
       )
     }
+  }
+
+  if (includeAuthors) {
+    qb.innerJoinAndSelect('podcast.authors', 'authors')
+  }
+
+  if (includeCategories) {
+    qb.innerJoinAndSelect('podcast.categories', 'categories')
   }
 
   if (!includeNSFW) {
@@ -76,15 +96,51 @@ const getPodcasts = async (query, includeNSFW) => {
   qb.andWhere('"isPublic" = true')
 
   if (query.sort) {
-    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'createdAt')
-    qb.orderBy(orderColumn, 'ASC')
+    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
+    // @ts-ignore
+    qb.orderBy(orderColumn[0], orderColumn[1])
   }
 
   try {
     const podcasts = await qb
-      .skip(query.skip)
-      .take(2)
-      .getMany()
+      .skip(skip)
+      .take(take)
+      .getManyAndCount()
+
+    return podcasts
+  } catch (error) {
+    console.log(error)
+    return
+  }
+}
+
+const getMetadata = async query => {
+  const repository = getRepository(Podcast)
+  const { podcastId } = query
+
+  if (!podcastId) {
+    return []
+  }
+
+  const podcastIds = podcastId.split(',')
+
+  let qb = repository
+    .createQueryBuilder('podcast')
+    .select('podcast.id')
+    .addSelect('podcast.feedLastUpdated')
+    .addSelect('podcast.lastEpisodePubDate')
+    .addSelect('podcast.lastEpisodeTitle')
+    .addSelect('podcast.title')
+    .where(
+      'podcast.id IN (:...podcastIds)',
+      { podcastIds }
+    )
+    .andWhere('"isPublic" = true')
+
+  try {
+    const podcasts = await qb
+      .take(500)
+      .getManyAndCount()
 
     return podcasts
   } catch (error) {
@@ -116,22 +172,25 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedPodcastIds = user.subscribedPodcastIds
+
   // If no podcastIds match the filter, add the podcastId.
   // Else, remove the podcastId.
   const filteredPodcasts = user.subscribedPodcastIds.filter(x => x !== podcastId)
   if (filteredPodcasts.length === user.subscribedPodcastIds.length) {
-    user.subscribedPodcastIds.push(podcastId)
+    subscribedPodcastIds.push(podcastId)
   } else {
-    user.subscribedPodcastIds = filteredPodcasts
+    subscribedPodcastIds = filteredPodcasts
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedPodcastIds })
 
-  return updatedUser.subscribedPodcastIds
+  return subscribedPodcastIds
 }
 
 export {
   getPodcast,
   getPodcasts,
+  getMetadata,
   toggleSubscribeToPodcast
 }

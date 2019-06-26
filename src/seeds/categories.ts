@@ -1,46 +1,49 @@
 import { Connection } from 'typeorm'
-import { validCategories } from 'config/categories'
-import { Category } from 'entities'
-import { connectToDb } from 'lib/db'
+import { validCategories } from '~/config/categories'
+import { getCategories } from '~/controllers/category'
+import { Category } from '~/entities'
+import { connectToDb } from '~/lib/db'
 
 const generateCategories = async (
   connection: Connection,
-  data: any,
-  parent: any,
-  shouldSave: boolean
+  data: any
 ): Promise<any> => {
-  let newCategories: any[] = []
   for (let category of data) {
-    category.parent = parent
-    let c = generateCategory(category)
-    newCategories.push(c)
+    let title
+    let parentId
 
-    if (category.categories && category.categories.length > 0) {
-      const subCategories = await generateCategories(
-        connection, category.categories, c, false
-      )
-      newCategories = newCategories.concat(subCategories)
+    if (category.indexOf('>') > 0) {
+      title = category.split('>')[1]
+      const parentTitle = category.split('>')[0]
+      const categoriesAndCount = await getCategories({
+        title: parentTitle
+      })
+      const categories = categoriesAndCount[0]
+
+      if (categories.length > 0) {
+        parentId = categories[0].id
+      }
+    } else {
+      title = category
     }
-  }
 
-  if (shouldSave) {
-    await connection.manager.save(newCategories)
-  }
+    const newCategory = generateCategory(category, title, parentId)
 
-  return newCategories
+    await connection.manager.save(newCategory)
+  }
 }
 
-const generateCategory = (data: any) => {
+const generateCategory = (fullPath, title, parentId) => {
   let category = new Category()
-  category.title = data.title
-  category.category = data.parent
+  category.fullPath = fullPath
+  category.title = title
+  category.category = parentId
   return category
 }
 
 connectToDb()
   .then(async connection => {
     if (connection) {
-      await generateCategories(connection, validCategories, null, true)
+      await generateCategories(connection, validCategories)
     }
   })
-

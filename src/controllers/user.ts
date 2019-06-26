@@ -1,10 +1,10 @@
 import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
-import { MediaRef, Playlist, User } from 'entities'
-import { saltRounds } from 'lib/constants'
-import { validateClassOrThrow } from 'lib/errors'
-import { getQueryOrderColumn, validatePassword } from 'lib/utility'
-import { validateEmail } from 'lib/utility/validation'
+import { MediaRef, Playlist, User } from '~/entities'
+import { saltRounds } from '~/lib/constants'
+import { validateClassOrThrow } from '~/lib/errors'
+import { getQueryOrderColumn, validatePassword } from '~/lib/utility'
+import { validateEmail } from '~/lib/utility/validation'
 
 const createError = require('http-errors')
 
@@ -29,7 +29,7 @@ const createUser = async (obj) => {
   return newUser
 }
 
-const deleteUser = async (id, loggedInUserId) => {
+const deleteLoggedInUser = async (id, loggedInUserId) => {
 
   if (id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this user')
@@ -95,46 +95,46 @@ const getPublicUser = async id => {
     .select('user.id')
     .addSelect('user.name')
     .addSelect('user.subscribedPodcastIds')
+    .addSelect('user.isPublic')
     .where({ isPublic: true })
     .andWhere('user.id = :id', { id })
 
-  try {
-    const user = await qb.getOne()
+  const user = await qb.getOne()
 
-    if (!user) {
-      throw new createError.NotFound('User not found.')
-    }
-
-    return user
-  } catch (error) {
-    console.log(error)
-    return
+  if (!user) {
+    throw new createError.NotFound('User not found.')
   }
+
+  return user
 }
 
-const getPublicUsers = async (query) => {
+const getPublicUsers = async query => {
   const repository = getRepository(User)
+  const { skip, take } = query
   let userIds = query.userIds && query.userIds.split(',') || []
 
   if (!userIds || userIds.length < 1) {
-    return []
+    return [[], 0]
   }
 
   const users = await repository
     .createQueryBuilder('user')
+    .select('user.id')
+    .addSelect('user.name')
     .where({
       isPublic: true
     })
     .andWhere('user.id IN (:...userIds)', { userIds })
-    .skip(query.skip)
-    .take(50)
+    .skip(skip)
+    .take(take)
     .orderBy('user.name', 'ASC')
-    .getMany()
+    .getManyAndCount()
 
   return users
 }
 
-const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0, take = 20) => {
+const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => {
+  const { skip, sort, take } = query
   const repository = getRepository(MediaRef)
   const orderColumn = getQueryOrderColumn('mediaRef', sort, 'createdAt')
   const episodeJoinAndSelect = `${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}`
@@ -153,39 +153,49 @@ const getUserMediaRefs = async (id, includeNSFW, includePrivate, sort, skip = 0,
     .where(
       {
         ...(includePrivate ? {} : { isPublic: true }),
-        owner: id
+        owner: ownerId
       }
     )
     .skip(skip)
     .take(take)
-    .orderBy(orderColumn, 'ASC')
-    .getMany()
+    // @ts-ignore
+    .orderBy(orderColumn[0], orderColumn[1])
+    .getManyAndCount()
 
   return mediaRefs
 }
 
-const getUserPlaylists = async (id, includePrivate, skip = 0, take = 20) => {
+const getUserPlaylists = async (query, ownerId, includePrivate) => {
+  const { skip, take } = query
   const repository = getRepository(Playlist)
 
   const playlists = await repository
     .createQueryBuilder('playlist')
+    .innerJoinAndSelect('playlist.owner', 'owner')
     .where(
       {
-        ...(includePrivate ? {} : { isPublic: true }),
-        owner: id
+        // ...(includePrivate ? {} : { isPublic: true }),
+        owner: ownerId
       }
-      )
-      .skip(skip)
-      .take(take)
-      .orderBy('title', 'ASC')
-      .getMany()
+    )
+    .skip(skip)
+    .take(take)
+    .orderBy('playlist.title', 'ASC')
+    .getManyAndCount()
 
   return playlists
 }
 
 const getUserByEmail = async (email) => {
   const repository = getRepository(User)
-  const user = await repository.findOne({ email })
+  const user = await repository.findOne({
+    where: { email },
+    select: [
+      'emailVerified',
+      'id',
+      'name'
+    ]
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found.')
@@ -203,7 +213,7 @@ const getUserByResetPasswordToken = async (resetPasswordToken) => {
   const user = await repository.findOne({ resetPasswordToken })
 
   if (!user) {
-    throw new createError.NotFound('Invalid password reset token.')
+    throw new createError.BadRequest('Invalid password reset token.')
   }
 
   return user
@@ -215,7 +225,17 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne({ emailVerificationToken })
+  const user = await repository.findOne(
+    {
+      where: { emailVerificationToken },
+      select: [
+        'emailVerificationToken',
+        'emailVerificationTokenExpiration',
+        'emailVerified',
+        'id'
+      ]
+    }
+  )
 
   if (!user) {
     throw new createError.NotFound('Invalid verify email token.')
@@ -231,7 +251,7 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  let loggedInUser = await repository.findOne(
     {
       where: {
         id: loggedInUserId
@@ -243,25 +263,43 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
     }
   )
 
-  if (!user) {
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  let userToSubscribe = await repository.findOne(
+    {
+      where: {
+        id: userId
+      },
+      select: [
+        'id',
+        'subscribedUserIds'
+      ]
+    }
+  )
+
+  if (!userToSubscribe) {
     throw new createError.NotFound('User not found')
   }
 
+  let subscribedUserIds = loggedInUser.subscribedUserIds
+
   // If no userIds match the filter, add the userId.
   // Else, remove the userId.
-  const filteredUsers = user.subscribedUserIds.filter(x => x !== userId)
-  if (filteredUsers.length === user.subscribedUserIds.length) {
-    user.subscribedUserIds.push(userId)
+  const filteredUsers = loggedInUser.subscribedUserIds.filter(x => x !== userId)
+  if (filteredUsers.length === loggedInUser.subscribedUserIds.length) {
+    subscribedUserIds.push(userId)
   } else {
-    user.subscribedUserIds = filteredUsers
+    subscribedUserIds = filteredUsers
   }
 
-  const updatedUser = await repository.save(user)
+  await repository.update(loggedInUserId, { subscribedUserIds })
 
-  return updatedUser.subscribedUserIds
+  return subscribedUserIds
 }
 
-const updateUser = async (obj, loggedInUserId) => {
+const updateLoggedInUser = async (obj, loggedInUserId) => {
 
   if (!obj.id) {
     throw new createError.NotFound('Must provide a user id.')
@@ -298,7 +336,7 @@ const updateUser = async (obj, loggedInUserId) => {
   }
 }
 
-const updateUserEmailVerificationToken = async (obj) => {
+const updateUserEmailVerificationToken = async obj => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -312,16 +350,12 @@ const updateUserEmailVerificationToken = async (obj) => {
     emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration
   }
 
-  const newUser = Object.assign(user, cleanedObj)
-
-  await validateClassOrThrow(newUser)
-
   await repository.update(obj.id, cleanedObj)
 
-  return newUser
+  return
 }
 
-const updateUserPassword = async (obj) => {
+const updateUserPassword = async obj => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -347,8 +381,6 @@ const updateUserPassword = async (obj) => {
 
   const newUser = Object.assign(user, cleanedObj)
 
-  await validateClassOrThrow(newUser)
-
   await repository.update(obj.id, cleanedObj)
 
   return newUser
@@ -368,8 +400,6 @@ const updateUserResetPasswordToken = async (obj) => {
   }
 
   const newUser = Object.assign(user, cleanedObj)
-
-  await validateClassOrThrow(newUser)
 
   await repository.update(obj.id, cleanedObj)
 
@@ -404,7 +434,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
-
+  nowPlayingItem.episodeDescription = ''
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to add history items')
   }
@@ -427,21 +457,93 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
 
   let historyItems = user.historyItems || []
 
-  // Remove historyItem if it already exists in the array, then append it to the end.
+  // Remove historyItem if it already exists in the array, then prepend it to the array.
   historyItems = historyItems.filter(x => {
-    if (x) {
-      if (x.clipId && nowPlayingItem.clipId && x.clipId !== nowPlayingItem.clipId) {
-        return x
-      } else if (x.episodeId !== nowPlayingItem.episodeId) {
-        return x
-      }
+    x.episodeDescription = ''
+    if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
+      return
+    } else {
+      return x
     }
-
-    return
   })
-  historyItems.push(nowPlayingItem)
+  historyItems.unshift(nowPlayingItem)
 
   return repository.update(loggedInUserId, { historyItems })
+}
+
+const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to remove history items')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'historyItems'
+      ]
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  let historyItems = user.historyItems || []
+
+  const hasMatchingHistoryItem = historyItems.some(x => hasHistoryItemWithMatchingId(episodeId, mediaRefId, x))
+
+  if (!hasMatchingHistoryItem) {
+    throw new createError.NotFound('History item not found.')
+  }
+
+  historyItems = historyItems.filter(x => {
+    if (hasHistoryItemWithMatchingId(episodeId, mediaRefId, x)) {
+      return
+    } else {
+      return x
+    }
+  })
+
+  return repository.update(loggedInUserId, { historyItems })
+}
+
+const hasHistoryItemWithMatchingId = (episodeId: string, mediaRefId: string, item: any) => {
+  if (mediaRefId && item.clipId === mediaRefId) {
+    return true
+  } else if (!mediaRefId && !item.clipId && item.episodeId === episodeId) {
+    return true
+  } else {
+    return false
+  }
+}
+
+const clearAllHistoryItems = async (loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to remove history items')
+  }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: ['id']
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  return repository.update(loggedInUserId, { historyItems: [] })
 }
 
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
@@ -474,8 +576,9 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
 export {
   addOrUpdateHistoryItem,
+  clearAllHistoryItems,
   createUser,
-  deleteUser,
+  deleteLoggedInUser,
   getCompleteUserDataAsJSON,
   getLoggedInUser,
   getPublicUser,
@@ -485,9 +588,10 @@ export {
   getUserByVerificationToken,
   getUserMediaRefs,
   getUserPlaylists,
+  removeHistoryItem,
   toggleSubscribeToUser,
   updateQueueItems,
-  updateUser,
+  updateLoggedInUser,
   updateUserEmailVerificationToken,
   updateUserPassword,
   updateUserResetPasswordToken

@@ -1,15 +1,16 @@
-import { getRepository, In } from 'typeorm'
-import { Episode } from 'entities'
-import { createQueryOrderObject } from 'lib/utility'
+import { getRepository } from 'typeorm'
+import { Episode } from '~/entities'
+import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
-  'authors', 'categories', 'mediaRefs', 'podcast'
+  'authors', 'categories', 'mediaRefs', 'podcast',
+  'podcast.authors', 'podcast.categories'
 ]
 
-const getEpisode = (id) => {
+const getEpisode = async id => {
   const repository = getRepository(Episode)
-  const episode = repository.findOne({
+  const episode = await repository.findOne({
     id,
     isPublic: true
   }, { relations })
@@ -23,39 +24,132 @@ const getEpisode = (id) => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
+  const { includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
+  let { sincePubDate } = query
 
-  if (query.podcastId && query.podcastId.split(',').length > 1) {
-    query.podcast = In(query.podcastId.split(','))
-  } else if (query.podcastId) {
-    query.podcast = query.podcastId
+  let podcastIds = podcastId && podcastId.split(',') || []
+  const podcastJoinConditions = `
+    ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
+    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+  `
+
+  const episodeWhereConditions = `
+    LOWER(episode.title) LIKE :searchAllFieldsText
+    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
+    ${sincePubDate ? 'AND episode.pubDate >= :sincePubDate' : ''}
+  `
+
+  const episodeWhereSincePubDateConditions = `
+    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds) AND' : ''}
+    ${sincePubDate ? 'episode.pubDate >= :sincePubDate' : ''}
+  `
+
+  // Is there a better way to do this? I'm not sure how to get the count
+  // with getRawMany...
+  let countQB = repository
+    .createQueryBuilder('episode')
+  if (searchAllFieldsText || sincePubDate) {
+    countQB.where(
+      sincePubDate ? episodeWhereSincePubDateConditions : episodeWhereConditions,
+      {
+        podcastIds,
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`,
+        sincePubDate
+      }
+    )
+    countQB.andWhere('episode."isPublic" = true')
+  } else {
+    countQB.where({ isPublic: true })
   }
-  delete query.podcastId
 
-  const order = createQueryOrderObject(query.sort, 'pubDate')
-  delete query.sort
+  const count = await countQB.getCount()
 
-  const skip = query.skip
-  delete query.skip
+  let qb = repository
+    .createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .addSelect('SUBSTR(episode.description, 1, 500)', 'description')
+    .addSelect('episode.duration', 'duration')
+    .addSelect('episode.episodeType', 'episodeType')
+    .addSelect('episode.guid', 'guid')
+    .addSelect('episode.imageUrl', 'imageUrl')
+    .addSelect('episode.isExplicit', 'isExplicit')
+    .addSelect('episode.isPublic', 'isPublic')
+    .addSelect('episode.linkUrl', 'linkUrl')
+    .addSelect('episode.mediaFilesize', 'mediaFilesize')
+    .addSelect('episode.mediaType', 'mediaType')
+    .addSelect('episode.mediaUrl', 'mediaUrl')
+    .addSelect('episode.pastHourTotalUniquePageviews', 'pastHourTotalUniquePageviews')
+    .addSelect('episode.pastDayTotalUniquePageviews', 'pastDayTotalUniquePageviews')
+    .addSelect('episode.pastWeekTotalUniquePageviews', 'pastWeekTotalUniquePageviews')
+    .addSelect('episode.pastMonthTotalUniquePageviews', 'pastMonthTotalUniquePageviews')
+    .addSelect('episode.pastYearTotalUniquePageviews', 'pastYearTotalUniquePageviews')
+    .addSelect('episode.pastAllTimeTotalUniquePageviews', 'pastAllTimeTotalUniquePageviews')
+    .addSelect('episode.pubDate', 'pubDate')
+    .addSelect('episode.title', 'title')
 
-  const take = query.take
-  delete query.take
+  if (includePodcast) {
+    qb.innerJoinAndSelect(
+      'episode.podcast',
+      'podcast',
+      podcastJoinConditions,
+      { podcastIds }
+    )
+  } else {
+    qb.innerJoin(
+      'episode.podcast',
+      'podcast',
+        podcastJoinConditions,
+      { podcastIds }
+    )
+  }
 
-  const episodes = await repository.find({
-    where: {
-      ...query,
-      ...query.podcast && {
-        podcast: { id: query.podcast }
-      },
-      ...!includeNSFW && { isExplicit: false },
-      isPublic: true
-    },
-    order,
-    skip: parseInt(skip, 10),
-    take: parseInt(take, 10),
-    relations
-  })
+  if (searchAllFieldsText) {
+    qb.where(
+      episodeWhereConditions,
+      {
+        podcastIds,
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
+      }
+    )
+    qb.andWhere('episode."isPublic" = true')
+  } else if (sincePubDate) {
+    if (podcastIds.length === 0) return [[], 0]
 
-  return episodes
+    qb.where(
+      episodeWhereSincePubDateConditions,
+      {
+        podcastIds,
+        sincePubDate
+      }
+    )
+    qb.andWhere('episode."isPublic" = true')
+  } else {
+    qb.where({ isPublic: true })
+  }
+
+  if (sincePubDate) {
+    qb.offset(0)
+    qb.limit(50)
+
+    let orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
+    const episodes = await qb
+      // @ts-ignore
+      .orderBy(orderColumn[0], orderColumn[1])
+      .getRawMany()
+
+    return [episodes, count]
+  } else {
+    qb.offset(skip)
+    qb.limit(take)
+
+    let orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+    const episodes = await qb
+      // @ts-ignore
+      .orderBy(orderColumn[0], orderColumn[1])
+      .getRawMany()
+
+    return [episodes, count]
+  }
 }
 
 export {

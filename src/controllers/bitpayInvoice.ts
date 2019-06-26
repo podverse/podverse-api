@@ -1,21 +1,17 @@
 import { getRepository } from 'typeorm'
-import { BitPayInvoice, User } from 'entities'
-import { validateClassOrThrow } from 'lib/errors'
+import { BitPayInvoice, User } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
 /*
-invoiceStates = [
-  'new', 'paid', 'confirmed', 'complete', 'expired', 'invalid',
-  'false', 'paidPartial', 'paidOver'
-]
+  invoiceStates = [
+    'new', 'paid', 'confirmed', 'complete', 'expired', 'invalid',
+    'false', 'paidPartial', 'paidOver'
+  ]
 */
 
-// After working on understanding BitPay payments for a few weeks,
-// I just learned they don't accept payments for US businesses :(
-// Sooo abandonning BitPay...but leaving BitPay code in the project
-// since it is mostly setup already...
+const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
 
-const createBitPayInvoice = async (data, loggedInUserId) => {
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to create a BitPayInvoice')
   }
@@ -49,10 +45,10 @@ const createBitPayInvoice = async (data, loggedInUserId) => {
   return bitpayInvoice
 }
 
-const getBitPayInvoiceStatus = async (orderId, loggedInUserId) => {
+const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
   const repository = getRepository(BitPayInvoice)
   let select = [
-    'orderId',
+    'id',
     'status'
   ]
 
@@ -79,7 +75,7 @@ const getBitPayInvoiceStatus = async (orderId, loggedInUserId) => {
   }
 }
 
-const updateBitPayInvoice = async data => {
+const updateBitPayInvoiceLocal = async data => {
   const { amountPaid, currency, exceptionStatus, id, price, status,
     transactionCurrency, transactionSpeed, url } = data
 
@@ -130,7 +126,11 @@ const updateBitPayInvoice = async data => {
   const user = await userRepository.findOne({
     where: {
       id: bitpayInvoice.owner.id
-    }
+    },
+    select: [
+      'id',
+      'membershipExpiration'
+    ]
   })
 
   if (!user) {
@@ -148,7 +148,7 @@ const updateBitPayInvoice = async data => {
 }
 
 export {
-  createBitPayInvoice,
-  getBitPayInvoiceStatus,
-  updateBitPayInvoice
+  createBitPayInvoiceLocal,
+  getBitPayInvoiceStatusLocal,
+  updateBitPayInvoiceLocal
 }

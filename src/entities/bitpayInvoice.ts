@@ -1,9 +1,9 @@
 import { IsUrl, IsUUID } from 'class-validator'
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
-import { User } from 'entities'
+import { User } from '~/entities'
 
-@Entity('bitpayInvoice')
+@Entity('bitpayInvoices')
 export class BitPayInvoice {
 
   @PrimaryColumn('varchar')

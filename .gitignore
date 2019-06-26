@@ -1,4 +1,6 @@
+/src/config/bitpay/api.key
 /src/config/google/jwt.keys.json
+/src/config/parser/addFeedUrlsList.json
 
 # API keys and secrets
 .env

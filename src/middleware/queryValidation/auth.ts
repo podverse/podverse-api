@@ -21,9 +21,7 @@ const validateAuthLogin = async (ctx, next) => {
 }
 
 const validateAuthSendVerification = async (ctx, next) => {
-  const schema = Joi.object().keys({
-    email: Joi.string().required()
-  })
+  const schema = Joi.object().keys({})
 
   await validateBaseBody(schema, ctx, next)
 }

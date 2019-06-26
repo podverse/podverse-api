@@ -1,7 +1,7 @@
 const fs = require('fs')
 const bitpay = require('bitpay-rest')
 const bitauth = require('bitauth')
-import { config } from 'config'
+import { config } from '~/config'
 const { bitpayConfig } = config
 const { apiKeyPath, apiKeyPassword, currency, notificationURL, price,
   redirectURL } = bitpayConfig
@@ -26,7 +26,7 @@ client.on('error', err => {
 //   console.log('bitpay client ready')
 // })
 
-export const createBitPayInvoice = email => {
+export const createBitPayInvoiceVendor = email => {
   return new Promise((resolve, reject) => {
     const orderId = uuidv4()
     let filteredData = {
@@ -50,7 +50,7 @@ export const createBitPayInvoice = email => {
   })
 }
 
-export const getBitPayInvoice = id => {
+export const getBitPayInvoiceVendor = id => {
   return new Promise((resolve, reject) => {
     client.get(`invoices/${id}`, function (err, invoice) {
       if (err) {

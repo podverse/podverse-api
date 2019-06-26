@@ -1,13 +1,12 @@
 import { createConnection, ConnectionOptions } from 'typeorm'
-import { config } from 'config'
-import { Author, BitPayInvoice, Category, CoingateOrder, Episode, FeedUrl,
-  MediaRef, PayPalOrder, Playlist, Podcast, User } from 'entities'
+import { config } from '~/config'
+import { Author, BitPayInvoice, Category, Episode, FeedUrl,
+  MediaRef, PayPalOrder, Playlist, Podcast, User } from '~/entities'
 
 const entities = [
   Author,
   BitPayInvoice,
   Category,
-  CoingateOrder,
   Episode,
   FeedUrl,
   MediaRef,
@@ -30,7 +29,7 @@ const connectionOptions: ConnectionOptions = {
   logging: false,
   entities,
   extra: {
-    ssl: config.dbsslconn // if not development, will use SSL
+    ssl: options.sslConnection
   }
 }
 

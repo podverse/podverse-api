@@ -1,4 +1,4 @@
-import { Episode, MediaRef, User } from 'entities'
+import { Episode, MediaRef, User } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
   ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
   BeforeUpdate } from 'typeorm'
@@ -16,9 +16,6 @@ export class Playlist {
 
   @Column({ nullable: true })
   description?: string
-
-  @Column({ default: false })
-  isMyClips: boolean
 
   @Column({ default: false })
   isPublic: boolean
@@ -74,6 +71,9 @@ export class Playlist {
   setItemCount () {
     if (this.mediaRefs) {
       this.itemCount = this.mediaRefs.length
+    }
+    if (this.episodes) {
+      this.itemCount = this.itemCount + this.episodes.length
     }
   }
 }

@@ -1,7 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
-import { Podcast } from 'entities'
+import { Podcast } from '~/entities'
 const shortid = require('shortid')
 
 @Entity('categories')
@@ -12,6 +12,9 @@ export class Category {
     length: 14
   })
   id: string
+
+  @Column({ unique: true })
+  fullPath: string
 
   @Column()
   slug: string
@@ -37,7 +40,8 @@ export class Category {
   @BeforeInsert()
   @BeforeUpdate()
   addSlug () {
-    this.slug = this.title.replace(/\s+/g, '-').toLowerCase()
+    let slug = this.title.replace(/\s+/g, '-').toLowerCase()
+    this.slug = slug.replace(/\W/g, '')
   }
 
   @BeforeInsert()

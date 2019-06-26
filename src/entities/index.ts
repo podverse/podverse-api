@@ -1,7 +1,6 @@
 export { Author } from './author'
 export { BitPayInvoice } from './bitpayInvoice'
 export { Category } from './category'
-export { CoingateOrder } from './coingateOrder'
 export { Episode } from './episode'
 export { FeedUrl } from './feedUrl'
 export { MediaRef } from './mediaRef'

@@ -1,7 +1,7 @@
 import { compare as compareHash } from 'bcryptjs'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Repository } from 'typeorm'
-import { User } from 'entities'
+import { User } from '~/entities'
 const createError = require('http-errors')
 
 const relations = ['playlists']

@@ -1,9 +1,12 @@
 import { Connection } from 'typeorm'
 import { isEmail } from 'validator'
-import { User } from 'entities'
-import { CustomStatusError, emitRouterError } from 'lib/errors'
-import { createUser } from 'controllers/user'
-import { sendVerificationEmail } from 'services/auth/sendVerificationEmail'
+import { config } from '~/config'
+import { User } from '~/entities'
+import { authExpires } from '~/lib/constants'
+import { CustomStatusError, emitRouterError } from '~/lib/errors'
+import { createUser } from '~/controllers/user'
+import { generateToken } from '~/services/auth'
+import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
@@ -32,14 +35,15 @@ export const emailNotExists = async (ctx, next) => {
 }
 
 export const signUpUser = async (ctx, next) => {
+
   const emailVerificationExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
   const freeTrialExpiration = addSeconds(new Date(), process.env.FREE_TRIAL_EXPIRATION)
-  const token = uuidv4()
+  const emailVerificationToken = uuidv4()
 
   const user = {
     email: ctx.request.body.email,
     emailVerified: false,
-    emailVerificationToken: token,
+    emailVerificationToken,
     emailVerificationTokenExpiration: emailVerificationExpiration,
     freeTrialExpiration,
     name: ctx.request.body.name,
@@ -51,15 +55,30 @@ export const signUpUser = async (ctx, next) => {
     const { id, email, emailVerificationToken, name } = await createUser(user)
 
     await sendVerificationEmail(email, name, emailVerificationToken)
-    let expires = new Date()
-    expires.setDate(expires.getDate() + 365)
-    ctx.cookies.set('Authorization', `Bearer ${token}`, {
-      expires,
-      httpOnly: true,
-      overwrite: true
-    })
 
-    ctx.body = { id, email }
+    const bearerToken = await generateToken({ id })
+
+    const expires = authExpires()
+
+    ctx.body = {
+      id,
+      email
+    }
+
+    if (ctx.query.includeBodyToken) {
+      ctx.body.token = `Bearer ${bearerToken}`
+    } else {
+      ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
+        domain: config.cookieDomain,
+        expires,
+        httpOnly: true,
+        overwrite: true,
+        secure: config.cookieIsSecure
+      })
+    }
+
+    ctx.status = 200
+
     next()
   } catch (error) {
     emitRouterError(error, ctx)

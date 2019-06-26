@@ -1,5 +1,5 @@
 import { IsUrl } from 'class-validator'
-import { Podcast } from 'entities'
+import { Podcast } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
 const shortid = require('shortid')

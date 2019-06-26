@@ -1,16 +1,15 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from 'config'
-import { emitRouterError } from 'lib/errors'
-import { createBitPayInvoice as createBitPayInvoiceLocal, getBitPayInvoiceStatus as
-  getBitPayInvoiceStatusLocal, updateBitPayInvoice as updateBitPayInvoiceLocal
-  } from 'controllers/bitpayInvoice'
-import { getLoggedInUser } from 'controllers/user'
-import { jwtAuth } from 'middleware/auth/jwtAuth'
-import { validateBitPayInvoiceCreate } from 'middleware/queryValidation/create'
-import { createBitPayInvoice as createBitPayInvoiceVendor, getBitPayInvoice
-  as getBitPayInvoiceVendor } from 'services/bitpay'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { createBitPayInvoiceLocal, getBitPayInvoiceStatusLocal,
+  updateBitPayInvoiceLocal } from '~/controllers/bitpayInvoice'
+import { getLoggedInUser } from '~/controllers/user'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
+import { validateBitPayInvoiceCreate } from '~/middleware/queryValidation/create'
+import { createBitPayInvoiceVendor, getBitPayInvoiceVendor } from '~/services/bitpay'
 const RateLimit = require('koa2-ratelimit').RateLimit
+const { rateLimiterMaxOverride } = config
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/bitpay` })
 
@@ -30,7 +29,7 @@ router.get('/invoice/:id',
 
 const createInvoiceLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max: 5,
+  max:  rateLimiterMaxOverride || 5,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/bitpay/invoice'
 })
@@ -77,15 +76,15 @@ router.post('/notification',
           } catch (error) {
             console.log(error)
             ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-            ctx.body = 'Could not update this invoice'
+            ctx.body = { message: 'Could not update this invoice' }
           }
         } else {
           ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-          ctx.body = 'No invoice matching that id found'
+          ctx.body = { message: 'No invoice matching that id found' }
         }
       } else {
         ctx.status = 200 // Tell BitPay to stop sending the notification with 200
-        ctx.body = 'No invoice id provided'
+        ctx.body = { message: 'No invoice id provided' }
       }
     } catch (error) {
       emitRouterError(error, ctx)
@@ -93,4 +92,4 @@ router.post('/notification',
   }
 )
 
-export default router
+export const bitpayRouter = router

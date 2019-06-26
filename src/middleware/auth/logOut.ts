@@ -1,7 +1,12 @@
-import { Context } from 'koa'
+import { config } from '~/config'
 
-export const logOut = (ctx: Context, next) => {
-  ctx.cookies.set('Authorization', undefined)
+export const logOut = (ctx, next) => {
+  ctx.cookies.set('Authorization', '', {
+    domain: config.cookieDomain,
+    httpOnly: true,
+    overwrite: true,
+    secure: config.cookieIsSecure
+  })
   ctx.res.statusCode = 200
   next()
 }

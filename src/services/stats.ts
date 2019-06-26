@@ -1,12 +1,12 @@
 import { getConnection } from 'typeorm'
-import { connectToDb } from 'lib/db'
-import { lastHour, offsetDate } from 'lib/utility'
+import { connectToDb } from '~/lib/db'
+import { lastHour, offsetDate } from '~/lib/utility'
 import { queryGoogleAnalyticsData } from './google'
 
 enum PagePaths {
-  clip = '~/clip',
-  episode = '~/episode',
-  podcast = '~/podcast'
+  clips = '~/clip',
+  episodes = '~/episode',
+  podcasts = '~/podcast'
 }
 
 enum StartDateOffset {
@@ -18,9 +18,9 @@ enum StartDateOffset {
 }
 
 const TableNames = {
-  clip: 'mediaRef',
-  episode: 'episode',
-  podcast: 'podcast'
+  clips: 'mediaRef',
+  episodes: 'episode',
+  podcasts: 'podcast'
 }
 
 enum TimeRanges {
@@ -47,7 +47,7 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
     return
   }
 
-  const startDate = timeRange === TimeRanges.allTime ? '2017-01-01' : offsetDate(startDateOffset)
+  const startDate = timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset)
   const hourFilter = TimeRanges[timeRange] === TimeRanges.hour ? `ga:hour==${lastHour()};` : ''
   const filtersExpression = `ga:pagePath=${PagePaths[pagePath]};${hourFilter}ga:uniquePageviews>0`
 
@@ -93,7 +93,7 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
         const pathName = row.dimensions[0]
 
         // remove all characters in the url path before the id, then put in an array
-        const idStartIndex = pathName.indexOf(`${pagePath}/`) + (pagePath.length + 1)
+        const idStartIndex = pathName.indexOf(`${pagePath}/`) + (pagePath.length + 2)
         const id = pathName.substr(idStartIndex)
 
         // max length of ids = 14
@@ -103,7 +103,11 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
         const values = row.metrics[0].values[0]
         const tableName = TableNames[pagePath]
-        rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
+
+        if (id) {
+          rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
+        }
+
       }
 
       await getConnection()
