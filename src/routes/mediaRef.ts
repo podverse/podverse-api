@@ -69,6 +69,8 @@ router.post('/',
 
       if (ctx.state.user && ctx.state.user.id) {
         body.owner = ctx.state.user.id
+      } else {
+        body.isPublic = false
       }
 
       const mediaRef = await createMediaRef(body)
