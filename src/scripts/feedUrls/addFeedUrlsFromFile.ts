@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 (async function () {
-  const json = fs.readFileSync(path.resolve(__dirname, '../../config/parser/feedUrlsArray.json'))
+  const json = fs.readFileSync(path.resolve(__dirname, '../../config/parser/addFeedUrlsFile.json'))
   const feedUrls = JSON.parse(json)
 
   try {
