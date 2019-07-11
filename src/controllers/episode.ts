@@ -60,11 +60,15 @@ const getEpisodes = async (query, includeNSFW) => {
     )
     countQB.andWhere('episode."isPublic" = true')
   } else {
-    countQB.where(
-      episodeWhereSincePubDateConditions,
-      { podcastIds }
-    )
-    countQB.andWhere('episode."isPublic" = true')
+    if (podcastIds.length > 0) {
+      countQB.where(
+        episodeWhereSincePubDateConditions,
+        { podcastIds }
+      )
+      countQB.andWhere('episode."isPublic" = true')
+    } else {
+      countQB.where({ isPublic: true })
+    }
   }
 
   const count = await countQB.getCount()
