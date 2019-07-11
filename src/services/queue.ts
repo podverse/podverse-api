@@ -22,9 +22,10 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
       .leftJoin(
         'feedUrl.podcast',
         'podcast',
-        'podcast.isPublic = :isPublic',
+        'podcast.isPublic = :isPublic AND podcast.priority = :priority',
         {
-          isPublic: true
+          isPublic: true,
+          priority
         }
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
