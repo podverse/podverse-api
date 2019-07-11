@@ -33,6 +33,7 @@ const getEpisodes = async (query, includeNSFW) => {
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
   `
 
+  // the names of these whereConditions make no sense :(
   const episodeWhereConditions = `
     LOWER(episode.title) LIKE :searchAllFieldsText
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
@@ -40,8 +41,8 @@ const getEpisodes = async (query, includeNSFW) => {
   `
 
   const episodeWhereSincePubDateConditions = `
-    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds) AND' : ''}
-    ${sincePubDate ? 'episode.pubDate >= :sincePubDate' : ''}
+    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds)' : ''}
+    ${sincePubDate ? `${podcastIds.length > 0 ? 'AND ' : ''}episode.pubDate >= :sincePubDate` : ''}
   `
 
   // Is there a better way to do this? I'm not sure how to get the count
@@ -59,7 +60,11 @@ const getEpisodes = async (query, includeNSFW) => {
     )
     countQB.andWhere('episode."isPublic" = true')
   } else {
-    countQB.where({ isPublic: true })
+    countQB.where(
+      episodeWhereSincePubDateConditions,
+      { podcastIds }
+    )
+    countQB.andWhere('episode."isPublic" = true')
   }
 
   const count = await countQB.getCount()
