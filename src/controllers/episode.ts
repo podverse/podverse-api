@@ -71,6 +71,7 @@ const getEpisodes = async (query, includeNSFW) => {
     }
   }
 
+  countQB.limit(10000)
   const count = await countQB.getCount()
 
   let qb = repository
