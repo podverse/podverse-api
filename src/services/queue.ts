@@ -13,13 +13,13 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
   await connectToDb()
 
   try {
-    const feedUrlRepo = await getRepository(FeedUrl)
+    const feedUrlRepo = getRepository(FeedUrl)
 
     let feedUrls = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .leftJoinAndSelect(
+      .leftJoin(
         'feedUrl.podcast',
         'podcast',
         'podcast.isPublic = :isPublic',
@@ -27,7 +27,6 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
           isPublic: true
         }
       )
-      .leftJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
       .getMany()
 
@@ -42,13 +41,13 @@ export const addAllOrphanFeedUrlsToQueue = async priority => {
   await connectToDb()
 
   try {
-    const feedUrlRepo = await getRepository(FeedUrl)
+    const feedUrlRepo = getRepository(FeedUrl)
 
     let feedUrls = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+      .leftJoin('feedUrl.podcast', 'podcast')
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
       .getMany()
 
