@@ -71,8 +71,10 @@ const getEpisodes = async (query, includeNSFW) => {
     }
   }
 
-  countQB.limit(10000)
-  const count = await countQB.getCount()
+  let count = 10000
+  if (podcastIds.length > 0) {
+    count = await countQB.getCount()
+  }
 
   let qb = repository
     .createQueryBuilder('episode')
