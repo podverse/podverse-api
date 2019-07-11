@@ -10,7 +10,6 @@ const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 export const addAllPublicFeedUrlsToQueue = async priority => {
-
   await connectToDb()
 
   try {
@@ -79,22 +78,21 @@ export const sendFeedUrlsToParsingQueue = async (feedUrls, priority) => {
   }
 
   const entryChunks = chunkArray(entries)
+  let messagePromises = []
   for (const entryChunk of entryChunks) {
     const chunkParams = {
       Entries: entryChunk,
       QueueUrl: queueUrl
     }
-    try {
-      await sqs.sendMessageBatch(chunkParams)
-        .promise()
-        // .then() should add better handling here
-        .catch(error => {
-          console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
-        })
-    } catch (error) {
-      console.log(error)
-    }
+
+    // @ts-ignore
+    messagePromises.push(sqs.sendMessageBatch(chunkParams).promise())
   }
+
+  Promise.all(messagePromises)
+    .catch(error => {
+      console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
+    })
 }
 
 export const sendMessageToQueue = async (attrs, queue) => {
