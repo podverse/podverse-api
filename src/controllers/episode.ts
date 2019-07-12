@@ -22,6 +22,32 @@ const getEpisode = async id => {
   return episode
 }
 
+// Use where clause to reduce the size of very large data sets and speed up queries
+const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
+  if (podcastIds.length === 0 || podcastIds.length > 5) {
+    if (sort === 'top-past-hour') {
+      qb.andWhere('episode."pastHourTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-day') {
+      qb.andWhere('episode."pastDayTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-week') {
+      qb.andWhere('episode."pastWeekTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-month') {
+      qb.andWhere('episode."pastMonthTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-year') {
+      qb.andWhere('episode."pastYearTotalUniquePageviews" > 0')
+    } else if (sort === 'top-all-time') {
+      qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
+    } else if (sort === 'most-recent') {
+      let date = new Date()
+      date.setMonth(date.getMonth() - 1)
+      const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
+      qb.andWhere(`episode."pubDate" > '${dateString}'`)
+    }
+  }
+
+  return qb
+}
+
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
   const { includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
@@ -68,13 +94,11 @@ const getEpisodes = async (query, includeNSFW) => {
       countQB.andWhere('episode."isPublic" = true')
     } else {
       countQB.where({ isPublic: true })
+      countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
     }
   }
 
-  let count = 10000
-  if (podcastIds.length > 0) {
-    count = await countQB.getCount()
-  }
+  const count = await countQB.getCount()
 
   let qb = repository
     .createQueryBuilder('episode')
@@ -136,7 +160,7 @@ const getEpisodes = async (query, includeNSFW) => {
     )
     qb.andWhere('episode."isPublic" = true')
   } else {
-    qb.where({ isPublic: true })
+    qb = limitEpisodesQuerySize(qb, podcastIds, sort)
   }
 
   if (sincePubDate) {
