@@ -189,7 +189,7 @@ export const parseNextFeedFromQueue = async priority => {
   const feedUrlMsg = extractFeedMessage(message)
 
   try {
-    const feedUrlRepo = await getRepository(FeedUrl)
+    const feedUrlRepo = getRepository(FeedUrl)
 
     let feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
