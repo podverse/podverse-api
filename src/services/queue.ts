@@ -14,12 +14,11 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
 
   try {
     const feedUrlRepo = getRepository(FeedUrl)
+    const qb = feedUrlRepo.createQueryBuilder('feedUrl')
 
-    let feedUrls = await feedUrlRepo
-      .createQueryBuilder('feedUrl')
-      .select('feedUrl.id')
+    qb.select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .leftJoin(
+      .innerJoin(
         'feedUrl.podcast',
         'podcast',
         'podcast.isPublic = :isPublic AND podcast.priority = :priority',
@@ -29,7 +28,8 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
         }
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
-      .getMany()
+
+    const feedUrls = await qb.getMany()
 
     await sendFeedUrlsToParsingQueue(feedUrls, priority)
   } catch (error) {
