@@ -93,7 +93,7 @@ export const parseFeedUrl = async feedUrl => {
           await transactionalEntityManager.save(newEpisodes, Episode)
         })
 
-        const feedUrlRepo = await getRepository(FeedUrl)
+        const feedUrlRepo = getRepository(FeedUrl)
 
         const cleanedFeedUrl = {
           id: feedUrl.id,
@@ -222,7 +222,7 @@ export const parseNextFeedFromQueue = async priority => {
 }
 
 const findOrGenerateAuthors = async (authorNames) => {
-  const authorRepo = await getRepository(Author)
+  const authorRepo = getRepository(Author)
   let allAuthorNames = authorNames.split(',').map(x => x.trim())
 
   const existingAuthors = await authorRepo.find({
@@ -261,7 +261,7 @@ const findCategories = async (categories: string[]) => {
     c.push(category)
   }
 
-  const categoryRepo = await getRepository(Category)
+  const categoryRepo = getRepository(Category)
   const matchedCategories = await categoryRepo.find({
     where: {
       fullPath: In(c)
@@ -305,7 +305,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
 }
 
 const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
-  const episodeRepo = await getRepository(Episode)
+  const episodeRepo = getRepository(Episode)
 
   // Parsed episodes are only valid if they have enclosure.url tags,
   // so ignore all that do not.
