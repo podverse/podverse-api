@@ -24,7 +24,7 @@ const getEpisode = async id => {
 
 // Use where clause to reduce the size of very large data sets and speed up queries
 const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
-  if (podcastIds.length === 0 || podcastIds.length > 5) {
+  if (podcastIds.length === 0 || podcastIds.length > 10) {
     if (sort === 'top-past-hour') {
       qb.andWhere('episode."pastHourTotalUniquePageviews" > 0')
     } else if (sort === 'top-past-day') {
