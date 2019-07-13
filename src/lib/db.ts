@@ -18,7 +18,7 @@ const entities = [
 
 const options = config.dbConfig
 
-export const connectToDb = (workerName: string) => {
+export const connectToDb = (workerName?: string) => {
 
   const connectionOptions: ConnectionOptions = {
     name: `podverse_api${workerName ? `_${workerName}` : ''}`,
@@ -38,7 +38,7 @@ export const connectToDb = (workerName: string) => {
 
   return createConnection(connectionOptions)
     .then(connection => {
-      console.log('createConnection:', connection)
+      console.log('createConnection:connectionOptions', connectionOptions)
       return connection
     })
     .catch(error => console.error(error))
