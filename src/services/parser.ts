@@ -1,6 +1,7 @@
+
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
-import { getRepository, In, getManager } from 'typeorm'
+import { getConnection, getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
@@ -194,6 +195,9 @@ export const parseNextFeedFromQueue = async priority => {
   const feedUrlMsg = extractFeedMessage(message)
 
   try {
+    const c = getConnection()
+    console.log('do we have a connection?', c && c.isConnected, 'asdfasdf?')
+
     const feedUrlRepo = getRepository(FeedUrl)
 
     let feedUrl = await feedUrlRepo
