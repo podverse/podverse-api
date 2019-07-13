@@ -1,7 +1,7 @@
 
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
-import { getConnection, getRepository, In, getManager } from 'typeorm'
+import { getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
@@ -186,8 +186,6 @@ export const parseNextFeedFromQueue = async priority => {
   const errorsQueueUrl = queueUrls.feedsToParse.priority[priority].errorsQueueUrl
   const message = await receiveMessageFromQueue(queueUrl)
 
-  console.log('parseNextFeedFromQueue: should restart', !!message)
-
   if (!message) {
     return false
   }
@@ -195,9 +193,6 @@ export const parseNextFeedFromQueue = async priority => {
   const feedUrlMsg = extractFeedMessage(message)
 
   try {
-    const c = getConnection()
-    console.log('do we have a connection?', c && c.isConnected, 'asdfasdf?')
-
     const feedUrlRepo = getRepository(FeedUrl)
 
     let feedUrl = await feedUrlRepo
