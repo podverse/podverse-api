@@ -8,6 +8,7 @@ export interface DbConfig {
   password: string
   database: string
   sslConnection: boolean
+  shouldSync: boolean
 }
 
 export interface IConfig {
@@ -91,7 +92,8 @@ const config: IConfig = {
     username: process.env.DB_USERNAME || '',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_DATABASE || '',
-    sslConnection: process.env.DB_SSL_CONNECTION === 'true'
+    sslConnection: process.env.DB_SSL_CONNECTION === 'true',
+    shouldSync: process.env.DB_SHOULD_SYNC === 'true'
   },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
