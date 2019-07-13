@@ -166,11 +166,14 @@ export const parseOrphanFeedUrls = async () => {
 export const parseFeedUrlsFromQueue = async (priority, restartTimeOut) => {
   console.log('parseFeedUrlsFromQueue')
   const shouldContinue = await parseNextFeedFromQueue(priority)
+  console.log('shouldContinue', shouldContinue)
   if (shouldContinue) {
     await parseFeedUrlsFromQueue(priority, restartTimeOut)
   } else if (restartTimeOut) {
+    console.log('set restart setTimeout')
     // @ts-ignore
     setTimeout(() => {
+      console.log('call restart setTimeout')
       parseFeedUrlsFromQueue(priority, restartTimeOut)
     }, restartTimeOut)
   }
@@ -181,6 +184,8 @@ export const parseNextFeedFromQueue = async priority => {
   const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
   const errorsQueueUrl = queueUrls.feedsToParse.priority[priority].errorsQueueUrl
   const message = await receiveMessageFromQueue(queueUrl)
+
+  console.log('parseNextFeedFromQueue: should restart', !!message)
 
   if (!message) {
     return false
