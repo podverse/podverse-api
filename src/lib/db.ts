@@ -18,22 +18,24 @@ const entities = [
 
 const options = config.dbConfig
 
-const connectionOptions: ConnectionOptions = {
-  type: 'postgres',
-  host: options.host,
-  port: options.port,
-  username: options.username,
-  password: options.password,
-  database: options.database,
-  synchronize: true,
-  logging: false,
-  entities,
-  extra: {
-    ssl: options.sslConnection
-  }
-}
+export const connectToDb = (workerName: string) => {
 
-export const connectToDb = () => {
+  const connectionOptions: ConnectionOptions = {
+    name: `podverse_api${workerName ? `_${workerName}` : ''}`,
+    type: 'postgres',
+    host: options.host,
+    port: options.port,
+    username: options.username,
+    password: options.password,
+    database: options.database,
+    synchronize: true,
+    logging: false,
+    entities,
+    extra: {
+      ssl: options.sslConnection
+    }
+  }
+
   return createConnection(connectionOptions)
     .then(connection => connection)
     .catch(error => console.error(error))
