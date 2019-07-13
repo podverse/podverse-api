@@ -3,8 +3,7 @@ import * as request from 'request-promise-native'
 import { getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue
-} from '~/services/queue'
+import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getPodcast } from '~/controllers/podcast'
 
 const { awsConfig } = config
@@ -12,7 +11,7 @@ const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async feedUrl => {
   const response = await request(feedUrl.url, { timeout: 10000 })
-
+  console.log('start parsing', feedUrl.url)
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
       if (error) {
@@ -80,7 +79,6 @@ export const parseFeedUrl = async feedUrl => {
 
           podcast.authors = authors
           podcast.categories = categories
-
           await transactionalEntityManager.save(podcast)
 
           await transactionalEntityManager
@@ -88,6 +86,7 @@ export const parseFeedUrl = async feedUrl => {
             .update(Episode)
             .set({ isPublic: false })
             .where('podcastId = :id', { id: podcast.id })
+            .execute()
 
           await transactionalEntityManager.save(updatedSavedEpisodes, Episode)
           await transactionalEntityManager.save(newEpisodes, Episode)
@@ -102,7 +101,6 @@ export const parseFeedUrl = async feedUrl => {
         }
 
         await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-
         resolve()
       } catch (error) {
         reject(error)
@@ -118,7 +116,7 @@ export const parsePublicFeedUrls = async () => {
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
-    .leftJoinAndSelect(
+    .innerJoinAndSelect(
       'feedUrl.podcast',
       'podcast',
       'podcast.isPublic = :isPublic',
@@ -126,7 +124,7 @@ export const parsePublicFeedUrls = async () => {
         isPublic: true
       }
     )
-    .leftJoinAndSelect('podcast.episodes', 'episodes')
+    .innerJoinAndSelect('podcast.episodes', 'episodes')
     .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
 
   try {
@@ -149,7 +147,7 @@ export const parseOrphanFeedUrls = async () => {
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
-    .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
     .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
 
   try {
@@ -166,6 +164,7 @@ export const parseOrphanFeedUrls = async () => {
 }
 
 export const parseFeedUrlsFromQueue = async (priority, restartTimeOut) => {
+  console.log('parseFeedUrlsFromQueue')
   const shouldContinue = await parseNextFeedFromQueue(priority)
   if (shouldContinue) {
     await parseFeedUrlsFromQueue(priority, restartTimeOut)
@@ -178,6 +177,7 @@ export const parseFeedUrlsFromQueue = async (priority, restartTimeOut) => {
 }
 
 export const parseNextFeedFromQueue = async priority => {
+  console.log('parseNextFeedFromQueue')
   const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
   const errorsQueueUrl = queueUrls.feedsToParse.priority[priority].errorsQueueUrl
   const message = await receiveMessageFromQueue(queueUrl)
@@ -195,11 +195,11 @@ export const parseNextFeedFromQueue = async priority => {
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .leftJoinAndSelect(
+      .innerJoinAndSelect(
         'feedUrl.podcast',
         'podcast'
       )
-      .leftJoinAndSelect('podcast.episodes', 'episodes')
+      .innerJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
 
