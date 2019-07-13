@@ -1,6 +1,6 @@
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
-import { getRepository, In, getManager } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue
@@ -70,30 +70,33 @@ export const parseFeedUrl = async feedUrl => {
         podcast.title = data.title
         podcast.type = data.type
 
-        await getManager().transaction(async transactionalEntityManager => {
-          delete podcast.createdAt
-          delete podcast.updatedAt
-          delete podcast.episodes
+        delete podcast.createdAt
+        delete podcast.updatedAt
+        delete podcast.episodes
 
-          await transactionalEntityManager.save(authors)
-          await transactionalEntityManager.save(categories)
-
-          podcast.authors = authors
-          podcast.categories = categories
-
-          await transactionalEntityManager.save(podcast)
-
-          await transactionalEntityManager
-            .createQueryBuilder()
-            .update(Episode)
-            .set({ isPublic: false })
-            .where('podcastId = :id', { id: podcast.id })
-
-          await transactionalEntityManager.save(updatedSavedEpisodes, Episode)
-          await transactionalEntityManager.save(newEpisodes, Episode)
-        })
-
+        const authorRepo = getRepository(Author)
+        const categoryRepo = getRepository(Category)
+        const episodeRepo = getRepository(Episode)
         const feedUrlRepo = getRepository(FeedUrl)
+        const podcastRepo = getRepository(Podcast)
+
+        await authorRepo.save(authors)
+        await categoryRepo.save(categories)
+
+        podcast.authors = authors
+        podcast.categories = categories
+
+        await podcastRepo.save(podcast)
+
+        await episodeRepo
+          .createQueryBuilder()
+          .update(Episode)
+          .set({ isPublic: false })
+          .where('podcastId = :id', { id: podcast.id })
+          .execute()
+
+        await episodeRepo.save(updatedSavedEpisodes)
+        await episodeRepo.save(newEpisodes)
 
         const cleanedFeedUrl = {
           id: feedUrl.id,
