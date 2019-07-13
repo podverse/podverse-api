@@ -35,11 +35,6 @@ const connectionOptions: ConnectionOptions = {
 
 export const connectToDb = () => {
   return createConnection(connectionOptions)
-    .then(connection => {
-      console.log('connection created?', connectionOptions)
-      const c = getConnection()
-      console.log('are we connected?', c && c.isConnected, 'hello?')
-      return connection
-    })
+    .then(connection => connection)
     .catch(error => console.error(error))
 }
