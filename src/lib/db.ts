@@ -37,6 +37,9 @@ export const connectToDb = (workerName: string) => {
   }
 
   return createConnection(connectionOptions)
-    .then(connection => connection)
+    .then(connection => {
+      console.log('createConnection:', connection)
+      return connection
+    })
     .catch(error => console.error(error))
 }
