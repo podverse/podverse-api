@@ -103,11 +103,11 @@ export const parseFeedUrl = async feedUrl => {
           console.log('transaction podcasts save end', performance.now())
 
           console.log('transaction save updatedSavedEpisodes start', performance.now())
-          await transactionalEntityManager.save(updatedSavedEpisodes)
+          await transactionalEntityManager.save(updatedSavedEpisodes, { chunk: 400 })
           console.log('transaction save updatedSavedEpisodes end', performance.now())
 
           console.log('transaction save newEpisodes start', performance.now())
-          await transactionalEntityManager.save(newEpisodes)
+          await transactionalEntityManager.save(newEpisodes, { chunk: 400 })
           console.log('transaction save newEpisodes end', performance.now())
         })
 
