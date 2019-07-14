@@ -102,15 +102,6 @@ export const parseFeedUrl = async feedUrl => {
           await transactionalEntityManager.save(podcast)
           console.log('transaction podcasts save end', performance.now())
 
-          console.log('transaction episodes set isPublic to false start', performance.now())
-          await transactionalEntityManager
-            .createQueryBuilder()
-            .update(Episode)
-            .set({ isPublic: false })
-            .where('podcastId = :id', { id: podcast.id })
-            .execute()
-          console.log('transaction episodes set isPublic to false end', performance.now())
-
           console.log('transaction save updatedSavedEpisodes start', performance.now())
           await transactionalEntityManager.save(updatedSavedEpisodes, Episode)
           console.log('transaction save updatedSavedEpisodes end', performance.now())
@@ -367,6 +358,14 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     }
   })
   console.log('find savedEpisodes end', performance.now())
+
+  console.log('set all savedEpisodes to isPublic false start', performance.now())
+  let nonPublicEpisodes = [] as any
+  for (const e of savedEpisodes) {
+    e.isPublic = false
+    nonPublicEpisodes.push(e)
+  }
+  console.log('set all savedEpisodes to isPublic false end', performance.now())
 
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
