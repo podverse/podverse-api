@@ -1,4 +1,4 @@
-import { createConnection, ConnectionOptions, getConnection } from 'typeorm'
+import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from '~/config'
 import { Author, BitPayInvoice, Category, Episode, FeedUrl,
   MediaRef, PayPalOrder, Playlist, Podcast, User } from '~/entities'
