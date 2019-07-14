@@ -15,6 +15,11 @@ const parseFeedUrls = async () => {
           id: shortid.generate(),
           url: 'http://joeroganexp.joerogan.libsynpro.com/rss'
         },
+        // this nhl rss feed is huge, good for stress testing
+        // {
+        //   id: shortid.generate(),
+        //   url: 'http://wild.ice.nhl.com/podcasts/pondcast.xml'
+        // },
         {
           id: shortid.generate(),
           url: 'http://feeds.feedburner.com/dancarlin/history?format=xml'
