@@ -185,27 +185,27 @@ export const parseOrphanFeedUrls = async () => {
   }
 }
 
-export const parseFeedUrlsFromQueue = async (priority, restartTimeOut) => {
+export const parseFeedUrlsFromQueue = async (restartTimeOut) => {
   console.log('parseFeedUrlsFromQueue')
-  const shouldContinue = await parseNextFeedFromQueue(priority)
+  const shouldContinue = await parseNextFeedFromQueue()
   console.log('shouldContinue', shouldContinue)
   if (shouldContinue) {
-    await parseFeedUrlsFromQueue(priority, restartTimeOut)
+    await parseFeedUrlsFromQueue(restartTimeOut)
   } else if (restartTimeOut) {
     console.log('set restart setTimeout')
     // @ts-ignore
     setTimeout(() => {
       console.log('call restart setTimeout')
-      parseFeedUrlsFromQueue(priority, restartTimeOut)
+      parseFeedUrlsFromQueue(restartTimeOut)
     }, restartTimeOut)
   }
 }
 
-export const parseNextFeedFromQueue = async priority => {
+export const parseNextFeedFromQueue = async () => {
   console.log('parseNextFeedFromQueue')
-  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
-  const errorsQueueUrl = queueUrls.feedsToParse.priority[priority].errorsQueueUrl
-  
+  const queueUrl = queueUrls.feedsToParse.queueUrl
+  const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
+
   console.log('receiveMessageFromQueue start', performance.now())
   const message = await receiveMessageFromQueue(queueUrl)
   console.log('receiveMessageFromQueue end', performance.now())
@@ -245,8 +245,7 @@ export const parseNextFeedFromQueue = async priority => {
     await sendMessageToQueue(attrs, errorsQueueUrl)
   }
 
-  await deleteMessage(priority, feedUrlMsg
-    .receiptHandle)
+  await deleteMessage(feedUrlMsg.receiptHandle)
 
   return true
 }

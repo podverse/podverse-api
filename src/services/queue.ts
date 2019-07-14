@@ -9,7 +9,7 @@ import { generateFeedMessageAttributes } from '~/services/parser'
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-export const addAllPublicFeedUrlsToQueue = async priority => {
+export const addAllPublicFeedUrlsToQueue = async () => {
   await connectToDb()
 
   try {
@@ -21,23 +21,20 @@ export const addAllPublicFeedUrlsToQueue = async priority => {
       .innerJoin(
         'feedUrl.podcast',
         'podcast',
-        'podcast.isPublic = :isPublic AND podcast.priority = :priority',
-        {
-          isPublic: true,
-          priority
-        }
+        'podcast.isPublic = :isPublic',
+        { isPublic: true }
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
 
     const feedUrls = await qb.getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls, priority)
+    await sendFeedUrlsToParsingQueue(feedUrls)
   } catch (error) {
     console.log('queue:addAllPublicFeedUrlsToQueue', error)
   }
 }
 
-export const addAllOrphanFeedUrlsToQueue = async priority => {
+export const addAllOrphanFeedUrlsToQueue = async () => {
 
   await connectToDb()
 
@@ -52,14 +49,14 @@ export const addAllOrphanFeedUrlsToQueue = async priority => {
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
       .getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls, priority)
+    await sendFeedUrlsToParsingQueue(feedUrls)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToQueue', error)
   }
 }
 
-export const sendFeedUrlsToParsingQueue = async (feedUrls, priority) => {
-  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+export const sendFeedUrlsToParsingQueue = async (feedUrls) => {
+  const queueUrl = queueUrls.feedsToParse.queueUrl
 
   let attributes = []
   for (const feedUrl of feedUrls) {
@@ -131,8 +128,8 @@ export const receiveMessageFromQueue = async queue => {
   return message
 }
 
-export const deleteMessage = async (priority, receiptHandle) => {
-  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+export const deleteMessage = async (receiptHandle) => {
+  const queueUrl = queueUrls.feedsToParse.queueUrl
 
   if (receiptHandle) {
     const params = {
@@ -148,8 +145,8 @@ export const deleteMessage = async (priority, receiptHandle) => {
   }
 }
 
-export const purgeQueue = async priority => {
-  const queueUrl = queueUrls.feedsToParse.priority[priority].queueUrl
+export const purgeQueue = async () => {
+  const queueUrl = queueUrls.feedsToParse.queueUrl
   const params = { QueueUrl: queueUrl }
 
   await sqs.purgeQueue(params)

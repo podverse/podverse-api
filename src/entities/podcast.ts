@@ -84,10 +84,6 @@ export class Podcast {
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
-  @IsInt()
-  @Column({ default: 1 })
-  priority: number
-
   @Column({ nullable: true })
   sortableTitle?: string
 
