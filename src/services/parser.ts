@@ -14,8 +14,9 @@ const queueUrls = awsConfig.queueUrls
 
 
 export const parseFeedUrl = async feedUrl => {
-  const response = await request(feedUrl.url, { timeout: 10000 })
   console.log('start parsing', performance.now(), feedUrl.url)
+  const response = await request(feedUrl.url, { timeout: 10000 })
+  console.log('response received', performance.now())
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
       if (error) {
