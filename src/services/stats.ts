@@ -74,6 +74,7 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
   }
 
   const response = await queryGoogleAnalyticsData(queryObj)
+  console.log('asdf', response.data)
   await savePageviewsToDatabase(pagePath, timeRange, response)
 }
 
