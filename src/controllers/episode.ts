@@ -94,8 +94,8 @@ const getEpisodes = async (query, includeNSFW) => {
       countQB.andWhere('episode."isPublic" = true')
     } else {
       countQB.where({ isPublic: true })
-      countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
     }
+    countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
   }
 
   const count = await countQB.getCount()
