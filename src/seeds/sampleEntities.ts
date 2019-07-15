@@ -10,7 +10,7 @@ import { connectToDb } from '~/lib/db'
 const addSeconds = require('date-fns/add_seconds')
 const { freeTrialExpiration, membershipExpiration } = config
 
-const assetPath = process.env.DEV_USE_LIVE_ASSETS ? false : 'http://localhost:1234/public'
+const assetPath = process.env.USE_LIVE_ASSETS ? false : 'http://localhost:1234/public'
 
 const seedDatabase = async (connection: Connection) => {
   const saltedPassword = await hash('Aa!1asdf', saltRounds)
