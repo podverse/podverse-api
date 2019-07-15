@@ -3,9 +3,8 @@ import googleConfig from '~/config/google'
 const path = require('path')
 
 export const queryGoogleAnalyticsData = async queryObj => {
-
   const client = await google.auth.getClient({
-    keyFile: path.join(__dirname, '../config/google/jwt.keys.json'),
+    keyFile: path.join(__dirname, '/../config/google/jwt.keys.json'),
     scopes: ['https://www.googleapis.com/auth/analytics.readonly']
   })
 
@@ -39,5 +38,4 @@ export const queryGoogleAnalyticsData = async queryObj => {
     .catch(error => console.log(error.errors))
 
   return response
-
 }
