@@ -35,6 +35,12 @@ export const parseFeedUrl = async feedUrl => {
           podcast = savedPodcast
         }
 
+        // Stop parsing if the feed has not been updated since it was last parsed.
+        if (podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) > new Date(data.updated)) {
+          console.log('skipping parsing: podcast has not been updated')
+          return
+        }
+
         podcast.isPublic = true
 
         let authors = []
