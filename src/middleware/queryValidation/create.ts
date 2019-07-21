@@ -21,11 +21,11 @@ const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array(),
     categories: Joi.array(),
-    endTime: Joi.number().integer().min(1),
+    endTime: Joi.number().integer().min(1).allow(null),
     episodeId: Joi.string(),
     isPublic: Joi.boolean(),
     startTime: Joi.number().integer().min(0),
-    title: Joi.string()
+    title: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -41,11 +41,11 @@ const validatePayPalOrderCreate = async (ctx, next) => {
 
 const validatePlaylistCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    description: Joi.string(),
+    description: Joi.string().allow(null).allow(''),
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
-    title: Joi.string()
+    title: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -55,7 +55,7 @@ const validateUserCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     email: Joi.string().required(),
     historyItems: Joi.array().items(Joi.string()),
-    name: Joi.string(),
+    name: Joi.string().allow(null).allow(''),
     playlists: Joi.array().items(Joi.string()),
     subscribedPlaylistIds: Joi.array().items(Joi.string()),
     subscribedPodcastIds: Joi.array().items(Joi.string()),
