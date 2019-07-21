@@ -45,7 +45,7 @@ const validatePlaylistUpdate = async (ctx, next) => {
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
     ownerId: Joi.string(),
-    title: Joi.string().allow(null)
+    title: Joi.string().allow(null).allow('')
   })
 
   await validateBaseBody(schema, ctx, next)
