@@ -39,9 +39,10 @@ router.post('/get-authenticated-user-info',
             subscribedUserIds: user.subscribedUserIds
           }
         }
+        ctx.status = 200
+      } else {
+        ctx.status = 401
       }
-
-      ctx.status = 200
     } catch (error) {
       ctx.body = {}
       ctx.status = 401
