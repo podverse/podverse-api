@@ -25,8 +25,8 @@ const getPodcast = async id => {
 
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
-  const { categories, includeAuthors, includeCategories, podcastId, searchAuthor, searchTitle, skip, take
-    } = query
+  const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
+    skip, take } = query
 
   let qb = repository
     .createQueryBuilder('podcast')
@@ -104,7 +104,7 @@ const getPodcasts = async (query, includeNSFW) => {
   try {
     const podcasts = await qb
       .skip(skip)
-      .take(take)
+      .take((maxResults && 1000) || take)
       .getManyAndCount()
 
     return podcasts
