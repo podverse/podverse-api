@@ -175,7 +175,7 @@ const getEpisodes = async (query, includeNSFW) => {
 
     return [episodes, count]
   } else {
-    if (sort !== 'most-recent-all') {
+    if (sort !== 'most-recent-all' || podcastIds.length > 1 || podcastIds.length === 0) {
       qb.offset(skip)
       qb.limit(take)
     }
