@@ -100,7 +100,7 @@ export const createQueryOrderObject = (sort, sortDateKey) => {
     order.pastYearTotalUniquePageviews = 'DESC'
   } else if (sort === 'top-all-time') {
     order.pastAllTimeTotalUniquePageviews = 'DESC'
-  } else if (sort === 'most-recent') {
+  } else if (sort === 'most-recent' || sort === 'most-recent-all') {
     order[sortDateKey] = 'DESC'
   } else if (sort === 'oldest') {
     order[sortDateKey] = 'ASC'
@@ -124,7 +124,7 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
     return [`${type}.pastYearTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-all-time') {
     return [`${type}.pastAllTimeTotalUniquePageviews`, 'DESC']
-  } else if (sort === 'most-recent') {
+  } else if (sort === 'most-recent' || sort === 'most-recent-all') {
     return [`${type}.${sortDateKey}`, 'DESC']
   } else if (sort === 'oldest') {
     return [`${type}.${sortDateKey}`, 'ASC']

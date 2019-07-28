@@ -37,7 +37,7 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
       qb.andWhere('episode."pastYearTotalUniquePageviews" > 0')
     } else if (sort === 'top-all-time') {
       qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
-    } else if (sort === 'most-recent') {
+    } else if (sort === 'most-recent' || sort === 'most-recent-all') {
       let date = new Date()
       date.setMonth(date.getMonth() - 1)
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
@@ -175,8 +175,10 @@ const getEpisodes = async (query, includeNSFW) => {
 
     return [episodes, count]
   } else {
-    qb.offset(skip)
-    qb.limit(take)
+    if (sort !== 'most-recent-all') {
+      qb.offset(skip)
+      qb.limit(take)
+    }
 
     let orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
     const episodes = await qb
