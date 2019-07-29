@@ -76,9 +76,9 @@ router.post('/reset-password',
   resetPassword)
 
 const sendResetPasswordLimiter = RateLimit.middleware({
-  interval: 5 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 2,
-  message: `You're doing that too much. Please try again in 2 minutes.`,
+  interval: 1 * 60 * 1000,
+  max:  rateLimiterMaxOverride || 3,
+  message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/reset-password'
 })
 
