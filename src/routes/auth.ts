@@ -51,7 +51,7 @@ router.post('/get-authenticated-user-info',
 
 const loginLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 5,
+  max:  rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/login'
 })
