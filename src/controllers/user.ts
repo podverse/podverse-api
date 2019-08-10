@@ -434,7 +434,10 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
-  nowPlayingItem.episodeDescription = ''
+  if (nowPlayingItem.episodeDescription) {
+    nowPlayingItem.episodeDescription = nowPlayingItem.episodeDescription.substring(0, 10000)
+  }
+
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to add history items')
   }
@@ -459,7 +462,9 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
 
   // Remove historyItem if it already exists in the array, then prepend it to the array.
   historyItems = historyItems.filter(x => {
-    x.episodeDescription = ''
+    if (x.episodeDescription) {
+      x.episodeDescription = x.episodeDescription.substring(0, 10000)
+    }
     if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
       return
     } else {
