@@ -103,7 +103,7 @@ const getEpisodes = async (query, includeNSFW) => {
   let qb = repository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
-    .addSelect('SUBSTR(episode.description, 1, 500)', 'description')
+    .addSelect('SUBSTR(episode.description, 1, 10000)', 'description')
     .addSelect('episode.duration', 'duration')
     .addSelect('episode.episodeType', 'episodeType')
     .addSelect('episode.guid', 'guid')
