@@ -104,6 +104,8 @@ const getMediaRefs = async (query, includeNSFW) => {
       })
   }
 
+  qb.innerJoinAndSelect('mediaRef.owner', 'user')
+
   if (searchAllFieldsText) {
     qb.where(
       `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
