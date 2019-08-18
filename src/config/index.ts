@@ -55,13 +55,13 @@ let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '3154000
 let mailerPort = process.env.MAILER_PORT || '587'
 let cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
 let cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
-let queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '100'
-let queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '100'
-let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '100'
-let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '100'
-let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '100'
-let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '100'
-let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '100'
+let queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
+let queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
+let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
+let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '50'
+let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '50'
+let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '50'
+let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '50'
 let rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
 
 const bitpayConfig = {
