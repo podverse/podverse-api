@@ -9,7 +9,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
   let options = {
     sort: 'top-past-week',
     skip: 0,
-    take: 20,
+    take: 100,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
     ...(includeAuthors ? { includeAuthors: includeAuthors === 'true' } : {}),
