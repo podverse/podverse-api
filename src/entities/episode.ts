@@ -1,6 +1,6 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, MediaRef, Podcast } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 
@@ -59,42 +59,49 @@ export class Episode {
   @Column({ unique: true })
   mediaUrl: string
 
+  @Index()
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastHourTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastDayTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastDayTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastWeekTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastWeekTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastMonthTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastMonthTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastYearTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
+  @Index()
   @Column({ nullable: true })
   pubDate?: Date
 

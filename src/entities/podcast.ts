@@ -1,7 +1,7 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
-  ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn, BeforeUpdate } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, JoinTable,
+  ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
 
@@ -17,6 +17,7 @@ export class Podcast {
   @Column({ nullable: true })
   description?: string
 
+  @Index()
   @Column({ nullable: true })
   feedLastUpdated?: Date
 
@@ -37,6 +38,7 @@ export class Podcast {
   @Column({ nullable: true })
   language?: string
 
+  @Index()
   @Column({ nullable: true })
   lastEpisodePubDate?: Date
 
@@ -48,36 +50,42 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
+  @Index()
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastHourTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastDayTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastDayTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastWeekTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastWeekTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastMonthTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastMonthTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastYearTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
+  @Index()
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
