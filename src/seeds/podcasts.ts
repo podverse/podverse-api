@@ -132,7 +132,13 @@ const parseFeedUrls = async () => {
 
       for (const feedUrl of sampleFeedUrls) {
         console.log(feedUrl)
-        await parseFeedUrl(feedUrl)
+        try {
+          await parseFeedUrl(feedUrl)
+        } catch (error) {
+          console.log('parsePublicFeedUrls feedUrlMsg parseFeedUrl', feedUrl)
+          console.log('error', error)
+          console.log(feedUrl)
+        }
       }
     })
 }

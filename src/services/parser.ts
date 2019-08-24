@@ -161,7 +161,13 @@ export const parsePublicFeedUrls = async () => {
     const feedUrls = await qb.getMany()
 
     for (const feedUrl of feedUrls) {
-      await parseFeedUrl(feedUrl)
+      try {
+        await parseFeedUrl(feedUrl)
+      } catch (error) {
+        console.log('parsePublicFeedUrls parseFeedUrl', feedUrl)
+        console.log('error', error)
+        console.log(feedUrl)
+      }
     }
 
     return
@@ -183,7 +189,13 @@ export const parseOrphanFeedUrls = async () => {
     const feedUrls = await qb.getMany()
 
     for (const feedUrl of feedUrls) {
-      await parseFeedUrl(feedUrl)
+      try {
+        await parseFeedUrl(feedUrl)
+      } catch (error) {
+        console.log('parseOrphanFeedUrls parseFeedUrl', feedUrl)
+        console.log('error', error)
+        console.log(feedUrl)
+      }
     }
 
     return
@@ -237,9 +249,22 @@ export const parseNextFeedFromQueue = async () => {
     // console.log('updateFeedUrl end', performance.now())
 
     if (feedUrl) {
+      try {
+        await parseFeedUrl(feedUrl)
+      } catch (error) {
+        console.log('parseNextFeedFromQueue parseFeedUrl', feedUrl)
+        console.log('error', error)
+        console.log(feedUrl)
+      }
       await parseFeedUrl(feedUrl)
     } else {
-      await parseFeedUrl(feedUrlMsg)
+      try {
+        await parseFeedUrl(feedUrlMsg)
+      } catch (error) {
+        console.log('parsePublicFeedUrls feedUrlMsg parseFeedUrl', feedUrlMsg)
+        console.log('error', error)
+        console.log(feedUrlMsg)
+      }
     }
 
   } catch (error) {
