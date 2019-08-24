@@ -132,7 +132,8 @@ export const parseFeedUrl = async feedUrl => {
         // console.log('updateFeedUrl end', performance.now())
         resolve()
       } catch (error) {
-        reject(error)
+        console.log('parseFeedUrl, feedUrl:', feedUrl)
+        console.log(error)
       }
     })
   })
@@ -187,7 +188,7 @@ export const parseOrphanFeedUrls = async () => {
 
     return
   } catch (error) {
-    console.log(error)
+    console.log('parseOrphanFeedUrls error: ', error)
   }
 }
 
