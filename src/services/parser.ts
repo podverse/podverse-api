@@ -7,16 +7,16 @@ import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getPodcast } from '~/controllers/podcast'
 
-import { performance } from 'perf_hooks'
+// import { performance } from 'perf_hooks'
 
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 
 export const parseFeedUrl = async feedUrl => {
-  console.log('start parsing', performance.now(), feedUrl.url)
+  // console.log('start parsing', performance.now(), feedUrl.url)
   const response = await request(feedUrl.url, { timeout: 10000 })
-  console.log('response received', performance.now())
+  // console.log('response received', performance.now())
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
       if (error) {
@@ -24,20 +24,19 @@ export const parseFeedUrl = async feedUrl => {
         reject()
         return
       }
-      console.log('podcast parsed', performance.now())
+      // console.log('podcast parsed', performance.now())
       try {
         let podcast = new Podcast()
         if (feedUrl.podcast) {
-          console.log('feedUrl.podcast, getting podcast', performance.now())
+          // console.log('feedUrl.podcast, getting podcast', performance.now())
           const savedPodcast = await getPodcast(feedUrl.podcast.id)
-          console.log('feedUrl.podcast, done getting podcast', performance.now())
+          // console.log('feedUrl.podcast, done getting podcast', performance.now())
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
         }
 
         // Stop parsing if the feed has not been updated since it was last parsed.
         if (podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
-          console.log('skipping parsing: podcast has not been updated')
           resolve()
           return
         }
@@ -45,23 +44,23 @@ export const parseFeedUrl = async feedUrl => {
         podcast.isPublic = true
 
         let authors = []
-        console.log('authors', performance.now())
+        // console.log('authors', performance.now())
         if (data.author) {
           authors = await findOrGenerateAuthors(data.author) as never
-          console.log('generated authors', performance.now())
+          // console.log('generated authors', performance.now())
         }
 
         let categories: Category[] = []
-        console.log('categories')
+        // console.log('categories', performance.now())
         if (data.categories) {
           categories = await findCategories(data.categories)
-          console.log('generated categories', performance.now())
+          // console.log('generated categories', performance.now())
         }
 
-        console.log('findOrGenerateParsedEpisodes start', performance.now())
+        // console.log('findOrGenerateParsedEpisodes start', performance.now())
         const { newEpisodes, updatedSavedEpisodes } =
           await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
-        console.log('findOrGenerateParsedEpisodes end', performance.now())
+        // console.log('findOrGenerateParsedEpisodes end', performance.now())
 
         let latestEpisode
         const latestNewEpisode = newEpisodes.reduce((r, a) => {
@@ -90,34 +89,34 @@ export const parseFeedUrl = async feedUrl => {
         podcast.title = data.title
         podcast.type = data.type
 
-        console.log('transactionStart', performance.now())
+        // console.log('transactionStart', performance.now())
         await getManager().transaction(async transactionalEntityManager => {
           delete podcast.createdAt
           delete podcast.updatedAt
           delete podcast.episodes
 
-          console.log('transaction authors save start', performance.now())
+          // console.log('transaction authors save start', performance.now())
           await transactionalEntityManager.save(authors)
-          console.log('transaction authors save end', performance.now())
+          // console.log('transaction authors save end', performance.now())
 
-          console.log('transaction categories save start', performance.now())
+          // console.log('transaction categories save start', performance.now())
           await transactionalEntityManager.save(categories)
-          console.log('transaction categories save end', performance.now())
+          // console.log('transaction categories save end', performance.now())
 
           podcast.authors = authors
           podcast.categories = categories
 
-          console.log('transaction podcasts save start', performance.now())
+          // console.log('transaction podcasts save start', performance.now())
           await transactionalEntityManager.save(podcast)
-          console.log('transaction podcasts save end', performance.now())
+          // console.log('transaction podcasts save end', performance.now())
 
-          console.log('transaction save updatedSavedEpisodes start', performance.now())
+          // console.log('transaction save updatedSavedEpisodes start', performance.now())
           await transactionalEntityManager.save(updatedSavedEpisodes, { chunk: 400 })
-          console.log('transaction save updatedSavedEpisodes end', performance.now())
+          // console.log('transaction save updatedSavedEpisodes end', performance.now())
 
-          console.log('transaction save newEpisodes start', performance.now())
+          // console.log('transaction save newEpisodes start', performance.now())
           await transactionalEntityManager.save(newEpisodes, { chunk: 400 })
-          console.log('transaction save newEpisodes end', performance.now())
+          // console.log('transaction save newEpisodes end', performance.now())
         })
 
         const feedUrlRepo = getRepository(FeedUrl)
@@ -128,9 +127,9 @@ export const parseFeedUrl = async feedUrl => {
           podcast
         }
 
-        console.log('updateFeedUrl start', performance.now())
+        // console.log('updateFeedUrl start', performance.now())
         await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-        console.log('updateFeedUrl end', performance.now())
+        // console.log('updateFeedUrl end', performance.now())
         resolve()
       } catch (error) {
         reject(error)
@@ -166,7 +165,7 @@ export const parsePublicFeedUrls = async () => {
 
     return
   } catch (error) {
-    console.log(error)
+    console.log('parsePublicFeedUrls error: ', error)
   }
 }
 
@@ -194,29 +193,25 @@ export const parseOrphanFeedUrls = async () => {
 }
 
 export const parseFeedUrlsFromQueue = async (restartTimeOut) => {
-  console.log('parseFeedUrlsFromQueue')
   const shouldContinue = await parseNextFeedFromQueue()
-  console.log('shouldContinue', shouldContinue)
+
   if (shouldContinue) {
     await parseFeedUrlsFromQueue(restartTimeOut)
   } else if (restartTimeOut) {
-    console.log('set restart setTimeout')
     // @ts-ignore
     setTimeout(() => {
-      console.log('call restart setTimeout')
       parseFeedUrlsFromQueue(restartTimeOut)
     }, restartTimeOut)
   }
 }
 
 export const parseNextFeedFromQueue = async () => {
-  console.log('parseNextFeedFromQueue')
   const queueUrl = queueUrls.feedsToParse.queueUrl
   const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
 
-  console.log('receiveMessageFromQueue start', performance.now())
+  // console.log('receiveMessageFromQueue start', performance.now())
   const message = await receiveMessageFromQueue(queueUrl)
-  console.log('receiveMessageFromQueue end', performance.now())
+  // console.log('receiveMessageFromQueue end', performance.now())
 
   if (!message) {
     return false
@@ -227,7 +222,7 @@ export const parseNextFeedFromQueue = async () => {
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
-    console.log('updateFeedUrl start', performance.now())
+    // console.log('updateFeedUrl start', performance.now())
     let feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
@@ -239,7 +234,7 @@ export const parseNextFeedFromQueue = async () => {
       .innerJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
-    console.log('updateFeedUrl end', performance.now())
+    // console.log('updateFeedUrl end', performance.now())
 
     if (feedUrl) {
       await parseFeedUrl(feedUrl)
@@ -359,21 +354,21 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   // Find episodes in the database that have matching episode media URLs to
   // those found in the parsed object, then store an array of just those URLs.
-  console.log('find savedEpisodes start', performance.now())
+  // console.log('find savedEpisodes start', performance.now())
   const savedEpisodes = await episodeRepo.find({
     where: {
       mediaUrl: In(parsedEpisodeMediaUrls)
     }
   })
-  console.log('find savedEpisodes end', performance.now())
+  // console.log('find savedEpisodes end', performance.now())
 
-  console.log('set all savedEpisodes to isPublic false start', performance.now())
+  // console.log('set all savedEpisodes to isPublic false start', performance.now())
   let nonPublicEpisodes = [] as any
   for (const e of savedEpisodes) {
     e.isPublic = false
     nonPublicEpisodes.push(e)
   }
-  console.log('set all savedEpisodes to isPublic false end', performance.now())
+  // console.log('set all savedEpisodes to isPublic false end', performance.now())
 
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
