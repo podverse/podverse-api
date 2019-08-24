@@ -58,24 +58,33 @@ export const parseFeedUrl = async feedUrl => {
         }
 
         // console.log('findOrGenerateParsedEpisodes start', performance.now())
-        let { newEpisodes, updatedSavedEpisodes } =
-          await findOrGenerateParsedEpisodes(data.episodes || [], podcast) as any
-        // console.log('findOrGenerateParsedEpisodes end', performance.now())
+        let newEpisodes = []
+        let updatedSavedEpisodes = []
+        if (data.episodes && Array.isArray(data.episodes)) {
+          let results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
+          // console.log('findOrGenerateParsedEpisodes end', performance.now())
 
-        newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
-        updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
+          newEpisodes = results.newEpisodes
+          updatedSavedEpisodes = results.updatedSavedEpisodes
 
-        let latestEpisode
-        const latestNewEpisode = newEpisodes.reduce((r, a) => {
-          return r.pubDate > a.pubDate ? r : a
-        }, [])
-        const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
-          return r.pubDate > a.pubDate ? r : a
-        }, [])
-        latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
+          newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
+          updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
-        podcast.lastEpisodePubDate = latestEpisode.pubDate
-        podcast.lastEpisodeTitle = latestEpisode.title
+          let latestEpisode
+          const latestNewEpisode = newEpisodes.reduce((r, a) => {
+            return r.pubDate > a.pubDate ? r : a
+          }, [])
+          const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
+            return r.pubDate > a.pubDate ? r : a
+          }, [])
+          latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
+
+          podcast.lastEpisodePubDate = latestEpisode.pubDate
+          podcast.lastEpisodeTitle = latestEpisode.title
+        } else {
+          podcast.lastEpisodePubDate = undefined
+          podcast.lastEpisodeTitle = ''
+        }
 
         if (data.description && data.description.long) {
           podcast.description = data.description.long
