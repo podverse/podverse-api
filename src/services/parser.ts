@@ -58,9 +58,12 @@ export const parseFeedUrl = async feedUrl => {
         }
 
         // console.log('findOrGenerateParsedEpisodes start', performance.now())
-        const { newEpisodes, updatedSavedEpisodes } =
+        let { newEpisodes, updatedSavedEpisodes } =
           await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
         // console.log('findOrGenerateParsedEpisodes end', performance.now())
+
+        newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
+        updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
         let latestEpisode
         const latestNewEpisode = newEpisodes.reduce((r, a) => {
