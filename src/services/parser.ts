@@ -59,7 +59,7 @@ export const parseFeedUrl = async feedUrl => {
 
         // console.log('findOrGenerateParsedEpisodes start', performance.now())
         let { newEpisodes, updatedSavedEpisodes } =
-          await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
+          await findOrGenerateParsedEpisodes(data.episodes || [], podcast) as any
         // console.log('findOrGenerateParsedEpisodes end', performance.now())
 
         newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
