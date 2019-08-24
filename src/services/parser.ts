@@ -72,9 +72,11 @@ export const parseFeedUrl = async feedUrl => {
 
           let latestEpisode
           const latestNewEpisode = newEpisodes.reduce((r, a) => {
+            // @ts-ignore
             return r.pubDate > a.pubDate ? r : a
           }, [])
           const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
+            // @ts-ignore
             return r.pubDate > a.pubDate ? r : a
           }, [])
           latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
