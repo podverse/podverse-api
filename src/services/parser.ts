@@ -176,7 +176,6 @@ export const parseOrphanFeedUrls = async () => {
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
-    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
     .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
 
   try {
