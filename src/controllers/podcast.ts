@@ -81,11 +81,11 @@ const getPodcasts = async (query, includeNSFW) => {
     }
   }
 
-  if (includeAuthors) {
+  if (includeAuthors && !searchTitle) {
     qb.innerJoinAndSelect('podcast.authors', 'authors')
   }
 
-  if (includeCategories) {
+  if (includeCategories && !searchTitle) {
     qb.innerJoinAndSelect('podcast.categories', 'categories')
   }
 
