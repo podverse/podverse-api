@@ -61,8 +61,8 @@ const getPodcasts = async (query, includeNSFW) => {
         'LOWER(podcast.title) LIKE :title',
         { title }
       )
-      qb.innerJoinAndSelect('podcast.authors', 'authors')
-      qb.innerJoinAndSelect('podcast.categories', 'categories')
+      qb.leftJoinAndSelect('podcast.authors', 'authors')
+      qb.leftJoinAndSelect('podcast.categories', 'categories')
     } else if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase()}%`
       qb.innerJoinAndSelect(
@@ -82,11 +82,11 @@ const getPodcasts = async (query, includeNSFW) => {
   }
 
   if (includeAuthors && !searchTitle) {
-    qb.innerJoinAndSelect('podcast.authors', 'authors')
+    qb.leftJoinAndSelect('podcast.authors', 'authors')
   }
 
   if (includeCategories && !searchTitle) {
-    qb.innerJoinAndSelect('podcast.categories', 'categories')
+    qb.leftJoinAndSelect('podcast.categories', 'categories')
   }
 
   if (!includeNSFW) {
