@@ -130,6 +130,7 @@ const getMetadata = async query => {
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.lastEpisodePubDate')
     .addSelect('podcast.lastEpisodeTitle')
+    .addSelect('podcast.sortableTitle')
     .addSelect('podcast.title')
     .where(
       'podcast.id IN (:...podcastIds)',

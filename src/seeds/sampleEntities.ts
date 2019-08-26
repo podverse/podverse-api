@@ -94,6 +94,7 @@ const seedDatabase = async (connection: Connection) => {
   user6.isPublic = false
 
   let podcast = new Podcast()
+  podcast.sortableTitle = 'james altucher show'
   podcast.title = 'The James Altucher Show'
   podcast.imageUrl = assetPath ? `${assetPath}/altucher.jpg` : 'http://static.libsyn.com/p/assets/b/4/6/3/b463232a6b0b641c/James-Altucher-iTunes.jpg'
   podcast.description = 'This is not your average business podcast. James Altucher interviews the world’s leading peak performers in every area of life. But instead of giving you the typical success story, James digs deeper to find the “Choose Yourself” story—these are the moments we relate to…. when someone rises up from personal struggle to reinvent themselves. The James Altucher Show brings you into the lives of peak-performers, billionaires, best-selling authors, writers, rappers, astronauts and more, all who forged their own paths, found financial freedom, and harnessed the power to create more meaningful and fulfilling lives.'
@@ -109,6 +110,7 @@ const seedDatabase = async (connection: Connection) => {
   feedUrl.isAuthority = true
 
   let podcast2 = new Podcast()
+  podcast2.sortableTitle = 'waking up with sam harris'
   podcast2.title = 'Waking Up with Sam Harris'
   podcast2.imageUrl = assetPath ? `${assetPath}/wakingup.jpg` : 'http://static.libsyn.com/p/assets/0/b/e/4/0be4dc9e0fc61265/podcast_art_alt_1.5.18.jpg'
   podcast2.description = 'Join neuroscientist, philosopher, and best-selling author Sam Harris as he explores important and controversial questions about the human mind, society, and current events. Sam Harris is the author of The End of Faith, Letter to a Christian Nation, The Moral Landscape, Free Will, Lying, Waking Up, and Islam and the Future of Tolerance (with Maajid Nawaz). The End of Faith won the 2005 PEN Award for Nonfiction. His writing has been published in more than 20 languages. Mr. Harris and his work have been discussed in The New York Times, Time, Scientific American, Nature, Newsweek, Rolling Stone, and many other journals. His writing has appeared in The New York Times, The Los Angeles Times, The Economist, Newsweek, The Times (London), The Boston Globe, The Atlantic, The Annals of Neurology, and elsewhere. Mr. Harris received a degree in philosophy from Stanford University and a Ph.D. in neuroscience from UCLA.'
@@ -125,6 +127,7 @@ const seedDatabase = async (connection: Connection) => {
   feedUrl2.isAuthority = true
 
   let podcast3 = new Podcast()
+  podcast3.sortableTitle = 'tim ferriss show'
   podcast3.title = 'The Tim Ferriss Show'
   podcast3.imageUrl = assetPath ? `${assetPath}/ferris.jpeg` : 'https://dfkfj8j276wwv.cloudfront.net/images/69/10/10/fb/691010fb-625e-4abe-993c-a57228b28dbe/91cb53ae0d5dbb379b9dffecf0a772593891d0d09bbe6d90ee746edbdb79e3ec75584f2ceb8260e9f675a90c05419b9b99842a76905b686f0f51c1a9d3e227ab.jpeg'
   podcast3.description = `Tim Ferriss is a self-experimenter and bestselling author, best known for The 4-Hour Workweek, which has been translated into 40+ languages. Newsweek calls him "the world's best human guinea pig, " and The New York Times calls him "a cross between Jack Welch and a Buddhist monk." In this show, he deconstructs world-class performers from eclectic areas (investing, chess, pro sports, etc.), digging deep to find the tools, tactics, and tricks that listeners can use.`
