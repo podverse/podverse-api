@@ -160,12 +160,11 @@ router.get('/mediaRefs',
   async ctx => {
     try {
       const { query } = ctx.state
-      const includeNSFW = ctx.headers.nsfwmode && ctx.headers.nsfwmode === 'on'
 
       const mediaRefs = await getUserMediaRefs(
         query,
         ctx.state.user.id,
-        includeNSFW,
+        ctx.state.includeNSFW,
         true
       )
       ctx.body = mediaRefs
