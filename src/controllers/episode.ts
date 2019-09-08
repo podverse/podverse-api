@@ -84,14 +84,14 @@ const getEpisodes = async (query, includeNSFW) => {
         sincePubDate
       }
     )
-    countQB.andWhere('episode."isPublic" = true')
+    countQB.andWhere('episode."isPublic" IS true')
   } else {
     if (podcastIds.length > 0) {
       countQB.where(
         episodeWhereSincePubDateConditions,
         { podcastIds }
       )
-      countQB.andWhere('episode."isPublic" = true')
+      countQB.andWhere('episode."isPublic" IS true')
     } else {
       countQB.where({ isPublic: true })
     }
@@ -147,7 +147,6 @@ const getEpisodes = async (query, includeNSFW) => {
         searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
       }
     )
-    qb.andWhere('episode."isPublic" = true')
   } else if (sincePubDate) {
     if (podcastIds.length === 0) return [[], 0]
 
@@ -158,10 +157,11 @@ const getEpisodes = async (query, includeNSFW) => {
         sincePubDate
       }
     )
-    qb.andWhere('episode."isPublic" = true')
   } else {
     qb = limitEpisodesQuerySize(qb, podcastIds, sort)
   }
+
+  qb.andWhere('episode."isPublic" IS true')
 
   if (sincePubDate) {
     qb.offset(0)

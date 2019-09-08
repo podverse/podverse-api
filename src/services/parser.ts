@@ -12,7 +12,6 @@ import { getPodcast } from '~/controllers/podcast'
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-
 export const parseFeedUrl = async feedUrl => {
   // console.log('start parsing', performance.now(), feedUrl.url)
   const response = await request(feedUrl.url, { timeout: 10000 })
@@ -55,6 +54,19 @@ export const parseFeedUrl = async feedUrl => {
         if (data.categories) {
           categories = await findCategories(data.categories)
           // console.log('generated categories', performance.now())
+        }
+
+        // if parsing an already existing podcast, hide all existing episodes for the podcast,
+        // in case they have been removed from the RSS feed.
+        // if they still exist, they will be re-added during findOrGenerateParsedEpisodes.
+        if (feedUrl.podcast && feedUrl.podcast.id) {
+          const episodeRepo = getRepository(Episode)
+          await episodeRepo
+            .createQueryBuilder()
+            .update(Episode)
+            .set({ isPublic: false })
+            .where({ podcastId: feedUrl.podcast.id })
+            .execute()
         }
 
         // console.log('findOrGenerateParsedEpisodes start', performance.now())
