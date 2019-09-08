@@ -156,6 +156,7 @@ router.get('/download',
 // Get Logged In User's MediaRefs
 router.get('/mediaRefs',
   jwtAuth,
+  parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   async ctx => {
     try {
