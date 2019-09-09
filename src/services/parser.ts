@@ -44,14 +44,14 @@ export const parseFeedUrl = async feedUrl => {
 
         let authors = []
         // console.log('authors', performance.now())
-        if (data.author) {
+        if (data.author && data.author.length > 0) {
           authors = await findOrGenerateAuthors(data.author) as never
           // console.log('generated authors', performance.now())
         }
 
         let categories: Category[] = []
         // console.log('categories', performance.now())
-        if (data.categories) {
+        if (data.categories && data.categories.length > 0) {
           categories = await findCategories(data.categories)
           // console.log('generated categories', performance.now())
         }
