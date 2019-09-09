@@ -5,7 +5,7 @@ import { getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { convertToSlug } from '~/lib/utility'
+import { convertToSlug, isValidDate } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 
 // import { performance } from 'perf_hooks'
@@ -96,7 +96,7 @@ export const parseFeedUrl = async feedUrl => {
           }, [])
           latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
 
-          podcast.lastEpisodePubDate = latestEpisode.pubDate
+          podcast.lastEpisodePubDate = isValidDate(latestEpisode.pubDate) ? latestEpisode.pubDate : undefined
           podcast.lastEpisodeTitle = latestEpisode.title
         } else {
           podcast.lastEpisodePubDate = undefined
@@ -107,7 +107,7 @@ export const parseFeedUrl = async feedUrl => {
           podcast.description = data.description.long
         }
 
-        podcast.feedLastUpdated = data.updated
+        podcast.feedLastUpdated = isValidDate(data.updated) ? data.updated : new Date()
         podcast.imageUrl = data.image
         podcast.isExplicit = !!data.explicit
         podcast.guid = data.guid
@@ -375,7 +375,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
     ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
-  episode.pubDate = parsedEpisode.published
+  episode.pubDate = isValidDate(parsedEpisode.published) ? parsedEpisode.published : new Date()
   episode.title = parsedEpisode.title
 
   // Since episode authors and categories aren't being used by the app,
