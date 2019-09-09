@@ -161,7 +161,7 @@ export const parseFeedUrl = async feedUrl => {
         // console.log('updateFeedUrl end', performance.now())
         resolve()
       } catch (error) {
-        console.log('parseFeedUrl, feedUrl:', feedUrl)
+        console.log('error parseFeedUrl, feedUrl:', feedUrl.id, feedUrl.url)
         console.log(error)
       }
     })
@@ -193,9 +193,8 @@ export const parsePublicFeedUrls = async () => {
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('parsePublicFeedUrls parseFeedUrl', feedUrl)
+        console.log('error parsePublicFeedUrls parseFeedUrl', feedUrl.id, feedUrl.url)
         console.log('error', error)
-        console.log(feedUrl)
       }
     }
 
@@ -221,9 +220,7 @@ export const parseOrphanFeedUrls = async () => {
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('parseOrphanFeedUrls parseFeedUrl', feedUrl)
-        console.log('error', error)
-        console.log(feedUrl)
+        console.log('error parseOrphanFeedUrls parseFeedUrl', feedUrl.id, feedUrl.url)
       }
     }
 
@@ -281,9 +278,8 @@ export const parseNextFeedFromQueue = async () => {
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('parseNextFeedFromQueue parseFeedUrl', feedUrl)
+        console.log('error parseNextFeedFromQueue parseFeedUrl', feedUrl.id, feedUrl.url)
         console.log('error', error)
-        console.log(feedUrl)
       }
       await parseFeedUrl(feedUrl)
     } else {
@@ -311,11 +307,14 @@ const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
   let allAuthorSlugs = authorNames.split(',').map(x => convertToSlug(x))
 
-  const existingAuthors = await authorRepo.find({
-    where: {
-      slug: In(allAuthorSlugs)
-    }
-  })
+  let existingAuthors = [] as any
+  if (allAuthorSlugs && allAuthorSlugs.length > 0) {
+    existingAuthors = await authorRepo.find({
+      where: {
+        slug: In(allAuthorSlugs)
+      }
+    })
+  }
 
   let newAuthors = []
   let existingAuthorSlugs = existingAuthors.map(x => x.slug)
@@ -349,11 +348,16 @@ const findCategories = async (categories: string[]) => {
   }
 
   const categoryRepo = getRepository(Category)
-  const matchedCategories = await categoryRepo.find({
-    where: {
-      fullPath: In(c)
-    }
-  })
+
+  let matchedCategories = [] as any
+  if (c && c.length > 0) {
+    matchedCategories = await categoryRepo.find({
+      where: {
+        fullPath: In(c)
+      }
+    })
+  }
+
   return matchedCategories
 }
 
@@ -410,11 +414,15 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // Find episodes in the database that have matching episode media URLs to
   // those found in the parsed object, then store an array of just those URLs.
   // console.log('find savedEpisodes start', performance.now())
-  const savedEpisodes = await episodeRepo.find({
-    where: {
-      mediaUrl: In(parsedEpisodeMediaUrls)
-    }
-  })
+  let savedEpisodes = [] as any
+  if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
+    savedEpisodes = await episodeRepo.find({
+      where: {
+        mediaUrl: In(parsedEpisodeMediaUrls)
+      }
+    })
+  }
+
   // console.log('find savedEpisodes end', performance.now())
 
   // console.log('set all savedEpisodes to isPublic false start', performance.now())
