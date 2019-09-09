@@ -1,6 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   ManyToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { Podcast } from '~/entities'
+import { convertToSlug } from '~/lib/utility'
 const shortid = require('shortid')
 
 @Entity('authors')
@@ -30,8 +31,7 @@ export class Author {
   @BeforeInsert()
   @BeforeUpdate()
   beforeAll () {
-    let slug = this.name.replace(/\s+/g, '-').toLowerCase()
-    this.slug = slug.replace(/\W/g, '')
+    this.slug = convertToSlug(this.name)
     this.name = this.name.trim()
   }
 

@@ -3,9 +3,10 @@ import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
 import { getRepository, In, getManager } from 'typeorm'
 import { config } from '~/config'
-import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getPodcast } from '~/controllers/podcast'
+import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
+import { convertToSlug } from '~/lib/utility'
+import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 
 // import { performance } from 'perf_hooks'
 
@@ -18,6 +19,7 @@ export const parseFeedUrl = async feedUrl => {
   // console.log('response received', performance.now())
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
+
       if (error) {
         console.error('Parsing error', error, feedUrl.url)
         reject()
@@ -43,6 +45,7 @@ export const parseFeedUrl = async feedUrl => {
         podcast.isPublic = true
 
         let authors = []
+
         // console.log('authors', performance.now())
         if (data.author && data.author.length > 0) {
           authors = await findOrGenerateAuthors(data.author) as never
@@ -306,17 +309,18 @@ export const parseNextFeedFromQueue = async () => {
 
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
-  let allAuthorNames = authorNames.split(',').map(x => x.trim())
+  let allAuthorSlugs = authorNames.split(',').map(x => convertToSlug(x))
 
   const existingAuthors = await authorRepo.find({
     where: {
-      name: In(allAuthorNames)
+      slug: In(allAuthorSlugs)
     }
   })
 
   let newAuthors = []
-  let existingAuthorNames = existingAuthors.map(x => x.name)
-  let newAuthorNames = allAuthorNames.filter(x => !existingAuthorNames.includes(x))
+  let existingAuthorSlugs = existingAuthors.map(x => x.slug)
+
+  let newAuthorNames = allAuthorSlugs.filter(x => !existingAuthorSlugs.includes(x))
 
   for (const name of newAuthorNames) {
     let author = generateAuthor(name) as never

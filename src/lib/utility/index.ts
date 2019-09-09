@@ -151,3 +151,5 @@ export const isBeforeDate = (expirationDate, dayOffset = 0) => {
 
 export const removeObjectKeysWithEmptyValues = obj =>
   Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key])
+
+export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '')
