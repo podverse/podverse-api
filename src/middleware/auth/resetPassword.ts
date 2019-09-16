@@ -52,6 +52,7 @@ export const sendResetPassword = async ctx => {
     ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
     ctx.status = 200
   } catch (error) {
+    console.log('sendResetPasswordEmail error:', error)
     ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
     ctx.status = 200
   }
