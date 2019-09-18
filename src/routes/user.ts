@@ -11,7 +11,7 @@ import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove,
+import { validateUserAddOrUpdateHistoryItem, validateUserAddOrUpdateHistoryItems, validateUserHistoryItemRemove,
   validateUserUpdate, validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
@@ -98,7 +98,7 @@ router.patch('/add-or-update-history-item',
 // Set all history items
 router.patch('/add-or-update-history-items',
   jwtAuth,
-  validateUserAddOrUpdateHistoryItem,
+  validateUserAddOrUpdateHistoryItems,
   hasValidMembership,
   async ctx => {
     try {
