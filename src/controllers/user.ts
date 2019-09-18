@@ -433,9 +433,15 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
   return { queueItems }
 }
 
+const addOrUpdateHistoryItems = async (nowPlayingItems, loggedInUserid) => {
+  for (const nowPlayingItem of nowPlayingItems) {
+    await addOrUpdateHistoryItem(nowPlayingItem, loggedInUserid)
+  }
+}
+
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   if (nowPlayingItem.episodeDescription) {
-    nowPlayingItem.episodeDescription = nowPlayingItem.episodeDescription.substring(0, 10000)
+    nowPlayingItem.episodeDescription = nowPlayingItem.episodeDescription.substring(0, 20000)
   }
 
   if (!loggedInUserId) {
@@ -463,7 +469,7 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   // Remove historyItem if it already exists in the array, then prepend it to the array.
   historyItems = historyItems.filter(x => {
     if (x.episodeDescription) {
-      x.episodeDescription = x.episodeDescription.substring(0, 10000)
+      x.episodeDescription = x.episodeDescription.substring(0, 20000)
     }
     if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
       return
@@ -581,6 +587,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
 export {
   addOrUpdateHistoryItem,
+  addOrUpdateHistoryItems,
   clearAllHistoryItems,
   createUser,
   deleteLoggedInUser,

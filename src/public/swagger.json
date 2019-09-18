@@ -1818,6 +1818,35 @@
         ]
       }
     },
+    "/user/add-or-update-history-items": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Add or update a logged-in user's history items. NOTE: array should contain history items in order from least recently played to most recently played.",
+        "description": "Returns a success message",
+        "operationId": "userAddOrUpdateHistoryItems",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/user/history-item": {
       "delete": {
         "tags": [

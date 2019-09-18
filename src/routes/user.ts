@@ -2,17 +2,17 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { addOrUpdateHistoryItem, clearAllHistoryItems, deleteLoggedInUser, getCompleteUserDataAsJSON,
-  getPublicUser, getPublicUsers, getUserMediaRefs, getUserPlaylists, toggleSubscribeToUser, updateQueueItems,
-  updateLoggedInUser, removeHistoryItem } from '~/controllers/user'
+import { addOrUpdateHistoryItem, addOrUpdateHistoryItems, clearAllHistoryItems, deleteLoggedInUser,
+  getCompleteUserDataAsJSON, getPublicUser, getPublicUsers, getUserMediaRefs, getUserPlaylists, removeHistoryItem,
+  toggleSubscribeToUser, updateQueueItems, updateLoggedInUser } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove, validateUserUpdate,
-  validateUserUpdateQueue } from '~/middleware/queryValidation/update'
+import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove,
+  validateUserUpdate, validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -90,6 +90,23 @@ router.patch('/add-or-update-history-item',
 
       ctx.status = 200
       ctx.body = { message: 'Updated user history' }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Set all history items
+router.patch('/add-or-update-history-items',
+  jwtAuth,
+  validateUserAddOrUpdateHistoryItem,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const body: any = ctx.request.body
+      await addOrUpdateHistoryItems(body.historyItems, ctx.state.user.id)
+
+      ctx.status = 200
+      ctx.body = { message: 'Updated user history items' }
     } catch (error) {
       emitRouterError(error, ctx)
     }

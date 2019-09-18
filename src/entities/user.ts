@@ -155,8 +155,8 @@ export class User {
     this.subscribedUserIds = this.subscribedUserIds || []
 
     this.historyItems = this.historyItems || []
-    if (this.historyItems.length > 500) {
-      const totalToRemove = (this.historyItems.length - 500)
+    if (this.historyItems.length > 100) {
+      const totalToRemove = (this.historyItems.length - 100)
       this.historyItems.splice(0, totalToRemove)
     }
   }
