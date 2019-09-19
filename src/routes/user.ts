@@ -2,16 +2,16 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { addOrUpdateHistoryItem, addOrUpdateHistoryItems, clearAllHistoryItems, deleteLoggedInUser,
+import { addOrUpdateHistoryItem, clearAllHistoryItems, deleteLoggedInUser,
   getCompleteUserDataAsJSON, getPublicUser, getPublicUsers, getUserMediaRefs, getUserPlaylists, removeHistoryItem,
-  toggleSubscribeToUser, updateQueueItems, updateLoggedInUser } from '~/controllers/user'
+  toggleSubscribeToUser, updateQueueItems, updateLoggedInUser, updateHistoryItemPlaybackPosition } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
-import { validateUserAddOrUpdateHistoryItem, validateUserAddOrUpdateHistoryItems, validateUserHistoryItemRemove,
+import { validateUserAddOrUpdateHistoryItem, validateUserHistoryItemRemove,
   validateUserUpdate, validateUserUpdateQueue } from '~/middleware/queryValidation/update'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
@@ -78,6 +78,23 @@ router.patch('/',
     }
   })
 
+// Update history item playback position
+router.patch('/update-history-item-playback-position',
+  jwtAuth,
+  validateUserAddOrUpdateHistoryItem,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const body: any = ctx.request.body
+      await updateHistoryItemPlaybackPosition(body.historyItem, ctx.state.user.id)
+
+      ctx.status = 200
+      ctx.body = { message: 'Updated user history item playback position' }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
 // Add or update history item
 router.patch('/add-or-update-history-item',
   jwtAuth,
@@ -90,23 +107,6 @@ router.patch('/add-or-update-history-item',
 
       ctx.status = 200
       ctx.body = { message: 'Updated user history' }
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
-
-// Set all history items
-router.patch('/add-or-update-history-items',
-  jwtAuth,
-  validateUserAddOrUpdateHistoryItems,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      await addOrUpdateHistoryItems(body.historyItems, ctx.state.user.id)
-
-      ctx.status = 200
-      ctx.body = { message: 'Updated user history items' }
     } catch (error) {
       emitRouterError(error, ctx)
     }

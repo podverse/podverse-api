@@ -433,10 +433,38 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
   return { queueItems }
 }
 
-const addOrUpdateHistoryItems = async (nowPlayingItems, loggedInUserid) => {
-  for (const nowPlayingItem of nowPlayingItems) {
-    await addOrUpdateHistoryItem(nowPlayingItem, loggedInUserid)
+const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId) => {
+
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to update history item playback position')
   }
+
+  const repository = getRepository(User)
+  let user = await repository.findOne(
+    {
+      id: loggedInUserId
+    },
+    {
+      select: [
+        'id',
+        'historyItems'
+      ]
+    })
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  let historyItems = user.historyItems || []
+
+  const index = historyItems.findIndex(
+    (x: any) => !x.clipId && x.episodeId === nowPlayingItem.episodeId)
+
+  if (index > -1) {
+    historyItems[index].userPlaybackPosition = nowPlayingItem.userPlaybackPosition
+  }
+
+  return repository.update(loggedInUserId, { historyItems })
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
@@ -587,7 +615,6 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
 export {
   addOrUpdateHistoryItem,
-  addOrUpdateHistoryItems,
   clearAllHistoryItems,
   createUser,
   deleteLoggedInUser,
@@ -602,6 +629,7 @@ export {
   getUserPlaylists,
   removeHistoryItem,
   toggleSubscribeToUser,
+  updateHistoryItemPlaybackPosition,
   updateQueueItems,
   updateLoggedInUser,
   updateUserEmailVerificationToken,

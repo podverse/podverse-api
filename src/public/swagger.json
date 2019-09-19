@@ -1789,14 +1789,14 @@
         ]
       }
     },
-    "/user/add-or-update-history-item": {
+    "/user/update-history-item-playback-position": {
       "patch": {
         "tags": [
           "user"
         ],
-        "summary": "Add or update a logged-in user's history item",
+        "summary": "Update a logged-in user's history item playback position",
         "description": "Returns a success message",
-        "operationId": "userAddOrUpdateHistoryItem",
+        "operationId": "userUpdateHistoryItemPlaybackPosition",
         "produces": [
           "application/json"
         ],
@@ -1818,14 +1818,14 @@
         ]
       }
     },
-    "/user/add-or-update-history-items": {
+    "/user/add-or-update-history-item": {
       "patch": {
         "tags": [
           "user"
         ],
-        "summary": "Add or update a logged-in user's history items. NOTE: array should contain history items in order from least recently played to most recently played.",
+        "summary": "Add or update a logged-in user's history item",
         "description": "Returns a success message",
-        "operationId": "userAddOrUpdateHistoryItems",
+        "operationId": "userAddOrUpdateHistoryItem",
         "produces": [
           "application/json"
         ],
