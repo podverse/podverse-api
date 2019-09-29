@@ -4,7 +4,7 @@ import { emailTemplate } from '~/lib/emailTemplate'
 import { convertSecondsToDaysText } from '~/lib/utility';
 const createError = require('http-errors')
 
-const { mailerUsername, resetPasswordTokenExpiration } = config
+const { mailerFrom, resetPasswordTokenExpiration } = config
 
 export const sendResetPasswordEmail = async (email, name, token) => {
   const transporter = createTransporter()
@@ -26,7 +26,7 @@ export const sendResetPasswordEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: `Podverse <${mailerUsername}>`,
+      from: `Podverse <${mailerFrom}>`,
       to: email,
       subject: 'Reset your Podverse password',
       html: emailTemplate(emailFields)

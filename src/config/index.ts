@@ -36,6 +36,7 @@ export interface IConfig {
   mailerPort: number
   mailerUsername: string
   mailerPassword: string
+  mailerFrom: string
   awsConfig: any
   bitpayConfig: any
   paypalConfig: any
@@ -116,6 +117,7 @@ const config: IConfig = {
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
+  mailerFrom: process.env.MAILER_FROM || '',
   awsConfig,
   bitpayConfig,
   paypalConfig,

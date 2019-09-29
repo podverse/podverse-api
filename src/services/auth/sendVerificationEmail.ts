@@ -3,7 +3,7 @@ import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
 const createError = require('http-errors')
 
-const { mailerUsername } = config
+const { mailerFrom } = config
 
 export const sendVerificationEmail = async (email, name, token) => {
   const transporter = createTransporter()
@@ -24,7 +24,7 @@ export const sendVerificationEmail = async (email, name, token) => {
 
   try {
     await transporter.sendMail({
-      from: `Podverse <${mailerUsername}>`,
+      from: `Podverse <${mailerFrom}>`,
       to: email,
       subject: 'Verify your Podverse account',
       html: emailTemplate(emailFields)
