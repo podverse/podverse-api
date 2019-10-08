@@ -494,12 +494,15 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
 
   let historyItems = user.historyItems || []
 
-  // Remove historyItem if it already exists in the array, then prepend it to the array.
+  // NOTE: userPlaybackPosition should ONLY ever be updated in updateHistoryItemPlaybackPosition.
+  // Remove historyItem if it already exists in the array, but retain the stored userPlaybackPosition,
+  // then prepend it to the array.
   historyItems = historyItems.filter(x => {
     if (x.episodeDescription) {
       x.episodeDescription = x.episodeDescription.substring(0, 20000)
     }
     if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
+      nowPlayingItem.userPlaybackPosition = x.userPlaybackPosition || 0
       return
     } else {
       return x
