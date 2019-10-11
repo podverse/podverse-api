@@ -59,6 +59,18 @@ export const parseFeedUrl = async feedUrl => {
           // console.log('generated categories', performance.now())
         }
 
+        // console.log('authors save start', performance.now())
+        const authorRepo = getRepository(Author)
+        await authorRepo.save(authors)
+        // console.log('authors save end', performance.now())
+        podcast.authors = authors
+
+        // console.log('categories save start', performance.now())
+        const categoryRepo = getRepository(Category)
+        await categoryRepo.save(categories)
+        // console.log('categories save end', performance.now())
+        podcast.categories = categories
+
         // if parsing an already existing podcast, hide all existing episodes for the podcast,
         // in case they have been removed from the RSS feed.
         // if they still exist, they will be re-added during findOrGenerateParsedEpisodes.
@@ -118,35 +130,30 @@ export const parseFeedUrl = async feedUrl => {
         podcast.title = data.title
         podcast.type = data.type
 
-        // console.log('transactionStart', performance.now())
+        delete podcast.createdAt
+        delete podcast.updatedAt
+        delete podcast.episodes
+
+        // console.log('podcast save start', performance.now())
+        const podcastRepo = getRepository(Podcast)
+        await podcastRepo.save(podcast)
+        // console.log('podcast save end', performance.now())
+
+        // console.log('transactionStart1', performance.now())
         await getManager().transaction(async transactionalEntityManager => {
-          delete podcast.createdAt
-          delete podcast.updatedAt
-          delete podcast.episodes
-
-          // console.log('transaction authors save start', performance.now())
-          await transactionalEntityManager.save(authors)
-          // console.log('transaction authors save end', performance.now())
-
-          // console.log('transaction categories save start', performance.now())
-          await transactionalEntityManager.save(categories)
-          // console.log('transaction categories save end', performance.now())
-
-          podcast.authors = authors
-          podcast.categories = categories
-
-          // console.log('transaction podcasts save start', performance.now())
-          await transactionalEntityManager.save(podcast)
-          // console.log('transaction podcasts save end', performance.now())
-
           // console.log('transaction save updatedSavedEpisodes start', performance.now())
           await transactionalEntityManager.save(updatedSavedEpisodes, { chunk: 400 })
           // console.log('transaction save updatedSavedEpisodes end', performance.now())
+        })
+        // console.log('transactionEnd1', performance.now())
 
+        // console.log('transactionStart2', performance.now())
+        await getManager().transaction(async transactionalEntityManager => {
           // console.log('transaction save newEpisodes start', performance.now())
           await transactionalEntityManager.save(newEpisodes, { chunk: 400 })
           // console.log('transaction save newEpisodes end', performance.now())
         })
+        // console.log('transactionEnd2', performance.now())
 
         const feedUrlRepo = getRepository(FeedUrl)
 
