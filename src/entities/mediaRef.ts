@@ -7,6 +7,8 @@ const shortid = require('shortid')
 
 @Entity('mediaRefs')
 export class MediaRef {
+
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

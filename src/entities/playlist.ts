@@ -1,13 +1,13 @@
 import { Episode, MediaRef, User } from '~/entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable,
-  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn,
-  BeforeUpdate } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, JoinTable,
+  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
 
 @Entity('playlists')
 export class Playlist {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

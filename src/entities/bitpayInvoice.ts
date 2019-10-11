@@ -1,14 +1,16 @@
 import { IsUrl, IsUUID } from 'class-validator'
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
 @Entity('bitpayInvoices')
 export class BitPayInvoice {
 
+  @Index()
   @PrimaryColumn('varchar')
   id: string
 
+  @Index()
   @IsUUID()
   @Column({ unique: true })
   orderId: string

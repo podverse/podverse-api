@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
 import { Podcast } from '~/entities'
@@ -7,6 +7,7 @@ const shortid = require('shortid')
 @Entity('categories')
 export class Category {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

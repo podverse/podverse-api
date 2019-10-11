@@ -9,6 +9,7 @@ const shortid = require('shortid')
 @Entity('episodes')
 export class Episode {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -55,6 +56,7 @@ export class Episode {
   @Column({ nullable: true })
   mediaType?: string
 
+  @Index()
   @IsUrl()
   @Column({ unique: true })
   mediaUrl: string

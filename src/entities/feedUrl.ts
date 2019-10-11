@@ -1,12 +1,13 @@
 import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne,
+import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToOne,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
 const shortid = require('shortid')
 
 @Entity('feedUrls')
 export class FeedUrl {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -16,6 +17,7 @@ export class FeedUrl {
   @Column({ default: false })
   isAuthority: boolean
 
+  @Index()
   @IsUrl()
   @Column({ unique: true })
   url: string

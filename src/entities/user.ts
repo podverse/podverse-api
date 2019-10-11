@@ -1,5 +1,5 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
@@ -10,12 +10,14 @@ const shortid = require('shortid')
 @Entity('users')
 export class User {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
   })
   id: string
 
+  @Index()
   @IsEmail()
   @Column({
     select: false,

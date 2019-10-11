@@ -8,6 +8,7 @@ const shortid = require('shortid')
 @Entity('podcasts')
 export class Podcast {
 
+  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -92,9 +93,11 @@ export class Podcast {
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
+  @Index()
   @Column({ nullable: true })
   sortableTitle?: string
 
+  @Index()
   @Column({ nullable: true })
   title?: string
 
