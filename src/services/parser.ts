@@ -287,8 +287,8 @@ export const parseNextFeedFromQueue = async () => {
       } catch (error) {
         console.log('error parseNextFeedFromQueue parseFeedUrl', feedUrl.id, feedUrl.url)
         console.log('error', error)
+        throw error
       }
-      await parseFeedUrl(feedUrl)
     } else {
       try {
         await parseFeedUrl(feedUrlMsg)
@@ -296,6 +296,7 @@ export const parseNextFeedFromQueue = async () => {
         console.log('parsePublicFeedUrls feedUrlMsg parseFeedUrl', feedUrlMsg)
         console.log('error', error)
         console.log(feedUrlMsg)
+        throw error
       }
     }
 
