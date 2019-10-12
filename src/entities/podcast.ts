@@ -112,14 +112,10 @@ export class Podcast {
   @JoinTable()
   categories: Category[]
 
-  @OneToMany(type => Episode, episode => episode.podcast, {
-    onDelete: 'CASCADE'
-  })
+  @OneToMany(type => Episode, episode => episode.podcast)
   episodes: Episode[]
 
-  @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast, {
-    onDelete: 'CASCADE'
-  })
+  @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast)
   feedUrls: FeedUrl[]
 
   @CreateDateColumn()

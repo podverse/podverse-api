@@ -22,7 +22,9 @@ export class FeedUrl {
   @Column({ unique: true })
   url: string
 
-  @ManyToOne(type => Podcast, podcast => podcast.feedUrls)
+  @ManyToOne(type => Podcast, podcast => podcast.feedUrls, {
+    onDelete: 'CASCADE'
+  })
   podcast: Podcast
 
   @CreateDateColumn()

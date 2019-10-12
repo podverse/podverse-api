@@ -121,7 +121,9 @@ export class Episode {
   @OneToMany(type => MediaRef, mediaRef => mediaRef.episode)
   mediaRefs: MediaRef[]
 
-  @ManyToOne(type => Podcast, podcast => podcast.episodes)
+  @ManyToOne(type => Podcast, podcast => podcast.episodes, {
+    onDelete: 'CASCADE'
+  })
   podcast: Podcast
 
   // This podcastId field is Mitch's hacky workaround for not knowing how to
