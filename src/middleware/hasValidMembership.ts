@@ -13,13 +13,23 @@ export const hasValidMembership = async (ctx, next) => {
         },
         select: [
           'freeTrialExpiration',
-          'membershipExpiration'
+          'membershipExpiration',
+          'emailVerified'
         ]
       }
     )
 
     if (!user) {
       throw new createError.NotFound('User not found')
+    }
+
+    if (!user.emailVerified) {
+      ctx.status = 401
+      ctx.body = {
+        message: 'Email Verification Required',
+        code: 124
+      }
+      return
     }
 
     if (

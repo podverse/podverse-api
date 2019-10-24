@@ -55,7 +55,6 @@ export const signUpUser = async (ctx, next) => {
     const { id, email, emailVerificationToken, name } = await createUser(user)
 
     await sendVerificationEmail(email, name, emailVerificationToken)
-
     const bearerToken = await generateToken({ id })
 
     const expires = authExpires()

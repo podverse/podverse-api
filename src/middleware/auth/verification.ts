@@ -12,7 +12,8 @@ export const sendVerification = async (ctx, loggedInUserId) => {
 
     if (!user) {
       ctx.body = { message: 'User not found' }
-      ctx.status = '404'
+      ctx.status = 404
+      return
     }
 
     // @ts-ignore

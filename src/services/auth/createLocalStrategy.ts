@@ -18,6 +18,7 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
           {
             select: [
               'email',
+              'emailVerified',
               'freeTrialExpiration',
               'historyItems',
               'id',

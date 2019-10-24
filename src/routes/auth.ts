@@ -2,10 +2,10 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { /* emailNotExists, */ jwtAuth, localAuth, logOut, optionalJwtAuth, resetPassword, sendResetPassword,
-  sendVerification, /* signUpUser, validEmail, */ verifyEmail } from '~/middleware/auth'
+import { emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth, resetPassword, sendResetPassword,
+  sendVerification, signUpUser, validEmail, verifyEmail } from '~/middleware/auth'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
-  validateAuthSendVerification, /* validateAuthSignUp, */ validateAuthVerifyEmail
+  validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
   } from '~/middleware/queryValidation/auth'
 import { getLoggedInUser } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
@@ -26,6 +26,7 @@ router.post('/get-authenticated-user-info',
         if (user) {
           ctx.body = {
             email: user.email,
+            emailVerified: user.emailVerified,
             freeTrialExpiration: user.freeTrialExpiration,
             historyItems: user.historyItems,
             id: user.id,
@@ -106,19 +107,19 @@ router.post('/send-verification',
     }
   })
 
-// const signUpLimiter = RateLimit.middleware({
-//   interval: 5 * 60 * 1000,
-//   max: rateLimiterMaxOverride || 2,
-//   message: `You're doing that too much. Please try again in 2 minutes.`,
-//   prefixKey: 'post/reset-password'
-// })
+const signUpLimiter = RateLimit.middleware({
+  interval: 5 * 60 * 1000,
+  max: rateLimiterMaxOverride || 2,
+  message: `You're doing that too much. Please try again in 2 minutes.`,
+  prefixKey: 'post/reset-password'
+})
 
-// router.post('/sign-up',
-//   signUpLimiter,
-//   validateAuthSignUp,
-//   validEmail,
-//   emailNotExists,
-//   signUpUser)
+router.post('/sign-up',
+  signUpLimiter,
+  validateAuthSignUp,
+  validEmail,
+  emailNotExists,
+  signUpUser)
 
 const verifyEmailLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,

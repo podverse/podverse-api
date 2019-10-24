@@ -55,6 +55,7 @@ const seedDatabase = async (connection: Connection) => {
   user2.freeTrialExpiration = addSeconds(new Date(), 0)
   user2.membershipExpiration = addSeconds(new Date(), membershipExpiration)
   user2.isPublic = true
+  user2.emailVerified = true
 
   let user3 = new User()
   user3.email = 'tweety@looney.tunes'

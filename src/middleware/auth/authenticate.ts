@@ -11,6 +11,7 @@ export function authenticate (ctx, next) {
         const { user } = ctx.state
         ctx.body = {
           email: user.email,
+          emailVerified: user.emailVerified,
           freeTrialExpiration: user.freeTrialExpiration,
           historyItems: user.historyItems,
           id: user.id,

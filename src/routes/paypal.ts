@@ -56,7 +56,7 @@ router.post('/webhooks/payment-completed',
     try {
       const body = ctx.request.body as any
       const paymentID = body.resource.parent_payment
-      const order = await getPayPalPaymentInfo(paymentID) as any
+      const order = await getPayPalPaymentInfo(paymentID)
 
       const { state } = order
 
