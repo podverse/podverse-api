@@ -6,30 +6,24 @@ const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
 export const sendVerification = async (ctx, loggedInUserId) => {
-
   try {
     const user = await getLoggedInUser(loggedInUserId)
-
     if (!user) {
       ctx.body = { message: 'User not found' }
       ctx.status = 404
       return
     }
-
     // @ts-ignore
     const { email, emailVerified, id, name } = user
-
     if (!emailVerified) {
       const emailVerificationToken = uuidv4()
       const emailVerificationTokenExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
-
       await updateUserEmailVerificationToken({
         emailVerified,
         emailVerificationToken,
         emailVerificationTokenExpiration,
         id
       })
-
       await sendVerificationEmail(email, name, emailVerificationToken)
       ctx.body = `Verification email sent!`
       ctx.status = 200
