@@ -1,7 +1,7 @@
 
 import * as parsePodcast from 'node-podcast-parser'
 import * as request from 'request-promise-native'
-import { getRepository, In, getManager } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
@@ -74,8 +74,8 @@ export const parseFeedUrl = async feedUrl => {
         // if parsing an already existing podcast, hide all existing episodes for the podcast,
         // in case they have been removed from the RSS feed.
         // if they still exist, they will be re-added during findOrGenerateParsedEpisodes.
+        const episodeRepo = getRepository(Episode)
         if (feedUrl.podcast && feedUrl.podcast.id) {
-          const episodeRepo = getRepository(Episode)
           await episodeRepo
             .createQueryBuilder()
             .update(Episode)
@@ -139,21 +139,13 @@ export const parseFeedUrl = async feedUrl => {
         await podcastRepo.save(podcast)
         // console.log('podcast save end', performance.now())
 
-        // console.log('transactionStart1', performance.now())
-        await getManager().transaction(async transactionalEntityManager => {
-          // console.log('transaction save updatedSavedEpisodes start', performance.now())
-          await transactionalEntityManager.save(updatedSavedEpisodes, { chunk: 400 })
-          // console.log('transaction save updatedSavedEpisodes end', performance.now())
-        })
-        // console.log('transactionEnd1', performance.now())
+        // console.log('updatedSavedEpisodes save start', performance.now())
+        await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
+        // console.log('updatedSavedEpisodes save end', performance.now())
 
-        // console.log('transactionStart2', performance.now())
-        await getManager().transaction(async transactionalEntityManager => {
-          // console.log('transaction save newEpisodes start', performance.now())
-          await transactionalEntityManager.save(newEpisodes, { chunk: 400 })
-          // console.log('transaction save newEpisodes end', performance.now())
-        })
-        // console.log('transactionEnd2', performance.now())
+        // console.log('newEpisodes save start', performance.now())
+        await episodeRepo.save(newEpisodes, { chunk: 400 })
+        // console.log('newEpisodes save end', performance.now())
 
         const feedUrlRepo = getRepository(FeedUrl)
 
