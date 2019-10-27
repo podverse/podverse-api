@@ -109,7 +109,7 @@ router.post('/send-verification',
   })
 
 const signUpLimiter = RateLimit.middleware({
-  interval: 5 * 60 * 1000,
+  interval: 2 * 60 * 1000,
   max: rateLimiterMaxOverride || 2,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/reset-password'
