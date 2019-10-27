@@ -1,20 +1,13 @@
-import { getLoggedInUser, getUserByVerificationToken, updateUserEmailVerificationToken
-  } from '~/controllers/user'
+import { getUserByEmail, getUserByVerificationToken, updateUserEmailVerificationToken } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
-export const sendVerification = async (ctx, loggedInUserId) => {
+export const sendVerification = async (ctx, email) => {
   try {
-    const user = await getLoggedInUser(loggedInUserId)
-    if (!user) {
-      ctx.body = { message: 'User not found' }
-      ctx.status = 404
-      return
-    }
-    // @ts-ignore
-    const { email, emailVerified, id, name } = user
+    const user = await getUserByEmail(email)
+    const { emailVerified, id, name } = user
     if (!emailVerified) {
       const emailVerificationToken = uuidv4()
       const emailVerificationTokenExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
@@ -25,15 +18,14 @@ export const sendVerification = async (ctx, loggedInUserId) => {
         id
       })
       await sendVerificationEmail(email, name, emailVerificationToken)
-      ctx.body = `Verification email sent!`
+      ctx.body = { message: `If that email exists in our system, a verification email should arrive in your inbox shortly.` }
       ctx.status = 200
-    } else {
-      ctx.body = `Email already verified.`
-      ctx.status = 400
     }
   } catch (error) {
-    emitRouterError(error, ctx)
+    console.log('sendVerification:', error)
   }
+  ctx.body = { message: `If that email exists in our system, a verification email should arrive in your inbox shortly.` }
+  ctx.status = 200
 }
 
 export const verifyEmail = async ctx => {

@@ -2,7 +2,7 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { emailNotExists, jwtAuth, localAuth, logOut, optionalJwtAuth, resetPassword, sendResetPassword,
+import { emailNotExists, localAuth, logOut, optionalJwtAuth, resetPassword, sendResetPassword,
   sendVerification, signUpUser, validEmail, verifyEmail } from '~/middleware/auth'
 import { validateAuthLogin, validateAuthResetPassword, validateAuthSendResetPassword,
   validateAuthSendVerification, validateAuthSignUp, validateAuthVerifyEmail
@@ -96,12 +96,13 @@ const sendVerificationLimiter = RateLimit.middleware({
 })
 
 router.post('/send-verification',
-  jwtAuth,
   sendVerificationLimiter,
   validateAuthSendVerification,
   async ctx => {
     try {
-      await sendVerification(ctx, ctx.state.user.id)
+      // @ts-ignore
+      const email = ctx.request.body.email
+      await sendVerification(ctx, email)
     } catch (error) {
       emitRouterError(error, ctx)
     }

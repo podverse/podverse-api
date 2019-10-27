@@ -9,6 +9,13 @@ export function authenticate (ctx, next) {
         const expires = authExpires()
 
         const { user } = ctx.state
+
+        if (!user.emailVerified) {
+          ctx.body = { message: 'Please verify your email address to login.' }
+          ctx.status = 460
+          return
+        }
+
         ctx.body = {
           email: user.email,
           emailVerified: user.emailVerified,

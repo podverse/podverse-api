@@ -26,7 +26,7 @@ export const sendVerificationEmail = async (email, name, token) => {
     await transporter.sendMail({
       from: `Podverse <${mailerFrom}>`,
       to: email,
-      subject: 'Verify your Podverse account',
+      subject: 'Verify your email address with Podverse.fm',
       html: emailTemplate(emailFields)
     })
   } catch (error) {
