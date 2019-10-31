@@ -143,7 +143,7 @@ export class User {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
 
-    this.historyItems = this.historyItems || []
+    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
     if (this.historyItems.length > 2) {
       const totalToRemove = this.historyItems.length - 2
       this.historyItems = this.historyItems.splice(0, totalToRemove)
