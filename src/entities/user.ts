@@ -143,6 +143,7 @@ export class User {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
 
+    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
     this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
     if (this.historyItems.length > 2) {
       const totalToRemove = this.historyItems.length - 2
@@ -156,7 +157,8 @@ export class User {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
 
-    this.historyItems = this.historyItems || []
+    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
+    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
     if (this.historyItems.length > 100) {
       const totalToRemove = (this.historyItems.length - 100)
       this.historyItems.splice(0, totalToRemove)

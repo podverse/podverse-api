@@ -455,7 +455,7 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
     throw new createError.NotFound('User not found.')
   }
 
-  let historyItems = user.historyItems || []
+  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
 
   const index = historyItems.findIndex(
     (x: any) => !x.clipId && x.episodeId === nowPlayingItem.episodeId)
@@ -492,7 +492,7 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  let historyItems = user.historyItems || []
+  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
 
   // NOTE: userPlaybackPosition should ONLY ever be updated in updateHistoryItemPlaybackPosition.
   // Remove historyItem if it already exists in the array, but retain the stored userPlaybackPosition,
@@ -536,7 +536,7 @@ const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  let historyItems = user.historyItems || []
+  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
 
   const hasMatchingHistoryItem = historyItems.some(x => hasHistoryItemWithMatchingId(episodeId, mediaRefId, x))
 
