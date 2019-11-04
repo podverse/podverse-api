@@ -1,5 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn,
-  UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
 // https://developers.google.com/android-publisher/api-ref/purchases/products#resource
@@ -27,20 +26,13 @@ export class GooglePlayPurchase {
   productId: string
 
   @Column({ nullable: true })
-  purchaseTimeMillis: number
+  purchaseTimeMillis: string
 
   @Column({ nullable: true })
   purchaseState: number
 
   @Column({ unique: true })
   purchaseToken: string
-
-  @Index()
-  @Column({ nullable: true })
-  transactionDate: Date
-
-  @Column({ unique: true })
-  transactionReceipt: string
 
   @ManyToOne(type => User, user => user.googlePlayPurchases, {
     nullable: false,
@@ -53,12 +45,4 @@ export class GooglePlayPurchase {
 
   @UpdateDateColumn()
   updatedAt: Date
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  beforeAll () {
-    if (this.purchaseTimeMillis) {
-      this.transactionDate = new Date(this.purchaseTimeMillis)
-    }
-  }
 }
