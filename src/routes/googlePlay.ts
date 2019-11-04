@@ -1,13 +1,13 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
 import { getGooglePlayPurchase, createGooglePlayPurchase } from '~/controllers/googlePlayPurchase'
-import { getLoggedInUser } from '~/controllers/user'
+import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
+import { GooglePlayPurchase } from '~/entities'
+import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateGooglePlayPurchaseCreate } from '~/middleware/queryValidation/create'
-import { GooglePlayPurchase } from '~/entities'
-// import { getGoogleProductPurchase } from '~/services/google'
+// import { getGoogleApiPurchaseByToken } from '~/services/google'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -37,61 +37,61 @@ router.post('/update-purchase-status',
   jwtAuth,
   async ctx => {
     try {
+      // @ts-ignore
+      const purchaseToken = ctx.request.body.purchaseToken
+      // @ts-ignore
+      const productId = ctx.request.body.productId
       const user = await getLoggedInUser(ctx.state.user.id)
-      if (user && user.id) {
-        // const body = ctx.request.body
-        // TODO: !!! VERIFY THE PURCHASETOKEN !!!
-        // const verified = await getGoogleApiPurchaseByToken(body.purchaseToken) as GooglePlayPurchase
+      if (!user || !user.id) {
+        throw new Error('User not found')
+      } else {
+
+        // @ts-ignore
         const verified = verifiedByTokenPurchase as GooglePlayPurchase
         verified.owner = user
+        verified.purchaseToken = purchaseToken
+        verified.productId = productId
 
         let purchase = await getGooglePlayPurchase(verified.orderId, user.id)
 
         if (purchase) {
           purchase = verified
-
-          // TODO: IF ALREADY ACKNOWLEDGED, DO NOTHING (return already processed body)
-
-          // const updatedPurchase = await updateGooglePlayPurchase(verified, user.id)
+          if (purchase.acknowledgementState === 0) {
+            ctx.body = {
+              code: 123,
+              message: 'Purchase already acknowledged.'
+            }
+            return
+          }
         } else {
           purchase = await createGooglePlayPurchase(verified)
         }
 
-        if (purchase) {
-          delete purchase.owner
-        }
-
         if (purchase && purchase.purchaseState === 0) {
-
-          // TODO: increase membershipExpiration by a year
+          await addYearsToUserMembershipExpiration(user.id, 1)
 
           // TODO: if membership increased success, send acknowledgment to Google API
 
           ctx.body = {
             code: 0,
-            message: 'Purchase completed.'
+            message: 'Purchase completed successfully.'
           }
         } else if (purchase && purchase.purchaseState === 1) {
           ctx.body = {
             code: 1,
-            message: 'Purchase cancelled.',
-            purchase
+            message: 'Purchase cancelled.'
           }
         } else if (purchase && purchase.purchaseState === 2) {
           ctx.body = {
             code: 2,
-            message: 'Purchase pending...',
-            purchase
+            message: 'Purchase pending...'
           }
         } else {
           ctx.body = {
             code: 3,
-            message: 'Something went wrong while processing the purchase. Please email contact@podverse.fm for support.',
-            purchase
+            message: 'Something went wrong while processing the purchase. Please email contact@podverse.fm for support.'
           }
         }
-      } else {
-        throw new Error('User not found')
       }
     } catch (error) {
       emitRouterError(error, ctx)

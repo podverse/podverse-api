@@ -19,6 +19,7 @@ const validateFeedUrlCreate = async (ctx, next) => {
 
 const validateGooglePlayPurchaseCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
+    productId: Joi.string().required(),
     purchaseToken: Joi.string().required()
   })
 

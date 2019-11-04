@@ -8,6 +8,58 @@ import { validateEmail } from '~/lib/utility/validation'
 
 const createError = require('http-errors')
 
+const addYearsToUserMembershipExpiration = async (id: string, years: number) => {
+  const user = await getUser(id)
+  if (user) {
+    let { freeTrialExpiration, membershipExpiration } = user
+    const currentDate = new Date()
+
+    if (!membershipExpiration) {
+      membershipExpiration = currentDate
+    }
+
+    if (freeTrialExpiration) {
+      const freeTrialTimeRemaining = currentDate.getTime() - freeTrialExpiration.getTime()
+      if (freeTrialTimeRemaining > 0) {
+        membershipExpiration = new Date(membershipExpiration.getTime() + freeTrialTimeRemaining)
+      }
+    }
+
+    // @ts-ignore
+    user.freeTrialExpiration = null
+    const yearsInMilliseconds = years * 365 * 24 * 60 * 60 * 1000
+    user.membershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
+
+    const repository = getRepository(User)
+    await repository.update(user.id, user)
+
+    return {
+      id: user.id,
+      membershipExpiration: user.membershipExpiration
+    }
+  } else {
+    throw new createError.NotFound('User not found.')
+  }
+}
+
+const getUser = async (id: string) => {
+  const repository = getRepository(User)
+  // @ts-ignore
+  const user = await repository.findOne(
+    { id },
+    {
+      relations: [],
+      select: ['id', 'freeTrialExpiration', 'membershipExpiration']
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found')
+  }
+
+  return user
+}
+
 const createUser = async (obj) => {
   const repository = getRepository(User)
   const user = new User()
@@ -618,6 +670,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
 export {
   addOrUpdateHistoryItem,
+  addYearsToUserMembershipExpiration,
   clearAllHistoryItems,
   createUser,
   deleteLoggedInUser,

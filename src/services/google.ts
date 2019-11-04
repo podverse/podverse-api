@@ -1,6 +1,5 @@
 const { google } = require('googleapis')
 import googleConfig from '~/config/google'
-import { GooglePlayPurchase } from '~/entities'
 const path = require('path')
 
 export const queryGoogleAnalyticsData = async queryObj => {
@@ -41,7 +40,9 @@ export const queryGoogleAnalyticsData = async queryObj => {
   return response
 }
 
-export const getGoogleApiPurchaseByToken = async (purchase: GooglePlayPurchase) => {
+const packageName = 'com.podverse'
+
+export const getGoogleApiPurchaseByToken = async (productId: string, token: string) => {
   const client = await google.auth.getClient({
     keyFile: path.join(__dirname, '/../config/google/jwt.keys.json'),
     scopes: ['https://www.googleapis.com/auth/androidpublisher']
@@ -52,12 +53,10 @@ export const getGoogleApiPurchaseByToken = async (purchase: GooglePlayPurchase) 
     auth: client
   })
 
-  const packageName = 'com.podverse'
-  const productId = purchase.productId
-  const token = purchase.purchaseToken
-
   // https://developers.google.com/android-publisher/api-ref/purchases/products/get
   const result = await androidpublisher.purchases.products.get({ packageName, productId, token })
 
   console.log('result', result)
+
+  return result
 }
