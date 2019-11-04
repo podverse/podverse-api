@@ -56,7 +56,5 @@ export const getGoogleApiPurchaseByToken = async (productId: string, token: stri
   // https://developers.google.com/android-publisher/api-ref/purchases/products/get
   const result = await androidpublisher.purchases.products.get({ packageName, productId, token })
 
-  console.log('result', result)
-
-  return result
+  return result.data
 }
