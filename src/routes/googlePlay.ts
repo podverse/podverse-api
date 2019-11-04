@@ -7,7 +7,7 @@ import { GooglePlayPurchase } from '~/entities'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateGooglePlayPurchaseCreate } from '~/middleware/queryValidation/create'
-// import { getGoogleApiPurchaseByToken } from '~/services/google'
+import { getGoogleApiPurchaseByToken } from '~/services/google'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -46,8 +46,13 @@ router.post('/update-purchase-status',
         throw new Error('User not found')
       } else {
 
+        // TODO: !!! VERIFY THE PURCHASETOKEN !!! (200)
+        // TODO: test/handle passing invalid token to google (400)
+        // TODO: test/handle google play api is down, or other error (5xx)
+        const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as GooglePlayPurchase
+
         // @ts-ignore
-        const verified = verifiedByTokenPurchase as GooglePlayPurchase
+        // const verified = verifiedByTokenPurchase as GooglePlayPurchase
         verified.owner = user
         verified.purchaseToken = purchaseToken
         verified.productId = productId
@@ -56,10 +61,10 @@ router.post('/update-purchase-status',
 
         if (purchase) {
           purchase = verified
-          if (purchase.acknowledgementState === 0) {
+          if (purchase.consumptionState === 1) {
             ctx.body = {
-              code: 123,
-              message: 'Purchase already acknowledged.'
+              code: 4,
+              message: 'Purchase already completed.'
             }
             return
           }
@@ -69,9 +74,6 @@ router.post('/update-purchase-status',
 
         if (purchase && purchase.purchaseState === 0) {
           await addYearsToUserMembershipExpiration(user.id, 1)
-
-          // TODO: if membership increased success, send acknowledgment to Google API
-
           ctx.body = {
             code: 0,
             message: 'Purchase completed successfully.'
