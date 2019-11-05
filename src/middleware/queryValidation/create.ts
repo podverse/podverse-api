@@ -17,6 +17,15 @@ const validateFeedUrlCreate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validateGooglePlayPurchaseCreate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    productId: Joi.string().required(),
+    purchaseToken: Joi.string().required()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateMediaRefCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     authors: Joi.array(),
@@ -67,6 +76,7 @@ const validateUserCreate = async (ctx, next) => {
 
 export {
   validateBitPayInvoiceCreate,
+  validateGooglePlayPurchaseCreate,
   validateFeedUrlCreate,
   validateMediaRefCreate,
   validatePayPalOrderCreate,

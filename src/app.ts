@@ -6,13 +6,11 @@ import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
 import * as swagger from 'koa2-swagger-ui'
 import { Connection } from 'typeorm'
-
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
-  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter
-  } from '~/routes'
+  googlePlayRouter, mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
 const cookie = require('cookie')
@@ -85,6 +83,9 @@ export const createApp = (conn: Connection) => {
 
   app.use(feedUrlRouter.routes())
   app.use(feedUrlRouter.allowedMethods())
+
+  app.use(googlePlayRouter.routes())
+  app.use(googlePlayRouter.allowedMethods())
 
   app.use(mediaRefRouter.routes())
   app.use(mediaRefRouter.allowedMethods())

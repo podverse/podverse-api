@@ -4,6 +4,7 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
+import { GooglePlayPurchase } from './googlePlayPurchase'
 
 const shortid = require('shortid')
 
@@ -119,6 +120,9 @@ export class User {
 
   @OneToMany(type => BitPayInvoice, bitpayInvoice => bitpayInvoice.owner)
   bitpayInvoices: BitPayInvoice[]
+
+  @OneToMany(type => GooglePlayPurchase, googlePlayPurchase => googlePlayPurchase.owner)
+  googlePlayPurchases: GooglePlayPurchase[]
 
   @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
   mediaRefs: MediaRef[]
