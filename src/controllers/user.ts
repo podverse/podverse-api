@@ -459,6 +459,9 @@ const updateUserResetPasswordToken = async (obj) => {
 }
 
 const updateQueueItems = async (queueItems, loggedInUserId) => {
+  if (!Array.isArray(queueItems)) {
+    throw new createError.BadRequest('queueItems must be an array.')
+  }
 
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to update this user')
@@ -486,7 +489,6 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to update history item playback position')
   }
@@ -562,6 +564,10 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   })
   historyItems.unshift(nowPlayingItem)
 
+  if (!Array.isArray(historyItems)) {
+    throw new createError.BadRequest('historyItems must be an array.')
+  }
+
   return repository.update(loggedInUserId, { historyItems })
 }
 
@@ -603,6 +609,10 @@ const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
       return x
     }
   })
+
+  if (!Array.isArray(historyItems)) {
+    throw new createError.BadRequest('historyItems must be an array.')
+  }
 
   return repository.update(loggedInUserId, { historyItems })
 }
