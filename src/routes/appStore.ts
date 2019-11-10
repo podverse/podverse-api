@@ -1,17 +1,17 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getGooglePlayPurchase, createGooglePlayPurchase, updateGooglePlayPurchase } from '~/controllers/googlePlayPurchase'
+import { createAppStorePurchase, getAppStorePurchase, updateAppStorePurchase } from '~/controllers/appStorePurchase'
 import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
-import { GooglePlayPurchase } from '~/entities'
+import { AppStorePurchase } from '~/entities'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
-import { validateGooglePlayPurchaseCreate } from '~/middleware/queryValidation/create'
-import { getGoogleApiPurchaseByToken } from '~/services/google'
+import { validateAppStorePurchaseCreate } from '~/middleware/queryValidation/create'
+import { getAppStorePurchaseByReceipt } from '~/services/apple'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
-const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/google-play` })
+const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/app-store` })
 
 router.use(bodyParser())
 
@@ -19,41 +19,41 @@ const createPurchaseLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
   max: rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
-  prefixKey: 'post/google-play/purchase'
+  prefixKey: 'post/app-store/purchase'
 })
 
 // const verifiedByTokenPurchase = {
 // }
 
-// purchaseState
+// status
 // 0 Purchased
-// 1 Canceled
-// 2 Pending
+// Other error codes found in Table 2-1 in the page linked below:
+// https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
 
-// Create or Update Google Play Purchases
+// Create or Update App Store Purchases
 router.post('/update-purchase-status',
-  validateGooglePlayPurchaseCreate,
+  validateAppStorePurchaseCreate,
   createPurchaseLimiter,
   jwtAuth,
   async ctx => {
     try {
       // @ts-ignore
-      const purchaseToken = ctx.request.body.purchaseToken
+      const transactionReceipt = ctx.request.body.transactionReceipt
       // @ts-ignore
       const productId = ctx.request.body.productId
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
-        const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as GooglePlayPurchase
+        const verified = await getAppStorePurchaseByReceipt(productId, transactionReceipt) as AppStorePurchase
 
         // @ts-ignore
-        // const verified = verifiedByTokenPurchase as GooglePlayPurchase
+        // const verified = verifiedByTokenPurchase as AppStorePurchase
         verified.owner = user
-        verified.purchaseToken = purchaseToken
+        verified.transactionReceipt = transactionReceipt
         verified.productId = productId
 
-        let purchase = await getGooglePlayPurchase(verified.orderId, user.id)
+        let purchase = await getAppStorePurchase(verified.orderId, user.id)
 
         if (purchase) {
           purchase = verified
@@ -65,25 +65,15 @@ router.post('/update-purchase-status',
             return
           }
         } else {
-          purchase = await createGooglePlayPurchase(verified)
+          purchase = await createAppStorePurchase(verified)
         }
 
-        if (purchase && purchase.purchaseState === 0) {
+        if (purchase && purchase.status === 0) {
           await addYearsToUserMembershipExpiration(user.id, 1)
-          await updateGooglePlayPurchase({ consumptionState: 1 }, user.id)
+          await updateAppStorePurchase({ consumptionState: 1 }, user.id)
           ctx.body = {
             code: 0,
             message: 'Purchase completed successfully.'
-          }
-        } else if (purchase && purchase.purchaseState === 1) {
-          ctx.body = {
-            code: 1,
-            message: 'Purchase cancelled.'
-          }
-        } else if (purchase && purchase.purchaseState === 2) {
-          ctx.body = {
-            code: 2,
-            message: 'Purchase pending...'
           }
         } else {
           ctx.body = {
@@ -97,4 +87,4 @@ router.post('/update-purchase-status',
     }
   })
 
-export const googlePlayRouter = router
+export const appStoreRouter = router
