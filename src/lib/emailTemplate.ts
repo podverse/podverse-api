@@ -1,184 +1,168 @@
+import { config } from '~/config'
+
 export const emailTemplate = (obj) => {
   // preheader displays as preview text in some email clients
-  const { preheader, greeting, topMessage, button, buttonLink, bottomMessage,
-    closing, name, address, unsubscribeLink, buttonColor } = obj
+  const { buttonLink, buttonText, headerText, paragraphText, unsubscribeLink } = obj
 
   return `
     <!doctype html>
-    <html>
 
-    <head>
-      <meta name="viewport" content="width=device-width">
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Verify your email address with Podverse.fm</title>
-      <style>
+    <html lang="en">
 
-        p {
-          color: #222 !important;
-        }
-
-        /* -------------------------------------
-            INLINED WITH htmlemail.io/inline
-        ------------------------------------- */
-        /* -------------------------------------
-            RESPONSIVE AND MOBILE FRIENDLY STYLES
-        ------------------------------------- */
-        @media only screen and (max-width: 620px) {
-          table[class=body] h1 {
-            font-size: 28px !important;
-            margin-bottom: 10px !important;
+      <head>
+        <meta charset="utf-8">
+        <title>Podverse</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
           }
-
-          table[class=body] p,
-          table[class=body] ul,
-          table[class=body] ol,
-          table[class=body] td,
-          table[class=body] span,
-          table[class=body] a {
-            font-size: 16px !important;
+          .container {
+            background-color: #D8D8D8;
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0 0 32px 0;
           }
-
-          table[class=body] .wrapper,
-          table[class=body] .article {
-            padding: 10px !important;
-          }
-
-          table[class=body] .content {
-            padding: 0 !important;
-          }
-
-          table[class=body] .container {
-            padding: 0 !important;
-            width: 100% !important;
-          }
-
-          table[class=body] .main {
-            border-left-width: 0 !important;
-            border-radius: 0 !important;
-            border-right-width: 0 !important;
-          }
-
-          table[class=body] .btn table {
-            width: 100% !important;
-          }
-
-          table[class=body] .btn a {
-            width: 100% !important;
-          }
-
-          table[class=body] .img-responsive {
-            height: auto !important;
-            max-width: 100% !important;
-            width: auto !important;
-          }
-        }
-
-        /* -------------------------------------
-            PRESERVE THESE STYLES IN THE HEAD
-        ------------------------------------- */
-        @media all {
-          .ExternalClass {
+          .nav {
+            background-color: ${config.emailBrandColor};
+            height: 58px;
+            text-align: center;
             width: 100%;
           }
-
-          .ExternalClass,
-          .ExternalClass p,
-          .ExternalClass span,
-          .ExternalClass font,
-          .ExternalClass td,
-          .ExternalClass div {
-            line-height: 100%;
+          .nav img {
+            height: 38px;
+            margin-top: 10px
           }
-
-          .apple-link a {
-            color: inherit !important;
-            font-family: inherit !important;
-            font-size: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-            text-decoration: none !important;
+          .content {
+            background-color: #FFF;
+            margin: 40px auto;
+            max-width: 380px;
+            padding: 40px 40px 48px 40px;
           }
-
-          .btn-primary table td:hover {
-            background-color: #34495e !important;
+          .content h1 {
+            color: ${config.emailBrandColor};
+            font-size: 30px;
+            margin: 0 0 32px 0;
+            text-align: center;
           }
-
-          .btn-primary a:hover {
-            background-color: #34495e !important;
-            border-color: #34495e !important;
+          .content p {
+            color: #000;
+            font-size: 14px;
+            margin: 0 0 32px 0;
+            text-align: center;
           }
-        }
-      </style>
-    </head>
+          .content .button {
+            background-color: ${config.emailBrandColor};
+            border-radius: 100px;
+            color: #FFF;
+            display: block;
+            font-size: 14px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            text-decoration: none;
+            width: 100%;
+          }
+          .content .closing {
+            margin: 36px 0 0 0;
+            text-align: center;
+          }
+          .footer .social-icons {
+            margin: 36px 32px 28px 32px;
+            text-align: center;
+          }
+          .footer .social-icon {
+            display: inline-block;
+            height: 32px;
+            margin: 0 16px;
+            width: 32px;
+          }
+          .footer .social-icon img {
+            height: 32px;
+            width: 32px;
+          }
+          .footer .address {
+            color: #555;
+            font-size: 14px;
+            line-height: 20px;
+            margin: 0;
+            text-align: center;
+          }
+          .footer .unsubscribe {
+            color: #555;
+            display: block;
+            font-size: 12px;
+            margin: 32px 0 0 0;
+            text-align: center;
+            text-decoration: none;
+          }
+        </style>
+      </head>
 
-    <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
-      <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
-        <tr>
-          <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
-          <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
-            <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
-
-              <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">${preheader}</span>
-              <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
-
-                <!-- START MAIN CONTENT AREA -->
-                <tr>
-                  <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
-                    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                      <tr>
-                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${greeting}</p>
-                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${topMessage}</p>
-                          <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
-                            <tbody>
-                              <tr>
-                                <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
-                                  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-                                    <tbody>
-                                      <tr>
-                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: ${buttonColor}; border-radius: 5px; text-align: center;">
-                                          <a href="${buttonLink}" target="_blank" style="display: inline-block; color: #ffffff; background-color: ${buttonColor}; border: solid 1px ${buttonColor}; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: ${buttonColor};">${button}</a> </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          ${!bottomMessage ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${bottomMessage}</p>`}
-                          ${!closing ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${closing}</p>`}
-                          ${!name ? '' : `<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${name}</p>`}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- END MAIN CONTENT AREA -->
-              </table>
-
-              <!-- START FOOTER -->
-              <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
-                <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                  <tr>
-                    <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
-                      ${address ? `<span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">${address}</span>` : ''}
-                      ${unsubscribeLink ? `<br><a href="${unsubscribeLink}" style="text-decoration: underline; color: #999999; font-size: 12px; text-align: center;">Unsubscribe</a>.` : ''}
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <!-- END FOOTER -->
-
-              <!-- END CENTERED WHITE CONTAINER -->
-            </div>
-          </td>
-          <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
-        </tr>
-      </table>
-    </body>
+      <body>
+        <div class="container">
+          <div class="nav">
+            ${config.emailHeaderImageUrl ? `<img src="${config.emailHeaderImageUrl}" />` : ''}
+          </div>
+          <div class="content">
+            ${headerText ? `<h1>${headerText}</h1>` : ''}
+            ${paragraphText ? `<p>${paragraphText}</p>` : ''}
+            ${buttonLink && buttonText ? `<a class="button" href="${buttonLink}">${buttonText}</a>` : ''}
+          </div>
+          <div class="footer">
+            ${socialIcons}
+            ${addressSection}
+            ${unsubscribeLink ? `
+              <a class="unsubscribe" href="${unsubscribeLink}">Unsubscribe</a>
+            ` : ''}
+          </div>
+        </div>
+      </body>
 
     </html>
   `
 }
+
+const addressSection = config.legalName || config.legalAddress ? `
+  <div class="address">
+    ${config.legalName}
+    ${config.legalName && config.legalAddress ? '<br />' : ''}
+    ${config.legalAddress}
+  </div>
+` : ''
+
+const facebookIcon = config.socialFacebookImageUrl && config.socialFacebookPageUrl ? `
+  <a class="social-icon" href="${config.socialFacebookPageUrl}">
+    <img src="${config.socialFacebookImageUrl}" />
+  </a>
+` : ''
+
+const githubIcon = config.socialGithubImageUrl && config.socialGithubPageUrl ? `
+  <a class="social-icon" href="${config.socialGithubPageUrl}">
+    <img src="${config.socialGithubImageUrl}" />
+  </a>
+` : ''
+
+const redditIcon = config.socialRedditImageUrl && config.socialRedditPageUrl ? `
+  <a class="social-icon" href="${config.socialRedditPageUrl}">
+    <img src="${config.socialRedditImageUrl}" />
+  </a>
+` : ''
+
+const twitterIcon = config.socialTwitterImageUrl && config.socialTwitterPageUrl ? `
+  <a class="social-icon" href="${config.socialTwitterPageUrl}">
+    <img src="${config.socialTwitterImageUrl}" />
+  </a>
+` : ''
+
+const socialIcons = config.socialFacebookPageUrl
+  || config.socialGithubPageUrl
+  || config.socialRedditPageUrl
+  || config.socialTwitterPageUrl ? `
+  <div class="social-icons">
+    ${facebookIcon}
+    ${githubIcon}
+    ${redditIcon}
+    ${twitterIcon}
+  </div>
+` : ''

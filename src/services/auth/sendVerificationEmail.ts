@@ -9,24 +9,19 @@ export const sendVerificationEmail = async (email, name, token) => {
   const transporter = createTransporter()
 
   const emailFields = {
-    preheader: '',
-    greeting: `${name ? `Hi ${name},` : 'Hello!'}`,
-    topMessage: 'Please click the button below to verify your email address with podverse.fm.',
-    button: 'Verify Email',
     buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
-    bottomMessage: ``,
-    closing: 'Have a nice day :)',
-    name: '',
-    address: '',
-    unsubscribeLink: '',
-    buttonColor: '#2968B1'
+    buttonText: 'Verify Email',
+    closing: '',
+    headerText: 'Verify your email',
+    paragraphText: 'Please click the button below to finish verifying your email.',
+    unsubscribeLink: ''
   }
 
   try {
     await transporter.sendMail({
       from: `Podverse <${mailerFrom}>`,
       to: email,
-      subject: 'Verify your email address with Podverse.fm',
+      subject: 'Verify your email address with Podverse',
       html: emailTemplate(emailFields)
     })
   } catch (error) {
