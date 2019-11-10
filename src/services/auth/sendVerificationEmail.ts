@@ -13,7 +13,7 @@ export const sendVerificationEmail = async (email, name, token) => {
     buttonText: 'Verify Email',
     closing: '',
     headerText: 'Verify your email',
-    paragraphText: 'Please click the button below to finish verifying your email.',
+    paragraphText: 'Please click the button below to finish verification.',
     unsubscribeLink: ''
   }
 
