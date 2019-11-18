@@ -489,6 +489,10 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId) => {
+  if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
+    throw new createError.BadRequest('An episodeId or clipId must be provided.')
+  }
+
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to update history item playback position')
   }
@@ -522,6 +526,10 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
 }
 
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
+  if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
+    throw new createError.BadRequest('An episodeId or clipId must be provided.')
+  }
+
   if (nowPlayingItem.episodeDescription) {
     nowPlayingItem.episodeDescription = nowPlayingItem.episodeDescription.substring(0, 20000)
   }
