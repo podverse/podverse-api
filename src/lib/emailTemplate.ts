@@ -1,7 +1,6 @@
 import { config } from '~/config'
 
 export const emailTemplate = (obj) => {
-  // preheader displays as preview text in some email clients
   const { buttonLink, buttonText, headerText, paragraphText, unsubscribeLink } = obj
 
   return `
