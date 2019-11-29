@@ -8,7 +8,7 @@ export class GooglePlayPurchase {
 
   @Index()
   @PrimaryColumn('varchar')
-  orderId: string
+  transactionId: string
 
   @Column({ nullable: true })
   acknowledgementState: number

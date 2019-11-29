@@ -38,9 +38,7 @@ router.post('/update-purchase-status',
   async ctx => {
     try {
       // @ts-ignore
-      const transactionReceipt = ctx.request.body.transactionReceipt
-      // @ts-ignore
-      const productId = ctx.request.body.productId
+      const { productId, transactionReceipt } = ctx.request.body
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')
@@ -53,7 +51,7 @@ router.post('/update-purchase-status',
         verified.transactionReceipt = transactionReceipt
         verified.productId = productId
 
-        let purchase = await getAppStorePurchase(verified.orderId, user.id)
+        let purchase = await getAppStorePurchase(verified.transactionId, user.id)
 
         if (purchase) {
           purchase = verified

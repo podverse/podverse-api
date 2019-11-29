@@ -12,7 +12,7 @@ const createGooglePlayPurchase = async (obj) => {
   return newGooglePlayPurchase
 }
 
-const getGooglePlayPurchase = async (orderId, loggedInUserId) => {
+const getGooglePlayPurchase = async (transactionId, loggedInUserId) => {
   const repository = getRepository(GooglePlayPurchase)
 
   if (!loggedInUserId) {
@@ -20,7 +20,7 @@ const getGooglePlayPurchase = async (orderId, loggedInUserId) => {
   }
 
   const googlePlayPurchase = await repository.findOne(
-    { orderId },
+    { transactionId },
     { relations: ['owner'] }
   )
 
@@ -38,7 +38,7 @@ const getGooglePlayPurchase = async (orderId, loggedInUserId) => {
 const updateGooglePlayPurchase = async (obj, loggedInUserId) => {
   const repository = getRepository(GooglePlayPurchase)
   const googlePlayPurchase = await repository.findOne(
-    { orderId: obj.orderId },
+    { transactionId: obj.transactionId },
     { relations: ['owner'] }
   )
 

@@ -53,7 +53,7 @@ router.post('/update-purchase-status',
         verified.purchaseToken = purchaseToken
         verified.productId = productId
 
-        let purchase = await getGooglePlayPurchase(verified.orderId, user.id)
+        let purchase = await getGooglePlayPurchase(verified.transactionId, user.id)
 
         if (purchase) {
           purchase = verified

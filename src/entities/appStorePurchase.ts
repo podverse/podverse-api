@@ -8,7 +8,7 @@ export class AppStorePurchase {
 
   @Index()
   @PrimaryColumn('varchar')
-  orderId: string
+  transactionId: string
 
   @Column({ nullable: true })
   acknowledgementState: number
@@ -31,6 +31,7 @@ export class AppStorePurchase {
   @Column({ nullable: true })
   status: number
 
+  // Save as a Base64 encoded string
   @Column({ unique: true })
   transactionReceipt: string
 

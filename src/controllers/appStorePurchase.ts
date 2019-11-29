@@ -12,7 +12,7 @@ const createAppStorePurchase = async (obj) => {
   return newAppStorePurchase
 }
 
-const getAppStorePurchase = async (orderId, loggedInUserId) => {
+const getAppStorePurchase = async (transactionId, loggedInUserId) => {
   const repository = getRepository(AppStorePurchase)
 
   if (!loggedInUserId) {
@@ -20,7 +20,7 @@ const getAppStorePurchase = async (orderId, loggedInUserId) => {
   }
 
   const appStorePurchase = await repository.findOne(
-    { orderId },
+    { transactionId },
     { relations: ['owner'] }
   )
 
@@ -38,7 +38,7 @@ const getAppStorePurchase = async (orderId, loggedInUserId) => {
 const updateAppStorePurchase = async (obj, loggedInUserId) => {
   const repository = getRepository(AppStorePurchase)
   const appStorePurchase = await repository.findOne(
-    { orderId: obj.orderId },
+    { transactionId: obj.transactionId },
     { relations: ['owner'] }
   )
 
