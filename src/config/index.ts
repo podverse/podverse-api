@@ -40,6 +40,7 @@ export interface IConfig {
   mailerUsername: string
   mailerPassword: string
   mailerFrom: string
+  appStoreConfig: any
   awsConfig: any
   bitpayConfig: any
   paypalConfig: any
@@ -106,6 +107,11 @@ const paypalConfig = {
   mode: process.env.PAYPAL_MODE,
   webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
 }
+const appStoreConfig = {
+  apiUrlProd: process.env.APP_STORE_API_URL_PROD,
+  apiUrlSandbox: process.env.APP_STORE_API_URL_SANDBOX,
+  sharedSecret: process.env.APP_STORE_API_SHARED_SECRET
+}
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
@@ -147,6 +153,7 @@ const config: IConfig = {
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
   mailerFrom: process.env.MAILER_FROM || '',
+  appStoreConfig,
   awsConfig,
   bitpayConfig,
   paypalConfig,

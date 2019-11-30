@@ -24,6 +24,7 @@ export const sendVerificationEmail = async (email, name, token) => {
       subject: 'Verify your email address with Podverse',
       html: emailTemplate(emailFields)
     })
+
   } catch (error) {
     throw new createError.InternalServerError(error)
   }

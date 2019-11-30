@@ -1,13 +1,12 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { createAppStorePurchase, getAppStorePurchase, updateAppStorePurchase } from '~/controllers/appStorePurchase'
-import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
+import { getLoggedInUser } from '~/controllers/user'
 import { AppStorePurchase } from '~/entities'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateAppStorePurchaseCreate } from '~/middleware/queryValidation/create'
-import { getAppStorePurchaseByReceipt } from '~/services/apple'
+import { verifyAppStorePurchaseByReceipt } from '~/services/apple'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -38,47 +37,52 @@ router.post('/update-purchase-status',
   async ctx => {
     try {
       // @ts-ignore
-      const { productId, transactionReceipt } = ctx.request.body
+      const { transactionReceipt } = ctx.request.body
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
-        const verified = await getAppStorePurchaseByReceipt(productId, transactionReceipt) as AppStorePurchase
+        const verified = await verifyAppStorePurchaseByReceipt(transactionReceipt) as AppStorePurchase
+
+        console.log('verified???', verified)
 
         // @ts-ignore
-        // const verified = verifiedByTokenPurchase as AppStorePurchase
-        verified.owner = user
-        verified.transactionReceipt = transactionReceipt
-        verified.productId = productId
+        // // const verified = verifiedByTokenPurchase as AppStorePurchase
+        // verified.owner = user
+        // verified.transactionReceipt = transactionReceipt
+        // // verified.productId = productId
+        // // verified.transactionId = verified.orderId
 
-        let purchase = await getAppStorePurchase(verified.transactionId, user.id)
+        // console.log('veri2', verified)
 
-        if (purchase) {
-          purchase = verified
-          if (purchase.consumptionState === 1) {
-            ctx.body = {
-              code: 4,
-              message: 'Purchase already completed.'
-            }
-            return
-          }
-        } else {
-          purchase = await createAppStorePurchase(verified)
-        }
+        // let purchase = await getAppStorePurchase(verified.transactionId, user.id)
 
-        if (purchase && purchase.status === 0) {
-          await addYearsToUserMembershipExpiration(user.id, 1)
-          await updateAppStorePurchase({ consumptionState: 1 }, user.id)
-          ctx.body = {
-            code: 0,
-            message: 'Purchase completed successfully.'
-          }
-        } else {
-          ctx.body = {
-            code: 3,
-            message: 'Something went wrong while processing this purchase. Please email support@podverse.fm for help.'
-          }
-        }
+        // if (purchase) {
+        //   purchase = verified
+        //   if (purchase.consumptionState === 1) {
+        //     ctx.body = {
+        //       code: 4,
+        //       message: 'Purchase already completed.'
+        //     }
+        //     return
+        //   }
+        // } else {
+        //   purchase = await createAppStorePurchase(verified)
+        // }
+
+        // if (purchase && purchase.status === 0) {
+        //   await addYearsToUserMembershipExpiration(user.id, 1)
+        //   await updateAppStorePurchase({ consumptionState: 1 }, user.id)
+        //   ctx.body = {
+        //     code: 0,
+        //     message: 'Purchase completed successfully.'
+        //   }
+        // } else {
+        //   ctx.body = {
+        //     code: 3,
+        //     message: 'Something went wrong while processing this purchase. Please email support@podverse.fm for help.'
+        //   }
+        // }
       }
     } catch (error) {
       emitRouterError(error, ctx)

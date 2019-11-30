@@ -3,7 +3,6 @@ import { validateBaseBody } from './base'
 
 const validateAppStorePurchaseCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
-    productId: Joi.string().required(),
     transactionReceipt: Joi.string().required()
   })
 

@@ -1,3 +1,4 @@
+export { appStoreRouter } from '~/routes/appStore'
 export { authRouter } from '~/routes/auth'
 export { authorRouter } from '~/routes/author'
 export { bitpayRouter } from '~/routes/bitpay'
