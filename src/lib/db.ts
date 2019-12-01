@@ -1,9 +1,10 @@
 import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from '~/config'
-import { Author, BitPayInvoice, Category, Episode, FeedUrl, GooglePlayPurchase,
+import { AppStorePurchase, Author, BitPayInvoice, Category, Episode, FeedUrl, GooglePlayPurchase,
   MediaRef, PayPalOrder, Playlist, Podcast, User } from '~/entities'
 
 const entities = [
+  AppStorePurchase,
   Author,
   BitPayInvoice,
   Category,

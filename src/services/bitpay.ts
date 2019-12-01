@@ -3,8 +3,7 @@ const bitpay = require('bitpay-rest')
 const bitauth = require('bitauth')
 import { config } from '~/config'
 const { bitpayConfig } = config
-const { apiKeyPath, apiKeyPassword, currency, notificationURL, price,
-  redirectURL } = bitpayConfig
+const { apiKeyPassword, apiKeyPath, currency, notificationURL, price, redirectURL } = bitpayConfig
 const uuidv4 = require('uuid/v4')
 
   // NOTE: necessary to decrypt your key even if you didn't enter a password

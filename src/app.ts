@@ -9,7 +9,7 @@ import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
-import { authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
+import { appStoreRouter, authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
   googlePlayRouter, mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
@@ -65,6 +65,9 @@ export const createApp = (conn: Connection) => {
       url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
     }
   }))
+
+  app.use(appStoreRouter.routes())
+  app.use(appStoreRouter.allowedMethods())
 
   app.use(authRouter.routes())
   app.use(authRouter.allowedMethods())

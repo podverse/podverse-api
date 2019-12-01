@@ -6,14 +6,40 @@
 	},
 	"item": [
 		{
+			"name": "App Store Purchase / Update Purchase Status",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"transactionReceipt\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/app-store/update-purchase-status",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"app-store",
+						"update-purchase-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Auth / Get Authenticated User Info",
 			"request": {
 				"method": "POST",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/get-authenticated-user-info",
 					"host": [
@@ -41,7 +67,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test@podverse.fm\",\n\t\"password\": \"Aa!1asdf\"\n}"
+					"raw": "{\n\t\"email\": \"\",\n\t\"password\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/login",
@@ -63,10 +89,6 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/logout",
 					"host": [
@@ -77,54 +99,6 @@
 						"v1",
 						"auth",
 						"logout"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / MediaRefs",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/mediaRefs",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"mediaRefs"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / Playlists",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/playlists",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"playlists"
 					]
 				}
 			},
@@ -142,7 +116,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"password\": \"NewPassw0rd!\",\n\t\"resetPasswordToken\": \"\"\n}"
+					"raw": "{\n\t\"password\": \"\",\n\t\"resetPasswordToken\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/reset-password",
@@ -171,7 +145,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test@podverse.fm\"\n}"
+					"raw": "{\n\t\"email\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/send-reset-password",
@@ -200,7 +174,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test@podverse.fm\"\n}"
+					"raw": "{\n\t\"email\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/send-verification",
@@ -229,10 +203,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test@podverse.fm\",\n\t\"name\": \"Tester\",\n\t\"password\": \"Aa!1asdf\"\n}"
+					"raw": "{\n\t\"email\": \"\",\n\t\"name\": \"\",\n\t\"password\": \"\"\n}"
 				},
 				"url": {
-					"raw": "{{base}}/api/v1/auth/sign-up?includeBodyToken=true",
+					"raw": "{{base}}/api/v1/auth/sign-up?",
 					"host": [
 						"{{base}}"
 					],
@@ -245,149 +219,9 @@
 					"query": [
 						{
 							"key": "includeBodyToken",
-							"value": "true"
+							"value": "true",
+							"disabled": true
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / User / Delete",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/user",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / User / Update",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test-new@podverse.fm\",\n\t\"id\": \"IsEiVxc32\",\n\t\"isPublic\": \"true\",\n\t\"name\": \"New Tester\"\n}"
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/user",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / User / Add or Update History Item",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"historyItem\": {\n        \"clipEndTime\": 100,\n        \"clipId\": \"\",\n        \"clipStartTime\": \"50\",\n        \"clipTitle\": \"Test clip title\",\n        \"episodeDescription\": \"Test episode description\",\n        \"episodeId\": \"\",\n        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n        \"episodePubDate\": \"\",\n        \"episodeTitle\": \"Test episode title\",\n        \"isPublic\": true,\n        \"ownerId\": \"\",\n        \"ownerIsPublic\": \"\",\n        \"ownerName\": \"\",\n        \"podcastAuthors\": null,\n        \"podcastCategories\": null,\n        \"podcastId\": \"\",\n        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n        \"podcastTitle\": \"Test podcast title\",\n        \"userPlaybackPosition\": 123\t\t\n\t}\n}"
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/user/add-or-update-history-item",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"user",
-						"add-or-update-history-item"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / User / Download Data",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/user/download",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"user",
-						"download"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth / User / Update Queue",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"queueItems\": [\n\t\t{\n\t        \"clipEndTime\": 100,\n\t        \"clipId\": \"\",\n\t        \"clipStartTime\": \"50\",\n\t        \"clipTitle\": \"Test clip title\",\n\t        \"episodeDescription\": \"Test episode description\",\n\t        \"episodeId\": \"\",\n\t        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n\t        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n\t        \"episodePubDate\": \"\",\n\t        \"episodeTitle\": \"Test episode title\",\n\t        \"isPublic\": true,\n\t        \"ownerId\": \"\",\n\t        \"ownerIsPublic\": \"\",\n\t        \"ownerName\": \"\",\n\t        \"podcastAuthors\": null,\n\t        \"podcastCategories\": null,\n\t        \"podcastId\": \"\",\n\t        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n\t        \"podcastTitle\": \"Test podcast title\",\n\t        \"userPlaybackPosition\": 123\n\t\t}\n\t]\n}"
-				},
-				"url": {
-					"raw": "{{base}}/api/v1/auth/user/update-queue",
-					"host": [
-						"{{base}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"auth",
-						"user",
-						"update-queue"
 					]
 				}
 			},
@@ -398,10 +232,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/auth/verify-email?",
 					"host": [
@@ -429,10 +259,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/author?page=1&sort=top-past-week",
 					"host": [
@@ -477,10 +303,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/author/:id",
 					"host": [
@@ -507,10 +329,6 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/bitpay/invoice",
 					"host": [
@@ -531,10 +349,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/bitpay/invoice/:id",
 					"host": [
@@ -599,10 +413,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/category?page=&sort=top-past-week",
 					"host": [
@@ -647,10 +457,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/category/:id",
 					"host": [
@@ -677,12 +483,8 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "{{base}}/api/v1/episode?page=1&sort=top-past-week",
+					"raw": "{{base}}/api/v1/episode?sort=random",
 					"host": [
 						"{{base}}"
 					],
@@ -699,7 +501,7 @@
 						},
 						{
 							"key": "podcastId",
-							"value": "",
+							"value": "o6kgywuwTA",
 							"disabled": true
 						},
 						{
@@ -708,12 +510,18 @@
 							"disabled": true
 						},
 						{
+							"key": "sincePubDate",
+							"value": "2012-02-16 19:11:25",
+							"disabled": true
+						},
+						{
 							"key": "page",
-							"value": "1"
+							"value": "1",
+							"disabled": true
 						},
 						{
 							"key": "sort",
-							"value": "top-past-week"
+							"value": "random"
 						}
 					]
 				}
@@ -725,10 +533,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/episode/:id",
 					"host": [
@@ -755,10 +559,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/feedUrl?page=1&sort=top-past-week",
 					"host": [
@@ -793,10 +593,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/feedUrl/:id",
 					"host": [
@@ -819,16 +615,42 @@
 			"response": []
 		},
 		{
+			"name": "Google Play Purchase / Update Purchase Status",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"productId\": \"\",\n\t\"purchaseToken\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/google-play/update-purchase-status",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"google-play",
+						"update-purchase-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "MediaRef / Find by Query",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "{{base}}/api/v1/mediaRef?page=1&sort=top-past-week",
+					"raw": "{{base}}/api/v1/mediaRef?page=1&sort=random&includeEpisode=true&includePodcast=true",
 					"host": [
 						"{{base}}"
 					],
@@ -859,7 +681,15 @@
 						},
 						{
 							"key": "sort",
-							"value": "top-past-week"
+							"value": "random"
+						},
+						{
+							"key": "includeEpisode",
+							"value": "true"
+						},
+						{
+							"key": "includePodcast",
+							"value": "true"
 						}
 					]
 				}
@@ -879,7 +709,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"authors\": [],\n    \"categories\": [],\n    \"endTime\": 200,\n    \"episodeId\": \"aNeiM52attt\",\n    \"isPublic\": \"true\",\n    \"startTime\": 175,\n    \"title\": \"Test mediaRef title\"\n  }"
+					"raw": "{\n    \"authors\": [],\n    \"categories\": [],\n    \"endTime\": 100,\n    \"episodeId\": \"\",\n    \"isPublic\": \"true\",\n    \"startTime\": 50,\n    \"title\": \"Sample clip title\"\n  }"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/mediaRef",
@@ -912,7 +742,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"authors\": [],\n    \"categories\": [],\n    \"endTime\": 345,\n    \"episodeId\": \"\",\n    \"id\": \"\",\n    \"isPublic\": \"true\",\n    \"startTime\": 330,\n    \"title\": \"New test mediaRef title\"\n  }"
+					"raw": "{\n    \"authors\": [],\n    \"categories\": [],\n    \"endTime\": 100,\n    \"episodeId\": \"\",\n    \"id\": \"\",\n    \"isPublic\": \"true\",\n    \"startTime\": 50,\n    \"title\": \"New sample clip title\"\n  }"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/mediaRef",
@@ -933,10 +763,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/mediaRef/:id",
 					"host": [
@@ -963,10 +789,6 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/mediaRef/:id",
 					"host": [
@@ -1001,7 +823,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"paymentID\": \"1234567890\"\n}"
+					"raw": "{\n\t\"paymentID\": \"\"\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/paypal/order",
@@ -1023,10 +845,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/paypal/order/:id",
 					"host": [
@@ -1061,7 +879,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"id\": \"WH-2WR32451HC0233532-67976317FL4543714\",\n  \"event_version\": \"1.0\",\n  \"create_time\": \"2014-10-23T17:23:52Z\",\n  \"resource_type\": \"sale\",\n  \"event_type\": \"PAYMENT.SALE.COMPLETED\",\n  \"summary\": \"A successful sale payment was made for $ 0.48 USD\",\n  \"resource\": {\n    \"id\": \"80021663DE681814L\",\n    \"create_time\": \"2014-10-23T17:22:56Z\",\n    \"update_time\": \"2014-10-23T17:23:04Z\",\n    \"amount\": {\n      \"total\": \"0.48\",\n      \"currency\": \"USD\"\n    },\n    \"payment_mode\": \"ECHECK\",\n    \"state\": \"completed\",\n    \"protection_eligibility\": \"ELIGIBLE\",\n    \"protection_eligibility_type\": \"ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE\",\n    \"clearing_time\": \"2014-10-30T07:00:00Z\",\n    \"parent_payment\": \"PAY-96P28626AC525771FLRBOJSA\",\n    \"links\": [\n      {\n        \"href\": \"https://api.paypal.com/v1/payments/sale/80021663DE681814L\",\n        \"rel\": \"self\",\n        \"method\": \"GET\"\n      },\n      {\n        \"href\": \"https://api.paypal.com/v1/payments/sale/80021663DE681814L/refund\",\n        \"rel\": \"refund\",\n        \"method\": \"POST\"\n      },\n      {\n        \"href\": \"https://api.paypal.com/v1/payments/payment/PAY-23F65094KB0045124LQQFCUY\",\n        \"rel\": \"parent_payment\",\n        \"method\": \"GET\"\n      }\n    ]\n  },\n  \"links\": [\n    {\n      \"href\": \"https://api.paypal.com/v1/notifications/webhooks-events/WH-2WR32451HC0233532-67976317FL4543714\",\n      \"rel\": \"self\",\n      \"method\": \"GET\"\n    },\n    {\n      \"href\": \"https://api.paypal.com/v1/notifications/webhooks-events/WH-2WR32451HC0233532-67976317FL4543714/resend\",\n      \"rel\": \"resend\",\n      \"method\": \"POST\"\n    }\n  ]\n}\n"
+					"raw": "{\n\t\"resource\": {\n\t\t\"parent_payment\": \"PAYID-\"\n\t}\n}"
 				},
 				"url": {
 					"raw": "{{base}}/api/v1/paypal/webhooks/payment-completed",
@@ -1084,12 +902,8 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "{{base}}/api/v1/playlist?page=1&sort=top-past-week",
+					"raw": "{{base}}/api/v1/playlist?playlistId=hKxZyKJjW&page=1&sort=top-past-week",
 					"host": [
 						"{{base}}"
 					],
@@ -1101,8 +915,7 @@
 					"query": [
 						{
 							"key": "playlistId",
-							"value": "",
-							"disabled": true
+							"value": "hKxZyKJjW"
 						},
 						{
 							"key": "page",
@@ -1180,10 +993,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/playlist/:id",
 					"host": [
@@ -1198,7 +1007,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": ""
+							"value": "hKxZyKJjW"
 						}
 					]
 				}
@@ -1210,10 +1019,6 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/playlist/:id",
 					"host": [
@@ -1270,10 +1075,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/playlist/toggle-subscribe/:id",
 					"host": [
@@ -1301,12 +1102,8 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "{{base}}/api/v1/podcast?page=1&sort=top-past-week",
+					"raw": "{{base}}/api/v1/podcast?includeAuthors=true&includeCategories=true&page=1&sort=random",
 					"host": [
 						"{{base}}"
 					],
@@ -1317,32 +1114,30 @@
 					],
 					"query": [
 						{
-							"key": "categories",
-							"value": "",
-							"disabled": true
+							"key": "includeAuthors",
+							"value": "true"
 						},
 						{
-							"key": "podcastId",
-							"value": "",
-							"disabled": true
-						},
-						{
-							"key": "searchAuthor",
-							"value": "",
-							"disabled": true
-						},
-						{
-							"key": "searchTitle",
-							"value": "",
-							"disabled": true
+							"key": "includeCategories",
+							"value": "true"
 						},
 						{
 							"key": "page",
 							"value": "1"
 						},
 						{
+							"key": "podcastId",
+							"value": "AEF2P6R78R,IF0Gw5CsiF,8BkTSdqJjWJ,ahsnnaYRRJLA,rQww79O8MyAX,6O-ZIQRXM6uB,mnBSPyRb6oB9,GQAkOsG9CZiy,9AWGyxtnbDXE,pIGik4mwyv,V-mLzU2Z29NL,fLUZ4pMZofu9,C310r9_AbO",
+							"disabled": true
+						},
+						{
 							"key": "sort",
-							"value": "top-past-week"
+							"value": "random"
+						},
+						{
+							"key": "searchAuthor",
+							"value": "Josh",
+							"disabled": true
 						}
 					]
 				}
@@ -1354,10 +1149,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/podcast/:id",
 					"host": [
@@ -1384,10 +1175,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/podcast/metadata?",
 					"host": [
@@ -1415,10 +1202,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/podcast/toggle-subscribe/:id",
 					"host": [
@@ -1442,14 +1225,49 @@
 			"response": []
 		},
 		{
+			"name": "User / Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / Download Data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user/download",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "User / Find Public Users by Query",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/user?page=1",
 					"host": [
@@ -1480,10 +1298,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/user/:id",
 					"host": [
@@ -1498,7 +1312,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": ""
+							"value": "eFv5NFx"
 						}
 					]
 				}
@@ -1510,10 +1324,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/user/:id/mediaRefs",
 					"host": [
@@ -1541,10 +1351,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/user/:id/playlists",
 					"host": [
@@ -1568,14 +1374,193 @@
 			"response": []
 		},
 		{
+			"name": "User / History Item / Add or Update",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"historyItem\": {\n        \"clipEndTime\": 100,\n        \"clipId\": \"\",\n        \"clipStartTime\": \"50\",\n        \"clipTitle\": \"Test clip title\",\n        \"episodeDescription\": \"Test episode description\",\n        \"episodeId\": \"\",\n        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n        \"episodePubDate\": \"\",\n        \"episodeTitle\": \"Test episode title\",\n        \"isPublic\": true,\n        \"ownerId\": \"\",\n        \"ownerIsPublic\": \"\",\n        \"ownerName\": \"\",\n        \"podcastAuthors\": null,\n        \"podcastCategories\": null,\n        \"podcastId\": \"\",\n        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n        \"podcastTitle\": \"Test podcast title\",\n        \"userPlaybackPosition\": 123\t\t\n\t}\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/user/add-or-update-history-item",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"add-or-update-history-item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / History Items / Update Playback Position",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"historyItems\": [\n\t\t{\n\t        \"clipEndTime\": 100,\n\t        \"clipId\": \"\",\n\t        \"clipStartTime\": \"50\",\n\t        \"clipTitle\": \"Test clip title\",\n\t        \"episodeDescription\": \"Test episode description\",\n\t        \"episodeId\": \"\",\n\t        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n\t        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n\t        \"episodePubDate\": \"\",\n\t        \"episodeTitle\": \"Test episode title\",\n\t        \"isPublic\": true,\n\t        \"ownerId\": \"\",\n\t        \"ownerIsPublic\": \"\",\n\t        \"ownerName\": \"\",\n\t        \"podcastAuthors\": null,\n\t        \"podcastCategories\": null,\n\t        \"podcastId\": \"\",\n\t        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n\t        \"podcastTitle\": \"Test podcast title\",\n\t        \"userPlaybackPosition\": 123\t\t\n\t\t}\n\t]\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/user/update-history-item-playback-position",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"update-history-item-playback-position"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / History Item / Remove",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user/history-item?",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"history-item"
+					],
+					"query": [
+						{
+							"key": "episodeId",
+							"value": "ki9isiMWLLQ",
+							"disabled": true
+						},
+						{
+							"key": "mediaRefId",
+							"value": "TPYjMAZQhMY",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / History Items / Clear All",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user/history-item/clear-all",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"history-item",
+						"clear-all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / History Items / Update All",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"historyItems\": [\n\t\t{\n\t        \"clipEndTime\": 100,\n\t        \"clipId\": \"\",\n\t        \"clipStartTime\": \"50\",\n\t        \"clipTitle\": \"Test clip title\",\n\t        \"episodeDescription\": \"Test episode description\",\n\t        \"episodeId\": \"\",\n\t        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n\t        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n\t        \"episodePubDate\": \"\",\n\t        \"episodeTitle\": \"Test episode title\",\n\t        \"isPublic\": true,\n\t        \"ownerId\": \"\",\n\t        \"ownerIsPublic\": \"\",\n\t        \"ownerName\": \"\",\n\t        \"podcastAuthors\": null,\n\t        \"podcastCategories\": null,\n\t        \"podcastId\": \"\",\n\t        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n\t        \"podcastTitle\": \"Test podcast title\",\n\t        \"userPlaybackPosition\": 123\t\t\n\t\t}\n\t]\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/user/update-history-items",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"update-history-items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / Logged-in User MediaRefs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user/mediaRefs",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"mediaRefs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / Logged-in User Playlists",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/api/v1/user/playlists",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "User / Toggle Subscribe",
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{base}}/api/v1/user/toggle-subscribe/:id",
 					"host": [
@@ -1593,6 +1578,65 @@
 							"key": "id",
 							"value": ""
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / Update",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"\",\n\t\"id\": \"\",\n\t\"isPublic\": \"true\",\n\t\"name\": \"New Tester\"\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/user",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User / Update Queue",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"queueItems\": [\n\t\t{\n\t        \"clipEndTime\": 100,\n\t        \"clipId\": \"\",\n\t        \"clipStartTime\": \"50\",\n\t        \"clipTitle\": \"Test clip title\",\n\t        \"episodeDescription\": \"Test episode description\",\n\t        \"episodeId\": \"\",\n\t        \"episodeImageUrl\": \"http://example.com/imageUrl\",\n\t        \"episodeMediaUrl\": \"http://example.com/mediaUrl\",\n\t        \"episodePubDate\": \"\",\n\t        \"episodeTitle\": \"Test episode title\",\n\t        \"isPublic\": true,\n\t        \"ownerId\": \"\",\n\t        \"ownerIsPublic\": \"\",\n\t        \"ownerName\": \"\",\n\t        \"podcastAuthors\": null,\n\t        \"podcastCategories\": null,\n\t        \"podcastId\": \"\",\n\t        \"podcastImageUrl\": \"http://example.com/imageUrl\",\n\t        \"podcastTitle\": \"Test podcast title\",\n\t        \"userPlaybackPosition\": 123\n\t\t}\n\t]\n}"
+				},
+				"url": {
+					"raw": "{{base}}/api/v1/user/update-queue",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"update-queue"
 					]
 				}
 			},

@@ -1,5 +1,6 @@
+import { addSeconds } from 'date-fns'
 import { Connection } from 'typeorm'
-import { isEmail } from 'validator'
+import isEmail from 'validator/lib/isEmail'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { authExpires } from '~/lib/constants'
@@ -7,7 +8,6 @@ import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
 import { generateToken } from '~/services/auth'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
-const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
 const emailExists = async (conn: Connection, email) => {
@@ -36,8 +36,8 @@ export const emailNotExists = async (ctx, next) => {
 
 export const signUpUser = async (ctx, next) => {
 
-  const emailVerificationExpiration = addSeconds(new Date(), process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION)
-  const freeTrialExpiration = addSeconds(new Date(), process.env.FREE_TRIAL_EXPIRATION)
+  const emailVerificationExpiration = addSeconds(new Date(), config.emailVerificationTokenExpiration)
+  const freeTrialExpiration = addSeconds(new Date(), config.freeTrialExpiration)
   const emailVerificationToken = uuidv4()
 
   const user = {
