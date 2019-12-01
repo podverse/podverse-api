@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": ["Mitch Downey"],
   "main": "dist/bundle.js",
@@ -18,7 +18,6 @@
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "dev:seeds:sampleEntities": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
-    "keepDockerContainerRunning": "cat",
     "scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "scripts:addAllPublicFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
