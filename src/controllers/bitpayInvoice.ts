@@ -1,4 +1,5 @@
 import { getRepository } from 'typeorm'
+import { addYearsToUserMembershipExpiration } from '~/controllers/user'
 import { BitPayInvoice, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
@@ -138,10 +139,7 @@ const updateBitPayInvoiceLocal = async data => {
   }
 
   if (user && cleanedBitPayInvoiceObj.status === 'confirmed') {
-    const newExpirationDate = user.membershipExpiration ? new Date(user.membershipExpiration) : new Date()
-    newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1)
-
-    await userRepository.update(user.id, { membershipExpiration: newExpirationDate })
+    await addYearsToUserMembershipExpiration(user.id, 1)
   }
 
   return

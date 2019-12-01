@@ -65,7 +65,6 @@ router.post('/notification',
     try {
       // @ts-ignore
       const invoiceId = ctx.request.body && ctx.request.body.id
-
       if (invoiceId) {
         const response: any = await getBitPayInvoiceVendor(invoiceId)
 
@@ -87,6 +86,7 @@ router.post('/notification',
         ctx.body = { message: 'No invoice id provided' }
       }
     } catch (error) {
+      console.log('Could not update this invoice...')
       emitRouterError(error, ctx)
     }
   }

@@ -1,4 +1,5 @@
 import { getRepository } from 'typeorm'
+import { addYearsToUserMembershipExpiration } from '~/controllers/user'
 import { PayPalOrder, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
@@ -83,10 +84,7 @@ const completePayPalOrder = async (paymentID, state) => {
   }
 
   if (user && cleanedPayPalOrderObj.state === 'approved') {
-    const newExpirationDate = user.membershipExpiration ? new Date(user.membershipExpiration) : new Date()
-    newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1)
-
-    await userRepository.update(user.id, { membershipExpiration: newExpirationDate })
+    await addYearsToUserMembershipExpiration(user.id, 1)
   } else {
     console.log('completePayPalOrder: something went wrong', cleanedPayPalOrderObj)
   }

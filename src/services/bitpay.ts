@@ -66,9 +66,9 @@ export const createBitPayInvoiceVendor = email => {
 export const getBitPayInvoiceVendor = id => {
   return new Promise((resolve, reject) => {
     if (client) {
-      client.get(`invoices/${id}`, function (err, invoice) {
+      client.as('pos').get(`invoices/${id}`, function (err, invoice) {
         if (err) {
-          console.log(err)
+          console.log('getBitPayInvoiceVendor client error')
           reject(err)
         } else {
           resolve(invoice)
