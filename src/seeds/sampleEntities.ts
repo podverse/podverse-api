@@ -1,13 +1,13 @@
 require('dotenv').config()
 
 import { hash } from 'bcryptjs'
+import { addSeconds } from 'date-fns'
 import { Connection } from 'typeorm'
 import { Author, Category, Episode, FeedUrl, MediaRef, Playlist, Podcast, User
   } from '~/entities'
 import { config } from '~/config'
 import { saltRounds } from '~/lib/constants'
 import { connectToDb } from '~/lib/db'
-const addSeconds = require('date-fns/add_seconds')
 const { freeTrialExpiration, membershipExpiration } = config
 
 const assetPath = process.env.USE_LIVE_ASSETS ? false : 'http://localhost:1234/public'

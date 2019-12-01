@@ -1,5 +1,7 @@
 import * as request from 'request-promise-native'
 import { config } from '~/config'
+import { createOrUpdateAppStorePurchase } from '~/controllers/appStorePurchase'
+import { addYearsToUserMembershipExpiration } from '~/controllers/user'
 
 /*
 requestBody
@@ -44,24 +46,48 @@ const verifyAppStorePurchaseByReceiptRequest = (transactionReceipt: string, isPr
 
 /*
   From develop.apple.com docs:
-  "Important: Verify your receipt first with the production URL; proceed to verify with the sandbox URL
+  "IMPORTANT: Verify your receipt first with the production URL; proceed to verify with the sandbox URL
   if you receive a 21007 status code. Following this approach ensures that you do not have to
   switch between URLs while your application is tested, reviewed by App Review, or live in the App Store."
 */
 const somethingWentWrongMessage = `Something went wrong. Please contact support@podverse.fm for help if the problem continues.`
+
+export const processAppStorePurchases = async (transactions: any[] = [], loggedInUserId: string) => {
+  const processedTransactionIds = [] as any
+  for (const transaction of transactions) {
+    const appStorePurchase = await processAppStorePurchase(transaction, loggedInUserId)
+    if (appStorePurchase) {
+      processedTransactionIds.push(appStorePurchase.transactionId)
+    }
+  }
+  return processedTransactionIds
+}
+
+const processAppStorePurchase = async (transaction: any, loggedInUserId: string) => {
+  const newAppStorePurchase = await createOrUpdateAppStorePurchase(transaction, loggedInUserId)
+  const { quantity } = newAppStorePurchase
+
+  for (let i = 0; i < quantity; i++) {
+    await addYearsToUserMembershipExpiration(loggedInUserId, 1)
+  }
+
+  return newAppStorePurchase
+}
 
 export const verifyAppStorePurchaseByReceipt = async (transactionReceipt: string) => {
   try {
     const response = await verifyAppStorePurchaseByReceiptRequest(transactionReceipt, true)
     const { status } = response
 
+    if (status === 0) {
+      console.log('Receipt verified.')
+      return response.receipt
+    }
+
     if (status === 21007) {
       console.log(`This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.`)
       const response = await verifyAppStorePurchaseByReceiptRequest(transactionReceipt, false)
-
-      // handle adding to database and consuming purchases
-
-      return {}
+      return response.receipt
     }
 
     if (status === 21000) {

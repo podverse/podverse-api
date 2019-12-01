@@ -1,8 +1,9 @@
+import { addSeconds } from 'date-fns'
+import { config } from '~/config'
 import { getUserByEmail, getUserByResetPasswordToken,
   updateUserPassword, updateUserResetPasswordToken} from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendResetPasswordEmail } from '~/services/auth/sendResetPasswordEmail'
-const addSeconds = require('date-fns/add_seconds')
 const uuidv4 = require('uuid/v4')
 
 export const resetPassword = async ctx => {
@@ -40,7 +41,7 @@ export const sendResetPassword = async ctx => {
     const { id, name } = await getUserByEmail(email)
 
     const resetPasswordToken = uuidv4()
-    const resetPasswordTokenExpiration = addSeconds(new Date(), process.env.RESET_PASSWORD_TOKEN_EXPIRATION)
+    const resetPasswordTokenExpiration = addSeconds(new Date(), config.resetPasswordTokenExpiration)
 
     await updateUserResetPasswordToken({
       id,

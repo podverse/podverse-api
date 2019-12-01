@@ -3,15 +3,6 @@ import { AppStorePurchase } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
 
-const createAppStorePurchase = async (obj) => {
-  const repository = getRepository(AppStorePurchase)
-  const appStorePurchase = new AppStorePurchase()
-  const newAppStorePurchase = Object.assign(appStorePurchase, obj)
-  await validateClassOrThrow(newAppStorePurchase)
-  await repository.save(newAppStorePurchase)
-  return newAppStorePurchase
-}
-
 const getAppStorePurchase = async (transactionId, loggedInUserId) => {
   const repository = getRepository(AppStorePurchase)
 
@@ -35,10 +26,44 @@ const getAppStorePurchase = async (transactionId, loggedInUserId) => {
   }
 }
 
-const updateAppStorePurchase = async (obj, loggedInUserId) => {
+const formatAppStorePurchaseAndTransaction = (appStorePurchase, transaction, loggedInUserId) => {
+  appStorePurchase.transactionId = transaction.transaction_id
+  delete transaction.transaction_id
+  appStorePurchase.owner = loggedInUserId
+  const formattedAppStorePurchase = appStorePurchase
+  const formattedTransaction = transaction
+  return { formattedAppStorePurchase, formattedTransaction }
+}
+
+const createAppStorePurchase = async (transaction, loggedInUserId) => {
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Login to get App Store Purchase by order id')
+  }
+
   const repository = getRepository(AppStorePurchase)
+  const appStorePurchase = new AppStorePurchase()
+  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(appStorePurchase, transaction, loggedInUserId)
+  const newAppStorePurchase = Object.assign(formattedAppStorePurchase, formattedTransaction)
+  await validateClassOrThrow(newAppStorePurchase)
+  await repository.save(newAppStorePurchase)
+  return newAppStorePurchase
+}
+
+const createOrUpdateAppStorePurchase = async (transaction, loggedInUserId) => {
+  const purchase = await getAppStorePurchase(transaction.transaction_id, loggedInUserId)
+
+  if (!purchase) {
+    return createAppStorePurchase(transaction, loggedInUserId)
+  } else {
+    return updateAppStorePurchase(transaction, loggedInUserId)
+  }
+}
+
+const updateAppStorePurchase = async (transaction, loggedInUserId) => {
+  const repository = getRepository(AppStorePurchase)
+
   const appStorePurchase = await repository.findOne(
-    { transactionId: obj.transactionId },
+    { transactionId: transaction.transaction_id },
     { relations: ['owner'] }
   )
 
@@ -49,15 +74,14 @@ const updateAppStorePurchase = async (obj, loggedInUserId) => {
   if (appStorePurchase.owner && appStorePurchase.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Unauthorized')
   }
-
-  const newAppStorePurchase = Object.assign(appStorePurchase, obj)
+  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(appStorePurchase, transaction, loggedInUserId)
+  const newAppStorePurchase = Object.assign(formattedAppStorePurchase, formattedTransaction)
   await validateClassOrThrow(newAppStorePurchase)
   await repository.save(newAppStorePurchase)
   return newAppStorePurchase
 }
 
 export {
-  createAppStorePurchase,
-  getAppStorePurchase,
-  updateAppStorePurchase
+  createOrUpdateAppStorePurchase,
+  getAppStorePurchase
 }

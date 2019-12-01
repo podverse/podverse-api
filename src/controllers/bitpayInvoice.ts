@@ -52,9 +52,9 @@ const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
     'status'
   ]
 
+  // @ts-ignore
   const bitpayInvoice = await repository.findOne(
     { orderId },
-    // @ts-ignore
     {
       relations: ['owner'],
       select
@@ -93,8 +93,8 @@ const updateBitPayInvoiceLocal = async data => {
     'url'
   ]
 
+  // @ts-ignore
   const bitpayInvoice = await repository.findOne({
-    // @ts-ignore
     where: { id },
     relations: ['owner'],
     select
