@@ -12,6 +12,10 @@ const uuidv4 = require('uuid/v4')
 const encPrivkey = fs.readFileSync(apiKeyPath).toString()
 const privkey = bitauth.decrypt(apiKeyPassword, encPrivkey)
 const client = bitpay.createClient(privkey)
+console.log('bitpay loading')
+console.log('encPrivKey', encPrivkey)
+console.log('privkey', privkey)
+console.log('client', client)
 
 client.on('error', err => {
   console.log('bitpay client.on error')
