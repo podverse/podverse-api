@@ -22,9 +22,6 @@ const createPurchaseLimiter = RateLimit.middleware({
   prefixKey: 'post/google-play/purchase'
 })
 
-// const verifiedByTokenPurchase = {
-// }
-
 // purchaseState
 // 0 Purchased
 // 1 Canceled
@@ -46,9 +43,6 @@ router.post('/update-purchase-status',
         throw new Error('User not found')
       } else {
         const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as GooglePlayPurchase
-
-        // @ts-ignore
-        // const verified = verifiedByTokenPurchase as GooglePlayPurchase
         verified.owner = user
         verified.purchaseToken = purchaseToken
         verified.productId = productId
