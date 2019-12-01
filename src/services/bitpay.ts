@@ -17,9 +17,6 @@ try {
   privkey = bitauth.decrypt(apiKeyPassword, encPrivKey)
   client = bitpay.createClient(privkey)
   console.log('bitpay key found')
-  console.log('encPrivKey', encPrivKey)
-  console.log('privkey', privkey)
-  console.log('client', client)
 } catch (error) {
   console.log('bitpay api.key not found. You\'ll need to setup and pair a BitPay API token within this container.')
   console.log('See https://github.com/bitpay/node-bitpay-client for pairing instructions.')
