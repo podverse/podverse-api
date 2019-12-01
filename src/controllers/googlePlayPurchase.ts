@@ -12,15 +12,15 @@ const createGooglePlayPurchase = async (obj) => {
   return newGooglePlayPurchase
 }
 
-const getGooglePlayPurchase = async (orderId, loggedInUserId) => {
+const getGooglePlayPurchase = async (transactionId, loggedInUserId) => {
   const repository = getRepository(GooglePlayPurchase)
 
   if (!loggedInUserId) {
-    throw new createError.Unauthorized('Login to get PayPalOrder by id')
+    throw new createError.Unauthorized('Login to get Google Play Purchase by order id')
   }
 
   const googlePlayPurchase = await repository.findOne(
-    { orderId },
+    { transactionId },
     { relations: ['owner'] }
   )
 
@@ -31,14 +31,14 @@ const getGooglePlayPurchase = async (orderId, loggedInUserId) => {
   if (googlePlayPurchase.owner.id === loggedInUserId) {
     return googlePlayPurchase
   } else {
-    throw new createError.Unauthorized(`You don't have permission to get this Google Play purchase by id`)
+    throw new createError.Unauthorized(`You don't have permission to get this Google Play Purchase by order id`)
   }
 }
 
 const updateGooglePlayPurchase = async (obj, loggedInUserId) => {
   const repository = getRepository(GooglePlayPurchase)
   const googlePlayPurchase = await repository.findOne(
-    { orderId: obj.orderId },
+    { transactionId: obj.transactionId },
     { relations: ['owner'] }
   )
 

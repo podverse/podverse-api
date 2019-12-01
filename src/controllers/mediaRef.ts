@@ -122,11 +122,13 @@ const getMediaRefs = async (query, includeNSFW) => {
     qb.where({ isPublic: true })
   }
 
+  // @ts-ignore
+  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
+
   const mediaRefs = await qb
-    .skip(skip)
-    .take(take)
+    .offset(skip)
+    .limit(take)
     // @ts-ignore
-    .orderBy(orderColumn[0], orderColumn[1])
     .getManyAndCount()
 
   return mediaRefs

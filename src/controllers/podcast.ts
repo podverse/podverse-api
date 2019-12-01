@@ -95,16 +95,14 @@ const getPodcasts = async (query, includeNSFW) => {
 
   qb.andWhere('"isPublic" = true')
 
-  if (query.sort) {
-    const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-    // @ts-ignore
-    qb.orderBy(orderColumn[0], orderColumn[1])
-  }
+  const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
+  // @ts-ignore
+  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
 
   try {
     const podcasts = await qb
-      .skip(skip)
-      .take((maxResults && 1000) || take)
+      .offset(skip)
+      .limit((maxResults && 1000) || take)
       .getManyAndCount()
 
     return podcasts

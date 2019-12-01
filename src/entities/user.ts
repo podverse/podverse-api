@@ -4,6 +4,7 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
+import { AppStorePurchase } from './appStorePurchase'
 import { GooglePlayPurchase } from './googlePlayPurchase'
 
 const shortid = require('shortid')
@@ -117,6 +118,9 @@ export class User {
 
   @Column('simple-json', { select: false })
   queueItems: NowPlayingItem[]
+
+  @OneToMany(type => AppStorePurchase, appStorePurchase => appStorePurchase.owner)
+  appStorePurchases: AppStorePurchase[]
 
   @OneToMany(type => BitPayInvoice, bitpayInvoice => bitpayInvoice.owner)
   bitpayInvoices: BitPayInvoice[]

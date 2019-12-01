@@ -87,32 +87,6 @@ export const convertSecToHHMMSS = (sec: number) => {
   return result
 }
 
-export const createQueryOrderObject = (sort, sortDateKey) => {
-  let order: any = {}
-
-  if (sort === 'top-past-hour') {
-    order.pastHourTotalUniquePageviews = 'DESC'
-  } else if (sort === 'top-past-day') {
-    order.pastDayTotalUniquePageviews = 'DESC'
-  } else if (sort === 'top-past-month') {
-    order.pastMonthTotalUniquePageviews = 'DESC'
-  } else if (sort === 'top-past-year') {
-    order.pastYearTotalUniquePageviews = 'DESC'
-  } else if (sort === 'top-all-time') {
-    order.pastAllTimeTotalUniquePageviews = 'DESC'
-  } else if (sort === 'most-recent' || sort === 'most-recent-all') {
-    order[sortDateKey] = 'DESC'
-  } else if (sort === 'oldest') {
-    order[sortDateKey] = 'ASC'
-  } else if (sort === 'alphabetical') {
-    order.sortableTitle = 'ASC'
-  } else { // sort = top-past-week
-    order.pastWeekTotalUniquePageviews = 'DESC'
-  }
-
-  return order
-}
-
 export const getQueryOrderColumn = (type, sort, sortDateKey) => {
   if (sort === 'top-past-hour') {
     return [`${type}.pastHourTotalUniquePageviews`, 'DESC']
@@ -130,6 +104,8 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
     return [`${type}.${sortDateKey}`, 'ASC']
   } else if (sort === 'alphabetical') {
     return [`${type}.sortableTitle`, 'ASC']
+  } else if (sort === 'random') {
+    return [`RANDOM()`]
   } else { // sort = top-past-week
     return [`${type}.pastWeekTotalUniquePageviews`, 'DESC']
   }

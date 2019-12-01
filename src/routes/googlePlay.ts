@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getGooglePlayPurchase, createGooglePlayPurchase } from '~/controllers/googlePlayPurchase'
+import { getGooglePlayPurchase, createGooglePlayPurchase, updateGooglePlayPurchase } from '~/controllers/googlePlayPurchase'
 import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
 import { GooglePlayPurchase } from '~/entities'
 import { emitRouterError } from '~/lib/errors'
@@ -21,9 +21,6 @@ const createPurchaseLimiter = RateLimit.middleware({
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/google-play/purchase'
 })
-
-const verifiedByTokenPurchase = {
-}
 
 // purchaseState
 // 0 Purchased
@@ -45,19 +42,12 @@ router.post('/update-purchase-status',
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
-
-        // TODO: !!! VERIFY THE PURCHASETOKEN !!! (200)
-        // TODO: test/handle passing invalid token to google (400)
-        // TODO: test/handle google play api is down, or other error (5xx)
         const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as GooglePlayPurchase
-
-        // @ts-ignore
-        // const verified = verifiedByTokenPurchase as GooglePlayPurchase
         verified.owner = user
         verified.purchaseToken = purchaseToken
         verified.productId = productId
 
-        let purchase = await getGooglePlayPurchase(verified.orderId, user.id)
+        let purchase = await getGooglePlayPurchase(verified.transactionId, user.id)
 
         if (purchase) {
           purchase = verified
@@ -74,6 +64,7 @@ router.post('/update-purchase-status',
 
         if (purchase && purchase.purchaseState === 0) {
           await addYearsToUserMembershipExpiration(user.id, 1)
+          await updateGooglePlayPurchase({ consumptionState: 1 }, user.id)
           ctx.body = {
             code: 0,
             message: 'Purchase completed successfully.'
@@ -91,7 +82,7 @@ router.post('/update-purchase-status',
         } else {
           ctx.body = {
             code: 3,
-            message: 'Something went wrong while processing the purchase. Please email contact@podverse.fm for support.'
+            message: 'Something went wrong while processing this purchase. Please email support@podverse.fm for help.'
           }
         }
       }

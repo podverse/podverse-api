@@ -19,6 +19,9 @@ export interface IConfig {
   apiVersion: string
   cookieDomain: string
   cookieIsSecure: boolean
+  emailBrandColor: string
+  emailHeaderImageUrl: string
+  emailUnsubscribeUrl: string
   queryAuthorsLimit: number
   queryCategoriesLimit: number
   queryEpisodesLimit: number
@@ -37,9 +40,20 @@ export interface IConfig {
   mailerUsername: string
   mailerPassword: string
   mailerFrom: string
+  appStoreConfig: any
   awsConfig: any
   bitpayConfig: any
   paypalConfig: any
+  socialFacebookImageUrl: string
+  socialFacebookPageUrl: string
+  socialGithubImageUrl: string
+  socialGithubPageUrl: string
+  socialRedditImageUrl: string
+  socialRedditPageUrl: string
+  socialTwitterImageUrl: string
+  socialTwitterPageUrl: string
+  legalName: string
+  legalAddress: string
   websiteDomain: string
   websiteProtocol: string
   websiteResetPasswordPagePath: string
@@ -56,6 +70,9 @@ let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '3154000
 let mailerPort = process.env.MAILER_PORT || '587'
 let cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
 let cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
+let emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
+let emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
+let emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
 let queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
 let queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
 let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
@@ -64,6 +81,16 @@ let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '50'
 let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '50'
 let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '50'
 let rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
+let socialFacebookImageUrl = process.env.SOCIAL_FACEBOOK_IMAGE_URL || ''
+let socialFacebookPageUrl = process.env.SOCIAL_FACEBOOK_PAGE_URL || ''
+let socialGithubImageUrl = process.env.SOCIAL_GITHUB_IMAGE_URL || ''
+let socialGithubPageUrl = process.env.SOCIAL_GITHUB_PAGE_URL || ''
+let socialRedditImageUrl = process.env.SOCIAL_REDDIT_IMAGE_URL || ''
+let socialRedditPageUrl = process.env.SOCIAL_REDDIT_PAGE_URL || ''
+let socialTwitterImageUrl = process.env.SOCIAL_TWITTER_IMAGE_URL || ''
+let socialTwitterPageUrl = process.env.SOCIAL_TWITTER_PAGE_URL || ''
+let legalName = process.env.LEGAL_NAME || ''
+let legalAddress = process.env.LEGAL_ADDRESS || ''
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -79,6 +106,11 @@ const paypalConfig = {
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
   mode: process.env.PAYPAL_MODE,
   webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
+}
+const appStoreConfig = {
+  apiUrlProd: process.env.APP_STORE_API_URL_PROD,
+  apiUrlSandbox: process.env.APP_STORE_API_URL_SANDBOX,
+  sharedSecret: process.env.APP_STORE_API_SHARED_SECRET
 }
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
@@ -100,6 +132,9 @@ const config: IConfig = {
   apiVersion: process.env.API_VERSION || '',
   cookieDomain,
   cookieIsSecure,
+  emailBrandColor,
+  emailHeaderImageUrl,
+  emailUnsubscribeUrl,
   queryAuthorsLimit: parseInt(queryAuthorsLimit, 10),
   queryCategoriesLimit: parseInt(queryCategoriesLimit, 10),
   queryEpisodesLimit: parseInt(queryEpisodesLimit, 10),
@@ -118,9 +153,20 @@ const config: IConfig = {
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
   mailerFrom: process.env.MAILER_FROM || '',
+  appStoreConfig,
   awsConfig,
   bitpayConfig,
   paypalConfig,
+  socialFacebookImageUrl,
+  socialFacebookPageUrl,
+  socialGithubImageUrl,
+  socialGithubPageUrl,
+  socialRedditImageUrl,
+  socialRedditPageUrl,
+  socialTwitterImageUrl,
+  socialTwitterPageUrl,
+  legalName,
+  legalAddress,
   websiteDomain,
   websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
