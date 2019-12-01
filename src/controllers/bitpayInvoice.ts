@@ -109,6 +109,10 @@ const updateBitPayInvoiceLocal = async data => {
     throw new createError.BadRequest('BitPayInvoice has already been confirmed')
   }
 
+  if (bitpayInvoice && bitpayInvoice.status === 'complete') {
+    throw new createError.BadRequest('BitPayInvoice has already been completed')
+  }
+
   const cleanedBitPayInvoiceObj = {
     amountPaid,
     currency,
@@ -138,7 +142,7 @@ const updateBitPayInvoiceLocal = async data => {
     throw new createError.NotFound('User not found')
   }
 
-  if (user && cleanedBitPayInvoiceObj.status === 'confirmed') {
+  if (user && (cleanedBitPayInvoiceObj.status === 'confirmed' || cleanedBitPayInvoiceObj.status === 'complete')) {
     await addYearsToUserMembershipExpiration(user.id, 1)
   }
 
