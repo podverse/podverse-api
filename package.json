@@ -2,6 +2,7 @@
   "name": "podverse-api",
   "version": "2.0.68",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
+  "contributors": ["Mitch Downey"],
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack --progress --colors",
