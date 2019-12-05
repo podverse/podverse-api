@@ -1,4 +1,5 @@
 import { getRepository } from 'typeorm'
+import { addYearsToUserMembershipExpiration } from '~/controllers/user'
 import { AppStorePurchase } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
@@ -53,7 +54,11 @@ const createOrUpdateAppStorePurchase = async (transaction, loggedInUserId) => {
   const purchase = await getAppStorePurchase(transaction.transaction_id, loggedInUserId)
 
   if (!purchase) {
-    return createAppStorePurchase(transaction, loggedInUserId)
+    const newAppStorePurchase = await createAppStorePurchase(transaction, loggedInUserId)
+    const { quantity } = newAppStorePurchase
+    for (let i = 0; i < quantity; i++) {
+      await addYearsToUserMembershipExpiration(loggedInUserId, 1)
+    }
   } else {
     return updateAppStorePurchase(transaction, loggedInUserId)
   }

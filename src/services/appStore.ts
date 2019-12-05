@@ -1,7 +1,6 @@
 import * as request from 'request-promise-native'
 import { config } from '~/config'
 import { createOrUpdateAppStorePurchase } from '~/controllers/appStorePurchase'
-import { addYearsToUserMembershipExpiration } from '~/controllers/user'
 
 /*
 requestBody
@@ -35,7 +34,7 @@ const verifyAppStorePurchaseByReceiptRequest = (transactionReceipt: string, isPr
   return request({
     method: 'POST',
     uri: `${isProd ? config.appStoreConfig.apiUrlProd : config.appStoreConfig.apiUrlSandbox}/verifyReceipt`,
-    // headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json' },
     body: {
       'receipt-data': transactionReceipt,
       'password': config.appStoreConfig.sharedSecret
@@ -65,12 +64,6 @@ export const processAppStorePurchases = async (transactions: any[] = [], loggedI
 
 const processAppStorePurchase = async (transaction: any, loggedInUserId: string) => {
   const newAppStorePurchase = await createOrUpdateAppStorePurchase(transaction, loggedInUserId)
-  const { quantity } = newAppStorePurchase
-
-  for (let i = 0; i < quantity; i++) {
-    await addYearsToUserMembershipExpiration(loggedInUserId, 1)
-  }
-
   return newAppStorePurchase
 }
 
