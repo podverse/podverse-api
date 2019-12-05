@@ -59,6 +59,7 @@ const createOrUpdateAppStorePurchase = async (transaction, loggedInUserId) => {
     for (let i = 0; i < quantity; i++) {
       await addYearsToUserMembershipExpiration(loggedInUserId, 1)
     }
+    return newAppStorePurchase
   } else {
     return updateAppStorePurchase(transaction, loggedInUserId)
   }
