@@ -38,7 +38,7 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
     } else if (sort === 'top-all-time') {
       qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
     } else if (sort === 'most-recent' || sort === 'most-recent-all') {
-      let date = new Date()
+      const date = new Date()
       date.setMonth(date.getMonth() - 3)
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
       qb.andWhere(`episode."pubDate" > '${dateString}'`)
@@ -51,9 +51,9 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
   const { includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
-  let { sincePubDate } = query
+  const { sincePubDate } = query
 
-  let podcastIds = podcastId && podcastId.split(',') || []
+  const podcastIds = podcastId && podcastId.split(',') || []
   const podcastJoinConditions = `
     ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
@@ -167,9 +167,9 @@ const getEpisodes = async (query, includeNSFW) => {
     qb.offset(0)
     qb.limit(50)
 
-    let orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
+    const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
     const episodes = await qb
-      // @ts-ignore
+      
       .orderBy(orderColumn[0], orderColumn[1])
       .getRawMany()
 
@@ -180,8 +180,8 @@ const getEpisodes = async (query, includeNSFW) => {
       qb.limit(take)
     }
 
-    let orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-    // @ts-ignore
+    const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+    
     query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
     const episodes = await qb.getRawMany()
 

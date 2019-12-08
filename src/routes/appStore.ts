@@ -27,13 +27,14 @@ router.post('/update-purchase-status',
   jwtAuth,
   async ctx => {
     try {
-      // @ts-ignore
+      
       const { transactionReceipt } = ctx.request.body
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
         const receipt = await verifyAppStorePurchaseByReceipt(transactionReceipt) as any
+        // eslint-disable-next-line @typescript-eslint/camelcase
         const { in_app } = receipt
         const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
 

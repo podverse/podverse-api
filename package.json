@@ -18,6 +18,7 @@
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "dev:seeds:sampleEntities": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
+    "lint:ts": "eslint src/**/*.ts",
     "scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "scripts:addAllPublicFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
@@ -32,6 +33,17 @@
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,js}": [
+      "eslint .",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",
@@ -68,13 +80,13 @@
     "koa2-swagger-ui": "2.15.4",
     "nodemon": "2.0.1",
     "ts-node": "8.5.4",
-    "tslint": "5.20.1",
-    "tslint-config-standard": "9.0.0",
     "typescript": "3.7.2",
     "webpack-cli": "3.3.10"
   },
   "dependencies": {
     "@koa/cors": "3.0.0",
+    "@typescript-eslint/eslint-plugin": "2.x",
+    "@typescript-eslint/parser": "2.x",
     "awesome-typescript-loader": "5.2.1",
     "aws-sdk": "2.580.0",
     "bcryptjs": "2.4.3",
@@ -84,8 +96,16 @@
     "clean-webpack-plugin": "3.0.0",
     "cookie": "0.4.0",
     "date-fns": "2.8.1",
+    "eslint": "6.x",
+    "eslint-config-react-app": "5.1.0",
+    "eslint-plugin-flowtype": "3.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react": "7.x",
+    "eslint-plugin-react-hooks": "1.x",
     "googleapis": "45.0.0",
     "http-errors": "1.7.3",
+    "husky": "3.1.0",
     "joi": "14.3.1",
     "koa": "2.11.0",
     "koa-bodyparser": "4.2.1",
@@ -97,6 +117,7 @@
     "koa-session": "5.12.3",
     "koa-static": "5.0.0",
     "koa2-ratelimit": "0.9.0",
+    "lint-staged": "9.5.0",
     "node-podcast-parser": "2.3.0",
     "nodemailer": "6.3.1",
     "passport-jwt": "4.0.0",

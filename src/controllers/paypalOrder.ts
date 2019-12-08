@@ -6,7 +6,7 @@ const createError = require('http-errors')
 
 const createPayPalOrder = async (obj) => {
   const repository = getRepository(PayPalOrder)
-  let paypalOrder = await repository.findOne({ paymentID: obj.paymentID })
+  const paypalOrder = await repository.findOne({ paymentID: obj.paymentID })
 
   if (paypalOrder) {
     throw new createError.Unauthorized('A PayPal order with that id already exists.')

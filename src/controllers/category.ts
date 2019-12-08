@@ -17,10 +17,10 @@ const getCategory = async id => {
 
 const getCategories = async query => {
   const repository = getRepository(Category)
-  let categoryIds = query.id && query.id.split(',') || []
+  const categoryIds = query.id && query.id.split(',') || []
   const { slug, title, topLevelCategories } = query
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('category')
     .select('category.id')
     .addSelect('category.slug')

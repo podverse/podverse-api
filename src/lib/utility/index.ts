@@ -1,7 +1,7 @@
 export { validatePassword } from '~/lib/utility/validation'
 
 export const delimitQueryValues = (ctx, keys) => {
-  let query = ctx.state.query
+  const query = ctx.state.query
 
   for (const key of keys) {
     if (query[key]) {
@@ -16,16 +16,16 @@ export const delimitQueryValues = (ctx, keys) => {
 export const chunkArray = (arr, chunkSize = 10) => {
   let i
   let j
-  let chunks = []
+  const chunks = []
   for (i = 0, j = arr.length; i < j; i += chunkSize) {
-    let chunk = arr.slice(i, i + chunkSize) as never // TODO: What does this mean?
+    const chunk = arr.slice(i, i + chunkSize) as never // TODO: What does this mean?
     chunks.push(chunk)
   }
   return chunks
 }
 
 export const offsetDate = (minutesOffset = 0) => {
-  let todayDate = new Date()
+  const todayDate = new Date()
   todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) + minutesOffset)
   return todayDate.toISOString().slice(0, 10)
 }
@@ -34,9 +34,9 @@ export const offsetDate = (minutesOffset = 0) => {
 // Google Analytics data is in CST.
 // This WILL cause a problem when DST happens.
 export const lastHour = () => {
-  let todayDate = new Date()
+  const todayDate = new Date()
   todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) - 300 - 60)
-  let lastHour = todayDate.toISOString().slice(11, 13)
+  const lastHour = todayDate.toISOString().slice(11, 13)
   return parseInt(lastHour, 10)
 }
 
@@ -111,7 +111,7 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
   }
 }
 
-// @ts-ignore
+
 Date.prototype.addDays = function (days) {
   const date = new Date(this.valueOf())
   date.setDate(date.getDate() + days)
@@ -120,7 +120,7 @@ Date.prototype.addDays = function (days) {
 
 export const isBeforeDate = (expirationDate, dayOffset = 0) => {
   const currentDate = new Date()
-  // @ts-ignore
+  
   const offsetDate = currentDate.addDays(dayOffset)
   return new Date(expirationDate) > offsetDate
 }

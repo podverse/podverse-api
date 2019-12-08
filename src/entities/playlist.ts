@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { Episode, MediaRef, User } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, JoinTable,
   ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'

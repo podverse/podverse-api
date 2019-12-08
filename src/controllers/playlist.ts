@@ -111,7 +111,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     'owner'
   ]
   const repository = getRepository(Playlist)
-  let playlist = await repository.findOne(
+  const playlist = await repository.findOne(
     {
       where: {
         id: playlistId
@@ -128,7 +128,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
-  let itemsOrder = playlist.itemsOrder
+  const itemsOrder = playlist.itemsOrder
   let actionTaken = 'removed'
 
   if (mediaRefId) {
@@ -138,7 +138,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
     if (filteredMediaRefs.length === playlist.mediaRefs.length) {
       const mediaRefRepository = getRepository(MediaRef)
-      let mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
+      const mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
       if (mediaRef) {
         playlist.mediaRefs.push(mediaRef)
         actionTaken = 'added'
@@ -157,7 +157,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 
     if (filteredEpisodes.length === playlist.episodes.length) {
       const episodeRepository = getRepository(Episode)
-      let episode = await episodeRepository.findOne({ id: episodeId })
+      const episode = await episodeRepository.findOne({ id: episodeId })
       if (episode) {
         playlist.episodes.push(episode)
         actionTaken = 'added'
@@ -193,7 +193,7 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       where: {
         id: loggedInUserId

@@ -8,7 +8,7 @@ const generateCategories = async (
   connection: Connection,
   data: any
 ): Promise<any> => {
-  for (let category of data) {
+  for (const category of data) {
     let title
     let parentId
 
@@ -34,7 +34,7 @@ const generateCategories = async (
 }
 
 const generateCategory = (fullPath, title, parentId) => {
-  let category = new Category()
+  const category = new Category()
   category.fullPath = fullPath
   category.title = title
   category.category = parentId

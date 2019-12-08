@@ -6,7 +6,7 @@ const createError = require('http-errors')
 export const hasValidMembership = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {
     const repository = getRepository(User)
-    let user = await repository.findOne(
+    const user = await repository.findOne(
       {
         where: {
           id: ctx.state.user.id

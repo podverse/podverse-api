@@ -59,8 +59,8 @@ const getMediaRef = async id => {
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
-  let podcastIds = query.podcastId && query.podcastId.split(',') || []
-  let episodeIds = query.episodeId && query.episodeId.split(',') || []
+  const podcastIds = query.podcastId && query.podcastId.split(',') || []
+  const episodeIds = query.episodeId && query.episodeId.split(',') || []
   const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
@@ -69,7 +69,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
 
-  let qb = repository.createQueryBuilder('mediaRef')
+  const qb = repository.createQueryBuilder('mediaRef')
 
   if (includePodcast) {
     qb.innerJoinAndSelect(
@@ -122,13 +122,13 @@ const getMediaRefs = async (query, includeNSFW) => {
     qb.where({ isPublic: true })
   }
 
-  // @ts-ignore
+  
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
 
   const mediaRefs = await qb
     .offset(skip)
     .limit(take)
-    // @ts-ignore
+    
     .getManyAndCount()
 
   return mediaRefs

@@ -11,7 +11,7 @@ export interface DbConfig {
   shouldSync: boolean
 }
 
-export interface IConfig {
+export interface Config {
   port: number
   debugLogging: boolean
   dbConfig: DbConfig
@@ -61,36 +61,36 @@ export interface IConfig {
   rateLimiterMaxOverride: any
 }
 
-let port = process.env.PORT || '1234'
-let dbPort = process.env.DB_PORT || '5432'
-let resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
-let emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
-let freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
-let membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
-let mailerPort = process.env.MAILER_PORT || '587'
-let cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
-let cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
-let emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
-let emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
-let emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
-let queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
-let queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
-let queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
-let queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '50'
-let queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '50'
-let queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '50'
-let queryUsersLimit = process.env.QUERY_USERS_LIMIT || '50'
-let rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
-let socialFacebookImageUrl = process.env.SOCIAL_FACEBOOK_IMAGE_URL || ''
-let socialFacebookPageUrl = process.env.SOCIAL_FACEBOOK_PAGE_URL || ''
-let socialGithubImageUrl = process.env.SOCIAL_GITHUB_IMAGE_URL || ''
-let socialGithubPageUrl = process.env.SOCIAL_GITHUB_PAGE_URL || ''
-let socialRedditImageUrl = process.env.SOCIAL_REDDIT_IMAGE_URL || ''
-let socialRedditPageUrl = process.env.SOCIAL_REDDIT_PAGE_URL || ''
-let socialTwitterImageUrl = process.env.SOCIAL_TWITTER_IMAGE_URL || ''
-let socialTwitterPageUrl = process.env.SOCIAL_TWITTER_PAGE_URL || ''
-let legalName = process.env.LEGAL_NAME || ''
-let legalAddress = process.env.LEGAL_ADDRESS || ''
+const port = process.env.PORT || '1234'
+const dbPort = process.env.DB_PORT || '5432'
+const resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
+const emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
+const freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
+const membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540000'
+const mailerPort = process.env.MAILER_PORT || '587'
+const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
+const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
+const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
+const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
+const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
+const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
+const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
+const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
+const queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '50'
+const queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '50'
+const queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '50'
+const queryUsersLimit = process.env.QUERY_USERS_LIMIT || '50'
+const rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
+const socialFacebookImageUrl = process.env.SOCIAL_FACEBOOK_IMAGE_URL || ''
+const socialFacebookPageUrl = process.env.SOCIAL_FACEBOOK_PAGE_URL || ''
+const socialGithubImageUrl = process.env.SOCIAL_GITHUB_IMAGE_URL || ''
+const socialGithubPageUrl = process.env.SOCIAL_GITHUB_PAGE_URL || ''
+const socialRedditImageUrl = process.env.SOCIAL_REDDIT_IMAGE_URL || ''
+const socialRedditPageUrl = process.env.SOCIAL_REDDIT_PAGE_URL || ''
+const socialTwitterImageUrl = process.env.SOCIAL_TWITTER_IMAGE_URL || ''
+const socialTwitterPageUrl = process.env.SOCIAL_TWITTER_PAGE_URL || ''
+const legalName = process.env.LEGAL_NAME || ''
+const legalAddress = process.env.LEGAL_ADDRESS || ''
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -115,7 +115,7 @@ const appStoreConfig = {
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
-const config: IConfig = {
+const config: Config = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
   dbConfig: {

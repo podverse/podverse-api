@@ -11,10 +11,10 @@ if (process.env.NODE_ENV === 'production') {
   env = new paypal.core.SandboxEnvironment(clientId, clientSecret)
 }
 
-let client = new paypal.core.PayPalHttpClient(env)
+const client = new paypal.core.PayPalHttpClient(env)
 
 export const getPayPalPaymentInfo = paymentId => {
-  let request = new payments.PaymentGetRequest(paymentId)
+  const request = new payments.PaymentGetRequest(paymentId)
 
   return client.execute(request).then((response) => {
     return response.result

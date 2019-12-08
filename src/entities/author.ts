@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   ManyToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { Podcast } from '~/entities'

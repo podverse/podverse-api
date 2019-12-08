@@ -100,7 +100,7 @@ router.post('/send-verification',
   validateAuthSendVerification,
   async ctx => {
     try {
-      // @ts-ignore
+      
       const email = ctx.request.body.email
       await sendVerification(ctx, email)
     } catch (error) {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
@@ -41,7 +43,7 @@ export class Category {
   @BeforeInsert()
   @BeforeUpdate()
   addSlug () {
-    let slug = this.title.replace(/\s+/g, '-').toLowerCase()
+    const slug = this.title.replace(/\s+/g, '-').toLowerCase()
     this.slug = slug.replace(/\W/g, '')
   }
 

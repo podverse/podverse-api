@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, MediaRef, Podcast } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,

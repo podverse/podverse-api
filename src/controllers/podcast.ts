@@ -28,7 +28,7 @@ const getPodcasts = async (query, includeNSFW) => {
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
     skip, take } = query
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('podcast')
     .select('podcast.id')
     .addSelect('podcast.feedLastUpdated')
@@ -96,7 +96,7 @@ const getPodcasts = async (query, includeNSFW) => {
   qb.andWhere('"isPublic" = true')
 
   const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-  // @ts-ignore
+  
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
 
   try {
@@ -122,7 +122,7 @@ const getMetadata = async query => {
 
   const podcastIds = podcastId.split(',')
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('podcast')
     .select('podcast.id')
     .addSelect('podcast.feedLastUpdated')
@@ -155,7 +155,7 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       where: {
         id: loggedInUserId

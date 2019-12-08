@@ -94,7 +94,7 @@ export const parseFeedUrl = async feedUrl => {
         let newEpisodes = []
         let updatedSavedEpisodes = []
         if (data.episodes && Array.isArray(data.episodes)) {
-          let results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
+          const results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
           // console.log('findOrGenerateParsedEpisodes end', performance.now())
 
           newEpisodes = results.newEpisodes
@@ -103,16 +103,13 @@ export const parseFeedUrl = async feedUrl => {
           newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
           updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
-          let latestEpisode
           const latestNewEpisode = newEpisodes.reduce((r, a) => {
-            // @ts-ignore
             return r.pubDate > a.pubDate ? r : a
           }, [])
           const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
-            // @ts-ignore
             return r.pubDate > a.pubDate ? r : a
           }, [])
-          latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
+          const latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
 
           podcast.lastEpisodePubDate = isValidDate(latestEpisode.pubDate) ? latestEpisode.pubDate : undefined
           podcast.lastEpisodeTitle = latestEpisode.title
@@ -176,7 +173,7 @@ export const parseFeedUrl = async feedUrl => {
 export const parsePublicFeedUrls = async () => {
   const repository = getRepository(FeedUrl)
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
@@ -212,7 +209,7 @@ export const parsePublicFeedUrls = async () => {
 export const parseOrphanFeedUrls = async () => {
   const repository = getRepository(FeedUrl)
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
@@ -241,7 +238,7 @@ export const parseFeedUrlsFromQueue = async (restartTimeOut) => {
   if (shouldContinue) {
     await parseFeedUrlsFromQueue(restartTimeOut)
   } else if (restartTimeOut) {
-    // @ts-ignore
+    
     setTimeout(() => {
       parseFeedUrlsFromQueue(restartTimeOut)
     }, restartTimeOut)
@@ -266,7 +263,7 @@ export const parseNextFeedFromQueue = async () => {
     const feedUrlRepo = getRepository(FeedUrl)
 
     // console.log('updateFeedUrl start', performance.now())
-    let feedUrl = await feedUrlRepo
+    const feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
@@ -311,7 +308,7 @@ export const parseNextFeedFromQueue = async () => {
 
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
-  let allAuthorSlugs = authorNames.split(',').map(x => convertToSlug(x))
+  const allAuthorSlugs = authorNames.split(',').map(x => convertToSlug(x))
 
   let existingAuthors = [] as any
   if (allAuthorSlugs && allAuthorSlugs.length > 0) {
@@ -322,13 +319,13 @@ const findOrGenerateAuthors = async (authorNames) => {
     })
   }
 
-  let newAuthors = []
-  let existingAuthorSlugs = existingAuthors.map(x => x.slug)
+  const newAuthors = []
+  const existingAuthorSlugs = existingAuthors.map(x => x.slug)
 
-  let newAuthorNames = allAuthorSlugs.filter(x => !existingAuthorSlugs.includes(x))
+  const newAuthorNames = allAuthorSlugs.filter(x => !existingAuthorSlugs.includes(x))
 
   for (const name of newAuthorNames) {
-    let author = generateAuthor(name) as never
+    const author = generateAuthor(name) as never
     newAuthors.push(author)
   }
 
@@ -338,13 +335,13 @@ const findOrGenerateAuthors = async (authorNames) => {
 }
 
 const generateAuthor = name => {
-  let author = new Author()
+  const author = new Author()
   author.name = name
   return author
 }
 
 const findCategories = async (categories: string[]) => {
-  let c: string[] = []
+  const c: string[] = []
 
   for (const category of categories) {
     if (category.indexOf('>') > 0) {
@@ -432,7 +429,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // console.log('find savedEpisodes end', performance.now())
 
   // console.log('set all savedEpisodes to isPublic false start', performance.now())
-  let nonPublicEpisodes = [] as any
+  const nonPublicEpisodes = [] as any
   for (const e of savedEpisodes) {
     e.isPublic = false
     nonPublicEpisodes.push(e)
@@ -452,14 +449,14 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
-    let parsedEpisode = validParsedEpisodes.find(
+    const parsedEpisode = validParsedEpisodes.find(
       x => x.enclosure.url === existingEpisode.mediaUrl
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
-    // @ts-ignore
+    
     if (!updatedSavedEpisodes.some(x => x.mediaUrl === existingEpisode.mediaUrl)) {
-      // @ts-ignore
+      
       updatedSavedEpisodes.push(existingEpisode)
     }
   }
@@ -470,9 +467,9 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     let episode = new Episode()
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
 
-    // @ts-ignore
+    
     if (!newEpisodes.some(x => x.mediaUrl === episode.mediaUrl)) {
-      // @ts-ignore
+      
       newEpisodes.push(episode)
     }
   }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'

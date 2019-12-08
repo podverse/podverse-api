@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 const webpack = require('webpack')
 const path = require('path')
 const outPath = path.join(__dirname, './dist')

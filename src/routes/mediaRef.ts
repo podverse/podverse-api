@@ -65,7 +65,7 @@ router.post('/',
   createMediaRefLimiter,
   async ctx => {
     try {
-      let body: any = ctx.request.body
+      const body: any = ctx.request.body
 
       if (ctx.state.user && ctx.state.user.id) {
         body.owner = ctx.state.user.id

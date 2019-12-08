@@ -58,7 +58,7 @@ export const createApp = (conn: Connection) => {
     `/public`, koaStatic(__dirname + '/public/samples')
   ))
 
-  // @ts-ignore
+  
   app.use(swagger({
     routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
     swaggerOptions: {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IsInt, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'

@@ -6,7 +6,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     maxResults, mediaRefId, name, page, playlistId, podcastId, searchAllFieldsText, searchAuthor,
     searchTitle, sincePubDate, slug, sort, title, topLevelCategories, userIds } = query
 
-  let options = {
+  const options = {
     sort: 'top-past-week',
     skip: 0,
     take: 50,

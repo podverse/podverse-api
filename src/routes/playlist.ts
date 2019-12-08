@@ -65,7 +65,7 @@ router.post('/',
   hasValidMembership,
   async ctx => {
     try {
-      let body: any = ctx.request.body
+      const body: any = ctx.request.body
       body.owner = ctx.state.user.id
 
       const playlist = await createPlaylist(body)

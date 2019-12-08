@@ -11,7 +11,7 @@ const createError = require('http-errors')
 const addYearsToUserMembershipExpiration = async (id: string, years: number) => {
   const user = await getUser(id)
   if (user) {
-    let { freeTrialExpiration, membershipExpiration } = user
+    const { freeTrialExpiration, membershipExpiration } = user
     const currentDate = new Date()
 
     if (!membershipExpiration) {
@@ -25,7 +25,7 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
       }
     }
 
-    // @ts-ignore
+    
     user.freeTrialExpiration = null
     const yearsInMilliseconds = years * 365 * 24 * 60 * 60 * 1000
     user.membershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
@@ -44,7 +44,7 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
 
 const getUser = async (id: string) => {
   const repository = getRepository(User)
-  // @ts-ignore
+  
   const user = await repository.findOne(
     { id },
     {
@@ -101,7 +101,7 @@ const deleteLoggedInUser = async (id, loggedInUserId) => {
 const getLoggedInUser = async id => {
   const repository = getRepository(User)
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('user')
     .select('user.id')
     .addSelect('user.email')
@@ -142,7 +142,7 @@ const getLoggedInUser = async id => {
 const getPublicUser = async id => {
   const repository = getRepository(User)
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('user')
     .select('user.id')
     .addSelect('user.name')
@@ -163,7 +163,7 @@ const getPublicUser = async id => {
 const getPublicUsers = async query => {
   const repository = getRepository(User)
   const { skip, take } = query
-  let userIds = query.userIds && query.userIds.split(',') || []
+  const userIds = query.userIds && query.userIds.split(',') || []
 
   if (!userIds || userIds.length < 1) {
     return [[], 0]
@@ -210,14 +210,14 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
     )
     .skip(skip)
     .take(take)
-    // @ts-ignore
+    
     .orderBy(orderColumn[0], orderColumn[1])
     .getManyAndCount()
 
   return mediaRefs
 }
 
-const getUserPlaylists = async (query, ownerId, includePrivate) => {
+const getUserPlaylists = async (query, ownerId) => {
   const { skip, take } = query
   const repository = getRepository(Playlist)
 
@@ -303,7 +303,7 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let loggedInUser = await repository.findOne(
+  const loggedInUser = await repository.findOne(
     {
       where: {
         id: loggedInUserId
@@ -319,7 +319,7 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
     throw new createError.NotFound('Logged In user not found')
   }
 
-  let userToSubscribe = await repository.findOne(
+  const userToSubscribe = await repository.findOne(
     {
       where: {
         id: userId
@@ -468,7 +468,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       id: loggedInUserId
     },
@@ -498,7 +498,7 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       id: loggedInUserId
     },
@@ -513,7 +513,7 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
     throw new createError.NotFound('User not found.')
   }
 
-  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
+  const historyItems = Array.isArray(user.historyItems) && user.historyItems || []
 
   const index = historyItems.findIndex(
     (x: any) => !x.clipId && x.episodeId === nowPlayingItem.episodeId)
@@ -539,7 +539,7 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       id: loggedInUserId
     },
@@ -586,7 +586,7 @@ const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       id: loggedInUserId
     },
@@ -642,7 +642,7 @@ const clearAllHistoryItems = async (loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  let user = await repository.findOne(
+  const user = await repository.findOne(
     {
       id: loggedInUserId
     },

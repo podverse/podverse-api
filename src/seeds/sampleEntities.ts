@@ -17,27 +17,27 @@ const seedDatabase = async (connection: Connection) => {
 
   await connection.synchronize(true)
 
-  let author1 = new Author()
+  const author1 = new Author()
   author1.name = 'James Altucher'
 
-  let author2 = new Author()
+  const author2 = new Author()
   author2.name = 'Sam Harris'
 
-  let author3 = new Author()
+  const author3 = new Author()
   author3.name = 'Tim Ferriss'
 
-  let author4 = new Author()
+  const author4 = new Author()
   author4.name = 'Josh Szeps'
 
-  let category1 = new Category()
+  const category1 = new Category()
   category1.fullPath = 'test-category1'
   category1.title = 'Test Category 1'
 
-  let category2 = new Category()
+  const category2 = new Category()
   category2.fullPath = 'test-category2'
   category2.title = 'Test Category 2'
 
-  let user1 = new User()
+  const user1 = new User()
   user1.email = 'foghorn@looney.tunes'
   user1.name = 'Foghorn Leghorn'
   user1.password = saltedPassword
@@ -47,7 +47,7 @@ const seedDatabase = async (connection: Connection) => {
   user1.isPublic = true
   user1.emailVerified = true
 
-  let user2 = new User()
+  const user2 = new User()
   user2.email = 'sylvester@looney.tunes'
   user2.name = 'Sylvester the Cat'
   user2.password = saltedPassword
@@ -58,7 +58,7 @@ const seedDatabase = async (connection: Connection) => {
   user2.isPublic = true
   user2.emailVerified = true
 
-  let user3 = new User()
+  const user3 = new User()
   user3.email = 'tweety@looney.tunes'
   user3.name = 'Tweety'
   user3.password = saltedPassword
@@ -69,7 +69,7 @@ const seedDatabase = async (connection: Connection) => {
   user3.isPublic = true
   user3.emailVerified = true
 
-  let user4 = new User()
+  const user4 = new User()
   user4.email = 'wile@looney.tunes'
   user4.name = 'Wile E. Coyote'
   user4.password = saltedPassword
@@ -79,7 +79,7 @@ const seedDatabase = async (connection: Connection) => {
   user4.isPublic = true
   user4.emailVerified = true
 
-  let user5 = new User()
+  const user5 = new User()
   user5.email = 'roadrunner@looney.tunes'
   user5.name = 'Roadrunner'
   user5.password = saltedPassword
@@ -89,7 +89,7 @@ const seedDatabase = async (connection: Connection) => {
   user5.isPublic = true
   user5.emailVerified = true
 
-  let user6 = new User()
+  const user6 = new User()
   user6.email = 'daffy@looney.tunes'
   user6.name = 'Daffy Duck'
   user6.password = saltedPassword
@@ -280,7 +280,7 @@ const seedDatabase = async (connection: Connection) => {
   mediaRef6.owner = user1
   mediaRef6.isPublic = true
 
-  let playlist1 = new Playlist()
+  const playlist1 = new Playlist()
   playlist1.owner = user1
   playlist1.title = 'Greatest Hits'
   playlist1.itemCount = 3
@@ -288,21 +288,21 @@ const seedDatabase = async (connection: Connection) => {
   playlist1.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis rhoncus metus, non commodo elit. Nunc sed felis non lacus vestibulum pharetra vel a erat.'
   playlist1.isPublic = true
 
-  let playlist2 = new Playlist()
+  const playlist2 = new Playlist()
   playlist2.owner = user1
   playlist2.title = `Foghorn's Playlist`
   playlist2.itemCount = 4
   playlist2.mediaRefs = [mediaRef4, mediaRef5, mediaRef2, mediaRef3]
   playlist2.description = 'Sed tortor ante, eleifend nec egestas ac, aliquet sed lorem. Duis eget libero consequat, tempor elit nec, sollicitudin arcu.'
 
-  let playlist3 = new Playlist()
+  const playlist3 = new Playlist()
   playlist3.owner = user2
   playlist3.title = `Sylvester's Playlist`
   playlist3.itemCount = 5
   playlist3.mediaRefs = [mediaRef, mediaRef6, mediaRef5, mediaRef4, mediaRef3]
   playlist3.description = 'Nam dui justo, fermentum at mauris ac, venenatis rhoncus neque. Aenean porttitor massa odio, id fermentum lectus ante bebendum.'
 
-  let playlist4 = new Playlist()
+  const playlist4 = new Playlist()
   playlist4.owner = user3
   playlist4.title = `Tweety's Playlist`
   playlist4.itemCount = 3
@@ -343,19 +343,19 @@ const seedDatabase = async (connection: Connection) => {
 
   await connection.manager.save([playlist1, playlist2, playlist3, playlist4])
 
-  let nestedCategory1 = new Category()
+  const nestedCategory1 = new Category()
   nestedCategory1.fullPath = 'nested-category-1'
   nestedCategory1.title = 'Nested Category 1'
   nestedCategory1.category = category1
 
-  let nestedCategory2 = new Category()
+  const nestedCategory2 = new Category()
   nestedCategory2.fullPath = 'nested-category-2'
   nestedCategory2.title = 'Nested Category 2'
   nestedCategory2.category = category2
 
   await connection.manager.save([nestedCategory1, nestedCategory2])
 
-  let podcast4 = new Podcast()
+  const podcast4 = new Podcast()
   podcast4.title = '#WeThePeople LIVE'
   podcast4.imageUrl = assetPath ? `${assetPath}/wethepeople.jpg` : 'http://static.megaphone.fm/podcasts/631704f4-0b52-11e7-b31e-e736e00075b3/image/18343616958_f4243669cd_k.jpg'
   podcast4.description = `In an era of thought bubbles, of talking points, of fake news and phony debate, #WeThePeople LIVE is a refreshing bar-room conversation about the biggest issues of our time. A place to reach across the conversational chasm. Pull up a stool, grab a cocktail, and help make debate healthy again. It's the discussion show for planet earth. Join the conversation: @WTP_Live.`

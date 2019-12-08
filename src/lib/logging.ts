@@ -31,7 +31,7 @@ export function logger () {
       logLevel = 'info'
     }
 
-    const msg: string = `${ctx.method} ${ctx.originalUrl} ${ctx.status} ${ms}ms`
+    const msg = `${ctx.method} ${ctx.originalUrl} ${ctx.status} ${ms}ms`
 
     loggerInstance.log(logLevel, msg)
 

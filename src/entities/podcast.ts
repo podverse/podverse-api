@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, JoinTable,
@@ -44,7 +46,7 @@ export class Podcast {
   lastEpisodePubDate?: Date
 
   @Column({ nullable: true })
-  lastEpisodeTitle?: String
+  lastEpisodeTitle?: string
 
   @ValidateIf(a => a.linkUrl != null)
   @IsUrl()

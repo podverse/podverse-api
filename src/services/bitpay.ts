@@ -40,7 +40,7 @@ if (client) {
 export const createBitPayInvoiceVendor = email => {
   return new Promise((resolve, reject) => {
     const orderId = uuidv4()
-    let filteredData = {
+    const filteredData = {
       orderId,
       price,
       currency,

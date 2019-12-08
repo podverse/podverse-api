@@ -17,10 +17,10 @@ const getAuthor = async id => {
 
 const getAuthors = async (query) => {
   const repository = getRepository(Author)
-  let authorIds = query.id && query.id.split(',') || []
+  const authorIds = query.id && query.id.split(',') || []
   const { name, slug, skip, take } = query
 
-  let qb = repository
+  const qb = repository
     .createQueryBuilder('author')
     .select('author.id')
     .addSelect('author.name')

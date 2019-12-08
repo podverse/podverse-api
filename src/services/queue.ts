@@ -41,7 +41,7 @@ export const addAllOrphanFeedUrlsToQueue = async () => {
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
-    let feedUrls = await feedUrlRepo
+    const feedUrls = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
@@ -58,14 +58,14 @@ export const addAllOrphanFeedUrlsToQueue = async () => {
 export const sendFeedUrlsToParsingQueue = async (feedUrls) => {
   const queueUrl = queueUrls.feedsToParse.queueUrl
 
-  let attributes = []
+  const attributes = []
   for (const feedUrl of feedUrls) {
     const attribute = generateFeedMessageAttributes(feedUrl) as never
     attributes.push(attribute)
   }
 
-  let entries = []
-  for (let [index, key] of Array.from(attributes.entries())) {
+  const entries = []
+  for (const [index, key] of Array.from(attributes.entries())) {
     const entry = {
       Id: String(index),
       MessageAttributes: key,
@@ -75,14 +75,13 @@ export const sendFeedUrlsToParsingQueue = async (feedUrls) => {
   }
 
   const entryChunks = chunkArray(entries)
-  let messagePromises = []
+  const messagePromises = []
   for (const entryChunk of entryChunks) {
     const chunkParams = {
       Entries: entryChunk,
       QueueUrl: queueUrl
     }
 
-    // @ts-ignore
     messagePromises.push(sqs.sendMessageBatch(chunkParams).promise())
   }
 
@@ -105,7 +104,7 @@ export const sendMessageToQueue = async (attrs, queue) => {
 }
 
 export const receiveMessageFromQueue = async queue => {
-  let params = {
+  const params = {
     QueueUrl: queue,
     MessageAttributeNames: ['All'],
     VisibilityTimeout: 30

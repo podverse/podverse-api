@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToOne,

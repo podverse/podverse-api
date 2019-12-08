@@ -34,9 +34,9 @@ router.post('/update-purchase-status',
   jwtAuth,
   async ctx => {
     try {
-      // @ts-ignore
+      
       const purchaseToken = ctx.request.body.purchaseToken
-      // @ts-ignore
+      
       const productId = ctx.request.body.productId
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
