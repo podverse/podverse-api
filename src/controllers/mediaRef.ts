@@ -123,7 +123,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   }
 
   
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
+  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   const mediaRefs = await qb
     .offset(skip)

@@ -170,7 +170,7 @@ const getEpisodes = async (query, includeNSFW) => {
     const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
     const episodes = await qb
       
-      .orderBy(orderColumn[0], orderColumn[1])
+      .orderBy(orderColumn[0], orderColumn[1] as any)
       .getRawMany()
 
     return [episodes, count]
@@ -182,7 +182,7 @@ const getEpisodes = async (query, includeNSFW) => {
 
     const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
     
-    query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
+    query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
     const episodes = await qb.getRawMany()
 
     return [episodes, count]

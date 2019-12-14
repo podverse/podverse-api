@@ -97,7 +97,7 @@ const getPodcasts = async (query, includeNSFW) => {
 
   const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
   
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1])
+  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   try {
     const podcasts = await qb

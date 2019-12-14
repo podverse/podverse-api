@@ -11,7 +11,8 @@ const createError = require('http-errors')
 const addYearsToUserMembershipExpiration = async (id: string, years: number) => {
   const user = await getUser(id)
   if (user) {
-    const { freeTrialExpiration, membershipExpiration } = user
+    const { freeTrialExpiration } = user
+    let { membershipExpiration } = user
     const currentDate = new Date()
 
     if (!membershipExpiration) {
@@ -25,7 +26,8 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
       }
     }
 
-    
+    // eslint-disable-next-line
+    // @ts-ignore
     user.freeTrialExpiration = null
     const yearsInMilliseconds = years * 365 * 24 * 60 * 60 * 1000
     user.membershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
@@ -211,7 +213,7 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
     .skip(skip)
     .take(take)
     
-    .orderBy(orderColumn[0], orderColumn[1])
+    .orderBy(orderColumn[0], orderColumn[1] as any)
     .getManyAndCount()
 
   return mediaRefs

@@ -4,7 +4,6 @@ import * as helmet from 'koa-helmet'
 import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
-import * as swagger from 'koa2-swagger-ui'
 import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
@@ -12,9 +11,10 @@ import { logger, loggerInstance } from '~/lib/logging'
 import { appStoreRouter, authRouter, authorRouter, bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter,
   googlePlayRouter, mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
-
+  
 const cookie = require('cookie')
 const cors = require('@koa/cors')
+const swagger = require('koa2-swagger-ui')
 
 declare module 'koa' {
   interface BaseContext {
@@ -107,7 +107,7 @@ export const createApp = (conn: Connection) => {
 
   app.use(logger())
 
-  app.on('error', async (error, ctx) => {
+  app.on('error', async (error) => {
     loggerInstance.log('error', error.message)
   })
 

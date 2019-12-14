@@ -201,8 +201,7 @@ router.get('/playlists',
 
       const playlists = await getUserPlaylists(
         query,
-        ctx.state.user.id,
-        true
+        ctx.state.user.id
       )
       ctx.body = playlists
     } catch (error) {
@@ -293,8 +292,7 @@ router.get('/:id/playlists',
 
       const playlists = await getUserPlaylists(
         query,
-        ctx.params.id,
-        false
+        ctx.params.id
       )
       ctx.body = playlists
     } catch (error) {

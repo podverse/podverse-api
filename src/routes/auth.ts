@@ -100,8 +100,8 @@ router.post('/send-verification',
   validateAuthSendVerification,
   async ctx => {
     try {
-      
-      const email = ctx.request.body.email
+      const body = ctx.request.body as any
+      const email = body.email
       await sendVerification(ctx, email)
     } catch (error) {
       emitRouterError(error, ctx)

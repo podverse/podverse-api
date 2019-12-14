@@ -53,7 +53,8 @@ const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
     'status'
   ]
 
-  
+  // eslint-disable-next-line
+  // @ts-ignore
   const bitpayInvoice = await repository.findOne(
     { orderId },
     {
@@ -94,7 +95,8 @@ const updateBitPayInvoiceLocal = async data => {
     'url'
   ]
 
-  
+  // eslint-disable-next-line
+  // @ts-ignore
   const bitpayInvoice = await repository.findOne({
     where: { id },
     relations: ['owner'],

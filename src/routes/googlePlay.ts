@@ -34,10 +34,9 @@ router.post('/update-purchase-status',
   jwtAuth,
   async ctx => {
     try {
-      
-      const purchaseToken = ctx.request.body.purchaseToken
-      
-      const productId = ctx.request.body.productId
+      const body = ctx.request.body as any
+      const purchaseToken = body.purchaseToken
+      const productId = body.productId
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')

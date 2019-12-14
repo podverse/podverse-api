@@ -63,8 +63,8 @@ router.post('/invoice',
 router.post('/notification',
   async ctx => {
     try {
-      
-      const invoiceId = ctx.request.body && ctx.request.body.id
+      const body = ctx.request.body as any
+      const invoiceId = body && body.id
       if (invoiceId) {
         const response: any = await getBitPayInvoiceVendor(invoiceId)
 

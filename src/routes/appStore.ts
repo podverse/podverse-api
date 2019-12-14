@@ -28,7 +28,7 @@ router.post('/update-purchase-status',
   async ctx => {
     try {
       
-      const { transactionReceipt } = ctx.request.body
+      const { transactionReceipt } = ctx.request.body as any
       const user = await getLoggedInUser(ctx.state.user.id)
       if (!user || !user.id) {
         throw new Error('User not found')

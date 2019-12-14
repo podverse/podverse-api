@@ -111,7 +111,8 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
   }
 }
 
-
+// eslint-disable-next-line
+// @ts-ignore
 Date.prototype.addDays = function (days) {
   const date = new Date(this.valueOf())
   date.setDate(date.getDate() + days)
@@ -119,7 +120,7 @@ Date.prototype.addDays = function (days) {
 }
 
 export const isBeforeDate = (expirationDate, dayOffset = 0) => {
-  const currentDate = new Date()
+  const currentDate = new Date() as any
   
   const offsetDate = currentDate.addDays(dayOffset)
   return new Date(expirationDate) > offsetDate
