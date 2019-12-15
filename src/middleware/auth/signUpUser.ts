@@ -3,10 +3,8 @@ import { Connection } from 'typeorm'
 import isEmail from 'validator/lib/isEmail'
 import { config } from '~/config'
 import { User } from '~/entities'
-import { authExpires } from '~/lib/constants'
 import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
-import { generateToken } from '~/services/auth'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 const uuidv4 = require('uuid/v4')
 
@@ -53,27 +51,11 @@ export const signUpUser = async (ctx, next) => {
 
   try {
     const { id, email, emailVerificationToken, name } = await createUser(user)
-
     await sendVerificationEmail(email, name, emailVerificationToken)
-    const bearerToken = await generateToken({ id })
-
-    const expires = authExpires()
 
     ctx.body = {
       id,
       email
-    }
-
-    if (ctx.query.includeBodyToken) {
-      ctx.body.token = `Bearer ${bearerToken}`
-    } else {
-      ctx.cookies.set('Authorization', `Bearer ${bearerToken}`, {
-        domain: config.cookieDomain,
-        expires,
-        httpOnly: true,
-        overwrite: true,
-        secure: config.cookieIsSecure
-      })
     }
 
     ctx.status = 200
