@@ -16,7 +16,7 @@ export const emailTemplate = (obj) => {
       <body style="margin: 0; padding: 0;">
         <div class="container" style="background-color: #D8D8D8; font-family: 'Arial', sans-serif; margin: 0; padding: 0 0 32px 0;">
           <div class="nav" style="background-color: ${config.emailBrandColor}; height: 58px; text-align: center; width: 100%;">
-            ${config.emailHeaderImageUrl ? `<img src="${config.emailHeaderImageUrl}" style="height: 38px; margin-top: 10px" />` : ''}
+            ${config.emailHeaderImageUrl ? `<img src="${config.emailHeaderImageUrl}" style="height: 38px; margin-top: 10px; max-width: 280px;" />` : ''}
           </div>
           <div class="content" style="background-color: #FFF; margin: 40px auto; max-width: 380px; padding: 40px 40px 48px 40px;">
             ${headerText ? `<h1 style="color: ${config.emailBrandColor}; font-size: 30px; margin: 0 0 32px 0; text-align: center;">${headerText}</h1>` : ''}
