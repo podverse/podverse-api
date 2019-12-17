@@ -41,12 +41,14 @@ router.post('/update-purchase-status',
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
-        const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as GooglePlayPurchase
+        const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as any
         verified.owner = user
         verified.purchaseToken = purchaseToken
         verified.productId = productId
+        verified.transactionId = verified.orderId
+        delete verified.orderId
 
-        let purchase = await getGooglePlayPurchase(verified.transactionId, user.id)
+        let purchase = await getGooglePlayPurchase(verified.transactionId, user.id) as GooglePlayPurchase
 
         if (purchase) {
           purchase = verified
@@ -63,7 +65,10 @@ router.post('/update-purchase-status',
 
         if (purchase && purchase.purchaseState === 0) {
           await addYearsToUserMembershipExpiration(user.id, 1)
-          await updateGooglePlayPurchase({ consumptionState: 1 }, user.id)
+          await updateGooglePlayPurchase({
+            ...purchase,
+            consumptionState: 1
+          }, user.id)
           ctx.body = {
             code: 0,
             message: 'Purchase completed successfully.'
