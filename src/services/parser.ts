@@ -103,10 +103,10 @@ export const parseFeedUrl = async feedUrl => {
           newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
           updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
-          const latestNewEpisode = newEpisodes.reduce((r, a) => {
+          const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
             return r.pubDate > a.pubDate ? r : a
           }, [])
-          const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r, a) => {
+          const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r: any, a: any) => {
             return r.pubDate > a.pubDate ? r : a
           }, [])
           const latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
@@ -367,15 +367,15 @@ const findCategories = async (categories: string[]) => {
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.isPublic = true
   episode.description = parsedEpisode.description
-  episode.duration = parsedEpisode.duration
-    ? parseInt(parsedEpisode.duration, 10) : 0
+  // episode.duration = parsedEpisode.duration
+  //   ? parseInt(parsedEpisode.duration, 10) : 0
   episode.episodeType = parsedEpisode.episodeType
   episode.guid = parsedEpisode.guid
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
   podcast.linkUrl = parsedEpisode.link
-  episode.mediaFilesize = parsedEpisode.enclosure.filesize
-    ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
+  // episode.mediaFilesize = parsedEpisode.enclosure.filesize
+  //   ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
   episode.pubDate = isValidDate(parsedEpisode.published) ? parsedEpisode.published : new Date()
@@ -444,8 +444,8 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     x => !savedEpisodeMediaUrls.includes(x.enclosure.url)
   )
 
-  const updatedSavedEpisodes = []
-  const newEpisodes = []
+  const updatedSavedEpisodes = [] as any
+  const newEpisodes = [] as any
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
@@ -455,8 +455,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
     
-    if (!updatedSavedEpisodes.some(x => x.mediaUrl === existingEpisode.mediaUrl)) {
-      
+    if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
       updatedSavedEpisodes.push(existingEpisode)
     }
   }
@@ -468,8 +467,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
 
     
-    if (!newEpisodes.some(x => x.mediaUrl === episode.mediaUrl)) {
-      
+    if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
       newEpisodes.push(episode)
     }
   }

@@ -75,7 +75,7 @@ export const sendFeedUrlsToParsingQueue = async (feedUrls) => {
   }
 
   const entryChunks = chunkArray(entries)
-  const messagePromises = []
+  const messagePromises = [] as any
   for (const entryChunk of entryChunks) {
     const chunkParams = {
       Entries: entryChunk,
