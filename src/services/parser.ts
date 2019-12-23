@@ -14,7 +14,7 @@ import { getFeedUrls } from '~/controllers/feedUrl'
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-export const parseFeedUrl = async feedUrl => {
+export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   // console.log('start parsing', performance.now(), feedUrl.url)
   const response = await request(feedUrl.url, {
     timeout: 10000,
@@ -44,7 +44,7 @@ export const parseFeedUrl = async feedUrl => {
         }
 
         // Stop parsing if the feed has not been updated since it was last parsed.
-        if (podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
+        if (!forceReparsing && podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
           resolve()
           return
         }
@@ -94,6 +94,7 @@ export const parseFeedUrl = async feedUrl => {
         // console.log('findOrGenerateParsedEpisodes start', performance.now())
         let newEpisodes = []
         let updatedSavedEpisodes = []
+
         if (data.episodes && Array.isArray(data.episodes)) {
           const results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
           // console.log('findOrGenerateParsedEpisodes end', performance.now())
@@ -173,9 +174,10 @@ export const parseFeedUrl = async feedUrl => {
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const feedUrls = await getFeedUrls({ podcastId: podcastIds })
+  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
-    await parseFeedUrl(feedUrl)
+    await parseFeedUrl(feedUrl, forceReparsing)
   }
 
   console.log('parseFeedUrlsByPodcastIds finished')
