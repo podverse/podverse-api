@@ -7,6 +7,7 @@ import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { convertToSlug, isValidDate } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
+import { getFeedUrls } from '~/controllers/feedUrl'
 
 // import { performance } from 'perf_hooks'
 
@@ -168,6 +169,17 @@ export const parseFeedUrl = async feedUrl => {
       }
     })
   })
+}
+
+export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
+  const feedUrls = await getFeedUrls({ podcastId: podcastIds })
+
+  for (const feedUrl of feedUrls) {
+    await parseFeedUrl(feedUrl)
+  }
+
+  console.log('parseFeedUrlsByPodcastIds finished')
+  return
 }
 
 export const parsePublicFeedUrls = async () => {

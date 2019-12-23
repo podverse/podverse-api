@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { FeedUrl } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
@@ -54,7 +54,7 @@ const getFeedUrls = (query) => {
   const repository = getRepository(FeedUrl)
 
   if (query.podcastId) {
-    query.podcast = query.podcastId
+    query.podcast = In(query.podcastId)
   }
 
   return repository.find({
