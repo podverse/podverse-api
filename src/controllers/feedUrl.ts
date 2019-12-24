@@ -9,20 +9,30 @@ const relations = [
 
 const addFeedUrls = async (urls: any[] = []) => {
   const repository = getRepository(FeedUrl)
+  const feeds = [] as any
 
   for (const url of urls) {
-    const feedUrl = await repository.findOne({ url })
+    let feedUrl = await repository.findOne({
+      where: {
+        url
+      },
+      relations
+    })
 
     if (!feedUrl) {
-      const feedUrl = new FeedUrl()
+      feedUrl = new FeedUrl()
       feedUrl.url = url
       feedUrl.isAuthority = true
       await validateClassOrThrow(feedUrl)
       await repository.save(feedUrl)
     }
+
+    if (feedUrl) {
+      feeds.push(feedUrl)
+    }
   }
 
-  return
+  return feeds
 }
 
 const deleteFeedUrl = async id => {
