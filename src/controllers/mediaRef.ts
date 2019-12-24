@@ -111,7 +111,7 @@ const getMediaRefs = async (query, includeNSFW) => {
       `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
       LOWER(episode.title) LIKE :searchAllFieldsText OR
       LOWER(podcast.title) LIKE :searchAllFieldsText`,
-      { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%` }
+      { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%` }
     )
     qb.andWhere(`
       mediaRef.title IS NOT NULL AND

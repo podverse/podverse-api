@@ -34,13 +34,13 @@ const getCategories = async query => {
       { categoryIds }
     )
   } else if (slug) {
-    const slugLowerCase = `%${slug.toLowerCase()}%`
+    const slugLowerCase = `%${slug.toLowerCase().trim()}%`
     qb.where(
       'LOWER(category.slug) LIKE :slug',
       { slug: slugLowerCase }
     )
   } else if (title) {
-    const titleLowerCase = `%${title.toLowerCase()}%`
+    const titleLowerCase = `%${title.toLowerCase().trim()}%`
     qb.where(
       'LOWER(category.title) LIKE :title',
       { title: titleLowerCase }

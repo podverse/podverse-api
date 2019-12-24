@@ -80,7 +80,7 @@ const getEpisodes = async (query, includeNSFW) => {
       sincePubDate ? episodeWhereSincePubDateConditions : episodeWhereConditions,
       {
         podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`,
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`,
         sincePubDate
       }
     )
@@ -144,7 +144,7 @@ const getEpisodes = async (query, includeNSFW) => {
       episodeWhereConditions,
       {
         podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase()}%`
+        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
       }
     )
   } else if (sincePubDate) {

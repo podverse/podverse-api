@@ -129,6 +129,6 @@ export const isBeforeDate = (expirationDate, dayOffset = 0) => {
 export const removeObjectKeysWithEmptyValues = obj =>
   Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key])
 
-export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '')
+export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '').trim()
 
 export const isValidDate = (date: any) => date instanceof Date && !isNaN(date as any)

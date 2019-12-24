@@ -32,13 +32,13 @@ const getAuthors = async (query) => {
       { authorIds }
     )
   } else if (name) {
-    const nameLowerCase = `%${name.toLowerCase()}%`
+    const nameLowerCase = `%${name.toLowerCase().trim()}%`
     qb.where(
       'LOWER(author.name) LIKE :name',
       { name: nameLowerCase }
     )
   } else if (slug) {
-    const slugLowerCase = `%${slug.toLowerCase()}%`
+    const slugLowerCase = `%${slug.toLowerCase().trim()}%`
     qb.where(
       'LOWER(author.slug) LIKE :slug',
       { slug: slugLowerCase }

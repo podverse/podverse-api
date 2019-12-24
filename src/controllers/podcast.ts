@@ -56,7 +56,7 @@ const getPodcasts = async (query, includeNSFW) => {
     )
   } else {
     if (searchTitle) {
-      const title = `%${searchTitle.toLowerCase()}%`
+      const title = `%${searchTitle.toLowerCase().trim()}%`
       qb.where(
         'LOWER(podcast.title) LIKE :title',
         { title }
@@ -64,7 +64,7 @@ const getPodcasts = async (query, includeNSFW) => {
       qb.leftJoinAndSelect('podcast.authors', 'authors')
       qb.leftJoinAndSelect('podcast.categories', 'categories')
     } else if (searchAuthor) {
-      const name = `%${searchAuthor.toLowerCase()}%`
+      const name = `%${searchAuthor.toLowerCase().trim()}%`
       qb.innerJoinAndSelect(
         'podcast.authors',
         'authors',
