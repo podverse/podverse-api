@@ -95,6 +95,11 @@ export class Podcast {
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
+  @ValidateIf(a => a.shrunkImageUrl != null)
+  @IsUrl()
+  @Column({ nullable: true })
+  shrunkImageUrl?: string
+
   @Index()
   @Column({ nullable: true })
   sortableTitle?: string

@@ -7,17 +7,11 @@ import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { convertToSlug, isValidDate } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
-// import { shrinkImage } from './imageShrinker'
+import { shrinkImage } from './imageShrinker'
 
 // import { performance } from 'perf_hooks'
 
-const fs = require('fs')
-const path = require('path')
-const sharp = require('sharp')
-
-const userAgent = 'Podverse.fm'
-
-const { awsConfig, imageSize, imageStorageDirectory } = config
+const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
@@ -148,49 +142,17 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         // console.log('podcast save start', performance.now())
         const podcastRepo = getRepository(Podcast)
         await podcastRepo.save(podcast)
-
-        try {
-          if (podcast.imageUrl) {
-            const imgResponse = await request(podcast.imageUrl, {
-              timeout: 5000,
-              headers: {
-                'User-Agent': userAgent
-              },
-              encoding: null
-            })
-
-            const shrunkImage = await sharp(imgResponse).resize(imageSize).toBuffer()
-
-            const parts = podcast.imageUrl.split('.')
-            const fileExtension = parts[parts.length - 1]
-
-            const imgWritePromise = () => {
-              return new Promise(async (resolve, reject) => {
-                const slug = podcast.title ? convertToSlug(podcast.title) : 'podcast-image'
-                const filePath = `${path.resolve(`${__dirname}/../../`)}/${imageStorageDirectory}/${podcast.id}/`
-                const fileName = `${slug}.${fileExtension}`
-
-                await fs.promises.mkdir(filePath, { recursive: true })
-
-                fs.writeFile(filePath + fileName, shrunkImage, () => {
-                  resolve()
-                })
-              })
-            }
-
-            await imgWritePromise()
-
-            // const newImgBuffer = shrinkImage(imgBuffer)
-            // podcast.shrunkImageUrl = 'https://newurl.com'
-          }
-        } catch (error) {
-          console.log('Image saving failed')
-          console.log('title', podcast.title)
-          console.log('imageUrl', podcast.imageUrl)
-          console.log(error)
-        }
-
         // console.log('podcast save end', performance.now())
+
+        // console.log('podcast image shrink start', performance.now())
+        if (podcast && podcast.imageUrl) {
+          const shrunkImageUrl = await shrinkImage(podcast)
+          if (shrunkImageUrl) {
+            podcast.shrunkImageUrl = shrunkImageUrl
+            await podcastRepo.save(podcast)
+          }
+        }
+        // console.log('podcast image shrink end', performance.now())
 
         // console.log('updatedSavedEpisodes save start', performance.now())
         await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })

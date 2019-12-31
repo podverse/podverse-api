@@ -5,5 +5,6 @@ export default {
       errorsQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_ERRORS_URL
     }
   },
-  region: process.env.AWS_REGION
+  region: process.env.AWS_REGION,
+  imageS3BucketName: process.env.AWS_IMAGE_S3_BUCKET_NAME
 }

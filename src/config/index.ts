@@ -17,10 +17,10 @@ export interface Config {
   dbConfig: DbConfig
   apiPrefix: string
   apiVersion: string
+  userAgent: string
   cookieDomain: string
   cookieIsSecure: boolean
-  imageStorageDirectory: string
-  imageSize: number
+  shrunkImageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
   emailUnsubscribeUrl: string
@@ -75,7 +75,7 @@ const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
-const imageSize = process.env.IMAGE_SIZE || '500'
+const shrunkImageSize = process.env.SHRUNK_IMAGE_SIZE || '400'
 const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
 const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
 const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
@@ -133,10 +133,10 @@ const config: Config = {
   },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
+  userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
   cookieDomain,
   cookieIsSecure,
-  imageStorageDirectory: process.env.IMAGE_STORAGE_DIRECTORY || '/image_storage',
-  imageSize: parseInt(imageSize, 10),
+  shrunkImageSize: parseInt(shrunkImageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,
   emailUnsubscribeUrl,
