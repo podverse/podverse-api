@@ -19,6 +19,8 @@ export interface Config {
   apiVersion: string
   cookieDomain: string
   cookieIsSecure: boolean
+  imageStorageDirectory: string
+  imageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
   emailUnsubscribeUrl: string
@@ -73,6 +75,7 @@ const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
+const imageSize = process.env.IMAGE_SIZE || '500'
 const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
 const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
 const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
@@ -132,6 +135,8 @@ const config: Config = {
   apiVersion: process.env.API_VERSION || '',
   cookieDomain,
   cookieIsSecure,
+  imageStorageDirectory: process.env.IMAGE_STORAGE_DIRECTORY || '/image_storage',
+  imageSize: parseInt(imageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,
   emailUnsubscribeUrl,

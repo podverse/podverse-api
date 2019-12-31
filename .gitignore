@@ -2,6 +2,8 @@
 /src/config/google/jwt.keys.json
 /src/config/parser/addFeedUrlsFile.json
 
+/image_storage
+
 # API keys and secrets
 .env
 
