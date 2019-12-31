@@ -96,7 +96,7 @@ export class Podcast {
   pastAllTimeTotalUniquePageviews: number
 
   // Save only the shrunk image's path, then set the origin in the client.
-  @ValidateIf(a => a.shrunkImageUrl != null)
+  @ValidateIf(a => a.shrunkImageUrlPath != null)
   @IsUrl()
   @Column({ nullable: true })
   shrunkImageUrlPath?: string
