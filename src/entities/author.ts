@@ -16,7 +16,7 @@ export class Author {
   })
   id: string
 
-  @Column({ unique: true })
+  @Column()
   name: string
 
   @Column({ unique: true })
@@ -34,8 +34,8 @@ export class Author {
   @BeforeInsert()
   @BeforeUpdate()
   beforeAll () {
-    this.slug = convertToSlug(this.name)
     this.name = this.name.trim()
+    this.slug = convertToSlug(this.name)
   }
 
   @BeforeInsert()

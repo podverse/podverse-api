@@ -332,8 +332,9 @@ export const parseNextFeedFromQueue = async () => {
 
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
-  const allAuthorSlugs = authorNames.split(',').map(x => convertToSlug(x))
-
+  const authorNamesArray = authorNames.split(',')
+  const allAuthorSlugs = authorNamesArray.map(x => convertToSlug(x))
+  
   let existingAuthors = [] as any
   if (allAuthorSlugs && allAuthorSlugs.length > 0) {
     existingAuthors = await authorRepo.find({
@@ -344,13 +345,15 @@ const findOrGenerateAuthors = async (authorNames) => {
   }
 
   const newAuthors = []
-  const existingAuthorSlugs = existingAuthors.map(x => x.slug)
-
-  const newAuthorNames = allAuthorSlugs.filter(x => !existingAuthorSlugs.includes(x))
-
+  const newAuthorNames = authorNamesArray.filter(x => !authorNamesArray.includes(convertToSlug(x)))
   for (const name of newAuthorNames) {
     const author = generateAuthor(name) as never
     newAuthors.push(author)
+  }
+
+  for (const existingAuthor of existingAuthors) {
+    const matchedName = authorNamesArray.find(x => convertToSlug(x) === existingAuthor.slug)
+    existingAuthor.name = matchedName
   }
 
   const allAuthors = existingAuthors.concat(newAuthors)
