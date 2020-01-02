@@ -345,7 +345,12 @@ const findOrGenerateAuthors = async (authorNames) => {
   }
 
   const newAuthors = []
-  const newAuthorNames = authorNamesArray.filter(x => !authorNamesArray.includes(convertToSlug(x)))
+  const newAuthorNames = authorNamesArray.filter(x => {
+    return !existingAuthors.find(existingAuthor => {
+      return existingAuthor.slug === convertToSlug(x)
+    })
+  })
+
   for (const name of newAuthorNames) {
     const author = generateAuthor(name) as never
     newAuthors.push(author)

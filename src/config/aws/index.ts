@@ -6,5 +6,6 @@ export default {
     }
   },
   region: process.env.AWS_REGION,
-  imageS3BucketName: process.env.AWS_IMAGE_S3_BUCKET_NAME
+  imageS3BucketName: process.env.AWS_IMAGE_S3_BUCKET_NAME,
+  imageCloudFrontOrigin: process.env.AWS_IMAGE_CLOUDFRONT_ORIGIN
 }

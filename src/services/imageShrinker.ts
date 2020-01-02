@@ -6,7 +6,7 @@ import { s3 } from '~/services/aws'
 const sharp = require('sharp')
 
 const { awsConfig, shrunkImageSize, userAgent } = config
-const { imageS3BucketName } = awsConfig
+const { imageCloudFrontOrigin, imageS3BucketName } = awsConfig
 
 // This handles requesting the original image from the podcaster's server,
 // shrinking the image, then PUTing it on our S3 bucket.
@@ -37,7 +37,7 @@ export const shrinkImage = async (podcast: any) => {
 
     const result = await s3.upload(s3Params).promise()
 
-    return result.Location
+    return imageCloudFrontOrigin + '/' + result.key
   } catch (error) {
     console.log('Image saving failed')
     console.log('title', podcast.title)
