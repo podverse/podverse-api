@@ -146,9 +146,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         // console.log('podcast image shrink start', performance.now())
         if (podcast && podcast.imageUrl) {
-          const shrunkImageUrlPath = await shrinkImage(podcast)
-          if (shrunkImageUrlPath) {
-            podcast.shrunkImageUrlPath = shrunkImageUrlPath
+          const shrunkImageUrl = await shrinkImage(podcast)
+          if (shrunkImageUrl) {
+            podcast.shrunkImageUrl = shrunkImageUrl
             await podcastRepo.save(podcast)
           }
         }

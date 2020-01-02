@@ -34,8 +34,10 @@ export const shrinkImage = async (podcast: any) => {
       Key: filePath + fileName,
       Body: shrunkImage
     }
+
     const result = await s3.upload(s3Params).promise()
-    return '/' + result.key
+
+    return result.Location
   } catch (error) {
     console.log('Image saving failed')
     console.log('title', podcast.title)

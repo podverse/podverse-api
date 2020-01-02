@@ -2335,7 +2335,7 @@
         "pastYearTotalUniquePageviews": {
           "type": "integer"
         },
-        "shrunkImageUrlPath": {
+        "shrunkImageUrl": {
           "type": "string"
         },
         "title": {
