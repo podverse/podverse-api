@@ -23,7 +23,14 @@ export const shrinkImage = async (podcast: any) => {
     const shrunkImage = await sharp(imgResponse).resize(shrunkImageSize).toBuffer()
 
     const parts = podcast.imageUrl.split('.')
-    const fileExtension = parts[parts.length - 1]
+    let fileExtension = parts[parts.length - 1]
+    
+    // If an invalid extension is provided, try to correct it.
+    if (fileExtension.indexOf('png') >= 0) {  
+      fileExtension = 'png'
+    } else if (fileExtension.indexOf('jpg') >= 0) {
+      fileExtension = 'jpg'
+    }
 
     const slug = podcast.title ? convertToSlug(podcast.title) : 'image'
     const filePath = `podcast-images/${podcast.id}/`
