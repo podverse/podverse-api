@@ -4,7 +4,7 @@ import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { convertToSlug, isValidDate } from '~/lib/utility'
+import { cleanFileExtension, convertToSlug, isValidDate } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
@@ -126,6 +126,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         podcast.feedLastUpdated = isValidDate(data.updated) ? data.updated : new Date()
         podcast.imageUrl = data.image
+        if (podcast.imageUrl) {
+          podcast.imageUrl = cleanFileExtension(podcast.imageUrl)
+        }
         podcast.isExplicit = !!data.explicit
         podcast.guid = data.guid
         podcast.language = data.language

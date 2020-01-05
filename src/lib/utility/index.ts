@@ -132,3 +132,14 @@ export const removeObjectKeysWithEmptyValues = obj =>
 export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '').trim()
 
 export const isValidDate = (date: any) => date instanceof Date && !isNaN(date as any)
+
+export const cleanFileExtension = (fileExtension: string) => {
+  // If an invalid extension is provided, try to correct it.
+  if (fileExtension.indexOf('png') >= 0) {
+    return 'png'
+  } else if (fileExtension.indexOf('jpg') >= 0) {
+    return 'jpg'
+  } else {
+    return fileExtension
+  }
+}

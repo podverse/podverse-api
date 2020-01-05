@@ -1,6 +1,6 @@
 import * as request from 'request-promise-native'
 import { config } from '~/config'
-import { convertToSlug } from '~/lib/utility'
+import { cleanFileExtension, convertToSlug } from '~/lib/utility'
 import { s3 } from '~/services/aws'
 
 const sharp = require('sharp')
@@ -24,13 +24,7 @@ export const shrinkImage = async (podcast: any) => {
 
     const parts = podcast.imageUrl.split('.')
     let fileExtension = parts[parts.length - 1]
-    
-    // If an invalid extension is provided, try to correct it.
-    if (fileExtension.indexOf('png') >= 0) {  
-      fileExtension = 'png'
-    } else if (fileExtension.indexOf('jpg') >= 0) {
-      fileExtension = 'jpg'
-    }
+    fileExtension = cleanFileExtension(fileExtension)
 
     const slug = podcast.title ? convertToSlug(podcast.title) : 'image'
     const filePath = `podcast-images/${podcast.id}/`
