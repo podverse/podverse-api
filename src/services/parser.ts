@@ -101,7 +101,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
           newEpisodes = results.newEpisodes
           updatedSavedEpisodes = results.updatedSavedEpisodes
-
           newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
           updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
@@ -111,7 +110,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r: any, a: any) => {
             return r.pubDate > a.pubDate ? r : a
           }, [])
-          const latestEpisode = latestNewEpisode || latestUpdatedSavedEpisode
+          const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
+            || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
 
           podcast.lastEpisodePubDate = isValidDate(latestEpisode.pubDate) ? latestEpisode.pubDate : undefined
           podcast.lastEpisodeTitle = latestEpisode.title
