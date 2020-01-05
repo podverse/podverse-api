@@ -75,6 +75,12 @@ const createUser = async (obj) => {
 
   const saltedPassword = await hash(password, saltRounds)
 
+  obj.queueItems = Array.isArray(obj.queueItems) ? obj.queueItems : []
+  obj.historyItems = Array.isArray(obj.historyItems) ? obj.historyItems : []
+  obj.subscribedPlaylistIds = Array.isArray(obj.subscribedPlaylistIds) ? obj.subscribedPlaylistIds : []
+  obj.subscribedPodcastIds = Array.isArray(obj.subscribedPodcastIds) ? obj.subscribedPodcastIds : []
+  obj.subscribedUserIds = Array.isArray(obj.subscribedUserIds) ? obj.subscribedUserIds : []
+
   const newUser = Object.assign(user, obj, { password: saltedPassword })
 
   await validateClassOrThrow(newUser)
