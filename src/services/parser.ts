@@ -127,7 +127,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         podcast.feedLastUpdated = isValidDate(data.updated) ? data.updated : new Date()
         podcast.imageUrl = data.image
         if (podcast.imageUrl) {
-          podcast.imageUrl = cleanFileExtension(podcast.imageUrl)
+          let cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.lastIndexOf('.'))
+          cleanedImageUrl = cleanedImageUrl + '.' + cleanFileExtension(podcast.imageUrl)
+          podcast.imageUrl = cleanedImageUrl
         }
         podcast.isExplicit = !!data.explicit
         podcast.guid = data.guid
