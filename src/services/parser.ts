@@ -125,19 +125,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         }
 
         podcast.feedLastUpdated = isValidDate(data.updated) ? data.updated : new Date()
+
         podcast.imageUrl = data.image
         if (podcast.imageUrl) {
-          const origImageUrl = podcast.imageUrl
-          let cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.indexOf('.'))
-          if (cleanFileExtension(cleanedImageUrl)) {
-            cleanedImageUrl = cleanedImageUrl.substring(0, cleanedImageUrl.indexOf('.'))
-            cleanedImageUrl = cleanedImageUrl + cleanFileExtension(podcast.imageUrl)
+          let cleanedImageUrl = ''
+          if (cleanFileExtension(podcast.imageUrl)) {
+            cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.lastIndexOf('.'))
+            cleanedImageUrl = cleanedImageUrl + '.' + cleanFileExtension(podcast.imageUrl)
           } else {
-            cleanedImageUrl = origImageUrl
+            cleanedImageUrl = podcast.imageUrl
           }
-
           podcast.imageUrl = cleanedImageUrl
         }
+
         podcast.isExplicit = !!data.explicit
         podcast.guid = data.guid
         podcast.language = data.language
@@ -150,14 +150,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         delete podcast.createdAt
         delete podcast.updatedAt
         delete podcast.episodes
-
+        console.log('jesus', podcast.imageUrl)
         // console.log('podcast save start', performance.now())
         const podcastRepo = getRepository(Podcast)
         await podcastRepo.save(podcast)
         // console.log('podcast save end', performance.now())
 
         // console.log('podcast image shrink start', performance.now())
+        console.log('um', podcast.imageUrl)
         if (podcast && podcast.imageUrl) {
+          console.log('what')
           const shrunkImageUrl = await shrinkImage(podcast)
           if (shrunkImageUrl) {
             podcast.shrunkImageUrl = shrunkImageUrl
