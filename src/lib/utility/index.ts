@@ -139,7 +139,9 @@ export const cleanFileExtension = (fileExtension: string) => {
     return 'png'
   } else if (fileExtension.indexOf('jpg') >= 0) {
     return 'jpg'
+  } else if (fileExtension.indexOf('jpeg') >= 0) {
+    return 'jpeg'
   } else {
-    return fileExtension
+    return
   }
 }
