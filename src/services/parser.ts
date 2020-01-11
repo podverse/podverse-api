@@ -150,16 +150,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         delete podcast.createdAt
         delete podcast.updatedAt
         delete podcast.episodes
-        console.log('jesus', podcast.imageUrl)
+
         // console.log('podcast save start', performance.now())
         const podcastRepo = getRepository(Podcast)
         await podcastRepo.save(podcast)
         // console.log('podcast save end', performance.now())
 
         // console.log('podcast image shrink start', performance.now())
-        console.log('um', podcast.imageUrl)
         if (podcast && podcast.imageUrl) {
-          console.log('what')
           const shrunkImageUrl = await shrinkImage(podcast)
           if (shrunkImageUrl) {
             podcast.shrunkImageUrl = shrunkImageUrl
