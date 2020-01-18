@@ -497,6 +497,7 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
 }
 
 const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId) => {
+  
   if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
   }
@@ -525,6 +526,10 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
 
   const index = historyItems.findIndex(
     (x: any) => !x.clipId && x.episodeId === nowPlayingItem.episodeId)
+
+  if (index === -1) {
+    throw new createError.NotAcceptable('NowPlayingItem does not exist in historyItems yet. Send an addOrUpdatePlaybackItem request.')
+  }
 
   if (index > -1) {
     historyItems[index].userPlaybackPosition = nowPlayingItem.userPlaybackPosition
