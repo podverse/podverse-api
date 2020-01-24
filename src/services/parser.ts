@@ -9,21 +9,21 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 
-// import { performance } from 'perf_hooks'
+import { performance } from 'perf_hooks'
 
 const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
-  // console.log('start parsing', performance.now(), feedUrl.url)
+  console.log('start parsing', performance.now(), feedUrl.url)
   const response = await request(feedUrl.url, {
     timeout: 10000,
     headers: {
       'User-Agent': userAgent
     }
   })
+  console.log('response received', performance.now())
 
-  // console.log('response received', performance.now())
   return new Promise(async (resolve, reject) => {
     await parsePodcast(response, async (error, data) => {
 
@@ -32,19 +32,20 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         reject()
         return
       }
-      // console.log('podcast parsed', performance.now())
+      console.log('podcast parsed', performance.now())
       try {
         let podcast = new Podcast()
         if (feedUrl.podcast) {
-          // console.log('feedUrl.podcast, getting podcast', performance.now())
+          console.log('feedUrl.podcast, getting podcast', performance.now())
           const savedPodcast = await getPodcast(feedUrl.podcast.id)
-          // console.log('feedUrl.podcast, done getting podcast', performance.now())
+          console.log('feedUrl.podcast, done getting podcast', performance.now())
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
         }
 
         // Stop parsing if the feed has not been updated since it was last parsed.
         if (!forceReparsing && podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
+          console.log('Stop parsing if the feed has not been updated since it was last parsed', performance.now())
           resolve()
           return
         }
@@ -53,29 +54,29 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         let authors = []
 
-        // console.log('authors', performance.now())
+        console.log('authors', performance.now())
         if (data.author && data.author.length > 0) {
           authors = await findOrGenerateAuthors(data.author) as never
-          // console.log('generated authors', performance.now())
+          console.log('generated authors', performance.now())
         }
 
         let categories: Category[] = []
-        // console.log('categories', performance.now())
+        console.log('categories', performance.now())
         if (data.categories && data.categories.length > 0) {
           categories = await findCategories(data.categories)
-          // console.log('generated categories', performance.now())
+          console.log('generated categories', performance.now())
         }
 
-        // console.log('authors save start', performance.now())
+        console.log('authors save start', performance.now())
         const authorRepo = getRepository(Author)
         await authorRepo.save(authors)
-        // console.log('authors save end', performance.now())
+        console.log('authors save end', performance.now())
         podcast.authors = authors
 
-        // console.log('categories save start', performance.now())
+        console.log('categories save start', performance.now())
         const categoryRepo = getRepository(Category)
         await categoryRepo.save(categories)
-        // console.log('categories save end', performance.now())
+        console.log('categories save end', performance.now())
         podcast.categories = categories
 
         // if parsing an already existing podcast, hide all existing episodes for the podcast,
@@ -91,13 +92,13 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
             .execute()
         }
 
-        // console.log('findOrGenerateParsedEpisodes start', performance.now())
+        console.log('findOrGenerateParsedEpisodes start', performance.now())
         let newEpisodes = []
         let updatedSavedEpisodes = []
 
         if (data.episodes && Array.isArray(data.episodes)) {
           const results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
-          // console.log('findOrGenerateParsedEpisodes end', performance.now())
+          console.log('findOrGenerateParsedEpisodes end', performance.now())
 
           newEpisodes = results.newEpisodes
           updatedSavedEpisodes = results.updatedSavedEpisodes
@@ -151,28 +152,28 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         delete podcast.updatedAt
         delete podcast.episodes
 
-        // console.log('podcast save start', performance.now())
+        console.log('podcast save start', performance.now())
         const podcastRepo = getRepository(Podcast)
         await podcastRepo.save(podcast)
-        // console.log('podcast save end', performance.now())
+        console.log('podcast save end', performance.now())
 
-        // console.log('podcast image shrink start', performance.now())
         if (podcast && podcast.imageUrl) {
+          console.log('podcast image shrink start', performance.now())
           const shrunkImageUrl = await shrinkImage(podcast)
           if (shrunkImageUrl) {
             podcast.shrunkImageUrl = shrunkImageUrl
             await podcastRepo.save(podcast)
           }
+          console.log('podcast image shrink end', performance.now())
         }
-        // console.log('podcast image shrink end', performance.now())
 
-        // console.log('updatedSavedEpisodes save start', performance.now())
+        console.log('updatedSavedEpisodes save start', performance.now())
         await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
-        // console.log('updatedSavedEpisodes save end', performance.now())
+        console.log('updatedSavedEpisodes save end', performance.now())
 
-        // console.log('newEpisodes save start', performance.now())
+        console.log('newEpisodes save start', performance.now())
         await episodeRepo.save(newEpisodes, { chunk: 400 })
-        // console.log('newEpisodes save end', performance.now())
+        console.log('newEpisodes save end', performance.now())
 
         const feedUrlRepo = getRepository(FeedUrl)
 
@@ -182,9 +183,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           podcast
         }
 
-        // console.log('updateFeedUrl start', performance.now())
+        console.log('updateFeedUrl start', performance.now())
         await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-        // console.log('updateFeedUrl end', performance.now())
+        console.log('updateFeedUrl end', performance.now())
         resolve()
       } catch (error) {
         console.log('error parseFeedUrl, feedUrl:', feedUrl.id, feedUrl.url)
@@ -285,9 +286,9 @@ export const parseNextFeedFromQueue = async () => {
   const queueUrl = queueUrls.feedsToParse.queueUrl
   const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
 
-  // console.log('receiveMessageFromQueue start', performance.now())
+  console.log('receiveMessageFromQueue start', performance.now())
   const message = await receiveMessageFromQueue(queueUrl)
-  // console.log('receiveMessageFromQueue end', performance.now())
+  console.log('receiveMessageFromQueue end', performance.now())
 
   if (!message) {
     return false
@@ -298,7 +299,7 @@ export const parseNextFeedFromQueue = async () => {
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
-    // console.log('updateFeedUrl start', performance.now())
+    console.log('updateFeedUrl start', performance.now())
     const feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
@@ -310,7 +311,7 @@ export const parseNextFeedFromQueue = async () => {
       .innerJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
-    // console.log('updateFeedUrl end', performance.now())
+    console.log('updateFeedUrl end', performance.now())
 
     if (feedUrl) {
       try {
@@ -460,7 +461,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   // Find episodes in the database that have matching episode media URLs to
   // those found in the parsed object, then store an array of just those URLs.
-  // console.log('find savedEpisodes start', performance.now())
+  console.log('find savedEpisodes start', performance.now())
   let savedEpisodes = [] as any
   if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
     savedEpisodes = await episodeRepo.find({
@@ -469,16 +470,15 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       }
     })
   }
+  console.log('find savedEpisodes end', performance.now())
 
-  // console.log('find savedEpisodes end', performance.now())
-
-  // console.log('set all savedEpisodes to isPublic false start', performance.now())
+  console.log('set all savedEpisodes to isPublic false start', performance.now())
   const nonPublicEpisodes = [] as any
   for (const e of savedEpisodes) {
     e.isPublic = false
     nonPublicEpisodes.push(e)
   }
-  // console.log('set all savedEpisodes to isPublic false end', performance.now())
+  console.log('set all savedEpisodes to isPublic false end', performance.now())
 
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
