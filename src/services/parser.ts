@@ -14,31 +14,44 @@ import { performance } from 'perf_hooks'
 const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
 
+const logPerformance = (subject: string, stage: string, notes = '') => {
+  console.log('subject = ' + subject)
+  console.log('stage = ' + stage)
+  console.log('time_value = ' + Math.ceil(performance.now()).toString() + 'ms')
+  console.log('notes = ', notes)
+}
+
+const _logStart = 'start'
+const _logEnd = 'end'
+
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
-  console.log('start parsing', performance.now(), feedUrl.url)
+  logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
+  logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
   const response = await request(feedUrl.url, {
     timeout: 10000,
     headers: {
       'User-Agent': userAgent
     }
   })
-  console.log('response received', performance.now())
+  logPerformance('request feedUrl.url', _logEnd, 'feedUrl.url ' + feedUrl.url)
 
   return new Promise(async (resolve, reject) => {
-    await parsePodcast(response, async (error, data) => {
 
+    logPerformance('parsePodcast', _logStart)
+    await parsePodcast(response, async (error, data) => {
+      logPerformance('parsePodcast', _logEnd)
       if (error) {
         console.error('Parsing error', error, feedUrl.url)
         reject()
         return
       }
-      console.log('podcast parsed', performance.now())
+
       try {
         let podcast = new Podcast()
         if (feedUrl.podcast) {
-          console.log('feedUrl.podcast, getting podcast', performance.now())
+          logPerformance('getPodcast', _logStart, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           const savedPodcast = await getPodcast(feedUrl.podcast.id)
-          console.log('feedUrl.podcast, done getting podcast', performance.now())
+          logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
         }
@@ -54,63 +67,82 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         let authors = []
 
-        console.log('authors', performance.now())
         if (data.author && data.author.length > 0) {
+          logPerformance('findOrGenerateAuthors', _logStart)
           authors = await findOrGenerateAuthors(data.author) as never
-          console.log('generated authors', performance.now())
+          logPerformance('findOrGenerateAuthors', _logEnd)
         }
 
         let categories: Category[] = []
-        console.log('categories', performance.now())
         if (data.categories && data.categories.length > 0) {
+          logPerformance('findCategories', _logStart)
           categories = await findCategories(data.categories)
-          console.log('generated categories', performance.now())
+          logPerformance('findCategories', _logEnd)
         }
 
-        console.log('authors save start', performance.now())
+        logPerformance('getRepository Author', _logStart)
         const authorRepo = getRepository(Author)
+        logPerformance('getRepository Author', _logEnd)
+
+        logPerformance('save Authors', _logStart)
         await authorRepo.save(authors)
+        logPerformance('save Authors', _logEnd)
         console.log('authors save end', performance.now())
         podcast.authors = authors
 
-        console.log('categories save start', performance.now())
+        logPerformance('getRepository Category', _logStart)
         const categoryRepo = getRepository(Category)
+        logPerformance('getRepository Category', _logEnd)
+
+        logPerformance('save Categories', _logStart)
         await categoryRepo.save(categories)
-        console.log('categories save end', performance.now())
+        logPerformance('save Categories', _logEnd)
+
         podcast.categories = categories
 
         // if parsing an already existing podcast, hide all existing episodes for the podcast,
         // in case they have been removed from the RSS feed.
         // if they still exist, they will be re-added during findOrGenerateParsedEpisodes.
+        logPerformance('getRepository Episode', _logStart)
         const episodeRepo = getRepository(Episode)
+        logPerformance('getRepository Episode', _logEnd)
+
         if (feedUrl.podcast && feedUrl.podcast.id) {
+          logPerformance('episodeRepo update', _logStart)
           await episodeRepo
             .createQueryBuilder()
             .update(Episode)
             .set({ isPublic: false })
             .where({ podcastId: feedUrl.podcast.id })
             .execute()
+          logPerformance('episodeRepo update', _logEnd)
         }
 
-        console.log('findOrGenerateParsedEpisodes start', performance.now())
         let newEpisodes = []
         let updatedSavedEpisodes = []
 
         if (data.episodes && Array.isArray(data.episodes)) {
+          logPerformance('findOrGenerateParsedEpisodes', _logStart)
           const results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
-          console.log('findOrGenerateParsedEpisodes end', performance.now())
+          logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
           newEpisodes = results.newEpisodes
           updatedSavedEpisodes = results.updatedSavedEpisodes
           newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
           updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
+          logPerformance('episode reduce latestNewEpisode', _logStart)
           const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
             return r.pubDate > a.pubDate ? r : a
           }, [])
+          logPerformance('episode reduce latestNewEpisode', _logEnd)
+
+          logPerformance('episode reduce latestUpdatedSavedEpisode', _logStart)
           const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r: any, a: any) => {
             return r.pubDate > a.pubDate ? r : a
           }, [])
+          logPerformance('episode reduce latestUpdatedSavedEpisode', _logEnd)
+
           const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
             || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
 
@@ -152,30 +184,37 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         delete podcast.updatedAt
         delete podcast.episodes
 
-        console.log('podcast save start', performance.now())
+        logPerformance('getRepository podcast', _logStart)
         const podcastRepo = getRepository(Podcast)
+        logPerformance('getRepository podcast', _logEnd)
+
+        logPerformance('podcast save', _logStart)
         await podcastRepo.save(podcast)
-        console.log('podcast save end', performance.now())
+        logPerformance('podcast save', _logEnd)
 
         if (podcast && podcast.imageUrl) {
-          console.log('podcast image shrink start', performance.now())
+          logPerformance('shrinkImage', _logStart)
           const shrunkImageUrl = await shrinkImage(podcast)
+          logPerformance('shrinkImage', _logEnd)
           if (shrunkImageUrl) {
             podcast.shrunkImageUrl = shrunkImageUrl
+            logPerformance('shrunkImageUrl podcast save', _logStart)
             await podcastRepo.save(podcast)
+            logPerformance('shrunkImageUrl podcast save', _logEnd)
           }
-          console.log('podcast image shrink end', performance.now())
         }
 
-        console.log('updatedSavedEpisodes save start', performance.now())
+        logPerformance('save updatedSavedEpisodes', _logStart)
         await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
-        console.log('updatedSavedEpisodes save end', performance.now())
+        logPerformance('save updatedSavedEpisodes', _logEnd)
 
-        console.log('newEpisodes save start', performance.now())
+        logPerformance('save newEpisodes', _logStart)
         await episodeRepo.save(newEpisodes, { chunk: 400 })
-        console.log('newEpisodes save end', performance.now())
+        logPerformance('save newEpisodes', _logEnd)
 
+        logPerformance('getRepository feedUrl', _logStart)
         const feedUrlRepo = getRepository(FeedUrl)
+        logPerformance('getRepository feedUrl', _logEnd)
 
         const cleanedFeedUrl = {
           id: feedUrl.id,
@@ -183,14 +222,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           podcast
         }
 
-        console.log('updateFeedUrl start', performance.now())
+        logPerformance('cleanedFeedUrl update', _logStart)
         await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-        console.log('updateFeedUrl end', performance.now())
+        logPerformance('cleanedFeedUrl update', _logEnd)
+
         resolve()
       } catch (error) {
         console.log('error parseFeedUrl, feedUrl:', feedUrl.id, feedUrl.url)
         console.log(error)
       }
+      logPerformance('parseFeedUrl', _logEnd, 'feedUrl.url = ' + feedUrl.url)
     })
   })
 }

@@ -26,8 +26,6 @@ import { parseFeedUrl } from '~/services/parser'
       await parseFeedUrl(feedUrl)
     }
 
-    console.log('finished parsing feed urls')
-
     return
   } catch (error) {
     console.log(error)
