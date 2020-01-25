@@ -9,8 +9,6 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 
-import { performance } from 'perf_hooks'
-
 const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
 
