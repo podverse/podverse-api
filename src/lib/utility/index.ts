@@ -1,4 +1,5 @@
 export { validatePassword } from '~/lib/utility/validation'
+import { performance } from 'perf_hooks'
 
 export const delimitQueryValues = (ctx, keys) => {
   const query = ctx.state.query
@@ -145,3 +146,13 @@ export const cleanFileExtension = (fileExtension: string) => {
     return
   }
 }
+
+export const logPerformance = (subject: string, stage: string, notes = '') => {
+  console.log('subject = ' + subject)
+  console.log('stage = ' + stage)
+  console.log('time_value = ' + Math.ceil(performance.now()).toString() + 'ms')
+  console.log('notes = ', notes)
+}
+
+export const _logStart = 'start'
+export const _logEnd = 'end'

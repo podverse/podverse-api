@@ -4,7 +4,7 @@ import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { cleanFileExtension, convertToSlug, isValidDate } from '~/lib/utility'
+import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
@@ -13,16 +13,6 @@ import { performance } from 'perf_hooks'
 
 const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
-
-const logPerformance = (subject: string, stage: string, notes = '') => {
-  console.log('subject = ' + subject)
-  console.log('stage = ' + stage)
-  console.log('time_value = ' + Math.ceil(performance.now()).toString() + 'ms')
-  console.log('notes = ', notes)
-}
-
-const _logStart = 'start'
-const _logEnd = 'end'
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
@@ -58,7 +48,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         // Stop parsing if the feed has not been updated since it was last parsed.
         if (!forceReparsing && podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
-          console.log('Stop parsing if the feed has not been updated since it was last parsed', performance.now())
+          console.log('Stop parsing if the feed has not been updated since it was last parsed')
           resolve()
           return
         }
@@ -87,7 +77,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         logPerformance('save Authors', _logStart)
         await authorRepo.save(authors)
         logPerformance('save Authors', _logEnd)
-        console.log('authors save end', performance.now())
         podcast.authors = authors
 
         logPerformance('getRepository Category', _logStart)
@@ -324,12 +313,14 @@ export const parseFeedUrlsFromQueue = async (restartTimeOut) => {
 }
 
 export const parseNextFeedFromQueue = async () => {
+  logPerformance('parseNextFeedFromQueue', _logStart)
+
   const queueUrl = queueUrls.feedsToParse.queueUrl
   const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
 
-  console.log('receiveMessageFromQueue start', performance.now())
+  logPerformance('parseNextFeedFromQueue > receiveMessageFromQueue', _logStart, 'queueUrl ' + queueUrl)
   const message = await receiveMessageFromQueue(queueUrl)
-  console.log('receiveMessageFromQueue end', performance.now())
+  logPerformance('parseNextFeedFromQueue > receiveMessageFromQueue', _logEnd, 'queueUrl ' + queueUrl)
 
   if (!message) {
     return false
@@ -340,7 +331,7 @@ export const parseNextFeedFromQueue = async () => {
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
-    console.log('updateFeedUrl start', performance.now())
+    logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logStart, 'queueUrl ' + queueUrl)
     const feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
@@ -352,7 +343,7 @@ export const parseNextFeedFromQueue = async () => {
       .innerJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
-    console.log('updateFeedUrl end', performance.now())
+    logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logEnd, 'queueUrl ' + queueUrl)
 
     if (feedUrl) {
       try {
@@ -375,11 +366,17 @@ export const parseNextFeedFromQueue = async () => {
 
   } catch (error) {
     console.error('parseNextFeedFromQueue:parseFeed', error)
+    logPerformance('parseNextFeedFromQueue > error handling', _logStart)
     const attrs = generateFeedMessageAttributes(feedUrlMsg)
     await sendMessageToQueue(attrs, errorsQueueUrl)
+    logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
   }
 
+  logPerformance('parseNextFeedFromQueue > deleteMessage', _logStart)
   await deleteMessage(feedUrlMsg.receiptHandle)
+  logPerformance('parseNextFeedFromQueue > deleteMessage', _logEnd)
+
+  logPerformance('parseNextFeedFromQueue', _logEnd)
 
   return true
 }
@@ -502,7 +499,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   // Find episodes in the database that have matching episode media URLs to
   // those found in the parsed object, then store an array of just those URLs.
-  console.log('find savedEpisodes start', performance.now())
+  logPerformance('findOrGenerateParsedEpisodes > savedEpisodes', _logStart)
   let savedEpisodes = [] as any
   if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
     savedEpisodes = await episodeRepo.find({
@@ -511,15 +508,15 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       }
     })
   }
-  console.log('find savedEpisodes end', performance.now())
+  logPerformance('findOrGenerateParsedEpisodes > savedEpisodes', _logEnd)
 
-  console.log('set all savedEpisodes to isPublic false start', performance.now())
+  logPerformance('findOrGenerateParsedEpisodes > nonPublicEpisodes', _logStart)
   const nonPublicEpisodes = [] as any
   for (const e of savedEpisodes) {
     e.isPublic = false
     nonPublicEpisodes.push(e)
   }
-  console.log('set all savedEpisodes to isPublic false end', performance.now())
+  logPerformance('findOrGenerateParsedEpisodes > nonPublicEpisodes', _logStart)
 
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
