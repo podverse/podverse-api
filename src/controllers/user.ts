@@ -538,6 +538,9 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
   return repository.update(loggedInUserId, { historyItems })
 }
 
+// NOTE: there seems to be a flaw with user.historyItems where it will stop updating the row,
+// but it won't throw an error. I wonder if it is caused by invalid input a shows description?
+// Maybe we need to change user.historyItems to use a new entity type, instead of a json column.
 const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
@@ -573,9 +576,6 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
   // Remove historyItem if it already exists in the array, but retain the stored userPlaybackPosition,
   // then prepend it to the array.
   historyItems = historyItems.filter(x => {
-    if (x.episodeDescription) {
-      x.episodeDescription = x.episodeDescription.substring(0, 20000)
-    }
     if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
       nowPlayingItem.userPlaybackPosition = x.userPlaybackPosition || 0
       return
@@ -589,6 +589,13 @@ const addOrUpdateHistoryItem = async (nowPlayingItem, loggedInUserId) => {
     throw new createError.BadRequest('historyItems must be an array.')
   }
 
+  // NOTE: limiting the historyItems array here because the @beforeUpdate in user entity
+  // will not be called on repository.update because historyItems uses select: false
+  if (historyItems.length > 200) {
+    const totalToRemove = (historyItems.length - 200)
+    historyItems.splice(200, 200 + totalToRemove)
+  }
+  
   return repository.update(loggedInUserId, { historyItems })
 }
 
