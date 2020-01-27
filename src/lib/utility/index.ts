@@ -148,10 +148,10 @@ export const cleanFileExtension = (fileExtension: string) => {
 }
 
 export const logPerformance = (subject: string, stage: string, notes = '') => {
-  console.log('subject = ' + subject)
-  console.log('stage = ' + stage)
-  console.log('time_value = ' + Math.ceil(performance.now()).toString() + 'ms')
-  console.log('notes = ', notes)
+  console.log(subject + ',')
+  console.log(stage + ',')
+  console.log(Math.ceil(performance.now()).toString() + 'ms' + ',')
+  console.log(notes + ',')
 }
 
 export const _logStart = 'start'
