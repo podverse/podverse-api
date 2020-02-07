@@ -84,12 +84,15 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
   for (const report of reports) {
     const data = report.data
+    const rawSQLUpdates = [] as string[]
 
     if (data) {
       const rows = data.rows || []
-      let rawSQLUpdate = ''
 
+      let rawSQLUpdate = ''
+      let loopCount = 0
       for (const row of rows) {
+        loopCount++
         const pathName = row.dimensions[0]
 
         // remove all characters in the url path before the id, then put in an array
@@ -103,16 +106,23 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
         const values = row.metrics[0].values[0]
         const tableName = TableNames[pagePath]
+        
+        if (loopCount >= 50) {
+          rawSQLUpdates.push(rawSQLUpdate)
+          rawSQLUpdate = ''
+          loopCount = 0
+        }
 
         if (id) {
           rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
         }
-
       }
 
-      await getConnection()
-        .createEntityManager()
-        .query(rawSQLUpdate)
+      for (const rawSQLUpdate of rawSQLUpdates) {
+        await getConnection()
+          .createEntityManager()
+          .query(rawSQLUpdate)
+      }
     }
   }
 }
