@@ -4,7 +4,7 @@ import { getQueryOrderColumn } from '~/lib/utility'
 
 const createError = require('http-errors')
 
-const getPodcast = async id => {
+const getPodcast = async (id, includeRelations = true) => {
   const repository = getRepository(Podcast)
   const podcast = await repository.findOne(
     {
@@ -12,7 +12,7 @@ const getPodcast = async id => {
       isPublic: true
     },
     {
-      relations: ['authors', 'categories', 'feedUrls']
+      relations: includeRelations ? ['authors', 'categories', 'feedUrls'] : []
     }
   )
 
