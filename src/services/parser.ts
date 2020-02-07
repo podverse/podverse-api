@@ -338,7 +338,6 @@ export const parseNextFeedFromQueue = async () => {
         'feedUrl.podcast',
         'podcast'
       )
-      .innerJoinAndSelect('podcast.episodes', 'episodes')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logEnd, 'queueUrl ' + queueUrl)
