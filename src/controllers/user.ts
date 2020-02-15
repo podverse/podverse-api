@@ -711,6 +711,15 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
     }
   )
 
+  if (user && user.historyItems && user.historyItems.length > 0) {
+    const cleanedHistoryItems = [] as any
+    for (const historyItem of user.historyItems) {
+      delete historyItem.episodeDescription
+      cleanedHistoryItems.push(historyItem)
+    }
+    user.historyItems = cleanedHistoryItems
+  }
+
   return JSON.stringify(user)
 }
 
