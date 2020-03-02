@@ -179,15 +179,18 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         await podcastRepo.save(podcast)
         logPerformance('podcast save', _logEnd)
 
-        if (podcast && podcast.imageUrl) {
-          logPerformance('shrinkImage', _logStart)
-          const shrunkImageUrl = await shrinkImage(podcast)
-          logPerformance('shrinkImage', _logEnd)
-          if (shrunkImageUrl) {
-            podcast.shrunkImageUrl = shrunkImageUrl
-            logPerformance('shrunkImageUrl podcast save', _logStart)
-            await podcastRepo.save(podcast)
-            logPerformance('shrunkImageUrl podcast save', _logEnd)
+        // Only shrinkImages and upload to server in production
+        if (process.env.NODE_ENV === 'production') {
+          if (podcast && podcast.imageUrl) {
+            logPerformance('shrinkImage', _logStart)
+            const shrunkImageUrl = await shrinkImage(podcast)
+            logPerformance('shrinkImage', _logEnd)
+            if (shrunkImageUrl) {
+              podcast.shrunkImageUrl = shrunkImageUrl
+              logPerformance('shrunkImageUrl podcast save', _logStart)
+              await podcastRepo.save(podcast)
+              logPerformance('shrunkImageUrl podcast save', _logEnd)
+            }
           }
         }
 
