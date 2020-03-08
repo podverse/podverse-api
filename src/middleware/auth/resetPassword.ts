@@ -35,26 +35,28 @@ export const resetPassword = async ctx => {
 }
 
 export const sendResetPassword = async ctx => {
-  const { email } = ctx.request.body
-
-  try {
-    const { id, name } = await getUserByEmail(email)
-
-    const resetPasswordToken = uuidv4()
-    const resetPasswordTokenExpiration = addSeconds(new Date(), config.resetPasswordTokenExpiration)
-
-    await updateUserResetPasswordToken({
-      id,
-      resetPasswordToken,
-      resetPasswordTokenExpiration
-    })
-
-    await sendResetPasswordEmail(email, name, resetPasswordToken)
-    ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
-    ctx.status = 200
-  } catch (error) {
-    console.log('sendResetPasswordEmail error:', error)
-    ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
-    ctx.status = 200
+  if (process.env.NODE_ENV === 'production') {
+    const { email } = ctx.request.body
+  
+    try {
+      const { id, name } = await getUserByEmail(email)
+  
+      const resetPasswordToken = uuidv4()
+      const resetPasswordTokenExpiration = addSeconds(new Date(), config.resetPasswordTokenExpiration)
+  
+      await updateUserResetPasswordToken({
+        id,
+        resetPasswordToken,
+        resetPasswordTokenExpiration
+      })
+  
+      await sendResetPasswordEmail(email, name, resetPasswordToken)
+      ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
+      ctx.status = 200
+    } catch (error) {
+      console.log('sendResetPasswordEmail error:', error)
+      ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
+      ctx.status = 200
+    }
   }
 }
