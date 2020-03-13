@@ -7,7 +7,6 @@ const validatePasswordSchema = schema
   .has().uppercase()
   .has().lowercase()
   .has().digits()
-  .has().not().spaces()
 
 export const validatePassword = password => {
   return validatePasswordSchema.validate(password)

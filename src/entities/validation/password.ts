@@ -10,7 +10,7 @@ export class ValidatePassword implements ValidatorConstraintInterface {
   }
 
   defaultMessage (args: ValidationArguments) {
-    return 'Invalid password. Password must be at least 8 character, with at least 1 uppercase letter, 1 lowercase letter, and 1 number, with no spaces.'
+    return 'Invalid password. Password must be at least 8 character, with at least 1 uppercase letter, 1 lowercase letter, and 1 number.'
   }
 
 }
