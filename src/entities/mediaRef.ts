@@ -68,6 +68,7 @@ export class MediaRef {
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
+  @Index()
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
