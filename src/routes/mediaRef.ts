@@ -5,13 +5,13 @@ import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
   from '~/controllers/mediaRef'
-import { jwtAuth, optionalJwtAuth } from '~/middleware/auth/jwtAuth'
+import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from '~/middleware/queryValidation/create'
 import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
 import { validateMediaRefUpdate } from '~/middleware/queryValidation/update'
-import { hasValidMembershipIfJwt } from '~/middleware/hasValidMembership'
+import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -53,15 +53,15 @@ router.get('/:id',
 // Create
 const createMediaRefLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 3,
+  max:  rateLimiterMaxOverride || 6,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/mediaRef'
 })
 
 router.post('/',
   validateMediaRefCreate,
-  optionalJwtAuth,
-  hasValidMembershipIfJwt,
+  jwtAuth,
+  hasValidMembership,
   createMediaRefLimiter,
   async ctx => {
     try {
@@ -83,7 +83,7 @@ router.post('/',
 // Update
 const updateMediaRefLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 3,
+  max:  rateLimiterMaxOverride || 6,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/mediaRef'
 })

@@ -90,6 +90,7 @@ export class MediaRef {
   episode: Episode
 
   @ManyToOne(type => User, user => user.mediaRefs, {
+    nullable: false,
     onDelete: 'CASCADE'
   })
   owner: User
