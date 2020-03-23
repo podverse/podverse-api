@@ -107,6 +107,8 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
     return [`${type}.sortableTitle`, 'ASC']
   } else if (sort === 'random') {
     return [`RANDOM()`]
+  } else if (sort === 'chronological' && type === 'mediaRef') {
+    return [`${type}.startTime`, 'ASC']
   } else { // sort = top-past-week
     return [`${type}.pastWeekTotalUniquePageviews`, 'DESC']
   }
