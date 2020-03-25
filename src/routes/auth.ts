@@ -123,8 +123,8 @@ router.post('/sign-up',
   signUpUser)
 
 const verifyEmailLimiter = RateLimit.middleware({
-  interval: 5 * 60 * 1000,
-  max: rateLimiterMaxOverride || 2,
+  interval: 2 * 60 * 1000,
+  max: rateLimiterMaxOverride || 20,
   message: `You're doing that too much. Please try again in 2 minutes.`,
   prefixKey: 'post/verify-email'
 })
