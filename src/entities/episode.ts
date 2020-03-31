@@ -123,6 +123,7 @@ export class Episode {
   @OneToMany(type => MediaRef, mediaRef => mediaRef.episode)
   mediaRefs: MediaRef[]
 
+  @Index()
   @ManyToOne(type => Podcast, podcast => podcast.episodes, {
     onDelete: 'CASCADE'
   })
