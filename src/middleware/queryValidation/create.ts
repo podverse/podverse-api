@@ -68,20 +68,6 @@ const validatePlaylistCreate = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
-const validateUserCreate = async (ctx, next) => {
-  const schema = Joi.object().keys({
-    email: Joi.string().required(),
-    historyItems: Joi.array().items(Joi.string()),
-    name: Joi.string().allow(null).allow(''),
-    playlists: Joi.array().items(Joi.string()),
-    subscribedPlaylistIds: Joi.array().items(Joi.string()),
-    subscribedPodcastIds: Joi.array().items(Joi.string()),
-    subscribedUserIds: Joi.array().items(Joi.string())
-  })
-
-  await validateBaseBody(schema, ctx, next)
-}
-
 export {
   validateAppStorePurchaseCreate,
   validateBitPayInvoiceCreate,
@@ -89,6 +75,5 @@ export {
   validateFeedUrlCreate,
   validateMediaRefCreate,
   validatePayPalOrderCreate,
-  validatePlaylistCreate,
-  validateUserCreate
+  validatePlaylistCreate
 }
