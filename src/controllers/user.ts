@@ -534,6 +534,13 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
 
   if (index > -1) {
     historyItems[index].userPlaybackPosition = nowPlayingItem.userPlaybackPosition
+    // Move item to beginning of historyItems
+    if (historyItems.length > 1) {
+      const itemToMoveArray = historyItems.splice(index, 1) as any
+      if (itemToMoveArray.length > 0) {
+        historyItems.unshift(itemToMoveArray[0])
+      }
+    }
   }
 
   return repository.update(loggedInUserId, { historyItems })
