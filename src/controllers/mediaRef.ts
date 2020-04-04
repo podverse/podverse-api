@@ -61,6 +61,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
   const podcastIds = query.podcastId && query.podcastId.split(',') || []
   const episodeIds = query.episodeId && query.episodeId.split(',') || []
+  const categoriesIds = query.categories && query.categories.split(',') || []
   const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
@@ -68,6 +69,8 @@ const getMediaRefs = async (query, includeNSFW) => {
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
+
+  const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
 
   const qb = repository.createQueryBuilder('mediaRef')
 
@@ -82,6 +85,15 @@ const getMediaRefs = async (query, includeNSFW) => {
         episodeIds: episodeIds
       })
     qb.innerJoinAndSelect('episode.podcast', 'podcast')
+
+    if (categoryJoinConditions) {
+      qb.innerJoin(
+        'podcast.categories',
+        'categories',
+        categoryJoinConditions,
+        { categoriesIds }
+      )
+    }
   } else if (includeEpisode) {
     qb.innerJoinAndSelect(
         'mediaRef.episode',

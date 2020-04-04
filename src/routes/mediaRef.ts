@@ -15,7 +15,7 @@ import { hasValidMembership } from '~/middleware/hasValidMembership'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
-const delimitKeys = ['authors', 'categories']
+const delimitKeys = ['authors']
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/mediaRef` })
 

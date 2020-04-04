@@ -9,7 +9,7 @@ import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
-const delimitKeys = ['authors', 'categories', 'mediaRefs']
+const delimitKeys = ['authors', 'mediaRefs']
 
 // Search
 router.get('/',

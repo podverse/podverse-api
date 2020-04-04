@@ -50,14 +50,18 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
 
 const getEpisodes = async (query, includeNSFW) => {
   const repository = getRepository(Episode)
-  const { includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
+  const { categories, includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
   const { sincePubDate } = query
 
   const podcastIds = podcastId && podcastId.split(',') || []
+  const categoriesIds = categories && categories.split(',') || []
+
   const podcastJoinConditions = `
     ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
   `
+
+  const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
 
   // the names of these whereConditions make no sense :(
   const episodeWhereConditions = `
@@ -92,6 +96,19 @@ const getEpisodes = async (query, includeNSFW) => {
         { podcastIds }
       )
       countQB.andWhere('episode."isPublic" IS true')
+    } else if (categoriesIds.length > 0) {
+      countQB.innerJoin(
+        'episode.podcast',
+        'podcast'
+      )
+      countQB.innerJoin(
+        'podcast.categories',
+        'categories',
+        categoryJoinConditions,
+        { categoriesIds }
+      )
+
+      countQB.where('episode."isPublic" IS true')
     } else {
       countQB.where({ isPublic: true })
     }
@@ -136,6 +153,15 @@ const getEpisodes = async (query, includeNSFW) => {
       'podcast',
         podcastJoinConditions,
       { podcastIds }
+    )
+  }
+
+  if (categoryJoinConditions) {
+    qb.innerJoin(
+      'podcast.categories',
+      'categories',
+      categoryJoinConditions,
+      { categoriesIds }
     )
   }
 
