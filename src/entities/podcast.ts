@@ -27,6 +27,9 @@ export class Podcast {
   @Column({ nullable: true })
   guid?: string
 
+  @Column({ default: false })
+  hideDynamicAdsWarning?: boolean
+
   @ValidateIf(a => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
