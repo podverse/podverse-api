@@ -65,7 +65,8 @@ const getMediaRefs = async (query, includeNSFW) => {
   const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
-    ${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}
+    episode.isPublic = true
+    ${includeNSFW ? '' : 'AND episode.isExplicit = :isExplicit'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
