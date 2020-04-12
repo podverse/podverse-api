@@ -39,7 +39,11 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
       qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
     } else if (sort === 'most-recent' || sort === 'most-recent-all') {
       const date = new Date()
-      date.setMonth(date.getMonth() - 3)
+      if (podcastIds.length === 0) {
+        date.setDate(date.getDate() - 14)
+      } else if (podcastIds.length > 10) {
+        date.setMonth(date.getMonth() - 3)
+      }
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
       qb.andWhere(`episode."pubDate" > '${dateString}'`)
     }
