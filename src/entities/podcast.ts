@@ -17,6 +17,9 @@ export class Podcast {
   })
   id: string
 
+  @Column({ default: false })
+  alwaysFullyParse?: boolean
+
   @Column({ nullable: true })
   description?: string
 

@@ -99,7 +99,7 @@ export const getQueryOrderColumn = (type, sort, sortDateKey) => {
     return [`${type}.pastYearTotalUniquePageviews`, 'DESC']
   } else if (sort === 'top-all-time') {
     return [`${type}.pastAllTimeTotalUniquePageviews`, 'DESC']
-  } else if (sort === 'most-recent' || sort === 'most-recent-all') {
+  } else if (sort === 'most-recent') {
     return [`${type}.${sortDateKey}`, 'DESC']
   } else if (sort === 'oldest') {
     return [`${type}.${sortDateKey}`, 'ASC']

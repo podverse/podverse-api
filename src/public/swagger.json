@@ -2289,6 +2289,9 @@
         "id": {
           "type": "string"
         },
+        "alwaysFullyParse": {
+          "type": "boolean"
+        },
         "description": {
           "type": "string"
         },

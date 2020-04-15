@@ -45,7 +45,13 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         }
 
         // Stop parsing if the feed has not been updated since it was last parsed.
-        if (!forceReparsing && podcast.feedLastUpdated && data.updated && new Date(podcast.feedLastUpdated) >= new Date(data.updated)) {
+        if (
+            !forceReparsing
+            && podcast.feedLastUpdated
+            && data.updated
+            && new Date(podcast.feedLastUpdated) >= new Date(data.updated)
+            && !podcast.alwaysFullyParse
+        ) {
           console.log('Stop parsing if the feed has not been updated since it was last parsed')
           resolve()
           return
