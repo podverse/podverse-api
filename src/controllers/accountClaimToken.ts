@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { AccountClaimToken } from '~/entities'
+import { validateClassOrThrow } from '~/lib/errors'
 import { addYearsToUserMembershipExpiration, getUserByEmail } from './user'
 const createError = require('http-errors')
 
@@ -27,6 +28,7 @@ const getAccountClaimToken = async (id: string) => {
 
 const redeemAccountClaimToken = async (id: string) => {
   const repository = getRepository(AccountClaimToken)
+
   const accountClaimToken = await repository.findOne(
     { id },
     {
@@ -35,12 +37,15 @@ const redeemAccountClaimToken = async (id: string) => {
   )
 
   if (!accountClaimToken) {
-    throw new createError.NotFound('User not found')
+    throw new createError.NotFound('AccountClaimToken not found')
   } else if (accountClaimToken.claimed) {
     throw new createError.BadRequest('This token has already been claimed.')
   } else if (!accountClaimToken.claimed) {
     const user = await getUserByEmail(accountClaimToken.email)
     await addYearsToUserMembershipExpiration(user.id, accountClaimToken.yearsToAdd)
+    accountClaimToken.claimed = true
+    await validateClassOrThrow(accountClaimToken)
+    await repository.save(accountClaimToken)
   }
 }
 

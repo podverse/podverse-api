@@ -21,7 +21,7 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
     }
 
     if (freeTrialExpiration) {
-      const freeTrialTimeRemaining = currentDate.getTime() - freeTrialExpiration.getTime()
+      const freeTrialTimeRemaining = freeTrialExpiration.getTime() - currentDate.getTime()
       if (freeTrialTimeRemaining > 0) {
         membershipExpiration = new Date(membershipExpiration.getTime() + freeTrialTimeRemaining)
       }
