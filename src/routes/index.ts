@@ -1,3 +1,4 @@
+export { accountClaimTokenRouter } from '~/routes/accountClaimToken'
 export { appStoreRouter } from '~/routes/appStore'
 export { authRouter } from '~/routes/auth'
 export { authorRouter } from '~/routes/author'

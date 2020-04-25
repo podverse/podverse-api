@@ -1,3 +1,4 @@
+export { AccountClaimToken } from './accountClaimToken'
 export { AppStorePurchase } from './appStorePurchase'
 export { Author } from './author'
 export { BitPayInvoice } from './bitpayInvoice'
