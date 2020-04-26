@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
+import { emitRouterError, errorMessages } from '~/lib/errors'
 import { getAccountClaimToken, redeemAccountClaimToken } from '~/controllers/accountClaimToken'
 const createError = require('http-errors')
 const RateLimit = require('koa2-ratelimit').RateLimit
@@ -46,6 +46,17 @@ router.post('/',
 
       ctx.status = 200
     } catch (error) {
+      if (error.message === errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound) {
+        ctx.status = 404
+        ctx.body = { message: errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound }
+      } else if (error.message === errorMessages.accountClaimToken.redeem.alreadyClaimed) {
+        ctx.status = 405
+        ctx.body = { message: errorMessages.accountClaimToken.redeem.alreadyClaimed }
+      } else if (error.message === 'User not found.') {
+        ctx.status = 404
+        ctx.body = { message: errorMessages.accountClaimToken.redeem.emailNotFound }
+      }
+
       emitRouterError(error, ctx)
     }
   })

@@ -46,3 +46,13 @@ export class JoiCustomValidationError extends CustomStatusError {
     }
   }
 }
+
+export const errorMessages = {
+  accountClaimToken: {
+    redeem: {
+      accountClaimTokenNotFound: 'AccountClaimToken not found. If the issue persists please contact support.',
+      alreadyClaimed: 'This offer has already been claimed.',
+      emailNotFound: 'Account with this email not found. Please Sign Up before claiming this offer, or contact support for help.'
+    }
+  }
+}
