@@ -26,13 +26,13 @@ const getAccountClaimToken = async (id: string) => {
   return accountClaimToken
 }
 
-const redeemAccountClaimToken = async (id: string) => {
+const redeemAccountClaimToken = async (id: string, email: string) => {
   const repository = getRepository(AccountClaimToken)
 
   const accountClaimToken = await repository.findOne(
     { id },
     {
-      select: ['email', 'id', 'claimed', 'yearsToAdd']
+      select: ['id', 'claimed', 'yearsToAdd']
     }
   )
 
@@ -41,7 +41,7 @@ const redeemAccountClaimToken = async (id: string) => {
   } else if (accountClaimToken.claimed) {
     throw new createError.BadRequest('This token has already been claimed.')
   } else if (!accountClaimToken.claimed) {
-    const user = await getUserByEmail(accountClaimToken.email)
+    const user = await getUserByEmail(email)
     await addYearsToUserMembershipExpiration(user.id, accountClaimToken.yearsToAdd)
     accountClaimToken.claimed = true
     await validateClassOrThrow(accountClaimToken)

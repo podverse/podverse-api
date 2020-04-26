@@ -36,8 +36,10 @@ router.post('/',
     try {
       const body: any = ctx.request.body
 
-      if (body && body.id) {
-        await redeemAccountClaimToken(body.id)
+      if (body && body.id && body.email) {
+        await redeemAccountClaimToken(body.id, body.email)
+      } else if (body && body.id && !body.email) {
+        throw new createError.BadRequest('Please provide a valid email.')
       } else {
         throw new createError.NotFound('AccountClaimToken id not found. Please provide a valid claim token.')
       }

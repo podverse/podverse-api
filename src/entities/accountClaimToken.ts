@@ -9,9 +9,6 @@ export class AccountClaimToken {
   @Column({ default: false })
   claimed: boolean
 
-  @Column()
-  email: string
-
   @Column({ default: 1 })
   yearsToAdd: number
 
