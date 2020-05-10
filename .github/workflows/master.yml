@@ -24,7 +24,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: podverse/podverse_api
         tags: latest,${{ steps.package-node-version.outputs.version }}
-        
+
     - name: log into prod, then deploy latest prod image
       uses: garygrossgarten/github-action-ssh@release
       with:
