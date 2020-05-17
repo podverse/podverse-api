@@ -733,8 +733,41 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
   return JSON.stringify(user)
 }
 
-const toggleSubscribeToAddByRSSPodcastFeedUrl = async (url: string, loggedInUserId: string) => {
-  
+const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) => {
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this profile.')
+  }
+
+  const repository = getRepository(User)
+  const loggedInUser = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'addByRSSPodcastFeedUrls'
+      ]
+    }
+  )
+
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  const addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
+
+  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
+    addByRSSPodcastFeedUrls.push(url)
+  }
+
+  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+
+  return addByRSSPodcastFeedUrls
+}
+
+const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string) => {
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this profile.')
   }
@@ -758,14 +791,8 @@ const toggleSubscribeToAddByRSSPodcastFeedUrl = async (url: string, loggedInUser
 
   let addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
 
-  // If no addByRSSPodcastFeedUrls match the filter, add the addByRSSPodcastFeedUrl.
-  // Else, remove the addByRSSPodcastFeedUrl.
   const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
-  if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
-    addByRSSPodcastFeedUrls.push(url)
-  } else {
-    addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
-  }
+  addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
 
   await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
 
@@ -773,6 +800,8 @@ const toggleSubscribeToAddByRSSPodcastFeedUrl = async (url: string, loggedInUser
 }
 
 export {
+  addByRSSPodcastFeedUrlAdd,
+  addByRSSPodcastFeedUrlRemove,
   addOrUpdateHistoryItem,
   addYearsToUserMembershipExpiration,
   clearAllHistoryItems,
@@ -788,7 +817,6 @@ export {
   getUserMediaRefs,
   getUserPlaylists,
   removeHistoryItem,
-  toggleSubscribeToAddByRSSPodcastFeedUrl,
   toggleSubscribeToUser,
   updateHistoryItemPlaybackPosition,
   updateQueueItems,
