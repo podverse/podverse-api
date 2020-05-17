@@ -3,6 +3,7 @@ import { validateBaseBody, validateBaseQuery } from './base'
 
 const validateAuthSignUp = async (ctx, next) => {
   const schema = Joi.object().keys({
+    addByRSSPodcastFeedUrls: Joi.array().items(Joi.string()),
     email: Joi.string().required(),
     name: Joi.string().allow(null).allow(''),
     password: Joi.string().required(),
