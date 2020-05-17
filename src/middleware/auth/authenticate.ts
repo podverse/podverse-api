@@ -17,6 +17,7 @@ export function authenticate (ctx, next) {
         }
 
         ctx.body = {
+          addByRSSPodcastFeedUrls: user.addByRSSPodcastFeedUrls,
           email: user.email,
           emailVerified: user.emailVerified,
           freeTrialExpiration: user.freeTrialExpiration,
