@@ -21,6 +21,13 @@ export class User {
   })
   id: string
 
+  @Column('varchar', {
+    array: true,
+    default: () => 'array[]::text[]',
+    select: false
+  })
+  addByRSSPodcastFeedUrls: string[]
+
   @Index()
   @IsEmail()
   @Column({
@@ -149,6 +156,7 @@ export class User {
   beforeInsert () {
     this.id = shortid.generate()
 
+    this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
@@ -159,6 +167,7 @@ export class User {
 
   @BeforeUpdate()
   beforeUpdate () {
+    this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []

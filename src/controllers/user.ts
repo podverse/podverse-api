@@ -730,6 +730,45 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
   return JSON.stringify(user)
 }
 
+const toggleSubscribeToAddByRSSPodcastFeedUrl = async (url: string, loggedInUserId: string) => {
+  
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this profile.')
+  }
+
+  const repository = getRepository(User)
+  const loggedInUser = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'addByRSSPodcastFeedUrls'
+      ]
+    }
+  )
+
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  let addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
+
+  // If no addByRSSPodcastFeedUrls match the filter, add the addByRSSPodcastFeedUrl.
+  // Else, remove the addByRSSPodcastFeedUrl.
+  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
+    addByRSSPodcastFeedUrls.push(url)
+  } else {
+    addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
+  }
+
+  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+
+  return addByRSSPodcastFeedUrls
+}
+
 export {
   addOrUpdateHistoryItem,
   addYearsToUserMembershipExpiration,
@@ -746,6 +785,7 @@ export {
   getUserMediaRefs,
   getUserPlaylists,
   removeHistoryItem,
+  toggleSubscribeToAddByRSSPodcastFeedUrl,
   toggleSubscribeToUser,
   updateHistoryItemPlaybackPosition,
   updateQueueItems,
