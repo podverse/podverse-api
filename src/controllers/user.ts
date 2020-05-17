@@ -78,6 +78,7 @@ const createUser = async (obj) => {
 
   obj.queueItems = Array.isArray(obj.queueItems) ? obj.queueItems : []
   obj.historyItems = Array.isArray(obj.historyItems) ? obj.historyItems : []
+  obj.addByRSSPodcastFeedUrls = Array.isArray(obj.addByRSSPodcastFeedUrls) ? obj.addByRSSPodcastFeedUrls : []
   obj.subscribedPlaylistIds = Array.isArray(obj.subscribedPlaylistIds) ? obj.subscribedPlaylistIds : []
   obj.subscribedPodcastIds = Array.isArray(obj.subscribedPodcastIds) ? obj.subscribedPodcastIds : []
   obj.subscribedUserIds = Array.isArray(obj.subscribedUserIds) ? obj.subscribedUserIds : []
@@ -113,6 +114,7 @@ const getLoggedInUser = async id => {
   const qb = repository
     .createQueryBuilder('user')
     .select('user.id')
+    .addSelect('user.addByRSSPodcastFeedUrls')
     .addSelect('user.email')
     .addSelect('user.emailVerified')
     .addSelect('user.freeTrialExpiration')
@@ -707,6 +709,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
     {
       select: [
         'id',
+        'addByRSSPodcastFeedUrls',
         'email',
         'historyItems',
         'name',
