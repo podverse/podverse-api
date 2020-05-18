@@ -24,3 +24,6 @@ dist/**/*
 
 # Logging files
 *.log
+
+package-lock.json
+yarn.lock
