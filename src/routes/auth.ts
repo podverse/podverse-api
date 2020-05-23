@@ -25,6 +25,7 @@ router.post('/get-authenticated-user-info',
         const user = await getLoggedInUser(jwtUserData.id)
         if (user) {
           ctx.body = {
+            addByRSSPodcastFeedUrls: user.addByRSSPodcastFeedUrls,
             email: user.email,
             emailVerified: user.emailVerified,
             freeTrialExpiration: user.freeTrialExpiration,

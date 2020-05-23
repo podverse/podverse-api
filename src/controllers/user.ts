@@ -78,6 +78,7 @@ const createUser = async (obj) => {
 
   obj.queueItems = Array.isArray(obj.queueItems) ? obj.queueItems : []
   obj.historyItems = Array.isArray(obj.historyItems) ? obj.historyItems : []
+  obj.addByRSSPodcastFeedUrls = Array.isArray(obj.addByRSSPodcastFeedUrls) ? obj.addByRSSPodcastFeedUrls : []
   obj.subscribedPlaylistIds = Array.isArray(obj.subscribedPlaylistIds) ? obj.subscribedPlaylistIds : []
   obj.subscribedPodcastIds = Array.isArray(obj.subscribedPodcastIds) ? obj.subscribedPodcastIds : []
   obj.subscribedUserIds = Array.isArray(obj.subscribedUserIds) ? obj.subscribedUserIds : []
@@ -113,6 +114,7 @@ const getLoggedInUser = async id => {
   const qb = repository
     .createQueryBuilder('user')
     .select('user.id')
+    .addSelect('user.addByRSSPodcastFeedUrls')
     .addSelect('user.email')
     .addSelect('user.emailVerified')
     .addSelect('user.freeTrialExpiration')
@@ -707,6 +709,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
     {
       select: [
         'id',
+        'addByRSSPodcastFeedUrls',
         'email',
         'historyItems',
         'name',
@@ -730,7 +733,75 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
   return JSON.stringify(user)
 }
 
+const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) => {
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this profile.')
+  }
+
+  const repository = getRepository(User)
+  const loggedInUser = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'addByRSSPodcastFeedUrls'
+      ]
+    }
+  )
+
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  const addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
+
+  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
+    addByRSSPodcastFeedUrls.push(url)
+  }
+
+  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+
+  return addByRSSPodcastFeedUrls
+}
+
+const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string) => {
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this profile.')
+  }
+
+  const repository = getRepository(User)
+  const loggedInUser = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'addByRSSPodcastFeedUrls'
+      ]
+    }
+  )
+
+  if (!loggedInUser) {
+    throw new createError.NotFound('Logged In user not found')
+  }
+
+  let addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
+
+  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
+
+  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+
+  return addByRSSPodcastFeedUrls
+}
+
 export {
+  addByRSSPodcastFeedUrlAdd,
+  addByRSSPodcastFeedUrlRemove,
   addOrUpdateHistoryItem,
   addYearsToUserMembershipExpiration,
   clearAllHistoryItems,

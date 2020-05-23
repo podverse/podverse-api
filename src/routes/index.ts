@@ -1,4 +1,5 @@
 export { accountClaimTokenRouter } from '~/routes/accountClaimToken'
+export { addByRSSPodcastFeedUrlRouter } from '~/routes/addByRSSPodcastFeedUrl'
 export { appStoreRouter } from '~/routes/appStore'
 export { authRouter } from '~/routes/auth'
 export { authorRouter } from '~/routes/author'
