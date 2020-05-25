@@ -103,6 +103,51 @@ export const sendMessageToQueue = async (attrs, queue) => {
     .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
+export const receiveErrorMessageFromQueue = async (count: number) => {
+  console.log('')
+  console.log('---')
+  console.log('')
+  console.log('START receiveErrorMessageFromQueue')
+  console.log('')
+  for (let i = 1; i <= count; i++) {
+    console.log('')
+    console.log('*** Message #' + i + ' ***')
+    console.log('')
+    const msg = await receiveMessageFromQueue(queueUrls.feedsToParse.errorsQueueUrl)
+    if (msg) {
+      if (msg.MessageAttributes) {
+        if (msg.MessageAttributes.url) {
+          console.log('url:', msg.MessageAttributes.url.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.id) {
+          console.log('feedUrlId:', msg.MessageAttributes.id.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.podcastTitle) {
+          console.log('podcastTitle:', msg.MessageAttributes.podcastTitle.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.podcastId) {
+          console.log('podcastId:', msg.MessageAttributes.podcastId.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.errorMessage) {
+          console.log('errorMessage:', msg.MessageAttributes.errorMessage.StringValue)
+          console.log('')
+        }
+      }
+      console.log('')
+      await deleteMessage(msg.receiptHandle)
+    } else {
+      console.log('no message found')
+      console.log('')
+    }
+  }
+  console.log('END receiveErrorMessageFromQueue')
+  console.log('')
+}
+
 export const receiveMessageFromQueue = async queue => {
   const params = {
     QueueUrl: queue,
