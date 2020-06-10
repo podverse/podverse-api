@@ -21,6 +21,9 @@ export class Podcast {
   alwaysFullyParse?: boolean
 
   @Column({ nullable: true })
+  authorityId?: string
+
+  @Column({ nullable: true })
   description?: string
 
   @Index()
