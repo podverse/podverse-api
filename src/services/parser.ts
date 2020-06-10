@@ -373,7 +373,7 @@ export const parseNextFeedFromQueue = async () => {
   } catch (error) {
     console.error('parseNextFeedFromQueue:parseFeed', error)
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
-    const attrs = generateFeedMessageAttributes(feedUrlMsg)
+    const attrs = generateFeedMessageAttributes(feedUrlMsg, error)
     await sendMessageToQueue(attrs, errorsQueueUrl)
     logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
   }
@@ -566,7 +566,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 }
 
-export const generateFeedMessageAttributes = feedUrl => {
+export const generateFeedMessageAttributes = (feedUrl, error = {} as any) => {
   return {
     'id': {
       DataType: 'String',
@@ -586,6 +586,12 @@ export const generateFeedMessageAttributes = feedUrl => {
       'podcastTitle': {
         DataType: 'String',
         StringValue: feedUrl.podcast && feedUrl.podcast.title
+      }
+    } : {}),
+    ...(error && error.message ? {
+      'errorMessage': {
+        DataType: 'String',
+        StringValue: error.message
       }
     } : {})
   }
