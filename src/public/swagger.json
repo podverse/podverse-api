@@ -2292,6 +2292,9 @@
         "alwaysFullyParse": {
           "type": "boolean"
         },
+        "authorityId": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
