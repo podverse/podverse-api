@@ -25,7 +25,7 @@ export class Category {
   @Column({ unique: true })
   title: string
 
-  @ManyToOne(type => Category, category => category.categories)
+  @ManyToOne(type => Category, category => category.categories, { onDelete: 'CASCADE' })
   category: Category
 
   @OneToMany(type => Category, category => category.category)
