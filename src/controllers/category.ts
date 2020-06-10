@@ -2,6 +2,20 @@ import { getRepository } from 'typeorm'
 import { Category } from '~/entities'
 const createError = require('http-errors')
 
+const deleteCategoryByTitle = async (title) => {
+  const repository = getRepository(Category)
+  const category = await repository.findOne({
+    where: { title }
+  })
+
+  if (!category) {
+    throw new createError.NotFound('Category not found')
+  }
+
+  const result = await repository.remove(category)
+  return result
+}
+
 const getCategory = async id => {
   const repository = getRepository(Category)
   const category = await repository.findOne({ id }, {
@@ -57,6 +71,7 @@ const getCategories = async query => {
 }
 
 export {
+  deleteCategoryByTitle,
   getCategory,
   getCategories
 }
