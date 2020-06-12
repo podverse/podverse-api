@@ -20,7 +20,7 @@ export class Podcast {
   @Column({ default: false })
   alwaysFullyParse?: boolean
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   authorityId?: string
 
   @Column({ nullable: true })
