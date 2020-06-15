@@ -393,10 +393,6 @@ const findOrGenerateAuthors = async (authorNames) => {
   const authorNamesArray = [...new Set(authorNames.split(',').map(x => x.trim()))]
   const allAuthorSlugs = authorNamesArray.map(x => convertToSlug(x))
 
-  console.log('authorNames', authorNames)
-  console.log('authorNamesArray', authorNamesArray)
-  console.log('allAuthorSlugs', allAuthorSlugs)
-
   let existingAuthors = [] as any
   if (allAuthorSlugs && allAuthorSlugs.length > 0) {
     existingAuthors = await authorRepo.find({
@@ -405,7 +401,6 @@ const findOrGenerateAuthors = async (authorNames) => {
       }
     })
   }
-  console.log('existingAuthors', existingAuthors)
 
   const newAuthors = []
   const newAuthorNames = authorNamesArray.filter(x => {
@@ -414,25 +409,17 @@ const findOrGenerateAuthors = async (authorNames) => {
     })
   })
 
-  console.log('newAuthorNames', newAuthorNames)
-
   for (const name of newAuthorNames) {
     const author = generateAuthor(name) as never
     newAuthors.push(author)
   }
 
-  console.log('newAuthors', newAuthors)
-
   for (const existingAuthor of existingAuthors) {
     const matchedName = authorNamesArray.find(x => convertToSlug(x) === existingAuthor.slug)
     existingAuthor.name = matchedName
-    console.log('existingAuthor', existingAuthor)
   }
 
-
   const allAuthors = existingAuthors.concat(newAuthors)
-
-  console.log('allAuthors', allAuthors)
 
   return allAuthors
 }
