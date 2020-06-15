@@ -80,7 +80,7 @@ export const validCategories = [
   'Science>Physics',
   'Science>Social Sciences',
   'Society & Culture',
-  'Society & Culture:Documentary',
+  'Society & Culture>Documentary',
   'Society & Culture>Personal Journals',
   'Society & Culture>Philosophy',
   'Society & Culture>Places & Travel',
