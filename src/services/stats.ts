@@ -111,6 +111,7 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
         }
 
         if (batchCount === 50) {
+          await new Promise(r => setTimeout(r, 2000));
           await getConnection()
             .createEntityManager()
             .query(rawSQLUpdate)
@@ -119,6 +120,7 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
       }
 
       if (rawSQLUpdate) {
+        await new Promise(r => setTimeout(r, 2000));
         await getConnection()
           .createEntityManager()
           .query(rawSQLUpdate)
