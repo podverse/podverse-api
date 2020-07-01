@@ -79,7 +79,6 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 
 const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   await connectToDb()
-
   const reports = response.data.reports
 
   for (const report of reports) {
@@ -88,8 +87,11 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
     if (data) {
       const rows = data.rows || []
       let rawSQLUpdate = ''
-
-      for (const row of rows) {
+      let batchCount = 0
+      for (let i = 0; i < rows.length; i++) {
+        // Batch updates in groups of 50 to avoid deadlock issues with large updates
+        batchCount = batchCount < 50 ? batchCount + 1 : 0
+        const row = rows[i]
         const pathName = row.dimensions[0]
 
         // remove all characters in the url path before the id, then put in an array
@@ -108,11 +110,19 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
           rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
         }
 
+        if (batchCount === 50) {
+          await getConnection()
+            .createEntityManager()
+            .query(rawSQLUpdate)
+          rawSQLUpdate = ''
+        }
       }
 
-      await getConnection()
-        .createEntityManager()
-        .query(rawSQLUpdate)
+      if (rawSQLUpdate) {
+        await getConnection()
+          .createEntityManager()
+          .query(rawSQLUpdate)
+      } 
     }
   }
 }
