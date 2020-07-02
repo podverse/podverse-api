@@ -80,17 +80,12 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   await connectToDb()
   const reports = response.data.reports
-
   for (const report of reports) {
     const data = report.data
-
+    
     if (data) {
       const rows = data.rows || []
-      let rawSQLUpdate = ''
-      let batchCount = 0
       for (let i = 0; i < rows.length; i++) {
-        // Batch updates in groups of 50 to avoid deadlock issues with large updates
-        batchCount = batchCount < 50 ? batchCount + 1 : 0
         const row = rows[i]
         const pathName = row.dimensions[0]
 
@@ -106,25 +101,15 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
         const values = row.metrics[0].values[0]
         const tableName = TableNames[pagePath]
 
+        // Updating the database one at a time to avoid deadlocks
+        // TODO: optimize with bulk updates, and avoid deadlocks! 
         if (id) {
-          rawSQLUpdate += `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
-        }
-
-        if (batchCount === 50) {
-          await new Promise(r => setTimeout(r, 2000));
+          const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
           await getConnection()
             .createEntityManager()
             .query(rawSQLUpdate)
-          rawSQLUpdate = ''
         }
       }
-
-      if (rawSQLUpdate) {
-        await new Promise(r => setTimeout(r, 2000));
-        await getConnection()
-          .createEntityManager()
-          .query(rawSQLUpdate)
-      } 
     }
   }
 }
