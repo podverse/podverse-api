@@ -23,12 +23,12 @@ try {
   console.log(error)
 }
 
-if (client) {
-  client.on('error', err => {
-    console.log('bitpay client.on error')
-    console.log(err)
-  })
-}
+// if (client) {
+//   client.on('error', err => {
+//     console.log('bitpay client.on error')
+//     console.log(err)
+//   })
+// }
 
 // Client will take a second to automatically load your tokens,
 // after which it will emit this ready event.
