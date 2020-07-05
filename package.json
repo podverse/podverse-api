@@ -40,7 +40,7 @@
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
-    "test:integration": "jest --config='jest.integration.config.js' --testPathPattern=itest\\.ts$",
+    "test:integration": "jest --config='jest.integration.config.js' --detectOpenHandles --forceExit",
     "test:unit": "jest",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },
@@ -103,6 +103,8 @@
     "bcryptjs": "2.4.3",
     "bitauth": "0.3.2",
     "bitpay-rest": "0.3.2",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "class-validator": "0.11.0",
     "clean-webpack-plugin": "3.0.0",
     "cookie": "0.4.0",
