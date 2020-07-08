@@ -2314,6 +2314,9 @@
         "isExplicit": {
           "type": "boolean"
         },
+        "isPublic": {
+          "type": "boolean"
+        },
         "language": {
           "type": "string"
         },
@@ -2345,6 +2348,9 @@
           "type": "integer"
         },
         "shrunkImageUrl": {
+          "type": "string"
+        },
+        "sortableTitle": {
           "type": "string"
         },
         "title": {

@@ -63,6 +63,13 @@ export class Podcast {
   linkUrl?: string
 
   @Index()
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
+
+  @Index()
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
@@ -96,13 +103,6 @@ export class Podcast {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
 
   @ValidateIf(a => a.shrunkImageUrl != null)
   @IsUrl()
