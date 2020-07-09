@@ -17,6 +17,14 @@
   "basePath": "/api/v1",
   "tags": [
     {
+      "name": "accountClaimToken",
+      "description": "a token for redeeming memberships"
+    },
+    {
+      "name": "appStorePurchase",
+      "description": "an App Store receipt object"
+    },
+    {
       "name": "auth",
       "description": "authentication related endpoints"
     },
@@ -38,6 +46,10 @@
     {
       "name": "feedUrl",
       "description": "official podcast feed URLs"
+    },
+    {
+      "name": "googlePlayPurchase",
+      "description": "a Google Play receipt object"
     },
     {
       "name": "mediaRef",
@@ -63,6 +75,115 @@
     "https"
   ],
   "paths": {
+    "/claim-account": {
+      "get": {
+        "tags": [
+          "accountClaimToken"
+        ],
+        "summary": "Get accountClaimToken by ID",
+        "description": "Returns a accountClaimToken object",
+        "operationId": "getAccountClaimTokenById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "accountClaimTokenId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/AccountClaimToken"
+            }
+          },
+          "404": {
+            "description": "AccountClaimToken not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "accountClaimToken"
+        ],
+        "summary": "Redeem an accountClaimToken",
+        "description": "Returns the new accountClaimToken object",
+        "operationId": "redeemAccountClaimToken",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "example": {
+                "id": "string",
+                "email": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/AccountClaimToken"
+            }
+          },
+          "404": {
+            "description": "AccountClaimToken not found"
+          },
+          "405": {
+            "description": "AccountClaimToken already claimed"
+          }
+        }
+      }
+    },
+    "/app-store/update-purchase-status": {
+      "post": {
+        "tags": [
+          "appStorePurchase"
+        ],
+        "summary": "Create or update an appStorePurchase",
+        "description": "Returns the new appStorePurchase object",
+        "operationId": "createOrUpdateAppStorePurchase ",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/AppStorePurchase"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/auth/get-authenticated-user-info": {
       "post": {
         "tags": [
@@ -727,6 +848,45 @@
         }
       }
     },
+    "/google-play/update-purchase-status": {
+      "post": {
+        "tags": [
+          "googlePlayPurchase"
+        ],
+        "summary": "Create or update a googlePlayPurchase",
+        "description": "Returns the new googlePlayPurchase object",
+        "operationId": "createOrUpdateGooglePlayPurchase ",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GooglePlayPurchase"
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "authorization": []
+          }
+        ]
+      }
+    },
     "/mediaRef": {
       "get": {
         "tags": [
@@ -1120,7 +1280,6 @@
                 "isPublic": "boolean",
                 "itemsOrder": ["string"],
                 "mediaRefs": ["string"],
-                "ownerId": "string",
                 "title": "string"
               }
             }
