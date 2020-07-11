@@ -1,8 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('accountClaimToken')
 export class AccountClaimToken {
 
+  @Index()
   @PrimaryGeneratedColumn('uuid')
   id: string
 

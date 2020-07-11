@@ -30,6 +30,7 @@ export class Episode {
   @Column({ nullable: true })
   episodeType?: string
 
+  @Index()
   @Column({ nullable: true })
   guid?: string
 
@@ -109,6 +110,7 @@ export class Episode {
   @Column({ nullable: true })
   pubDate?: Date
 
+  @Index()
   @Column({ nullable: true })
   title?: string
 

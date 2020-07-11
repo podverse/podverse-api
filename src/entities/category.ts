@@ -16,12 +16,15 @@ export class Category {
   })
   id: string
 
+  @Index()
   @Column({ unique: true })
   fullPath: string
 
+  @Index()
   @Column()
   slug: string
 
+  @Index()
   @Column({ unique: true })
   title: string
 

@@ -28,6 +28,7 @@ export class Playlist {
   @Column('varchar', { array: true })
   itemsOrder: string[]
 
+  @Index()
   @Column({ nullable: true })
   title?: string
 

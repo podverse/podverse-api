@@ -35,7 +35,11 @@
         "./src/**/*"
     ],
     "exclude": [
-        "**/*.spec.ts",
+        "**/*.itest.ts",
+        "**/*.test.ts",
         "node_modules"
+    ],
+    "files": [
+        "global.d.ts"
     ]
 }

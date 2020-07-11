@@ -16,9 +16,11 @@ export class Author {
   })
   id: string
 
+  @Index()
   @Column()
   name: string
 
+  @Index()
   @Column({ unique: true })
   slug: string
 

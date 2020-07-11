@@ -30,6 +30,7 @@ export class Podcast {
   @Column({ nullable: true })
   feedLastUpdated?: Date
 
+  @Index()
   @Column({ nullable: true })
   guid?: string
 
@@ -61,6 +62,13 @@ export class Podcast {
   @IsUrl()
   @Column({ nullable: true })
   linkUrl?: string
+
+  @Index()
+  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  pastAllTimeTotalUniquePageviews: number
 
   @Index()
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
@@ -96,13 +104,6 @@ export class Podcast {
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
 
   @ValidateIf(a => a.shrunkImageUrl != null)
   @IsUrl()
