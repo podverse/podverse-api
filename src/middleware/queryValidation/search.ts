@@ -34,26 +34,11 @@ const validateCategorySearch = async (ctx, next) => {
 
 const validateEpisodeSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
-    authors: Joi.string(),
-    category: Joi.string(),
-    categories: Joi.string(),
-    description: Joi.string(),
-    duration: Joi.number().integer().min(0),
-    episodeType: Joi.string(),
-    guid: Joi.string(),
-    id: Joi.string().min(7).max(14),
-    imageUrl: Joi.string().uri(),
     includePodcast: Joi.boolean(),
-    isExplicit: Joi.boolean(),
-    linkUrl: Joi.string().uri(),
-    mediaUrl: Joi.string().uri(),
-    mediaRefs: Joi.string(),
     podcastId: Joi.string(),
-    pubDate: Joi.date().iso(),
     searchAllFieldsText: Joi.string(),
-    title: Joi.string(),
-    page: Joi.number().integer().min(0),
     sincePubDate: Joi.date().iso(),
+    page: Joi.number().integer().min(0),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
     take: Joi.number().integer().min(0)
