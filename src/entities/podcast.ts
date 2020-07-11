@@ -30,6 +30,7 @@ export class Podcast {
   @Column({ nullable: true })
   feedLastUpdated?: Date
 
+  @Index()
   @Column({ nullable: true })
   guid?: string
 

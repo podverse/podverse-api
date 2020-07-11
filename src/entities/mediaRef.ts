@@ -74,6 +74,7 @@ export class MediaRef {
   @Column({ default: 0 })
   startTime: number
 
+  @Index()
   @Column({ nullable: true })
   title?: string
 

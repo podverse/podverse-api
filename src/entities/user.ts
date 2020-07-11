@@ -72,6 +72,7 @@ export class User {
   })
   membershipExpiration: Date
 
+  @Index()
   @Column({ nullable: true })
   name: string
 
