@@ -9,7 +9,7 @@ import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter, authorRouter,
-  bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter, googlePlayRouter, mediaRefRouter, paypalRouter,
+  categoryRouter, episodeRouter, feedUrlRouter, googlePlayRouter, mediaRefRouter, paypalRouter,
   playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
   
@@ -81,8 +81,8 @@ export const createApp = (conn: Connection) => {
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
 
-  app.use(bitpayRouter.routes())
-  app.use(bitpayRouter.allowedMethods())
+  // app.use(bitpayRouter.routes())
+  // app.use(bitpayRouter.allowedMethods())
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
