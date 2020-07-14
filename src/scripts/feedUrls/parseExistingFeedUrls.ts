@@ -1,4 +1,4 @@
-import { addFeedUrls } from '~/controllers/feedUrl'
+import { getFeedUrls } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parser'
 
@@ -16,11 +16,11 @@ import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parse
 
   try {
     await connectToDb()
-    const newFeedUrls = await addFeedUrls(feedUrls)
+    const existingFeedUrls = await getFeedUrls({ url: feedUrls })
 
-    console.log('newFeedUrls length', newFeedUrls.length)
+    console.log('existingFeedUrls length', existingFeedUrls.length)
 
-    for (const feedUrl of newFeedUrls) {
+    for (const feedUrl of existingFeedUrls) {
       try {
         const forceReparsing = true
         await parseFeedUrl(feedUrl, forceReparsing)
