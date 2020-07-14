@@ -18,7 +18,7 @@ export const addAllPublicFeedUrlsToQueue = async () => {
 
     qb.select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .innerJoin(
+      .innerJoinAndSelect(
         'feedUrl.podcast',
         'podcast',
         'podcast.isPublic = :isPublic',
