@@ -4,12 +4,13 @@ import * as helmet from 'koa-helmet'
 import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
+import * as Router from 'koa-router'
 import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter, authorRouter,
-  bitpayRouter, categoryRouter, episodeRouter, feedUrlRouter, googlePlayRouter, mediaRefRouter, paypalRouter,
+  categoryRouter, episodeRouter, feedUrlRouter, googlePlayRouter, mediaRefRouter, paypalRouter,
   playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
   
@@ -22,6 +23,8 @@ declare module 'koa' {
     db: Connection
   }
 }
+
+const rootRouter = new Router()
 
 export const createApp = (conn: Connection) => {
 
@@ -66,6 +69,14 @@ export const createApp = (conn: Connection) => {
     }
   }))
 
+  rootRouter.get('/',
+    async ctx => {
+      ctx.body = 'Please visit /api/v1/swagger for current documentation.'
+    })
+
+  app.use(rootRouter.routes())
+  app.use(rootRouter.allowedMethods())
+
   app.use(accountClaimTokenRouter.routes())
   app.use(accountClaimTokenRouter.allowedMethods())
 
@@ -81,8 +92,8 @@ export const createApp = (conn: Connection) => {
   app.use(authorRouter.routes())
   app.use(authorRouter.allowedMethods())
 
-  app.use(bitpayRouter.routes())
-  app.use(bitpayRouter.allowedMethods())
+  // app.use(bitpayRouter.routes())
+  // app.use(bitpayRouter.allowedMethods())
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
