@@ -1,6 +1,6 @@
 import { addFeedUrls } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
-import { parseFeedUrl } from '~/services/parser'
+import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parser'
 
 (async function () {
   let feedUrls = []
@@ -21,9 +21,12 @@ import { parseFeedUrl } from '~/services/parser'
     console.log('newFeedUrls length', newFeedUrls.length)
 
     for (const feedUrl of newFeedUrls) {
-      console.log('now parsing feedUrl:', feedUrl.url)
-      console.log('now parsing podcast:', feedUrl && feedUrl.podcast ? feedUrl.podcast.title : '(new podcast)')
-      await parseFeedUrl(feedUrl)
+      try {
+        const forceReparsing = true
+        await parseFeedUrl(feedUrl, forceReparsing)
+      } catch (error) {
+        await handlePodcastFeedLastParseFailed(feedUrl, error)
+      }
     }
 
     return
