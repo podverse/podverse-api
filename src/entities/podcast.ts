@@ -26,6 +26,9 @@ export class Podcast {
   @Column({ nullable: true })
   description?: string
 
+  @Column({ default: false })
+  feedLastParseFailed?: boolean
+
   @Index()
   @Column({ nullable: true })
   feedLastUpdated?: Date

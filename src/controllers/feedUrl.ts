@@ -67,6 +67,10 @@ const getFeedUrls = (query) => {
     query.podcast = In(query.podcastId)
   }
 
+  if (query.url) {
+    query.url = In(query.url)
+  }
+
   return repository.find({
     where: {
       ...query

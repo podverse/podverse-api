@@ -29,8 +29,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     await parsePodcast(response, async (error, data) => {
       logPerformance('parsePodcast', _logEnd)
       if (error) {
-        console.error('Parsing error', error, feedUrl.url)
-        reject()
+        reject(error)
         return
       }
 
@@ -58,6 +57,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         }
 
         podcast.isPublic = true
+        podcast.feedLastParseFailed = false
 
         let authors = []
 
@@ -224,8 +224,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         resolve()
       } catch (error) {
-        console.log('error parseFeedUrl, feedUrl:', feedUrl.id, feedUrl.url)
-        console.log(error)
+        reject(error)
       }
       logPerformance('parseFeedUrl', _logEnd, 'feedUrl.url = ' + feedUrl.url)
     })
@@ -237,7 +236,11 @@ export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
-    await parseFeedUrl(feedUrl, forceReparsing)
+    try {
+      await parseFeedUrl(feedUrl, forceReparsing)
+    } catch (error) {
+      await handlePodcastFeedLastParseFailed(feedUrl, error)
+    }
   }
 
   console.log('parseFeedUrlsByPodcastIds finished')
@@ -269,8 +272,7 @@ export const parsePublicFeedUrls = async () => {
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('error parsePublicFeedUrls parseFeedUrl', feedUrl.id, feedUrl.url)
-        console.log('error', error)
+        await handlePodcastFeedLastParseFailed(feedUrl, error)
       }
     }
 
@@ -296,7 +298,7 @@ export const parseOrphanFeedUrls = async () => {
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('error parseOrphanFeedUrls parseFeedUrl', feedUrl.id, feedUrl.url)
+        await handlePodcastFeedLastParseFailed(feedUrl, error)
       }
     }
 
@@ -323,7 +325,6 @@ export const parseNextFeedFromQueue = async () => {
   logPerformance('parseNextFeedFromQueue', _logStart)
 
   const queueUrl = queueUrls.feedsToParse.queueUrl
-  const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
 
   logPerformance('parseNextFeedFromQueue > receiveMessageFromQueue', _logStart, 'queueUrl ' + queueUrl)
   const message = await receiveMessageFromQueue(queueUrl)
@@ -373,8 +374,7 @@ export const parseNextFeedFromQueue = async () => {
   } catch (error) {
     console.error('parseNextFeedFromQueue:parseFeed', error)
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
-    const attrs = generateFeedMessageAttributes(feedUrlMsg, error)
-    await sendMessageToQueue(attrs, errorsQueueUrl)
+    await handlePodcastFeedLastParseFailed(feedUrlMsg, error)
     logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
   }
 
@@ -385,6 +385,36 @@ export const parseNextFeedFromQueue = async () => {
   logPerformance('parseNextFeedFromQueue', _logEnd)
 
   return true
+}
+
+// If a podcast exists for the feedUrl, then set podcast.feedLastParseFailed true,
+// else send the failed feedUrl to the dead letter queue.
+export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedError) => {
+  console.log('\n\n\n')
+  console.log('***** PODCAST PARSING FAILED *****')
+  console.log('podcast.title ', feedUrlMsg && feedUrlMsg.podcast && feedUrlMsg.podcast.title)
+  console.log('podcast.id    ', feedUrlMsg && feedUrlMsg.podcast && feedUrlMsg.podcast.id)
+  console.log('feedUrl.id    ', feedUrlMsg && feedUrlMsg.id)
+  console.log('feedUrl.url   ', feedUrlMsg && feedUrlMsg.url)
+  console.log(inheritedError && inheritedError.message)
+  console.log('\n\n\n')
+
+  if (feedUrlMsg && feedUrlMsg.podcast && feedUrlMsg.podcast.id) {
+    try {
+      logPerformance('setPodcastFeedLastParseFailed', _logStart)
+      const savedPodcast = await getPodcast(feedUrlMsg.podcast.id, false)
+      savedPodcast.feedLastParseFailed = true
+      const podcastRepo = getRepository(Podcast)
+      await podcastRepo.save(savedPodcast)
+      logPerformance('setPodcastFeedLastParseFailed', _logEnd)
+    } catch (err) {
+      console.log('setPodcastFeedLastParseFailed', feedUrlMsg.podcast.id, err)
+    }
+  } else if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
+    const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
+    const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError)
+    await sendMessageToQueue(attrs, errorsQueueUrl)
+  }
 }
 
 const findOrGenerateAuthors = async (authorNames) => {
