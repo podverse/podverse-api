@@ -4,6 +4,7 @@ import * as helmet from 'koa-helmet'
 import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
+import * as Router from 'koa-router'
 import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
@@ -22,6 +23,8 @@ declare module 'koa' {
     db: Connection
   }
 }
+
+const rootRouter = new Router()
 
 export const createApp = (conn: Connection) => {
 
@@ -65,6 +68,14 @@ export const createApp = (conn: Connection) => {
       url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
     }
   }))
+
+  rootRouter.get('/',
+    async ctx => {
+      ctx.body = 'Please visit /api/v1/swagger for current documentation.'
+    })
+
+  app.use(rootRouter.routes())
+  app.use(rootRouter.allowedMethods())
 
   app.use(accountClaimTokenRouter.routes())
   app.use(accountClaimTokenRouter.allowedMethods())
