@@ -34,7 +34,7 @@
     },
     {
       "name": "bitpayInvoice",
-      "description": "the BitPay order object"
+      "description": "the BitPay order object (disabled)"
     },
     {
       "name": "category",
@@ -535,8 +535,8 @@
         "tags": [
           "bitpayInvoice"
         ],
-        "summary": "Create a bitpayInvoice",
-        "description": "Returns a new bitpayInvoice object",
+        "summary": "Create a bitpayInvoice (disabled)",
+        "description": "Returns a new bitpayInvoice object (disabled because of unresolved issues with automating the BitPay private key pairing process during deploys)",
         "operationId": "createBitPayInvoice",
         "produces": [
           "application/json"
@@ -564,8 +564,8 @@
         "tags": [
           "bitpayInvoice"
         ],
-        "summary": "Get the status of a bitpayInvoice by ID",
-        "description": "Returns the status of a bitpayInvoice by ID",
+        "summary": "Get the status of a bitpayInvoice by ID (disabled)",
+        "description": "Returns the status of a bitpayInvoice by ID (disabled because of unresolved issues with automating the BitPay private key pairing process during deploys)",
         "operationId": "getBitPayInvoice",
         "produces": [
           "application/json"
