@@ -18,7 +18,7 @@ export const addAllPublicFeedUrlsToQueue = async () => {
 
     qb.select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .innerJoin(
+      .innerJoinAndSelect(
         'feedUrl.podcast',
         'podcast',
         'podcast.isPublic = :isPublic',
@@ -52,6 +52,30 @@ export const addAllOrphanFeedUrlsToQueue = async () => {
     await sendFeedUrlsToParsingQueue(feedUrls)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToQueue', error)
+  }
+}
+
+export const addExistingFeedUrlsByIdToQueue = async (feedUrlIds) => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+    console.log('ids...', feedUrlIds)
+    const feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+      .where(
+        'feedUrl.isAuthority = true AND feedUrl.id IN (:...feedUrlIds)',
+        { feedUrlIds }
+      )
+      .getMany()
+
+    await sendFeedUrlsToParsingQueue(feedUrls)
+  } catch (error) {
+    console.log('queue:addExistingFeedUrlsByIdToQueue', error)
   }
 }
 
