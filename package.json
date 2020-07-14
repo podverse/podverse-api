@@ -9,6 +9,7 @@
   "scripts": {
     "build": "webpack --progress --colors",
     "dev": "NODE_ENV=development DB_SHOULD_SYNC=true nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev:scripts:addExistingFeedUrlsByIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addExistingFeedUrlsByIdToQueue.ts",
     "dev:scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
@@ -25,6 +26,7 @@
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "dev:seeds:sampleEntities": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
     "lint:ts": "eslint src/**/*.ts",
+    "scripts:addExistingFeedUrlsByIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addExistingFeedUrlsByIdToQueue.ts",
     "scripts:addAllOrphanFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToQueue.ts",
     "scripts:addAllPublicFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "scripts:addAndParseFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAndParseFeedUrls.ts",
