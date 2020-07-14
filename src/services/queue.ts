@@ -61,7 +61,7 @@ export const addExistingFeedUrlsByIdToQueue = async (feedUrlIds) => {
 
   try {
     const feedUrlRepo = getRepository(FeedUrl)
-    console.log('ids...', feedUrlIds)
+
     const feedUrls = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
@@ -72,6 +72,8 @@ export const addExistingFeedUrlsByIdToQueue = async (feedUrlIds) => {
         { feedUrlIds }
       )
       .getMany()
+
+    console.log('Total feedUrls found:', feedUrls.length)
 
     await sendFeedUrlsToParsingQueue(feedUrls)
   } catch (error) {
