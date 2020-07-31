@@ -86,7 +86,7 @@ router.post('/update-purchase-status',
         } else {
           ctx.body = {
             code: 3,
-            message: 'Something went wrong while processing this purchase. Please email support@podverse.fm for help.'
+            message: 'Something went wrong while processing this purchase. Please email contact@podverse.fm for help.'
           }
         }
       }

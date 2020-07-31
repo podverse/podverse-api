@@ -49,7 +49,7 @@ const verifyAppStorePurchaseByReceiptRequest = (transactionReceipt: string, isPr
   if you receive a 21007 status code. Following this approach ensures that you do not have to
   switch between URLs while your application is tested, reviewed by App Review, or live in the App Store."
 */
-const somethingWentWrongMessage = `Something went wrong. Please contact support@podverse.fm for help if the problem continues.`
+const somethingWentWrongMessage = `Something went wrong. Please contact contact@podverse.fm for help if the problem continues.`
 
 export const processAppStorePurchases = async (transactions: any[] = [], loggedInUserId: string) => {
   const processedTransactionIds = [] as any
