@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
+import { NowPlayingItem } from 'podverse-shared'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
-import { NowPlayingItem } from '~/lib/utility/nowPlayingItem'
 import { AppStorePurchase } from './appStorePurchase'
 import { GooglePlayPurchase } from './googlePlayPurchase'
 

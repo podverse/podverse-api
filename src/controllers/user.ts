@@ -1,11 +1,11 @@
 import { hash } from 'bcryptjs'
+import { cleanNowPlayingItem } from 'podverse-shared'
 import { getRepository } from 'typeorm'
 import { MediaRef, Playlist, User } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
 import { getQueryOrderColumn, validatePassword } from '~/lib/utility'
 import { validateEmail } from '~/lib/utility/validation'
-import { cleanNowPlayingItem } from '~/lib/utility/nowPlayingItem'
 
 const createError = require('http-errors')
 
