@@ -11,12 +11,23 @@ const relations = [
 const getEpisode = async id => {
   const repository = getRepository(Episode)
   const episode = await repository.findOne({
-    id,
-    isPublic: true
+    id
   }, { relations })
-
+  
   if (!episode) {
     throw new createError.NotFound('Episode not found')
+  } else if (!episode.isPublic) {
+    // If a public version of the episode isn't available, check if a newer public version
+    // of the episode is available and return that. Don't return the non-public version
+    // because it is more likely to contain a dead / out-of-date mediaUrl.
+    // Non-public episodes may be attached to old mediaRefs that are still accessible on clip pages.
+    const publicEpisode = await repository.findOne({
+      isPublic: true,
+      podcastId: episode.podcastId,
+      title: episode.title
+    })
+
+    if (publicEpisode) return publicEpisode
   }
 
   return episode
