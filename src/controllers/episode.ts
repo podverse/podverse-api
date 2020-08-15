@@ -25,7 +25,7 @@ const getEpisode = async id => {
       isPublic: true,
       podcastId: episode.podcastId,
       title: episode.title
-    })
+    }, { relations })
 
     if (publicEpisode) return publicEpisode
   }
