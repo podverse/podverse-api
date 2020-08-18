@@ -45,6 +45,7 @@
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
     "test:integration": "./scripts/runIntegrationTests.sh",
+    "test:integration:single": "./scripts/runIntegrationTestSingle.sh",
     "test:unit": "jest",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },
