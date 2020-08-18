@@ -4,7 +4,7 @@ import { v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('accountClaimToken endpoints', () => {
+describe('_accountClaimToken endpoints', () => {
 
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
