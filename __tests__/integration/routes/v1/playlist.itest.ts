@@ -42,6 +42,17 @@ describe('_playlist endpoints', () => {
           done()
         })
     })
+
+    test('when an invalid id is provided', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/CH_2-LasdflM`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(404);
+          chaiExpect(res.body).to.have.property('message', 'Playlist not found')
+
+          done()
+        })
+    })
   })
 
 })

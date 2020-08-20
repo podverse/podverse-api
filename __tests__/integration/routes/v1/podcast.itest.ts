@@ -68,6 +68,17 @@ describe('_podcast endpoints', () => {
           done()
         })
     })
+
+    test('when an invalid id is provided', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/podcast/mN25xfadfFjDG`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(404);
+          chaiExpect(res.body).to.have.property('message', 'Podcast not found')
+
+          done()
+        })
+    })
   })
 
 })

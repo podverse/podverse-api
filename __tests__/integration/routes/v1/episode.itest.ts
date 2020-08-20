@@ -25,13 +25,13 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body).to.have.property('mediaFilesize', 0)
           chaiExpect(res.body).to.have.property('mediaType', 'audio/mpeg')
           chaiExpect(res.body).to.have.property('mediaUrl', 'https://dts.podtrac.com/redirect.mp3/media.blubrry.com/99percentinvisible/dovetail.prxu.org/96/99a841bb-27cf-44de-908a-2d33f1265c83/335_Gathering_the_Magic_pt01.mp3')
-          chaiExpect(res.body).to.have.property('pastHourTotalUniquePageviews', '1')
-          chaiExpect(res.body).to.have.property('pastDayTotalUniquePageviews', '2')
-          chaiExpect(res.body).to.have.property('pastWeekTotalUniquePageviews', '3')
-          chaiExpect(res.body).to.have.property('pastMonthTotalUniquePageviews', '4')
-          chaiExpect(res.body).to.have.property('pastYearTotalUniquePageviews', '5')
-          chaiExpect(res.body).to.have.property('pastAllTimeTotalUniquePageviews', '6')
-          chaiExpect(res.body).to.have.property('pubDate', '0')
+          chaiExpect(res.body).to.have.property('pastHourTotalUniquePageviews', 1)
+          chaiExpect(res.body).to.have.property('pastDayTotalUniquePageviews', 2)
+          chaiExpect(res.body).to.have.property('pastWeekTotalUniquePageviews', 3)
+          chaiExpect(res.body).to.have.property('pastMonthTotalUniquePageviews', 4)
+          chaiExpect(res.body).to.have.property('pastYearTotalUniquePageviews', 5)
+          chaiExpect(res.body).to.have.property('pastAllTimeTotalUniquePageviews', 6)
+          chaiExpect(res.body).to.have.property('pubDate', '2019-01-01T23:54:08.000Z')
           chaiExpect(res.body).to.have.property('title', '335- Gathering the Magic')
           chaiExpect(res.body).to.have.property('podcastId', '0RMk6UYGq')
           chaiExpect(res.body).to.have.property('createdAt', '2020-03-02T21:17:46.840Z')
@@ -55,6 +55,16 @@ describe('_episode endpoints', () => {
           chaiExpect(mediaRef).to.have.property('updatedAt', '2020-03-02T22:13:33.820Z')
           
           
+
+          done()
+        })
+    })
+    test('when an invalid id is provided', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/episode/gRgjd3asdfYcKb`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(404);
+          chaiExpect(res.body).to.have.property('message', 'Episode not found')
 
           done()
         })
