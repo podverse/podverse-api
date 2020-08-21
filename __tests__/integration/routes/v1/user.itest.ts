@@ -32,7 +32,8 @@ describe('user endpoints', () => {
           chaiExpect(res).to.have.status(200)
 
           const queueItem = res.body[0]
-          chaiExpect(queueItem).to.have.property('clipEndTime', 1199)
+          chaiExpect(queueItem.clipEndTime).to.equal(1199)
+          // chaiExpect(queueItem).to.have.property('clipEndTime', 1199)
           chaiExpect(queueItem).to.have.property('clipId', 'jxv22OGr')
           chaiExpect(queueItem).to.have.property('clipStartTime', 1114)
           chaiExpect(queueItem).to.have.property('clipTitle', 'Test clip title')
