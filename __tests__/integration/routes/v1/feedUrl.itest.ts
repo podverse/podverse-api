@@ -19,7 +19,7 @@ describe('_feedUrl endpoints', () => {
           chaiExpect(res.body).to.have.property('updatedAt', '2020-03-02T21:17:07.154Z')
 
 
-          const podcast = res.body.podcast[0]
+          const podcast = res.body.podcast
           chaiExpect(podcast).to.have.property('id', 'Q_QCTJbNR')
           chaiExpect(podcast).to.have.property('alwaysFullyParse', false)
           chaiExpect(podcast).to.have.property('authorityId', null)
@@ -55,12 +55,12 @@ describe('_feedUrl endpoints', () => {
         })
     })
 
-    test('when a valid id is provided', async (done) => {
+    test('when an invalid id is provided', async (done) => {
       chai.request(global.app)
-        .get(`${v1Path}/feedUrl/JCldU-ll`)
+        .get(`${v1Path}/feedUrl/JCldewarsfU-ll`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
-          chaiExpect(res.body).to.have.property('message', 'Episode not found')
+          chaiExpect(res.body).to.have.property('message', 'FeedUrl not found')
          
           
 

@@ -50,7 +50,7 @@ describe('_episode endpoints', () => {
           chaiExpect(mediaRef).to.have.property('pastYearTotalUniquePageviews', 0)
           chaiExpect(mediaRef).to.have.property('pastAllTimeTotalUniquePageviews', 0)
           chaiExpect(mediaRef).to.have.property('startTime', 480)
-          chaiExpect(mediaRef).to.have.property('title', 'Consectetur lorem donec massa sapien faucibus et molestie ac. Purus semper eget duis at tellus')
+          chaiExpect(mediaRef).to.have.property('title', 'Consectetur lorem donec massa sapien faucibus et molestie ac. Purus semper eget duis at tellus.')
           chaiExpect(mediaRef).to.have.property('createdAt', '2020-03-02T22:13:33.820Z')
           chaiExpect(mediaRef).to.have.property('updatedAt', '2020-03-02T22:13:33.820Z')
           

@@ -19,7 +19,7 @@ describe('_category endpoints', () => {
           chaiExpect(res.body).to.have.property('createdAt', '2020-04-03T06:49:43.343Z')
           chaiExpect(res.body).to.have.property('updatedAt', '2020-04-03T06:49:43.343Z')
 
-          const category = res.body.category[0]
+          const category = res.body.category
           chaiExpect(category).to.have.property('id', 'jeW7cF_Pv')
           chaiExpect(category).to.have.property('fullPath', 'Arts')
           chaiExpect(category).to.have.property('slug', 'arts')

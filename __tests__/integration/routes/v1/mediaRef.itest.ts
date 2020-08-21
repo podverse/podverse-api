@@ -29,7 +29,7 @@ describe('_mediaRef endpoints', () => {
           //categories
           
 
-          const episode = res.body.episode[0]
+          const episode = res.body.episode
           chaiExpect(episode).to.have.property('id', 'fFmGXkgIM')
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode).to.have.property('duration', 0)

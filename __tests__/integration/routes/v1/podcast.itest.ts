@@ -24,7 +24,7 @@ describe('_podcast endpoints', () => {
           chaiExpect(res.body).to.have.property('isExplicit', true)
           chaiExpect(res.body).to.have.property('isPublic', true)
           chaiExpect(res.body).to.have.property('language', 'en-us')
-          chaiExpect(res.body).to.have.property('lastEpisodePublishDate', '2020-03-30T20:24:14.000Z')
+          chaiExpect(res.body).to.have.property('lastEpisodePubDate', '2020-03-30T20:24:14.000Z')
           chaiExpect(res.body).to.have.property('lastEpisodeTitle', '378: David Nichtern')
           chaiExpect(res.body).to.have.property('linkUrl', 'http://www.duncantrussell.com/')
           chaiExpect(res.body).to.have.property('pastAllTimeTotalUniquePageviews', 0)

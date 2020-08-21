@@ -23,6 +23,7 @@ describe('_playlist endpoints', () => {
           //episodes
 
           const mediaRef = res.body.mediaRefs[0]
+          const episode = res.body.mediaRefs[0].episode
           chaiExpect(mediaRef).to.have.property('id', '6UFQc7Lq')
           chaiExpect(mediaRef).to.have.property('endTime', 1496)
           chaiExpect(mediaRef).to.have.property('isPublic', true)
@@ -36,6 +37,11 @@ describe('_playlist endpoints', () => {
           chaiExpect(mediaRef).to.have.property('title', 'Viverra orci sagittis eu volutpat odio facilisis mauris sit.')
           chaiExpect(mediaRef).to.have.property('createdAt', '2020-03-02T22:27:41.585Z')
           chaiExpect(mediaRef).to.have.property('updatedAt', '2020-03-02T23:00:42.173Z')
+
+          chaiExpect(episode).to.have.property('id', '4uE26PEF_y')
+          chaiExpect(episode).to.have.property('description')
+          chaiExpect(episode).to.have.property('duration', 0)
+          chaiExpect(episode).to.have.property('episodeType', 'full')
           
           
 
