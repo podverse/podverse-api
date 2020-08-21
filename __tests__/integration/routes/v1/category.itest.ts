@@ -12,21 +12,23 @@ describe('_category endpoints', () => {
         .get(`${v1Path}/category/2ELHNnfE9Y`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
-          chaiExpect(res.body).to.have.property('id', '2ELHNnfE9Y')
-          chaiExpect(res.body).to.have.property('fullPath', 'Arts>Design')
-          chaiExpect(res.body).to.have.property('slug', 'design')
-          chaiExpect(res.body).to.have.property('title', 'Design')
-          chaiExpect(res.body).to.have.property('createdAt', '2020-04-03T06:49:43.343Z')
-          chaiExpect(res.body).to.have.property('updatedAt', '2020-04-03T06:49:43.343Z')
+          chaiExpect(res.body.id).to.equal('2ELHNnfE9Y')
+          chaiExpect(res.body.fullPath).to.eql('Arts>Design')
+          chaiExpect(res.body.slug).to.eql('design')
+          chaiExpect(res.body.title).to.eql('Design')
+          chaiExpect(res.body.createdAt).to.eql('2020-04-03T06:49:43.343Z')
+          chaiExpect(res.body.updatedAt).to.eql('2020-04-03T06:49:43.343Z')
 
           const category = res.body.category
-          chaiExpect(category).to.have.property('id', 'jeW7cF_Pv')
-          chaiExpect(category).to.have.property('fullPath', 'Arts')
-          chaiExpect(category).to.have.property('slug', 'arts')
-          chaiExpect(category).to.have.property('title', 'Arts')
-          chaiExpect(category).to.have.property('createdAt', '2020-04-03T06:49:43.272Z')
-          chaiExpect(category).to.have.property('updatedAt', '2020-04-03T06:49:43.272Z')
-          chaiExpect(category).to.have.property('category', null)
+          chaiExpect(category.id).to.eql('jeW7cF_Pv')
+          chaiExpect(category.fullPath).to.eql('Arts')
+          chaiExpect(category.slug).to.eql('arts')
+          chaiExpect(category.title).to.eql('Arts')
+          chaiExpect(category.createdAt).to.eql('2020-04-03T06:49:43.272Z')
+          chaiExpect(category.updatedAt).to.eql('2020-04-03T06:49:43.272Z')
+          chaiExpect(category.category).to.eql(null)
+
+          chaiExpect(res.body.categories).to.eql([])
 
           //categories
           
@@ -40,7 +42,7 @@ describe('_category endpoints', () => {
         .get(`${v1Path}/category/2ELHNasdnfE9Y`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
-          chaiExpect(res.body).to.have.property('message', 'Category not found')
+          chaiExpect(res.body.message).to.eql('Category not found')
           
 
           done()

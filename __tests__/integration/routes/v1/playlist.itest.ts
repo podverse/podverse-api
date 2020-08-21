@@ -12,36 +12,36 @@ describe('_playlist endpoints', () => {
         .get(`${v1Path}/playlist/CH_2-LlM`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
-          chaiExpect(res.body).to.have.property('id', 'CH_2-LlM')
+          chaiExpect(res.body.id).to.eql('CH_2-LlM')
           chaiExpect(res.body).to.have.property('description')
-          chaiExpect(res.body).to.have.property('isPublic', false)
-          chaiExpect(res.body).to.have.property('itemCount', 2)
-          //itemsOrder
-          chaiExpect(res.body).to.have.property('title', 'Premium - Test Playlist 2')
-          chaiExpect(res.body).to.have.property('createdAt', '2020-03-02T22:38:21.768Z')
-          chaiExpect(res.body).to.have.property('updatedAt', '2020-05-26T01:22:00.712Z')
-          //episodes
+          chaiExpect(res.body.isPublic).to.eql(false)
+          chaiExpect(res.body.itemCount).to.eql(2)
+          chaiExpect(res.body.itemsOrder).to.eql([])
+          chaiExpect(res.body.title).to.eql('Premium - Test Playlist 2')
+          chaiExpect(res.body.createdAt).to.eql('2020-03-02T22:38:21.768Z')
+          chaiExpect(res.body.updatedAt).to.eql('2020-05-26T01:22:00.712Z')
+          chaiExpect(res.body.episodes).to.eql([])
 
           const mediaRef = res.body.mediaRefs[0]
           const episode = res.body.mediaRefs[0].episode
-          chaiExpect(mediaRef).to.have.property('id', '6UFQc7Lq')
-          chaiExpect(mediaRef).to.have.property('endTime', 1496)
-          chaiExpect(mediaRef).to.have.property('isPublic', true)
-          chaiExpect(mediaRef).to.have.property('pastHourTotalUniquePageviews', 2)
-          chaiExpect(mediaRef).to.have.property('pastDayTotalUniquePageviews', 3)
-          chaiExpect(mediaRef).to.have.property('pastWeekTotalUniquePageviews', 4)
-          chaiExpect(mediaRef).to.have.property('pastMonthTotalUniquePageviews', 5)
-          chaiExpect(mediaRef).to.have.property('pastYearTotalUniquePageviews', 6)
-          chaiExpect(mediaRef).to.have.property('pastAllTimeTotalUniquePageviews', 7)
-          chaiExpect(mediaRef).to.have.property('startTime', 1366)
-          chaiExpect(mediaRef).to.have.property('title', 'Viverra orci sagittis eu volutpat odio facilisis mauris sit.')
-          chaiExpect(mediaRef).to.have.property('createdAt', '2020-03-02T22:27:41.585Z')
-          chaiExpect(mediaRef).to.have.property('updatedAt', '2020-03-02T23:00:42.173Z')
+          chaiExpect(mediaRef.id).to.eql('6UFQc7Lq')
+          chaiExpect(mediaRef.endTime).to.eql(1496)
+          chaiExpect(mediaRef.isPublic).to.eql(true)
+          chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.eql(2)
+          chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.eql(3)
+          chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.eql(4)
+          chaiExpect(mediaRef.pastMonthTotalUniquePageviews).to.eql(5)
+          chaiExpect(mediaRef.pastYearTotalUniquePageviews).to.eql(6)
+          chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.eql(7)
+          chaiExpect(mediaRef.startTime).to.eql(1366)
+          chaiExpect(mediaRef.title).to.eql('Viverra orci sagittis eu volutpat odio facilisis mauris sit.')
+          chaiExpect(mediaRef.createdAt).to.eql('2020-03-02T22:27:41.585Z')
+          chaiExpect(mediaRef.updatedAt).to.eql('2020-03-02T23:00:42.173Z')
 
-          chaiExpect(episode).to.have.property('id', '4uE26PEF_y')
+          chaiExpect(episode.id).to.eql('4uE26PEF_y')
           chaiExpect(episode).to.have.property('description')
-          chaiExpect(episode).to.have.property('duration', 0)
-          chaiExpect(episode).to.have.property('episodeType', 'full')
+          chaiExpect(episode.duration).to.eql(0)
+          chaiExpect(episode.episodeType).to.eql('full')
           
           
 
@@ -54,7 +54,7 @@ describe('_playlist endpoints', () => {
         .get(`${v1Path}/playlist/CH_2-LasdflM`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
-          chaiExpect(res.body).to.have.property('message', 'Playlist not found')
+          chaiExpect(res.body.message).to.eql('Playlist not found')
 
           done()
         })
