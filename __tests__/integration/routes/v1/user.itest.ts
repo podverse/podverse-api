@@ -12,9 +12,9 @@ describe('_user endpoints', () => {
           .get(`${v1Path}/user/EVHDBRZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(200);
-            chaiExpect(res.body.id).to.eql('EVHDBRZY')
-            chaiExpect(res.body.isPublic).to.eql(true)
-            chaiExpect(res.body.name).to.eql('Free Trial Valid - Test User')
+            chaiExpect(res.body.id).to.equal('EVHDBRZY')
+            chaiExpect(res.body.isPublic).to.equal(true)
+            chaiExpect(res.body.name).to.equal('Free Trial Valid - Test User')
   
             //subscribedPodcastId
             done()
@@ -26,47 +26,47 @@ describe('_user endpoints', () => {
           .get(`${v1Path}/user/EVHDBRgfdsaZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(404);
-            chaiExpect(res.body.message).to.eql('User not found.')
+            chaiExpect(res.body.message).to.equal('User not found.')
 
             done()
           })
       })
     })
 
-    // describe('update', () => {
-    //   const sendBody = {
-    //     "email": "premium@stage.podverse.fm",
-    //     "id": "QMReJmbE",
-    //     "isPublic": "true",
-    //     "name": "Kyle"
-    //   }
+    describe('update', () => {
+      const sendBody = {
+        "email": "premium@stage.podverse.fm",
+        "id": "QMReJmbE",
+        "isPublic": "true",
+        "name": "Kyle"
+      }
 
-    //   test('when the user is not logged in', async (done) => {
-    //     chai.request(global.app)
-    //       .patch(`${v1Path}/user`)
-    //       .send(sendBody)
-    //       .end((err, res) => {
-    //         chaiExpect(res).to.have.status(401)
+      test('when the user is not logged in', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user`)
+          .send(sendBody)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
 
-    //         done()
-    //       })
-    //   })
+            done()
+          })
+      })
       
-    //   test('when the user is logged in', async (done) => {
-    //     chai.request(global.app)
-    //       .patch(`${v1Path}/user`)
-    //       .set('Cookie', testUsers.premium.authCookie)
-    //       .send(sendBody)
-    //       .end((err, res) => {
-    //         chaiExpect(res).to.have.status(200)
+      // test('when the user is logged in', async (done) => {
+      //   chai.request(global.app)
+      //     .patch(`${v1Path}/user`)
+      //     .set('Cookie', testUsers.premium.authCookie)
+      //     .send(sendBody)
+      //     .end((err, res) => {
+      //       chaiExpect(res).to.have.status(200)
 
-    //         const body = res.body
-    //         // expects
+      //       const body = res.body
+      //       // expects
 
-    //         done()
-    //       })
-    //   })
-    // })
+      //       done()
+      //     })
+      // })
+    })
 
     describe('update queue', () => {
 
@@ -83,7 +83,7 @@ describe('_user endpoints', () => {
 
             done()
           })
-      }) 
+      })
       
       test('when the user is logged in', async (done) => {
         chai.request(global.app)
@@ -94,26 +94,26 @@ describe('_user endpoints', () => {
             chaiExpect(res).to.have.status(200)
   
             const queueItem = res.body[0]
-            chaiExpect(queueItem.clipEndTime).to.eql(1199)
-            chaiExpect(queueItem.clipId).to.eql('jxv22OGr')
-            chaiExpect(queueItem.clipStartTime).to.eql(1114)
-            chaiExpect(queueItem.clipTitle).to.eql('Test clip title')
-            chaiExpect(queueItem.episodeDescription).to.eql('Test episode description')
-            chaiExpect(queueItem.episodeId).to.eql('gRgjd3YcKb')
-            chaiExpect(queueItem.episodeImageUrl).to.eql('http://example.com/imageUrl')
-            chaiExpect(queueItem.episodeMediaUrl).to.eql('http://example.com/mediaUrl')
-            chaiExpect(queueItem.episodePubDate).to.eql('2019-01-01T23:54:08.000Z')
-            chaiExpect(queueItem.episodeTitle).to.eql('Test episode title')
-            chaiExpect(queueItem.isPublic).to.eql(true)
-            chaiExpect(queueItem.ownerId).to.eql('EVHDBRZY')
-            chaiExpect(queueItem.ownerIsPublic).to.eql(true)
-            chaiExpect(queueItem.ownerName).to.eql('Free Trial Valid - Test User')
+            chaiExpect(queueItem.clipEndTime).to.equal(1199)
+            chaiExpect(queueItem.clipId).to.equal('jxv22OGr')
+            chaiExpect(queueItem.clipStartTime).to.equal(1114)
+            chaiExpect(queueItem.clipTitle).to.equal('Test clip title')
+            chaiExpect(queueItem.episodeDescription).to.equal('Test episode description')
+            chaiExpect(queueItem.episodeId).to.equal('gRgjd3YcKb')
+            chaiExpect(queueItem.episodeImageUrl).to.equal('http://example.com/imageUrl')
+            chaiExpect(queueItem.episodeMediaUrl).to.equal('http://example.com/mediaUrl')
+            chaiExpect(queueItem.episodePubDate).to.equal('2019-01-01T23:54:08.000Z')
+            chaiExpect(queueItem.episodeTitle).to.equal('Test episode title')
+            chaiExpect(queueItem.isPublic).to.equal(true)
+            chaiExpect(queueItem.ownerId).to.equal('EVHDBRZY')
+            chaiExpect(queueItem.ownerIsPublic).to.equal(true)
+            chaiExpect(queueItem.ownerName).to.equal('Free Trial Valid - Test User')
             chaiExpect(queueItem.podcastAuthors).to.eql(['Rk1zs7vs'])
             chaiExpect(queueItem.podcastCategories).to.eql(['5vNa3RnSZpC'])
-            chaiExpect(queueItem.podcastId).to.eql('0RMk6UYGq')
-            chaiExpect(queueItem.podcastImageUrl).to.eql('http://example.com/imageUrl')
-            chaiExpect(queueItem.podcastTitle).to.eql('Test podcast title')
-            chaiExpect(queueItem.userPlaybackPosition).to.eql(123)
+            chaiExpect(queueItem.podcastId).to.equal('0RMk6UYGq')
+            chaiExpect(queueItem.podcastImageUrl).to.equal('http://example.com/imageUrl')
+            chaiExpect(queueItem.podcastTitle).to.equal('Test podcast title')
+            chaiExpect(queueItem.userPlaybackPosition).to.equal(123)
 
             done()
           })

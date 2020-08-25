@@ -13,20 +13,20 @@ describe('_category endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('2ELHNnfE9Y')
-          chaiExpect(res.body.fullPath).to.eql('Arts>Design')
-          chaiExpect(res.body.slug).to.eql('design')
-          chaiExpect(res.body.title).to.eql('Design')
-          chaiExpect(res.body.createdAt).to.eql('2020-04-03T06:49:43.343Z')
-          chaiExpect(res.body.updatedAt).to.eql('2020-04-03T06:49:43.343Z')
+          chaiExpect(res.body.fullPath).to.equal('Arts>Design')
+          chaiExpect(res.body.slug).to.equal('design')
+          chaiExpect(res.body.title).to.equal('Design')
+          chaiExpect(res.body.createdAt).to.equal('2020-04-03T06:49:43.343Z')
+          chaiExpect(res.body.updatedAt).to.equal('2020-04-03T06:49:43.343Z')
 
           const category = res.body.category
-          chaiExpect(category.id).to.eql('jeW7cF_Pv')
-          chaiExpect(category.fullPath).to.eql('Arts')
-          chaiExpect(category.slug).to.eql('arts')
-          chaiExpect(category.title).to.eql('Arts')
-          chaiExpect(category.createdAt).to.eql('2020-04-03T06:49:43.272Z')
-          chaiExpect(category.updatedAt).to.eql('2020-04-03T06:49:43.272Z')
-          chaiExpect(category.category).to.eql(null)
+          chaiExpect(category.id).to.equal('jeW7cF_Pv')
+          chaiExpect(category.fullPath).to.equal('Arts')
+          chaiExpect(category.slug).to.equal('arts')
+          chaiExpect(category.title).to.equal('Arts')
+          chaiExpect(category.createdAt).to.equal('2020-04-03T06:49:43.272Z')
+          chaiExpect(category.updatedAt).to.equal('2020-04-03T06:49:43.272Z')
+          chaiExpect(category.category).to.equal(null)
 
           chaiExpect(res.body.categories).to.eql([])
 
