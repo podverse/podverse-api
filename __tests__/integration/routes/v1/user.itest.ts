@@ -52,20 +52,19 @@ describe('_user endpoints', () => {
           })
       })
       
-      // test('when the user is logged in', async (done) => {
-      //   chai.request(global.app)
-      //     .patch(`${v1Path}/user`)
-      //     .set('Cookie', testUsers.premium.authCookie)
-      //     .send(sendBody)
-      //     .end((err, res) => {
-      //       chaiExpect(res).to.have.status(200)
+      test('when the user is logged in', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .send(sendBody)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
 
-      //       const body = res.body
-      //       // expects
+            chaiExpect(res.body).to.eql(sendBody)
 
-      //       done()
-      //     })
-      // })
+            done()
+          })
+      })
     })
 
     describe('update queue', () => {
@@ -119,4 +118,53 @@ describe('_user endpoints', () => {
           })
       })
     })
+
+    describe('toggle subscribe', () => {
+
+      test('when the user is not logged in', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/toggle-subscribe/:id`)
+          .send('EVHDBRZY')
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+
+            done()
+          })
+      })
+      
+      test('when the user is logged in: subscribe to user', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body).to.eql([
+              "bvVjsQCH",
+              "oAbPPRF9"
+            ])
+
+            done()
+          })
+      })
+
+      test('when the user is logged in: unsubscribe from user', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body).to.eql([
+              "bvVjsQCH",
+              "oAbPPRF9",
+              "EVHDBRZY"
+            ])
+
+            done()
+          })
+      })
+    })
+
+
 })
