@@ -1,11 +1,11 @@
-import * as request from 'request-promise-native'
 import { config } from '~/config'
+import { request } from '~/lib/request'
 import { cleanFileExtension, convertToSlug } from '~/lib/utility'
 import { s3 } from '~/services/aws'
 
 const sharp = require('sharp')
 
-const { awsConfig, shrunkImageSize, userAgent } = config
+const { awsConfig, shrunkImageSize } = config
 const { imageCloudFrontOrigin, imageS3BucketName } = awsConfig
 
 // This handles requesting the original image from the podcaster's server,
@@ -14,9 +14,6 @@ export const shrinkImage = async (podcast: any) => {
   try {
     const imgResponse = await request(podcast.imageUrl, {
       timeout: 5000,
-      headers: {
-        'User-Agent': userAgent
-      },
       encoding: null
     })
 
