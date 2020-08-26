@@ -71,4 +71,43 @@ describe('_episode endpoints', () => {
     })
   })
 
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/episode?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body[0][0].id).to.equal('tfAg_PJjx9')
+          chaiExpect(res.body[0][0].duration).to.equal(0)
+          chaiExpect(res.body[0][0].episodeType).to.equal('full')
+          chaiExpect(res.body[0][0].guid).to.equal('72718914-ff3f-11e8-a2df-3b7ce7823cac')
+          chaiExpect(res.body[0][0].imageUrl).to.equal(null)
+          chaiExpect(res.body[0][0].isExplicit).to.equal(false)
+          chaiExpect(res.body[0][0].isPublic).to.equal(true)
+          chaiExpect(res.body[0][0].linkUrl).to.equal(null)
+          chaiExpect(res.body[0][0].mediaFilesize).to.equal(0)
+          chaiExpect(res.body[0][0].mediaType).to.equal('audio/mpeg')
+          chaiExpect(res.body[0][0].mediaUrl).to.equal('https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP8741400441.mp3')
+          chaiExpect(res.body[0][0].pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(res.body[0][0].pastDayTotalUniquePageviews).to.equal(2)
+          chaiExpect(res.body[0][0].pastWeekTotalUniquePageviews).to.equal(7)
+          chaiExpect(res.body[0][0].pastMonthTotalUniquePageviews).to.equal(4)
+          chaiExpect(res.body[0][0].pastYearTotalUniquePageviews).to.equal(5)
+          chaiExpect(res.body[0][0].pastAllTimeTotalUniquePageviews).to.equal(6)
+          chaiExpect(res.body[0][0].pubDate).to.equal('2019-10-09T04:01:00.000Z')
+          chaiExpect(res.body[0][0].title).to.equal('\"Antisocial\" author Andrew Marantz on how the far right hijacked the internet')
+          chaiExpect(res.body[0][0]).to.have.property('description')
+
+          chaiExpect(res.body[0][1].id).to.equal('TKqJs3hoF7')
+
+          chaiExpect(res.body[0][2].id).to.equal('W7-RAalET')
+
+          chaiExpect(res.body[0][3].id).to.equal('CBfXbA5c0Y8')
+
+          done()
+        })
+    })
+  })
+
 })

@@ -33,4 +33,20 @@ describe('_author endpoints', () => {
     })
   })
 
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/author?page=1&sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          chaiExpect(res.body[0][0].id).to.equal('Rk1zs7vs')
+          chaiExpect(res.body[0][0].name).to.equal('Josh Zepps / Panoply')
+          chaiExpect(res.body[0][0].slug).to.equal('joshzeppspanoply')
+                
+          done()
+        })
+    })
+  })
+
 })
