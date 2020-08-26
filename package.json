@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.8.2",
+  "version": "2.8.3",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -44,7 +44,10 @@
     "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
-    "test:integration": "jest --config='jest.integration.config.js' --detectOpenHandles --forceExit",
+    "test:integration": "./scripts/runIntegrationTests.sh",
+    "test:integration:single": "./scripts/runIntegrationTestSingle.sh",
+    "test:w:integration": "./scripts/runWIntegrationTests.sh",
+    "test:w:integration:single": "./scripts/runWIntegrationTestSingle.sh",
     "test:unit": "jest",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },

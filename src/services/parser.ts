@@ -1,26 +1,21 @@
 import * as parsePodcast from 'node-podcast-parser'
-import * as request from 'request-promise-native'
 import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
+import { request } from '~/lib/request'
 import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 
-const { awsConfig, userAgent } = config
+const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
   logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
-  const response = await request(feedUrl.url, {
-    timeout: 10000,
-    headers: {
-      'User-Agent': userAgent
-    }
-  })
+  const response = await request(feedUrl.url)
   logPerformance('request feedUrl.url', _logEnd, 'feedUrl.url ' + feedUrl.url)
 
   return new Promise(async (resolve, reject) => {

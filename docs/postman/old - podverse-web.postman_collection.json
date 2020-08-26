@@ -1,0 +1,668 @@
+{
+	"info": {
+		"_postman_id": "1fe4e149-65ac-57af-2444-121c16ea8214",
+		"name": "old - podverse-web",
+		"description": "https://github.com/podverse/podverse-web",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth - Create Anon Credentials",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clip - Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTdhNmJjMzE4YmNlNzU0YTUyMDY5ZjhlIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJleHAiOjE0NzEzOTA3NTAsImlhdCI6MTQ3MDc4NTk1MH0.i4hrsE7CPwWIZaJ1RPRKoV9WAeYoZtatf-M4q2g9kro"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"jerry\",\n    \"startTime\": 3,\n    \"endTime\": 10,\n    \n    \"episode\": {\n        \"title\": \"testEpisodeTitle22\",\n        \"mediaURL\": \"http://something.com/1.mp3\",\n        \"podcast\": {\n          \"title\": \"testPodcastTitle234\",\n          \"feedURL\": \"http://something.com/rss\"\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/clips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"clips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clip - Find All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/clips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"clips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clip - Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoibG9jYWxob3N0QGV4YW1wbGUuY29tIiwiZW1haWwiOiJsb2NhbGhvc3RAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6IkxvY2FsaG9zdCJ9LCJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWI1NTA2YTM5N2FmNjUyYjE5ZjkzMTBmIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJpYXQiOjE1MzIzMDAzMzAsImV4cCI6MTU0MjMwMDMyOX0.rrkwbUqphzWwZfipjPizSVJldzuzDRpp1UUrWA9jqYE"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": null,\n  \"startTime\": null,\n  \"endTime\": 1234\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/clips/TDIbQe1D-",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"clips",
+						"TDIbQe1D-"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clip - Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoibG9jYWxob3N0QGV4YW1wbGUuY29tIiwiZW1haWwiOiJsb2NhbGhvc3RAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6IkxvY2FsaG9zdCJ9LCJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWI1NTA2YTM5N2FmNjUyYjE5ZjkzMTBmIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJpYXQiOjE1MzIzMDQ2NzIsImV4cCI6MTU0MjMwNDY3MX0.KX2-9zLHQGqcFnsWwyT_D_nigKKj4MRIs6bIFKndL5s"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/clips/TDIbQe1D-",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"clips",
+						"TDIbQe1D-"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clips - From Episode",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"podcastFeedURL\": \"https://feeds.feedburner.com/DuncanTrussell\",\n\t\"episodeMediaURL\": \"https://rss.cast.plus/5818eaa0de6c9291483a45ab/59050f478aca2505f571766e/2880b1e5-1cdf-4d88-aa20-b518c47349e7.mp3\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/clips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"clips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clips - From Podcast",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"podcastFeedURL\": \"http://feeds.feedburner.com/DuncanTrussell\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/clips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"clips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Episode - Find by mediaUrl",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://podverse.fm/episodes?mediaUrl=https://dts.podtrac.com/redirect.mp3/omnystudio.com/d/clips/a7b0bd27-d748-4fbe-ab3b-a6fa0049bcf6/d4c191eb-c77f-4339-82cb-a70000095f15/46f8c90a-eeea-483c-acc5-a938016be078/audio.mp3?utm_source=Podcast&in_playlist=64a114c3-0c56-49e8-b89f-a70000095f15",
+					"protocol": "https",
+					"host": [
+						"podverse",
+						"fm"
+					],
+					"path": [
+						"episodes"
+					],
+					"query": [
+						{
+							"key": "mediaUrl",
+							"value": "https://dts.podtrac.com/redirect.mp3/omnystudio.com/d/clips/a7b0bd27-d748-4fbe-ab3b-a6fa0049bcf6/d4c191eb-c77f-4339-82cb-a70000095f15/46f8c90a-eeea-483c-acc5-a938016be078/audio.mp3?utm_source=Podcast"
+						},
+						{
+							"key": "in_playlist",
+							"value": "64a114c3-0c56-49e8-b89f-a70000095f15"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Episode - Get by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/episodes/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"episodes",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Feedparser - Parse Podcast",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rssURL\": \"http://www.npr.org/rss/podcast.php?id=510208\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/parse",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"parse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist - Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Intriguing Playlist Title\",\n    \"ownerId\": \"gonzo@podverse.fm\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/playlists/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"playlists",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist - Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoibG9jYWxob3N0QGV4YW1wbGUuY29tIiwiZW1haWwiOiJsb2NhbGhvc3RAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6IkxvY2FsaG9zdCJ9LCJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWI1NTA2YTM5N2FmNjUyYjE5ZjkzMTBmIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJpYXQiOjE1MzMwODU4MzksImV4cCI6MTU0MzA4NTgzOH0.nUjoilGs-5fzt8m7A_91exQECoKuMOe_cZTUOSthA14"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/playlists/LGebCSbQQ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"playlists",
+						"LGebCSbQQ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist - Find All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/playlists?ownerId=auth0%7c57a6bc318bce754a52069f8e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"playlists"
+					],
+					"query": [
+						{
+							"key": "ownerId",
+							"value": "auth0%7c57a6bc318bce754a52069f8e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist - Get by ID or Slug",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/playlists/8d6a6c10-624b-11e6-950f-a968e16ab604",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"playlists",
+						"8d6a6c10-624b-11e6-950f-a968e16ab604"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist - Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoibG9jYWxob3N0QGV4YW1wbGUuY29tIiwiZW1haWwiOiJsb2NhbGhvc3RAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6IkxvY2FsaG9zdCJ9LCJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWI1NTA2YTM5N2FmNjUyYjE5ZjkzMTBmIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJpYXQiOjE1MzMwODU4MzksImV4cCI6MTU0MzA4NTgzOH0.nUjoilGs-5fzt8m7A_91exQECoKuMOe_cZTUOSthA14"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"asdf\",\n    \"slug\": \"peace\",\n    \"title\": \"helloooo\",\n    \"itemsOrder\": [\"5\", \"3\", \"4\", \"2\", \"1000\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/playlists/65a9dcc0-6759-11e6-9ee1-97d38d370bbe",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"playlists",
+						"65a9dcc0-6759-11e6-9ee1-97d38d370bbe"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist API - Playlist by ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"HJxvMFPYRg\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/playlist",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"playlist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Playlist API - Retrieve User's Playlists",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoibG9jYWxob3N0QGV4YW1wbGUuY29tIiwiZW1haWwiOiJsb2NhbGhvc3RAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6IkxvY2FsaG9zdCJ9LCJpc3MiOiJodHRwczovL21pdGNoZC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWI1NTA2YTM5N2FmNjUyYjE5ZjkzMTBmIiwiYXVkIjoidFRHUXJsNUNlbk1EZHB6Y0tOcG1MSWdpbnlSZ0JKTk4iLCJpYXQiOjE1MzMwODU4MzksImV4cCI6MTU0MzA4NTgzOH0.nUjoilGs-5fzt8m7A_91exQECoKuMOe_cZTUOSthA14"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/user/playlists",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"user",
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Podcast - Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"feedURL\": \"http://example.org\",\n    \"title\": \"Amazing podcast title\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/podcasts/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"podcasts",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Podcast - Find All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/podcasts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"podcasts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API - Clips - Get by ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"rJTWuLd7X\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/clips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"clips"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API - Episode - Get by ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"HyzS-XNOQQ\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/episodes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"episodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API - Episode - Get ID by mediaUrl",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"mediaUrl\": \"https://dts.podtrac.com/redirect.mp3/omnystudio.com/d/clips/a7b0bd27-d748-4fbe-ab3b-a6fa0049bcf6/d4c191eb-c77f-4339-82cb-a70000095f15/46f8c90a-eeea-483c-acc5-a938016be078/audio.mp3?utm_source=Podcast&in_playlist=64a114c3-0c56-49e8-b89f-a70000095f15\"\n}"
+				},
+				"url": {
+					"raw": "https://podverse.fm/api/episodes/id",
+					"protocol": "https",
+					"host": [
+						"podverse",
+						"fm"
+					],
+					"path": [
+						"api",
+						"episodes",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API - User - Retrieve User and Subscribed Podcasts",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3BvZHZlcnNlLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw1ODRmODAwODkwMTQ0NzIxMDA3ZmRkYTciLCJhdWQiOiI3UTBjYnAxQmpYZ0czd1J0bzIxU0hlTkNob0RZNXUyYyIsImlhdCI6MTUxOTg0NzYyMSwiZXhwIjoxNTUxMzg3NjIxfQ.KXcWktJyj-mZGimyNWUeNuM8EkjPqrga4ZZ6GUC6k90"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://podverse.fm/api/user/podcasts",
+					"protocol": "https",
+					"host": [
+						"podverse",
+						"fm"
+					],
+					"path": [
+						"api",
+						"user",
+						"podcasts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API - Podcast - Get by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://podverse.fm/api/podcasts?id=S1gxSQEuif",
+					"protocol": "http",
+					"host": [
+						"podverse",
+						"fm"
+					],
+					"path": [
+						"api",
+						"podcasts"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "S1gxSQEuif"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
