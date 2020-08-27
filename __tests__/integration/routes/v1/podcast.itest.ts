@@ -82,4 +82,35 @@ describe('_podcast endpoints', () => {
     })
   })
 
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/podcast?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body[0][0].id).to.equal('kS9ZnQNWlQc')
+          chaiExpect(res.body[0][0].feedLastUpdated).to.equal('2019-10-25T00:10:53.000Z')
+          chaiExpect(res.body[0][0].hideDynamicAdsWarning).to.equal(false)
+          chaiExpect(res.body[0][0].imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/JbhIM2rFLFw/dancarlinshardcorehistory.jpg')
+          chaiExpect(res.body[0][0].isExplicit).to.equal(false)
+          chaiExpect(res.body[0][0].lastEpisodePubDate).to.equal('2019-10-25T00:10:53.000Z')
+          chaiExpect(res.body[0][0].lastEpisodeTitle).to.equal('Show 64 - Supernova in the East III')
+          chaiExpect(res.body[0][0].linkUrl).to.equal('http://www.dancarlin.com')
+          chaiExpect(res.body[0][0].pastAllTimeTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastHourTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastDayTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastWeekTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastYearTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].shrunkImageUrl).to.equal(null)
+          chaiExpect(res.body[0][0].sortableTitle).to.equal('dan carlin\'s hardcore history')
+          chaiExpect(res.body[0][0].title).to.equal('Dan Carlin\'s Hardcore History')
+          chaiExpect(res.body[0][0].createdAt).to.equal('2020-03-02T21:17:09.854Z')
+
+          done()
+        })
+    })
+  })
+
 })

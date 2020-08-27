@@ -125,4 +125,34 @@ describe('_mediaRef endpoints', () => {
     })
   })
 
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/mediaRef?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body[0][0].id).to.equal('9rA5BhWp')
+          chaiExpect(res.body[0][0].endTime).to.equal(1680)
+          chaiExpect(res.body[0][0].isPublic).to.equal(true)
+          chaiExpect(res.body[0][0].pastHourTotalUniquePageviews).to.equal(7)
+          chaiExpect(res.body[0][0].pastDayTotalUniquePageviews).to.equal(8)
+          chaiExpect(res.body[0][0].pastWeekTotalUniquePageviews).to.equal(9)
+          chaiExpect(res.body[0][0].pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body[0][0].pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(res.body[0][0].pastAllTimeTotalUniquePageviews).to.equal(2)
+          chaiExpect(res.body[0][0].startTime).to.equal(1500)
+          chaiExpect(res.body[0][0].title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
+          chaiExpect(res.body[0][0].createdAt).to.equal('2020-03-02T22:37:36.073Z')
+          chaiExpect(res.body[0][0].updatedAt).to.equal('2020-03-02T22:58:19.378Z')
+          
+          chaiExpect(res.body[0][0].owner.id).to.equal('QMReJmbE')
+          chaiExpect(res.body[0][0].owner.isPublic).to.equal(true)
+          chaiExpect(res.body[0][0].owner.name).to.equal('Premium Valid - Test User')
+
+          done()
+        })
+    })
+  })
+
 })
