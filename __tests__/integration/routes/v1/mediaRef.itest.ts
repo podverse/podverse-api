@@ -72,7 +72,7 @@ describe('_mediaRef endpoints', () => {
         })
     })
   })
-  describe('mediaRef create', () => {
+  describe('mediaRef create and delete', () => {
     const sendBody = {
       "authors": [],
       "categories": [],
@@ -92,6 +92,7 @@ describe('_mediaRef endpoints', () => {
 
           done()
         })
+        
     })
 
     test('when the user is logged in', async (done) => {
@@ -149,6 +150,31 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(res.body[0][0].owner.id).to.equal('QMReJmbE')
           chaiExpect(res.body[0][0].owner.isPublic).to.equal(true)
           chaiExpect(res.body[0][0].owner.name).to.equal('Premium Valid - Test User')
+
+          done()
+        })
+    })
+  })
+
+  describe('MediaRef Update', () => {
+    test('update', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/mediaRef`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send({
+          "authors": [],
+          "categories": [],
+          "endTime": 100,
+          "episodeId": "gRgjd3YcKb",
+          "id": "o0WTxqON",
+          "isPublic": "true",
+          "startTime": 50,
+          "title": "New sample clip title"
+        })
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401);
+          
+          chaiExpect(res.body.message).to.equal('Log in to edit this media ref')
 
           done()
         })

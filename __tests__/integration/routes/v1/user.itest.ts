@@ -15,8 +15,7 @@ describe('_user endpoints', () => {
             chaiExpect(res.body.id).to.equal('EVHDBRZY')
             chaiExpect(res.body.isPublic).to.equal(true)
             chaiExpect(res.body.name).to.equal('Free Trial Valid - Test User')
-  
-            //subscribedPodcastId
+
             done()
           })
       })
@@ -245,7 +244,7 @@ describe('_user endpoints', () => {
       })
     })
 
-    describe('logged-in user: get mediaRefs', () => {
+    describe('logged-in user: get user mediaRefs', () => {
 
       test('Logged in', async (done) => {
         chai.request(global.app)
@@ -323,7 +322,7 @@ describe('_user endpoints', () => {
             done()
           })
       })
-        test('Logged in', async (done) => {
+        test('Not logged in', async (done) => {
           chai.request(global.app)
             .get(`${v1Path}/user/mediaRefs`)
             .end((err, res) => {
@@ -333,5 +332,105 @@ describe('_user endpoints', () => {
             })
         })
     })
+
+    describe('logged-in user: get user playlists', () => {
+
+      test('Logged in', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/playlists`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body[0][0].id).to.equal('-67KgiG1')
+            chaiExpect(res.body[0][0]).to.have.property('description')
+            chaiExpect(res.body[0][0].isPublic).to.equal(false)
+            chaiExpect(res.body[0][0].itemCount).to.equal(6)
+            chaiExpect(res.body[0][0].itemsOrder).to.eql([])
+            chaiExpect(res.body[0][0].title).to.equal('Premium - Test Playlist 1')
+            chaiExpect(res.body[0][0].createdAt).to.equal('2020-03-02T22:38:16.464Z')
+            chaiExpect(res.body[0][0].updatedAt).to.equal('2020-05-26T01:21:42.163Z')
+
+            chaiExpect(res.body[0][0].owner.id).to.equal('QMReJmbE')
+            chaiExpect(res.body[0][0].owner.isPublic).to.equal(false)
+            chaiExpect(res.body[0][0].owner.name).to.equal('Kyle')
+
+            chaiExpect(res.body[0][1].id).to.equal('CH_2-LlM')
+            chaiExpect(res.body[0][1]).to.have.property('description')
+            chaiExpect(res.body[0][1].isPublic).to.equal(false)
+            chaiExpect(res.body[0][1].itemCount).to.equal(2)
+            chaiExpect(res.body[0][1].itemsOrder).to.eql([])
+            chaiExpect(res.body[0][1].title).to.equal('Premium - Test Playlist 2')
+            chaiExpect(res.body[0][1].createdAt).to.equal('2020-03-02T22:38:21.768Z')
+            chaiExpect(res.body[0][1].updatedAt).to.equal('2020-05-26T01:22:00.712Z')
+
+            chaiExpect(res.body[0][1].owner.id).to.equal('QMReJmbE')
+            chaiExpect(res.body[0][1].owner.isPublic).to.equal(false)
+            chaiExpect(res.body[0][1].owner.name).to.equal('Kyle')
+            
+
+            done()
+          })
+      })
+        test('Not logged in', async (done) => {
+          chai.request(global.app)
+            .get(`${v1Path}/user/playlists`)
+            .end((err, res) => {
+              chaiExpect(res).to.have.status(401)
+
+              done()
+            })
+        })
+    })
+
+    describe('Download user data', () => {
+      test('Logged in', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/download`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+
+            chaiExpect(res).to.have.status(200);
+           
+            done()
+          })
+      })
+
+      test('Not logged in', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/download`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401);
+
+            done()
+          })
+      })
+    })
+
+    describe('Find public users by query', () => {
+      test('find 3 users', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user?userIds=bvVjsQCH,oAbPPRF9,EVHDBRZY`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+
+            chaiExpect(res).to.have.status(200);
+
+            chaiExpect(res.body[0][0].id).to.equal('bvVjsQCH')
+            chaiExpect(res.body[0][0].name).to.equal('Free Trial Expired - Test User')
+
+            chaiExpect(res.body[0][1].id).to.equal('EVHDBRZY')
+            chaiExpect(res.body[0][1].name).to.equal('Free Trial Valid - Test User')
+
+            chaiExpect(res.body[0][2].id).to.equal('oAbPPRF9')
+            chaiExpect(res.body[0][2].name).to.equal('Premium Expired - Test User')
+
+           
+            done()
+          })
+      })
+    })
+
+    
 
 })
