@@ -83,7 +83,9 @@ describe('_mediaRef endpoints', () => {
       "title": "Sample clip title"
     }
 
-    test('when the user is not logged in', async (done) => {
+    let newMediaRefId = '' 
+
+    test('Create: when the user is not logged in', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/mediaRef`)
         .send(sendBody)
@@ -95,13 +97,15 @@ describe('_mediaRef endpoints', () => {
         
     })
 
-    test('when the user is logged in', async (done) => {
+    test('Create: when the user is logged in', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/mediaRef`)
         .set('Cookie', testUsers.premium.authCookie)
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
+
+          newMediaRefId = res.body.id
 
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
@@ -124,6 +128,27 @@ describe('_mediaRef endpoints', () => {
           done()
         })
     })
+
+    test('Delete: when the user is not logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          done()
+        })
+    })
+
+    test('Delete: when the user is logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          done()
+        })
+    })
   })
 
   describe('find by query', () => {
@@ -132,24 +157,27 @@ describe('_mediaRef endpoints', () => {
         .get(`${v1Path}/mediaRef?sort=top-past-week`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
+
+          const mediaRefs = res.body[0]
+          const mediaRef = mediaRefs[0]
           
-          chaiExpect(res.body[0][0].id).to.equal('9rA5BhWp')
-          chaiExpect(res.body[0][0].endTime).to.equal(1680)
-          chaiExpect(res.body[0][0].isPublic).to.equal(true)
-          chaiExpect(res.body[0][0].pastHourTotalUniquePageviews).to.equal(7)
-          chaiExpect(res.body[0][0].pastDayTotalUniquePageviews).to.equal(8)
-          chaiExpect(res.body[0][0].pastWeekTotalUniquePageviews).to.equal(9)
-          chaiExpect(res.body[0][0].pastMonthTotalUniquePageviews).to.equal(0)
-          chaiExpect(res.body[0][0].pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body[0][0].pastAllTimeTotalUniquePageviews).to.equal(2)
-          chaiExpect(res.body[0][0].startTime).to.equal(1500)
-          chaiExpect(res.body[0][0].title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
-          chaiExpect(res.body[0][0].createdAt).to.equal('2020-03-02T22:37:36.073Z')
-          chaiExpect(res.body[0][0].updatedAt).to.equal('2020-03-02T22:58:19.378Z')
+          chaiExpect(mediaRef.id).to.equal('9rA5BhWp')
+          chaiExpect(mediaRef.endTime).to.equal(1680)
+          chaiExpect(mediaRef.isPublic).to.equal(true)
+          chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(7)
+          chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(8)
+          chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(9)
+          chaiExpect(mediaRef.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(mediaRef.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(2)
+          chaiExpect(mediaRef.startTime).to.equal(1500)
+          chaiExpect(mediaRef.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
+          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:37:36.073Z')
+          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T22:58:19.378Z')
           
-          chaiExpect(res.body[0][0].owner.id).to.equal('QMReJmbE')
-          chaiExpect(res.body[0][0].owner.isPublic).to.equal(true)
-          chaiExpect(res.body[0][0].owner.name).to.equal('Premium Valid - Test User')
+          chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
+          chaiExpect(mediaRef.owner.isPublic).to.equal(true)
+          chaiExpect(mediaRef.owner.name).to.equal('Premium Valid - Test User')
 
           done()
         })
