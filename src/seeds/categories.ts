@@ -34,7 +34,9 @@ const generateCategories = async (
     const existingCategoryAndCount = await getCategories({ title })
     const existingCategory = existingCategoryAndCount[0]
 
-    if (existingCategory[0]) { continue }
+    if (existingCategory[0]) {
+      newCategory.id = existingCategory[0].id
+    }
 
     await connection.manager.save(newCategory)
   }
