@@ -18,7 +18,7 @@ jobs:
         repository: podverse/podverse_api
         tags: stage
         
-    - name: log into stage, deploy latest stage image
+    - name: log into stage, deploy latest stage image, then run integration tests
       uses: garygrossgarten/github-action-ssh@release
       with:
         command: |
