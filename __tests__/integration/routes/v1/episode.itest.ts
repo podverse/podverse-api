@@ -34,8 +34,8 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.pubDate).to.equal('2019-01-01T23:54:08.000Z')
           chaiExpect(res.body.title).to.equal('335- Gathering the Magic')
           chaiExpect(res.body.podcastId).to.equal('0RMk6UYGq')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T21:17:46.840Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-04-03T06:53:12.123Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
 
@@ -51,8 +51,8 @@ describe('_episode endpoints', () => {
           chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(0)
           chaiExpect(mediaRef.startTime).to.equal(480)
           chaiExpect(mediaRef.title).to.equal('Consectetur lorem donec massa sapien faucibus et molestie ac. Purus semper eget duis at tellus.')
-          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:13:33.820Z')
-          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T22:13:33.820Z')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
           
           
 
@@ -98,15 +98,19 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(4)
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
-          chaiExpect(episode.pubDate).to.equal('2019-10-09T04:01:00.000Z')
+          chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('\"Antisocial\" author Andrew Marantz on how the far right hijacked the internet')
           chaiExpect(episode).to.have.property('description')
 
-          chaiExpect(episodes[1].id).to.equal('TKqJs3hoF7')
+          const episode0 = episodes[1]
+          const episode1 = episodes[2]
+          const episode2 = episodes[3]
 
-          chaiExpect(episodes[2].id).to.equal('W7-RAalET')
+          chaiExpect(episode0.id).to.equal('TKqJs3hoF7')
 
-          chaiExpect(episodes[3].id).to.equal('CBfXbA5c0Y8')
+          chaiExpect(episode1.id).to.equal('W7-RAalET')
+
+          chaiExpect(episode2.id).to.equal('CBfXbA5c0Y8')
 
           done()
         })

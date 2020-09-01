@@ -15,8 +15,8 @@ describe('_author endpoints', () => {
           chaiExpect(res.body.id).to.equal('Rk1zs7vs')
           chaiExpect(res.body.name).to.equal('Josh Zepps / Panoply')
           chaiExpect(res.body.slug).to.equal('joshzeppspanoply')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T21:17:06.822Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-03-02T21:17:06.822Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
                 
           done()
         })
