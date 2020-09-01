@@ -40,9 +40,12 @@ describe('_author endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
 
-          chaiExpect(res.body[0][0].id).to.equal('Rk1zs7vs')
-          chaiExpect(res.body[0][0].name).to.equal('Josh Zepps / Panoply')
-          chaiExpect(res.body[0][0].slug).to.equal('joshzeppspanoply')
+          const authors = res.body[0]
+          const author = authors[0]
+
+          chaiExpect(author.id).to.equal('Rk1zs7vs')
+          chaiExpect(author.name).to.equal('Josh Zepps / Panoply')
+          chaiExpect(author.slug).to.equal('joshzeppspanoply')
                 
           done()
         })
