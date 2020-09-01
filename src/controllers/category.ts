@@ -55,7 +55,7 @@ const getCategories = async query => {
     )
   } else if (title) {
     qb.where(
-      'category.title = :title',
+      'category.title ILIKE :title',
       { title }
     )
   } else if (topLevelCategories) {
