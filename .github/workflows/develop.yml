@@ -19,9 +19,13 @@ jobs:
     #     tags: stage
         
     - name: log into stage, deploy latest stage image, then run integration tests
-      uses: garygrossgarten/github-action-ssh@release
+      uses: appleboy/ssh-action@master
       with:
-        command: |
+        host: ${{ secrets.STAGE_SSH_HOST }}
+        username: ${{ secrets.STAGE_SSH_USERNAME }}
+        password: ${{ secrets.STAGE_SSH_PASSPHRASE }}
+        key_path: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
+        script: |
           # docker stop podverse_api_stage
           # docker rm podverse_api_stage
           # docker image rm podverse/podverse_api:stage
@@ -31,10 +35,6 @@ jobs:
           git pull
           # npm install
           npm run test:integration
-        host: ${{ secrets.STAGE_SSH_HOST }}
-        username: ${{ secrets.STAGE_SSH_USERNAME }}
-        passphrase: ${{ secrets.STAGE_SSH_PASSPHRASE }}
-        privateKey: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
 
     # - name: Slack Notification
     #   uses: rtCamp/action-slack-notify@v2.0.0
