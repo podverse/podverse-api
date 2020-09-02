@@ -59,6 +59,8 @@ describe('playlist endpoints', () => {
     })
   })
 
+  let newPlaylistId = ''
+
   describe('playlist create', () => {
     const sendBody = {
       "description": "Test description",
@@ -87,6 +89,8 @@ describe('playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
 
+          newPlaylistId = res.body.id
+
           chaiExpect(res.body.description).to.equal('Test description')
           chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.itemsOrder).to.eql([])
@@ -104,16 +108,18 @@ describe('playlist endpoints', () => {
   })
 
   describe('playlist update', () => {
+
     const sendBody = {
-      "id": "CH_2-LlM",
       "description": "New test description",
-      "isPublic": true,
+      "isPublic": false,
       "itemsOrder": [],
       "mediaRefs": [],
       "title": "Premium - Test Playlist 2345"
-    }
+    } as any
 
     test('when the user is not logged in', async (done) => {
+      sendBody.id = newPlaylistId
+
       chai.request(global.app)
         .patch(`${v1Path}/playlist`)
         .send(sendBody)
@@ -125,6 +131,8 @@ describe('playlist endpoints', () => {
     })
 
     test('when the user is logged in', async (done) => {
+      sendBody.id = newPlaylistId
+
       chai.request(global.app)
         .patch(`${v1Path}/playlist`)
         .set('Cookie', testUsers.premium.authCookie)
@@ -132,9 +140,9 @@ describe('playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
 
-          chaiExpect(res.body.id).to.equal('CH_2-LlM')
+          chaiExpect(res.body.id).to.equal(newPlaylistId)
           chaiExpect(res.body.description).to.equal('New test description')
-          chaiExpect(res.body.isPublic).to.equal(true)
+          chaiExpect(res.body.isPublic).to.equal(false)
           chaiExpect(res.body.itemCount).to.equal(0)
           chaiExpect(res.body.itemsOrder).to.eql([])
           chaiExpect(res.body.title).to.equal('Premium - Test Playlist 2345')
