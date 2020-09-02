@@ -36,7 +36,7 @@ jobs:
           sleep 120
           cd podverse-api
           git pull
-          # npm install
+          npm install
           npm run test:integration
 
     - name: Slack Notification
