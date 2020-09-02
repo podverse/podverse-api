@@ -91,11 +91,11 @@ describe('_podcast endpoints', () => {
           const podcast = podcasts[0]
           
           chaiExpect(podcast.id).to.equal('kS9ZnQNWlQc')
-          chaiExpect(podcast.feedLastUpdated).to.equal('2019-10-25T00:10:53.000Z')
+          chaiExpect(podcast).to.have.property('feedLastUpdated')
           chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/JbhIM2rFLFw/dancarlinshardcorehistory.jpg')
           chaiExpect(podcast.isExplicit).to.equal(false)
-          chaiExpect(podcast.lastEpisodePubDate).to.equal('2019-10-25T00:10:53.000Z')
+          chaiExpect(podcast).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast.lastEpisodeTitle).to.equal('Show 64 - Supernova in the East III')
           chaiExpect(podcast.linkUrl).to.equal('http://www.dancarlin.com')
           chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
@@ -107,7 +107,7 @@ describe('_podcast endpoints', () => {
           chaiExpect(podcast.shrunkImageUrl).to.equal(null)
           chaiExpect(podcast.sortableTitle).to.equal('dan carlin\'s hardcore history')
           chaiExpect(podcast.title).to.equal('Dan Carlin\'s Hardcore History')
-          chaiExpect(podcast.createdAt).to.equal('2020-03-02T21:17:09.854Z')
+          chaiExpect(podcast).to.have.property('createdAt')
 
           done()
         })
