@@ -20,9 +20,6 @@ jobs:
         
     - name: log into stage, deploy latest stage image, then run integration tests
       uses: garygrossgarten/github-action-ssh@release
-      env:
-        WTF: ${{ secrets.WTF }}
-        PGPASSWORD: ${{ secrets.STAGE_DB_PASSWORD }}
       with:
         host: ${{ secrets.STAGE_SSH_HOST }}
         username: ${{ secrets.STAGE_SSH_USERNAME }}
@@ -31,6 +28,7 @@ jobs:
         command: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
+          source ~/pgpassword.sh
           nvm use 12.18.3
           # docker stop podverse_api_stage
           # docker rm podverse_api_stage
