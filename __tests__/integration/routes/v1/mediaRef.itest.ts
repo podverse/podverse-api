@@ -23,8 +23,8 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(2)
           chaiExpect(res.body.startTime).to.equal(1500)
           chaiExpect(res.body.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T22:37:36.073Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-03-02T22:58:19.378Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
           
@@ -48,14 +48,11 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(4)
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
-          chaiExpect(episode.pubDate).to.equal('2020-03-02T05:01:00.000Z')
+          chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('Jason Calacanis: TikTok should be banned, Tim Cook doesn\'t have enough \"chutzpah,\" and Uber will be fine')
           chaiExpect(episode.podcastId).to.equal('zRo1jwx67')
-          chaiExpect(episode.createdAt).to.equal('2020-03-02T21:17:39.462Z')
-          chaiExpect(episode.updatedAt).to.equal('2020-04-03T06:52:52.361Z')
-
-          
-          
+          chaiExpect(episode).to.have.property('createdAt')
+          chaiExpect(episode).to.have.property('updatedAt')
 
           done()
         })
@@ -172,8 +169,8 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(2)
           chaiExpect(mediaRef.startTime).to.equal(1500)
           chaiExpect(mediaRef.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
-          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:37:36.073Z')
-          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T22:58:19.378Z')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
           
           chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
           chaiExpect(mediaRef.owner.isPublic).to.equal(true)

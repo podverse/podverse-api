@@ -7,32 +7,88 @@ chai.use(chaiHttp)
 describe('_category endpoints', () => {
 
   describe('get by id', () => {
-    test('when a valid id is provided', async (done) => {
+    test('when a valid parent category id is provided', async (done) => {
       chai.request(global.app)
-        .get(`${v1Path}/category/2ELHNnfE9Y`)
+        .get(`${v1Path}/category/oqttP672MM`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
-          chaiExpect(res.body.id).to.equal('2ELHNnfE9Y')
-          chaiExpect(res.body.fullPath).to.equal('Arts>Design')
-          chaiExpect(res.body.slug).to.equal('design')
-          chaiExpect(res.body.title).to.equal('Design')
-          chaiExpect(res.body.createdAt).to.equal('2020-04-03T06:49:43.343Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-04-03T06:49:43.343Z')
+          chaiExpect(res.body.id).to.equal('oqttP672MM')
+          chaiExpect(res.body.fullPath).to.equal('Health & Fitness')
+          chaiExpect(res.body.slug).to.equal('healthfitness')
+          chaiExpect(res.body.title).to.equal('Health & Fitness')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
+          chaiExpect(res.body.category).to.equal(null)
+
+          const category0 = res.body.categories[0]
+          const category1 = res.body.categories[1]
+          const category2 = res.body.categories[2]
+          const category3 = res.body.categories[3]
+          const category4 = res.body.categories[4]
+
+          chaiExpect(category0.id).to.equal('nzFoXinvP3')
+          chaiExpect(category0.fullPath).to.equal('Health & Fitness>Mental Health')
+          chaiExpect(category0.slug).to.equal('mentalhealth')
+          chaiExpect(category0.title).to.equal('Mental Health')
+          chaiExpect(category0).to.have.property('createdAt')
+          chaiExpect(category0).to.have.property('updatedAt')
+
+          chaiExpect(category1.id).to.equal('HOg7j7SXhk')
+          chaiExpect(category1.fullPath).to.equal('Health & Fitness>Alternative Health')
+          chaiExpect(category1.slug).to.equal('alternativehealth')
+          chaiExpect(category1.title).to.equal('Alternative Health')
+          chaiExpect(category1).to.have.property('createdAt')
+          chaiExpect(category1).to.have.property('updatedAt')
+
+          chaiExpect(category2.id).to.equal('6jKTcMdGMP')
+          chaiExpect(category2.fullPath).to.equal('Health & Fitness>Fitness')
+          chaiExpect(category2.slug).to.equal('fitness')
+          chaiExpect(category2.title).to.equal('Fitness')
+          chaiExpect(category2).to.have.property('createdAt')
+          chaiExpect(category2).to.have.property('updatedAt')
+
+          chaiExpect(category3.id).to.equal('P22Q8lwUOe')
+          chaiExpect(category3.fullPath).to.equal('Health & Fitness>Medicine')
+          chaiExpect(category3.slug).to.equal('medicine')
+          chaiExpect(category3.title).to.equal('Medicine')
+          chaiExpect(category3).to.have.property('createdAt')
+          chaiExpect(category3).to.have.property('updatedAt')
+
+          chaiExpect(category4.id).to.equal('jvtAuDcnCv')
+          chaiExpect(category4.fullPath).to.equal('Health & Fitness>Nutrition')
+          chaiExpect(category4.slug).to.equal('nutrition')
+          chaiExpect(category4.title).to.equal('Nutrition')
+          chaiExpect(category4).to.have.property('createdAt')
+          chaiExpect(category4).to.have.property('updatedAt')
+
+
+          done()
+        })
+
+    })
+
+    test('when a valid child category id is provided', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/category/HOg7j7SXhk`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          chaiExpect(res.body.id).to.equal('HOg7j7SXhk')
+          chaiExpect(res.body.fullPath).to.equal('Health & Fitness>Alternative Health')
+          chaiExpect(res.body.slug).to.equal('alternativehealth')
+          chaiExpect(res.body.title).to.equal('Alternative Health')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
 
           const category = res.body.category
-          chaiExpect(category.id).to.equal('jeW7cF_Pv')
-          chaiExpect(category.fullPath).to.equal('Arts')
-          chaiExpect(category.slug).to.equal('arts')
-          chaiExpect(category.title).to.equal('Arts')
-          chaiExpect(category.createdAt).to.equal('2020-04-03T06:49:43.272Z')
-          chaiExpect(category.updatedAt).to.equal('2020-04-03T06:49:43.272Z')
+          chaiExpect(category.id).to.equal('oqttP672MM')
+          chaiExpect(category.fullPath).to.equal('Health & Fitness')
+          chaiExpect(category.slug).to.equal('healthfitness')
+          chaiExpect(category.title).to.equal('Health & Fitness')
+          chaiExpect(category).to.have.property('createdAt')
+          chaiExpect(category).to.have.property('updatedAt')
           chaiExpect(category.category).to.equal(null)
 
           chaiExpect(res.body.categories).to.eql([])
-
-          //categories
-          
-          
 
           done()
         })
@@ -57,50 +113,20 @@ describe('_category endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
 
-          const categories = res.body[0]
-          const category = categories[0]
+          const category = res.body[0][0]
           
-          chaiExpect(category.id).to.equal('5vNa3RnSZpC')
-          chaiExpect(category.slug).to.equal('alternativehealth')
-          chaiExpect(category.title).to.equal('Alternative Health')
+          chaiExpect(category.id).to.equal('H3kmMlJAPE')
+          chaiExpect(category.slug).to.equal('aftershows')
+          chaiExpect(category.title).to.equal('After Shows')
 
-          chaiExpect(category.category.id).to.equal('v21EFftma5h')
-          chaiExpect(category.category.fullPath).to.equal('Health')
-          chaiExpect(category.category.slug).to.equal('health')
-          chaiExpect(category.category.title).to.equal('Health')
-          chaiExpect(category.category.createdAt).to.equal('2020-04-03T06:49:43.969Z')
-          chaiExpect(category.category.updatedAt).to.equal('2020-04-03T06:49:43.969Z')
+          chaiExpect(category.category.id).to.equal('fEVhFxQCz')
+          chaiExpect(category.category.fullPath).to.equal('TV & Film')
+          chaiExpect(category.category.slug).to.equal('tvfilm')
+          chaiExpect(category.category.title).to.equal('TV & Film')
+          chaiExpect(category.category).to.have.property('createdAt')
+          chaiExpect(category.category).to.have.property('updatedAt')
 
-          chaiExpect(category.categories[0].id).to.equal('e0luIzX0w3B')
-          chaiExpect(category.categories[0].fullPath).to.equal('Health>Fitness & Nutrition')
-          chaiExpect(category.categories[0].slug).to.equal('fitnessnutrition')
-          chaiExpect(category.categories[0].title).to.equal('Fitness & Nutrition')
-          chaiExpect(category.categories[0].createdAt).to.equal('2020-04-03T06:49:44.020Z')
-          chaiExpect(category.categories[0].updatedAt).to.equal('2020-04-03T06:49:44.020Z')
-
-          chaiExpect(category.categories[1].id).to.equal('mDymYb4vC')
-          chaiExpect(category.categories[1].fullPath).to.equal('Health>Sexuality')
-          chaiExpect(category.categories[1].slug).to.equal('sexuality')
-          chaiExpect(category.categories[1].title).to.equal('Sexuality')
-          chaiExpect(category.categories[1].createdAt).to.equal('2020-04-03T06:49:44.089Z')
-          chaiExpect(category.categories[1].updatedAt).to.equal('2020-04-03T06:49:44.089Z')
-
-          chaiExpect(category.categories[2].id).to.equal('mRCqTE1ET-r')
-          chaiExpect(category.categories[2].fullPath).to.equal('Health>Self-Help')
-          chaiExpect(category.categories[2].slug).to.equal('selfhelp')
-          chaiExpect(category.categories[2].title).to.equal('Self-Help')
-          chaiExpect(category.categories[2].createdAt).to.equal('2020-04-03T06:49:44.066Z')
-          chaiExpect(category.categories[2].updatedAt).to.equal('2020-04-03T06:49:44.066Z')
-
-          chaiExpect(category.categories[3].id).to.equal('JXcE8Da1afa')
-          chaiExpect(category.categories[3].fullPath).to.equal('Health>Kids & Family')
-          chaiExpect(category.categories[3].slug).to.equal('kidsfamily')
-          chaiExpect(category.categories[3].title).to.equal('Kids & Family')
-          chaiExpect(category.categories[3].createdAt).to.equal('2020-04-03T06:49:44.044Z')
-          chaiExpect(category.categories[3].updatedAt).to.equal('2020-04-03T06:49:44.044Z')
-
-
-          
+          chaiExpect(category.categories).to.eql([])
                 
           done()
         })
