@@ -10,5 +10,6 @@ module.exports = {
     "^~/(.*)$": "<rootDir>/src/$1"
   },
   setupFilesAfterEnv: ['<rootDir>/__tests__/integration/setupTests.ts'],
-  testRegex: ['itest\\.ts$']
+  testRegex: ['itest\\.ts$'],
+  testSequencer: './__tests__/integration/customSequencer.ts'
 }

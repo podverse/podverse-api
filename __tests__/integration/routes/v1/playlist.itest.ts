@@ -110,7 +110,7 @@ describe('playlist endpoints', () => {
       "isPublic": true,
       "itemsOrder": [],
       "mediaRefs": [],
-      "title": "New test title"
+      "title": "Premium - Test Playlist 2345"
     }
 
     test('when the user is not logged in', async (done) => {
@@ -137,15 +137,15 @@ describe('playlist endpoints', () => {
           chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.itemCount).to.equal(0)
           chaiExpect(res.body.itemsOrder).to.eql([])
-          chaiExpect(res.body.title).to.equal('New test title')          
+          chaiExpect(res.body.title).to.equal('Premium - Test Playlist 2345')
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.episodes).to.eql([])
           chaiExpect(res.body.mediaRefs).to.eql([])
 
           chaiExpect(res.body.owner.id).to.equal('QMReJmbE')
-          chaiExpect(res.body.owner.isPublic).to.equal(true) 
-          chaiExpect(res.body.owner.name).to.equal('Premium Valid - Test User') 
+          chaiExpect(res.body.owner).to.not.have.property('isPublic') 
+          chaiExpect(res.body.owner).to.not.have.property('name') 
 
           done()
         })
