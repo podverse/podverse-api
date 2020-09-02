@@ -354,7 +354,7 @@ describe('_user endpoints', () => {
             chaiExpect(queueItem.isPublic).to.equal(false)
             chaiExpect(queueItem.itemCount).to.equal(6)
             chaiExpect(queueItem.itemsOrder).to.eql([])
-            chaiExpect(queueItem).to.have.property('title')
+            chaiExpect(queueItem.title).to.equal('Premium - Test Playlist 1')
             chaiExpect(queueItem).to.have.property('createdAt')
             chaiExpect(queueItem).to.have.property('updatedAt')
 
@@ -367,13 +367,13 @@ describe('_user endpoints', () => {
             chaiExpect(queueItems[1].isPublic).to.equal(false)
             chaiExpect(queueItems[1].itemCount).to.equal(2)
             chaiExpect(queueItems[1].itemsOrder).to.eql([])
-            chaiExpect(queueItems[1]).to.have.property('title')
+            chaiExpect(queueItems[1].title).to.equal('Premium - Test Playlist 2')
             chaiExpect(queueItems[1]).to.have.property('createdAt')
             chaiExpect(queueItems[1]).to.have.property('updatedAt')
 
             chaiExpect(queueItems[1].owner.id).to.equal('QMReJmbE')
-            chaiExpect(queueItems[1].owner).to.not.have.property('isPublic')
-            chaiExpect(queueItems[1].owner).to.not.have.property('name')
+            chaiExpect(queueItem.owner).to.not.have.property('isPublic')
+            chaiExpect(queueItem.owner).to.not.have.property('name')
             
             done()
           })
