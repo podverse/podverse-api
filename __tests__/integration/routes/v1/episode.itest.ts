@@ -31,7 +31,7 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.pastMonthTotalUniquePageviews).to.equal(4)
           chaiExpect(res.body.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(6)
-          chaiExpect(res.body.pubDate).to.equal('2019-01-01T23:54:08.000Z')
+          chaiExpect(res.body).to.have.property('pubDate')
           chaiExpect(res.body.title).to.equal('335- Gathering the Magic')
           chaiExpect(res.body.podcastId).to.equal('0RMk6UYGq')
           chaiExpect(res.body).to.have.property('createdAt')
