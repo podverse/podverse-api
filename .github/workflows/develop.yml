@@ -19,13 +19,13 @@ jobs:
     #     tags: stage
         
     - name: log into stage, deploy latest stage image, then run integration tests
-      uses: appleboy/ssh-action@master
+      uses: garygrossgarten/github-action-ssh@release
       with:
         host: ${{ secrets.STAGE_SSH_HOST }}
-        username: ${{ secrets.STAGE_SSH_USERNAME }}
+        username: mitch
         password: ${{ secrets.STAGE_SSH_PASSPHRASE }}
         key_path: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
-        script: |
+        command: |
           # docker stop podverse_api_stage
           # docker rm podverse_api_stage
           # docker image rm podverse/podverse_api:stage
