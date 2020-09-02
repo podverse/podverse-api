@@ -378,15 +378,16 @@ describe('_user endpoints', () => {
             done()
           })
       })
-        test('Not logged in', async (done) => {
-          chai.request(global.app)
-            .get(`${v1Path}/user/playlists`)
-            .end((err, res) => {
-              chaiExpect(res).to.have.status(401)
 
-              done()
-            })
-        })
+      test('Not logged in', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/playlists`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+
+            done()
+          })
+      })
     })
 
     describe('Download user data', () => {
