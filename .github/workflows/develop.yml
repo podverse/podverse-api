@@ -27,8 +27,8 @@ jobs:
           # docker image rm podverse/podverse_api:stage
           # docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml up -d podverse_api
           # sleep 120
-          # cd podverse-api
-          # git pull
+          cd podverse-api
+          git pull
           # npm install
           npm run test:integration
         host: ${{ secrets.STAGE_SSH_HOST }}
