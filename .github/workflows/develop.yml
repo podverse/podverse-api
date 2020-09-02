@@ -21,6 +21,7 @@ jobs:
     - name: log into stage, deploy latest stage image, then run integration tests
       uses: garygrossgarten/github-action-ssh@release
       env:
+        WTF: ${{ secrets.WTF }}
         PGPASSWORD: ${{ secrets.STAGE_DB_PASSWORD }}
       with:
         host: ${{ secrets.STAGE_SSH_HOST }}
