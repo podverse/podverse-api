@@ -18,8 +18,8 @@ describe('playlist endpoints', () => {
           chaiExpect(res.body.itemCount).to.equal(2)
           chaiExpect(res.body.itemsOrder).to.eql([])
           chaiExpect(res.body.title).to.equal('Premium - Test Playlist 2')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T22:38:21.768Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-05-26T01:22:00.712Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.episodes).to.eql([])
 
           const mediaRef = res.body.mediaRefs[0]
@@ -35,15 +35,13 @@ describe('playlist endpoints', () => {
           chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(7)
           chaiExpect(mediaRef.startTime).to.equal(1366)
           chaiExpect(mediaRef.title).to.equal('Viverra orci sagittis eu volutpat odio facilisis mauris sit.')
-          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:27:41.585Z')
-          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T23:00:42.173Z')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
 
           chaiExpect(episode.id).to.equal('4uE26PEF_y')
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
-          
-          
 
           done()
         })

@@ -18,14 +18,14 @@ describe('_podcast endpoints', () => {
           chaiExpect(res.body.authorityId).to.equal(null)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)
-          chaiExpect(res.body.feedLastUpdated).to.equal('2020-03-30T20:27:19.000Z')
+          chaiExpect(res.body).to.have.property('feedLastUpdated')
           chaiExpect(res.body.guid).to.equal(null)
           chaiExpect(res.body.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(res.body.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/SfjLyq3660/duncantrussellfamilyhour.jpg')
           chaiExpect(res.body.isExplicit).to.equal(true)
           chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.language).to.equal('en-us')
-          chaiExpect(res.body.lastEpisodePubDate).to.equal('2020-03-30T20:24:14.000Z')
+          chaiExpect(res.body).to.have.property('lastEpisodePubDate')
           chaiExpect(res.body.lastEpisodeTitle).to.equal('378: David Nichtern')
           chaiExpect(res.body.linkUrl).to.equal('http://www.duncantrussell.com/')
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(0)
@@ -38,33 +38,31 @@ describe('_podcast endpoints', () => {
           chaiExpect(res.body.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(res.body.title).to.equal('Duncan Trussell Family Hour')
           chaiExpect(res.body.type).to.equal('episodic')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T21:17:12.363Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-04-03T06:50:58.279Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
 
 
           const author = res.body.authors[0]
           chaiExpect(author.id).to.equal('uS56AylX')
           chaiExpect(author.name).to.equal('Duncan Trussell Family Hour')
           chaiExpect(author.slug).to.equal('duncantrussellfamilyhour')
-          chaiExpect(author.createdAt).to.equal('2020-03-02T21:17:12.302Z')
-          chaiExpect(author.updatedAt).to.equal('2020-03-02T21:17:12.302Z')
+          chaiExpect(author).to.have.property('createdAt')
+          chaiExpect(author).to.have.property('updatedAt')
 
           const category = res.body.categories[0]
           chaiExpect(category.id).to.equal('SuCRgv5pdf')
           chaiExpect(category.fullPath).to.equal('Comedy')
           chaiExpect(category.slug).to.equal('comedy')
           chaiExpect(category.title).to.equal('Comedy')
-          chaiExpect(category.createdAt).to.equal('2020-04-03T06:49:43.625Z')
-          chaiExpect(category.updatedAt).to.equal('2020-04-03T06:49:43.625Z')
+          chaiExpect(category).to.have.property('createdAt')
+          chaiExpect(category).to.have.property('updatedAt')
 
           const feedUrl = res.body.feedUrls[0]
           chaiExpect(feedUrl.id).to.equal('abHIMhblL')
           chaiExpect(feedUrl.isAuthority).to.equal(true)
           chaiExpect(feedUrl.url).to.equal('https://audioboom.com/channels/4954758.rss')
-          chaiExpect(feedUrl.createdAt).to.equal('2020-03-02T21:15:50.483Z')
-          chaiExpect(feedUrl.updatedAt).to.equal('2020-04-03T06:51:03.621Z')
-          
-          
+          chaiExpect(feedUrl).to.have.property('createdAt')
+          chaiExpect(feedUrl).to.have.property('updatedAt')         
 
           done()
         })
