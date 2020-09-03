@@ -7,12 +7,14 @@ class CustomSequencer extends TestSequencer {
     const testsPath = './routes/v1/'
     const orderPath = [
       path.join(__dirname, testsPath, 'accountClaimToken.itest.ts'),
+      path.join(__dirname, testsPath, 'addByRSSPodcastFeedUrl.itest.ts'),
       path.join(__dirname, testsPath, 'auth.itest.ts'),
       path.join(__dirname, testsPath, 'author.itest.ts'),
       path.join(__dirname, testsPath, 'category.itest.ts'),
       path.join(__dirname, testsPath, 'episode.itest.ts'),
       path.join(__dirname, testsPath, 'feedUrl.itest.ts'),
       path.join(__dirname, testsPath, 'mediaRef.itest.ts'),
+      path.join(__dirname, testsPath, 'paypal.itest.ts'),
       path.join(__dirname, testsPath, 'playlist.itest.ts'),
       path.join(__dirname, testsPath, 'podcast.itest.ts'),
       path.join(__dirname, testsPath, 'user.itest.ts')
