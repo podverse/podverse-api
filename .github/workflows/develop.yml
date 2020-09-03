@@ -25,7 +25,7 @@ jobs:
         username: ${{ secrets.STAGE_SSH_USERNAME }}
         passphrase: ${{ secrets.STAGE_SSH_PASSPHRASE }}
         key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
-        command: |
+        script: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           source ~/pgpassword.sh
