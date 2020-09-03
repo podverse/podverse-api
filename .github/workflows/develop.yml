@@ -19,12 +19,12 @@ jobs:
         tags: stage
         
     - name: log into stage, deploy latest stage image, then run integration tests
-      uses: garygrossgarten/github-action-ssh@release
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.STAGE_SSH_HOST }}
         username: ${{ secrets.STAGE_SSH_USERNAME }}
-        passphrase: ${{ secrets.STAGE_SSH_PASSPHRASE }}
-        privateKey: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
+        password: ${{ secrets.STAGE_SSH_PASSPHRASE }}
+        key: ${{ secrets.STAGE_SSH_PRIVATE_KEY }}
         command: |
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
