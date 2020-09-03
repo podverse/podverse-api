@@ -4,7 +4,7 @@ import { v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('_podcast endpoints', () => {
+describe('Podcast endpoints', () => {
 
   describe('get by id', () => {
     
@@ -28,12 +28,12 @@ describe('_podcast endpoints', () => {
           chaiExpect(res.body).to.have.property('lastEpisodePubDate')
           chaiExpect(res.body.lastEpisodeTitle).to.equal('378: David Nichtern')
           chaiExpect(res.body.linkUrl).to.equal('http://www.duncantrussell.com/')
-          chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.pastMonthTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(res.body.pastYearTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.shrunkImageUrl).to.equal(null)
           chaiExpect(res.body.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(res.body.title).to.equal('Duncan Trussell Family Hour')
@@ -98,12 +98,12 @@ describe('_podcast endpoints', () => {
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast.lastEpisodeTitle).to.equal('Show 64 - Supernova in the East III')
           chaiExpect(podcast.linkUrl).to.equal('http://www.dancarlin.com')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(5)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(0)
           chaiExpect(podcast.shrunkImageUrl).to.equal(null)
           chaiExpect(podcast.sortableTitle).to.equal('dan carlin\'s hardcore history')
           chaiExpect(podcast.title).to.equal('Dan Carlin\'s Hardcore History')
