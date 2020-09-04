@@ -48,7 +48,7 @@ const getPlaylist = async id => {
     throw new createError.NotFound('Playlist not found')
   }
 
-  if (!playlist.isPublic) {
+  if (!playlist.owner.isPublic) {
     delete playlist.owner.name
   }
 
