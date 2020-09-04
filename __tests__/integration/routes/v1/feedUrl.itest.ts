@@ -4,7 +4,7 @@ import { v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('_feedUrl endpoints', () => {
+describe('FeedUrl endpoints', () => {
 
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
@@ -35,12 +35,12 @@ describe('_feedUrl endpoints', () => {
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast.lastEpisodeTitle).to.equal('EP 139. IS THE USA UNDEMOCRATIC?')
           chaiExpect(podcast.linkUrl).to.equal('http://panoply.fm/podcasts/wethepeoplelive')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(0)
           chaiExpect(podcast.shrunkImageUrl).to.equal(null)
           chaiExpect(podcast.sortableTitle).to.equal('wethepeople live')
           chaiExpect(podcast.title).to.equal('#WeThePeople LIVE')
@@ -100,12 +100,12 @@ describe('_feedUrl endpoints', () => {
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast.lastEpisodeTitle).to.equal('EP 139. IS THE USA UNDEMOCRATIC?')
           chaiExpect(podcast.linkUrl).to.equal('http://panoply.fm/podcasts/wethepeoplelive')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(0)
           chaiExpect(podcast.shrunkImageUrl).to.equal(null)
           chaiExpect(podcast.sortableTitle).to.equal('wethepeople live')
           chaiExpect(podcast.title).to.equal('#WeThePeople LIVE')
