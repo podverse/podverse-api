@@ -1,4 +1,4 @@
-import { getRepository, In } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { Episode, Playlist, MediaRef, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 const createError = require('http-errors')
@@ -48,30 +48,40 @@ const getPlaylist = async id => {
     throw new createError.NotFound('Playlist not found')
   }
 
+  if (!playlist.owner.isPublic) {
+    delete playlist.owner.name
+  }
+
   return playlist
 }
 
-const getPlaylists = (query) => {
+const getPlaylists = async (query) => {
   const repository = getRepository(Playlist)
 
   if (query.playlistId && query.playlistId.split(',').length > 1) {
-    query.id = In(query.playlistId.split(','))
+    query.id = query.playlistId.split(',')
   } else if (query.playlistId) {
-    query.id = query.playlistId
+    query.id = [query.playlistId]
   } else {
     return
   }
 
-  delete query.sort
-  delete query.skip
-  delete query.take
+  const playlists = await repository
+    .createQueryBuilder('playlist')
+    .select('playlist.id')
+    .addSelect('playlist.description')
+    .addSelect('playlist.isPublic')
+    .addSelect('playlist.itemCount')
+    .addSelect('playlist.itemsOrder')
+    .addSelect('playlist.title')
+    .addSelect('playlist.createdAt')
+    .addSelect('playlist.updatedAt')
+    .innerJoin('playlist.owner', 'user')
+    .addSelect('user.id')
+    .where('playlist.id IN (:...playlistIds)', { playlistIds: query.id })
+    .getMany()
 
-  return repository.find({
-    where: {
-      ...query
-    },
-    relations: ['owner']
-  })
+  return playlists
 }
 
 const updatePlaylist = async (obj, loggedInUserId) => {
@@ -81,6 +91,7 @@ const updatePlaylist = async (obj, loggedInUserId) => {
     'owner'
   ]
   const repository = getRepository(Playlist)
+
   const playlist = await repository.findOne({
     where: {
       id: obj.id
@@ -101,6 +112,10 @@ const updatePlaylist = async (obj, loggedInUserId) => {
   await validateClassOrThrow(newPlaylist)
 
   await repository.save(newPlaylist)
+
+  delete newPlaylist.owner.isPublic
+  delete newPlaylist.owner.name
+
   return newPlaylist
 }
 

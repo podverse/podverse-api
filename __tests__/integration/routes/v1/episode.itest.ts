@@ -31,11 +31,11 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.pastMonthTotalUniquePageviews).to.equal(4)
           chaiExpect(res.body.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(6)
-          chaiExpect(res.body.pubDate).to.equal('2019-01-01T23:54:08.000Z')
+          chaiExpect(res.body).to.have.property('pubDate')
           chaiExpect(res.body.title).to.equal('335- Gathering the Magic')
           chaiExpect(res.body.podcastId).to.equal('0RMk6UYGq')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T21:17:46.840Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-04-03T06:53:12.123Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
 
@@ -51,8 +51,8 @@ describe('_episode endpoints', () => {
           chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(0)
           chaiExpect(mediaRef.startTime).to.equal(480)
           chaiExpect(mediaRef.title).to.equal('Consectetur lorem donec massa sapien faucibus et molestie ac. Purus semper eget duis at tellus.')
-          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:13:33.820Z')
-          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T22:13:33.820Z')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
           
           
 
@@ -65,6 +65,52 @@ describe('_episode endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Episode not found')
+
+          done()
+        })
+    })
+  })
+
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/episode?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const episodes = res.body[0]
+          const episode = episodes[0]
+          
+          chaiExpect(episode.id).to.equal('tfAg_PJjx9')
+          chaiExpect(episode.duration).to.equal(0)
+          chaiExpect(episode.episodeType).to.equal('full')
+          chaiExpect(episode.guid).to.equal('72718914-ff3f-11e8-a2df-3b7ce7823cac')
+          chaiExpect(episode.imageUrl).to.equal(null)
+          chaiExpect(episode.isExplicit).to.equal(false)
+          chaiExpect(episode.isPublic).to.equal(true)
+          chaiExpect(episode.linkUrl).to.equal(null)
+          chaiExpect(episode.mediaFilesize).to.equal(0)
+          chaiExpect(episode.mediaType).to.equal('audio/mpeg')
+          chaiExpect(episode.mediaUrl).to.equal('https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP8741400441.mp3')
+          chaiExpect(episode.pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(episode.pastDayTotalUniquePageviews).to.equal(2)
+          chaiExpect(episode.pastWeekTotalUniquePageviews).to.equal(7)
+          chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(4)
+          chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
+          chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
+          chaiExpect(episode).to.have.property('pubDate')
+          chaiExpect(episode.title).to.equal('\"Antisocial\" author Andrew Marantz on how the far right hijacked the internet')
+          chaiExpect(episode).to.have.property('description')
+
+          const episode0 = episodes[1]
+          const episode1 = episodes[2]
+          const episode2 = episodes[3]
+
+          chaiExpect(episode0.id).to.equal('TKqJs3hoF7')
+
+          chaiExpect(episode1.id).to.equal('W7-RAalET')
+
+          chaiExpect(episode2.id).to.equal('CBfXbA5c0Y8')
 
           done()
         })

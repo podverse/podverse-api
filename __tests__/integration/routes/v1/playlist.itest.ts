@@ -4,7 +4,7 @@ import { testUsers, v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('playlist endpoints', () => {
+describe('Playlist endpoints', () => {
 
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
@@ -18,8 +18,8 @@ describe('playlist endpoints', () => {
           chaiExpect(res.body.itemCount).to.equal(2)
           chaiExpect(res.body.itemsOrder).to.eql([])
           chaiExpect(res.body.title).to.equal('Premium - Test Playlist 2')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T22:38:21.768Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-05-26T01:22:00.712Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.episodes).to.eql([])
 
           const mediaRef = res.body.mediaRefs[0]
@@ -35,15 +35,13 @@ describe('playlist endpoints', () => {
           chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(7)
           chaiExpect(mediaRef.startTime).to.equal(1366)
           chaiExpect(mediaRef.title).to.equal('Viverra orci sagittis eu volutpat odio facilisis mauris sit.')
-          chaiExpect(mediaRef.createdAt).to.equal('2020-03-02T22:27:41.585Z')
-          chaiExpect(mediaRef.updatedAt).to.equal('2020-03-02T23:00:42.173Z')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
 
           chaiExpect(episode.id).to.equal('4uE26PEF_y')
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
-          
-          
 
           done()
         })
@@ -60,6 +58,8 @@ describe('playlist endpoints', () => {
         })
     })
   })
+
+  let newPlaylistId = ''
 
   describe('playlist create', () => {
     const sendBody = {
@@ -89,6 +89,8 @@ describe('playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
 
+          newPlaylistId = res.body.id
+
           chaiExpect(res.body.description).to.equal('Test description')
           chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.itemsOrder).to.eql([])
@@ -106,16 +108,18 @@ describe('playlist endpoints', () => {
   })
 
   describe('playlist update', () => {
+
     const sendBody = {
-      "id": "CH_2-LlM",
       "description": "New test description",
-      "isPublic": true,
+      "isPublic": false,
       "itemsOrder": [],
       "mediaRefs": [],
-      "title": "New test title"
-    }
+      "title": "Premium - Test Playlist 2345"
+    } as any
 
     test('when the user is not logged in', async (done) => {
+      sendBody.id = newPlaylistId
+
       chai.request(global.app)
         .patch(`${v1Path}/playlist`)
         .send(sendBody)
@@ -127,6 +131,8 @@ describe('playlist endpoints', () => {
     })
 
     test('when the user is logged in', async (done) => {
+      sendBody.id = newPlaylistId
+
       chai.request(global.app)
         .patch(`${v1Path}/playlist`)
         .set('Cookie', testUsers.premium.authCookie)
@@ -134,20 +140,20 @@ describe('playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
 
-          chaiExpect(res.body.id).to.equal('CH_2-LlM')
+          chaiExpect(res.body.id).to.equal(newPlaylistId)
           chaiExpect(res.body.description).to.equal('New test description')
-          chaiExpect(res.body.isPublic).to.equal(true)
+          chaiExpect(res.body.isPublic).to.equal(false)
           chaiExpect(res.body.itemCount).to.equal(0)
           chaiExpect(res.body.itemsOrder).to.eql([])
-          chaiExpect(res.body.title).to.equal('New test title')          
+          chaiExpect(res.body.title).to.equal('Premium - Test Playlist 2345')
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.episodes).to.eql([])
           chaiExpect(res.body.mediaRefs).to.eql([])
 
           chaiExpect(res.body.owner.id).to.equal('QMReJmbE')
-          chaiExpect(res.body.owner.isPublic).to.equal(true) 
-          chaiExpect(res.body.owner.name).to.equal('Premium Valid - Test User') 
+          chaiExpect(res.body.owner).to.not.have.property('isPublic') 
+          chaiExpect(res.body.owner).to.not.have.property('name') 
 
           done()
         })

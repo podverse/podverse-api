@@ -54,10 +54,9 @@ const getCategories = async query => {
       { slug: slugLowerCase }
     )
   } else if (title) {
-    const titleLowerCase = `%${title.toLowerCase().trim()}%`
     qb.where(
-      'LOWER(category.title) LIKE :title',
-      { title: titleLowerCase }
+      'category.title ILIKE :title',
+      { title }
     )
   } else if (topLevelCategories) {
     qb.where(`category.category IS NULL`)

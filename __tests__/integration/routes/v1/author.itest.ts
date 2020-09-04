@@ -15,8 +15,8 @@ describe('_author endpoints', () => {
           chaiExpect(res.body.id).to.equal('Rk1zs7vs')
           chaiExpect(res.body.name).to.equal('Josh Zepps / Panoply')
           chaiExpect(res.body.slug).to.equal('joshzeppspanoply')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T21:17:06.822Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-03-02T21:17:06.822Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
                 
           done()
         })
@@ -27,6 +27,25 @@ describe('_author endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Author not found')
+                
+          done()
+        })
+    })
+  })
+
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/author?page=1&sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const authors = res.body[0]
+          const author = authors[0]
+
+          chaiExpect(author.id).to.equal('Rk1zs7vs')
+          chaiExpect(author.name).to.equal('Josh Zepps / Panoply')
+          chaiExpect(author.slug).to.equal('joshzeppspanoply')
                 
           done()
         })

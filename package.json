@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.8.3",
+  "version": "2.8.4",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -45,6 +45,7 @@
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
     "test:integration": "./scripts/runIntegrationTests.sh",
+    "test:integration:server": "./scripts/runIntegrationTestsOnServer.sh",
     "test:integration:single": "./scripts/runIntegrationTestSingle.sh",
     "test:w:integration": "./scripts/runWIntegrationTests.sh",
     "test:w:integration:single": "./scripts/runWIntegrationTestSingle.sh",

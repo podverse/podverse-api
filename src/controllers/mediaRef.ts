@@ -117,7 +117,8 @@ const getMediaRefs = async (query, includeNSFW) => {
       })
   }
 
-  qb.innerJoinAndSelect('mediaRef.owner', 'user')
+  qb.innerJoin('mediaRef.owner', 'user')
+  qb.addSelect('user.id')
 
   if (searchAllFieldsText) {
     qb.where(

@@ -234,7 +234,16 @@ const getUserPlaylists = async (query, ownerId) => {
 
   const playlists = await repository
     .createQueryBuilder('playlist')
-    .innerJoinAndSelect('playlist.owner', 'owner')
+    .select('playlist.id')
+    .addSelect('playlist.description')
+    .addSelect('playlist.isPublic')
+    .addSelect('playlist.itemCount')
+    .addSelect('playlist.itemsOrder')
+    .addSelect('playlist.title')
+    .addSelect('playlist.createdAt')
+    .addSelect('playlist.updatedAt')
+    .innerJoin('playlist.owner', 'user')
+    .addSelect('user.id')
     .where(
       {
         // ...(includePrivate ? {} : { isPublic: true }),

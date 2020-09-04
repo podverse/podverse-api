@@ -4,7 +4,7 @@ import { testUsers, v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('_mediaRef endpoints', () => {
+describe('MediaRef endpoints', () => {
 
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
@@ -23,8 +23,8 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(2)
           chaiExpect(res.body.startTime).to.equal(1500)
           chaiExpect(res.body.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
-          chaiExpect(res.body.createdAt).to.equal('2020-03-02T22:37:36.073Z')
-          chaiExpect(res.body.updatedAt).to.equal('2020-03-02T22:58:19.378Z')
+          chaiExpect(res.body).to.have.property('createdAt')
+          chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
           
@@ -48,14 +48,11 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(4)
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
-          chaiExpect(episode.pubDate).to.equal('2020-03-02T05:01:00.000Z')
+          chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('Jason Calacanis: TikTok should be banned, Tim Cook doesn\'t have enough \"chutzpah,\" and Uber will be fine')
           chaiExpect(episode.podcastId).to.equal('zRo1jwx67')
-          chaiExpect(episode.createdAt).to.equal('2020-03-02T21:17:39.462Z')
-          chaiExpect(episode.updatedAt).to.equal('2020-04-03T06:52:52.361Z')
-
-          
-          
+          chaiExpect(episode).to.have.property('createdAt')
+          chaiExpect(episode).to.have.property('updatedAt')
 
           done()
         })
@@ -72,7 +69,7 @@ describe('_mediaRef endpoints', () => {
         })
     })
   })
-  describe('mediaRef create', () => {
+  describe('mediaRef create and delete', () => {
     const sendBody = {
       "authors": [],
       "categories": [],
@@ -83,7 +80,9 @@ describe('_mediaRef endpoints', () => {
       "title": "Sample clip title"
     }
 
-    test('when the user is not logged in', async (done) => {
+    let newMediaRefId = '' 
+
+    test('Create: when the user is not logged in', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/mediaRef`)
         .send(sendBody)
@@ -92,15 +91,18 @@ describe('_mediaRef endpoints', () => {
 
           done()
         })
+        
     })
 
-    test('when the user is logged in', async (done) => {
+    test('Create: when the user is logged in', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/mediaRef`)
         .set('Cookie', testUsers.premium.authCookie)
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
+
+          newMediaRefId = res.body.id
 
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
@@ -119,6 +121,85 @@ describe('_mediaRef endpoints', () => {
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
+
+          done()
+        })
+    })
+
+    test('Delete: when the user is not logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          done()
+        })
+    })
+
+    test('Delete: when the user is logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          done()
+        })
+    })
+  })
+
+  describe('find by query', () => {
+    test('top past week', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/mediaRef?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const mediaRefs = res.body[0]
+          const mediaRef = mediaRefs[0]
+          
+          chaiExpect(mediaRef.id).to.equal('9rA5BhWp')
+          chaiExpect(mediaRef.endTime).to.equal(1680)
+          chaiExpect(mediaRef.isPublic).to.equal(true)
+          chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(7)
+          chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(8)
+          chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(9)
+          chaiExpect(mediaRef.pastMonthTotalUniquePageviews).to.equal(0)
+          chaiExpect(mediaRef.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(2)
+          chaiExpect(mediaRef.startTime).to.equal(1500)
+          chaiExpect(mediaRef.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
+          chaiExpect(mediaRef).to.have.property('createdAt')
+          chaiExpect(mediaRef).to.have.property('updatedAt')
+          
+          chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
+          chaiExpect(mediaRef.owner).to.not.have.property('isPublic')
+          chaiExpect(mediaRef.owner).to.not.have.property('name')
+
+          done()
+        })
+    })
+  })
+
+  describe('MediaRef Update', () => {
+    test('update', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/mediaRef`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send({
+          "authors": [],
+          "categories": [],
+          "endTime": 100,
+          "episodeId": "gRgjd3YcKb",
+          "id": "o0WTxqON",
+          "isPublic": "true",
+          "startTime": 50,
+          "title": "New sample clip title"
+        })
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401);
+          
+          chaiExpect(res.body.message).to.equal('Log in to edit this media ref')
 
           done()
         })
