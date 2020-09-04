@@ -4,7 +4,7 @@ import { testUsers, v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('_mediaRef endpoints', () => {
+describe('MediaRef endpoints', () => {
 
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {

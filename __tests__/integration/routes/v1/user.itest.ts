@@ -4,7 +4,7 @@ import { sampleQueueItems, testUsers, v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
-describe('_user endpoints', () => {
+describe('User endpoints', () => {
 
     describe('get by id', () => {
       test('when a valid id is provided', async (done) => {
@@ -228,12 +228,12 @@ describe('_user endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('#1452 - Greg Fitzsimmons')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.joerogan.com')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(5)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('joe rogan experience')
             chaiExpect(queueItem.episode.podcast.title).to.equal('The Joe Rogan Experience')
@@ -310,12 +310,12 @@ describe('_user endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack\'s redesign')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.vox.com/recode-decode-podcast-kara-swisher')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('recode decode')
             chaiExpect(queueItem.episode.podcast.title).to.equal('Recode Decode')
