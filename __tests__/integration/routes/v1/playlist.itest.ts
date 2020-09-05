@@ -160,4 +160,70 @@ describe('Playlist endpoints', () => {
     })
   })
 
+  describe('playlist delete', () => {
+
+    test('when the user is not logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/playlist/${newPlaylistId}`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          done()
+        })
+    })
+    test('when the user is logged in', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/playlist/${newPlaylistId}`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          done()
+        })
+    })
+  })
+
+  describe('toggle subscribe', () => {
+
+    test('when the user is not logged in', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/user/playlist/toggle-subscribe/wgOok7Xp`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          done()
+        })
+    })
+    
+    test('when the user is logged in: subscribe to user', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          chaiExpect(res.body).to.eql([
+            "zXSkVlr7",
+          ])
+
+          done()
+        })
+    })
+
+    test('when the user is logged in: unsubscribe from user', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          chaiExpect(res.body).to.eql([
+            "zXSkVlr7",
+            "wgOok7Xp"
+          ])
+
+          done()
+        })
+    })
+  })
 })

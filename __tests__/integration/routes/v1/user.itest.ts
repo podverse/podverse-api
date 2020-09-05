@@ -6,7 +6,7 @@ chai.use(chaiHttp)
 
 describe('User endpoints', () => {
 
-    describe('get by id', () => {
+    describe('get public user by ID', () => {
       test('when a valid id is provided', async (done) => {
         chai.request(global.app)
           .get(`${v1Path}/user/EVHDBRZY`)
@@ -122,8 +122,7 @@ describe('User endpoints', () => {
 
       test('when the user is not logged in', async (done) => {
         chai.request(global.app)
-          .get(`${v1Path}/user/toggle-subscribe/:id`)
-          .send('EVHDBRZY')
+          .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
 
