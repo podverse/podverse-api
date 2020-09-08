@@ -187,7 +187,7 @@ describe('Playlist endpoints', () => {
 
     test('when the user is not logged in', async (done) => {
       chai.request(global.app)
-        .get(`${v1Path}/user/playlist/toggle-subscribe/wgOok7Xp`)
+        .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
 
@@ -195,7 +195,7 @@ describe('Playlist endpoints', () => {
         })
     })
     
-    test('when the user is logged in: subscribe to user', async (done) => {
+    test('when the user is logged in: unsubscribe from playlist', async (done) => {
       chai.request(global.app)
         .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
         .set('Cookie', testUsers.premium.authCookie)
@@ -210,7 +210,7 @@ describe('Playlist endpoints', () => {
         })
     })
 
-    test('when the user is logged in: unsubscribe from user', async (done) => {
+    test('when the user is logged in: subscribe to playlist', async (done) => {
       chai.request(global.app)
         .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
         .set('Cookie', testUsers.premium.authCookie)

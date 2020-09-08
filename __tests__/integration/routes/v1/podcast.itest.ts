@@ -126,7 +126,7 @@ describe('Podcast endpoints', () => {
         })
     })
     
-    test('when the user is logged in: subscribe to user', async (done) => {
+    test('when the user is logged in: unsubscribe from user', async (done) => {
       chai.request(global.app)
         .get(`${v1Path}/podcast/toggle-subscribe/XdbkHTiH9`)
         .set('Cookie', testUsers.premium.authCookie)
@@ -148,7 +148,7 @@ describe('Podcast endpoints', () => {
         })
     })
 
-    test('when the user is logged in: unsubscribe from user', async (done) => {
+    test('when the user is logged in: subscribe to podcast', async (done) => {
       chai.request(global.app)
         .get(`${v1Path}/podcast/toggle-subscribe/XdbkHTiH9`)
         .set('Cookie', testUsers.premium.authCookie)
