@@ -227,12 +227,12 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('#1452 - Greg Fitzsimmons')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.joerogan.com')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(5)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('joe rogan experience')
             chaiExpect(queueItem.episode.podcast.title).to.equal('The Joe Rogan Experience')
@@ -309,12 +309,12 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack\'s redesign')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.vox.com/recode-decode-podcast-kara-swisher')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('recode decode')
             chaiExpect(queueItem.episode.podcast.title).to.equal('Recode Decode')
@@ -435,6 +435,29 @@ describe('User endpoints', () => {
             chaiExpect(queueItems[2].name).to.equal('Premium Expired - Test User')
 
            
+            done()
+          })
+      })
+    })
+
+    describe('user delete', () => {
+
+      test('when the user is not logged in', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+  
+            done()
+          })
+      })
+      test('when the user is logged in', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+  
             done()
           })
       })
