@@ -107,8 +107,7 @@ const bitpayConfig = {
 const paypalConfig = {
   clientId: process.env.PAYPAL_CLIENT_ID,
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
-  mode: process.env.PAYPAL_MODE,
-  webhookIdPaymentSaleCompleted: process.env.PAYPAL_WEBHOOK_ID_PAYMENT_SALE_COMPLETED
+  mode: process.env.PAYPAL_MODE
 }
 const appStoreConfig = {
   apiUrlProd: process.env.APP_STORE_API_URL_PROD,
