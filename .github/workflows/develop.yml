@@ -42,7 +42,7 @@ jobs:
           cd podverse-api
           git pull
           npm install
-          npm run test:integration:server
+          npm run test:integration
 
     - name: Slack Notification - Success
       if: success()
