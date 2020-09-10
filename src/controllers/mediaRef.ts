@@ -150,6 +150,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const PIIScrubbedMediaRefs = mediaRefs[0].map((x: any) => {
     if (x.owner && !x.owner.isPublic) {
       delete x.owner.name
+      delete x.owner.isPublic
     }
     return x
   })
