@@ -31,6 +31,9 @@ jobs:
           source ~/.nvm/nvm.sh
           source ~/pgpassword.sh
           nvm use 12.18.3
+          cd podverse-ops
+          git pull
+          cd ..
           docker stop podverse_api_stage
           docker rm podverse_api_stage
           docker image rm podverse/podverse_api:stage
