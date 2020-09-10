@@ -173,8 +173,8 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef).to.have.property('updatedAt')
           
           chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
-          chaiExpect(mediaRef.owner).to.not.have.property('isPublic')
-          chaiExpect(mediaRef.owner).to.not.have.property('name')
+          chaiExpect(mediaRef.owner).to.have.property('isPublic')
+          chaiExpect(mediaRef.owner).to.have.property('name')
 
           done()
         })

@@ -440,6 +440,101 @@ describe('User endpoints', () => {
       })
     })
 
+    describe('History Item - Add or Update', () => {
+
+      const queueItem1 = {
+        "historyItem": {
+        "clipEndTime": 1199,
+        "clipId": "jxv22OGr",
+        "clipStartTime": 1114,
+        "clipTitle": "Test clip title",
+        "episodeDescription": "Test episode description",
+        "episodeId": "gRgjd3YcKb",
+        "episodeImageUrl": "http://example.com/imageUrl",
+        "episodeMediaUrl": "http://example.com/mediaUrl",
+        "episodePubDate": "2019-01-01T23:54:08.000Z",
+        "episodeTitle": "Test episode title",
+        "isPublic": true,
+        "ownerId": "EVHDBRZY",
+        "ownerIsPublic": true,
+        "ownerName": "Free Trial Valid - Test User",
+        "podcastAuthors": ["Rk1zs7vs"],
+        "podcastCategories": ["5vNa3RnSZpC"],
+        "podcastId": "0RMk6UYGq",
+        "podcastImageUrl": "http://example.com/imageUrl",
+        "podcastTitle": "Test podcast title",
+        "userPlaybackPosition": 123
+        }
+      }
+
+      const queueItem2 = {
+        "historyItem": {
+          "episodeDescription": "Test episode description 2",
+          "episodeId": "4s2CiyLsJJ",
+          "episodeImageUrl": "http://example.com/imageUrl",
+          "episodeMediaUrl": "http://example.com/mediaUrl",
+          "episodePubDate": "2020-01-01T23:54:08.000Z",
+          "episodeTitle": "Test episode title 2",
+          "isPublic": true,
+          "ownerId": "",
+          "ownerIsPublic": null,
+          "ownerName": "",
+          "podcastAuthors": ["Rk1zs7vs"],
+          "podcastCategories": ["5vNa3RnSZpC"],
+          "podcastId": "0RMk6UYGq",
+          "podcastImageUrl": "http://example.com/imageUrl",
+          "podcastTitle": "Test podcast title 2",
+          "userPlaybackPosition": 345
+        }
+      }      
+      
+      test('update user history with sample 1', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user/add-or-update-history-item`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .send(queueItem1)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Updated user history')
+  
+            done()
+          })
+      })
+
+      test('update user history with sample 2', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user/add-or-update-history-item`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .send(queueItem2)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Updated user history')
+  
+            done()
+          })
+      })
+    })
+
+    describe('history - clear all', () => {
+
+      test('clear', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user/history-item/clear-all`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Cleared all history items.')
+  
+            done()
+          })
+      })
+    })
+
+    
+
     describe('user delete', () => {
 
       test('when the user is not logged in', async (done) => {
