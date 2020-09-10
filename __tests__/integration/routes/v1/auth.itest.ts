@@ -42,7 +42,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.addByRSSPodcastFeedUrls).to.eql([
             "http://feed.thisamericanlife.org/talpodcast",
             "https://feeds.npr.org/344098539/podcast.xml",
-            "https://feeds.npr.org/381444908/podcast.xml"
+            "http://rss.art19.com/the-daily"
           ])
           chaiExpect(res.body.email).to.equal('premium@stage.podverse.fm')
           chaiExpect(res.body.emailVerified).to.equal(true)
@@ -123,7 +123,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.addByRSSPodcastFeedUrls).to.eql([
             "http://feed.thisamericanlife.org/talpodcast",
             "https://feeds.npr.org/344098539/podcast.xml",
-            "https://feeds.npr.org/381444908/podcast.xml"
+            "http://rss.art19.com/the-daily"
           ])
           chaiExpect(res.body.email).to.equal('premium@stage.podverse.fm')
           chaiExpect(res.body.emailVerified).to.equal(true)
@@ -295,7 +295,7 @@ describe('Auth endpoints', () => {
         .post(`${v1Path}/auth/send-reset-password`)
         .send(sendBody)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(404)
+          chaiExpect(res).to.have.status(400)
 
           done()
         })
@@ -306,8 +306,8 @@ describe('Auth endpoints', () => {
   describe('Login', () => {
     
     const sendBody = {
-    "email": "verifyEmailTest@stage.podverse.fm",
-    "password": "Aa!1asdf"
+      "email": "verifyEmailTest@stage.podverse.fm",
+      "password": "Aa!1asdf"
     }
 
     test('attempt log in to unverified email', async (done) => {
