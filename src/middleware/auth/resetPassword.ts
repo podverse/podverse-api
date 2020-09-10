@@ -58,5 +58,8 @@ export const sendResetPassword = async ctx => {
       ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
       ctx.status = 200
     }
+  } else {
+    ctx.body = { message: 'Development mode: sendResetPassword endpoint is disabled.' }
+    ctx.status = 400
   }
 }
