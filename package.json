@@ -49,6 +49,7 @@
     "test:integration:single": "./scripts/runIntegrationTestSingle.sh",
     "test:w:integration": "./scripts/runWIntegrationTests.sh",
     "test:w:integration:single": "./scripts/runWIntegrationTestSingle.sh",
+    "test:w:restoreDatabase": "./scripts/restoreDatabaseWin.sh",
     "test:unit": "jest",
     "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
   },
