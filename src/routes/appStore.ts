@@ -34,13 +34,18 @@ router.post('/update-purchase-status',
         throw new Error('User not found')
       } else {
         const receipt = await verifyAppStorePurchaseByReceipt(transactionReceipt) as any
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        const { in_app } = receipt
-        const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
 
-        ctx.status = 200
-        ctx.body = {
-          finishedTransactionIds
+        if (receipt) {
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          const { in_app } = receipt
+          const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
+  
+          ctx.status = 200
+          ctx.body = {
+            finishedTransactionIds
+          }
+        } else {
+          throw new Error('Receipt not found')
         }
       }
     } catch (error) {

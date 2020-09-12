@@ -119,6 +119,8 @@ const getMediaRefs = async (query, includeNSFW) => {
 
   qb.innerJoin('mediaRef.owner', 'user')
   qb.addSelect('user.id')
+  qb.addSelect('user.name')
+  qb.addSelect('user.isPublic')
 
   if (searchAllFieldsText) {
     qb.where(
@@ -145,7 +147,15 @@ const getMediaRefs = async (query, includeNSFW) => {
     
     .getManyAndCount()
 
-  return mediaRefs
+  const PIIScrubbedMediaRefs = mediaRefs[0].map((x: any) => {
+    if (x.owner && !x.owner.isPublic) {
+      delete x.owner.name
+      delete x.owner.isPublic
+    }
+    return x
+  })
+
+  return [PIIScrubbedMediaRefs, mediaRefs[1]]
 }
 
 const updateMediaRef = async (obj, loggedInUserId) => {

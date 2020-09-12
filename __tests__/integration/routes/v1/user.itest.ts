@@ -6,7 +6,7 @@ chai.use(chaiHttp)
 
 describe('User endpoints', () => {
 
-    describe('get by id', () => {
+    describe('get public user by ID', () => {
       test('when a valid id is provided', async (done) => {
         chai.request(global.app)
           .get(`${v1Path}/user/EVHDBRZY`)
@@ -122,8 +122,7 @@ describe('User endpoints', () => {
 
       test('when the user is not logged in', async (done) => {
         chai.request(global.app)
-          .get(`${v1Path}/user/toggle-subscribe/:id`)
-          .send('EVHDBRZY')
+          .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
 
@@ -228,12 +227,12 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('#1452 - Greg Fitzsimmons')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.joerogan.com')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(5)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('joe rogan experience')
             chaiExpect(queueItem.episode.podcast.title).to.equal('The Joe Rogan Experience')
@@ -310,12 +309,12 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('lastEpisodePubDate')
             chaiExpect(queueItem.episode.podcast.lastEpisodeTitle).to.equal('Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack\'s redesign')
             chaiExpect(queueItem.episode.podcast.linkUrl).to.equal('https://www.vox.com/recode-decode-podcast-kara-swisher')
-            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(0)
-            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(0)
+            chaiExpect(queueItem.episode.podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastHourTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastDayTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastWeekTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastMonthTotalUniquePageviews).to.equal(1)
+            chaiExpect(queueItem.episode.podcast.pastYearTotalUniquePageviews).to.equal(1)
             chaiExpect(queueItem.episode.podcast.shrunkImageUrl).to.equal(null)
             chaiExpect(queueItem.episode.podcast.sortableTitle).to.equal('recode decode')
             chaiExpect(queueItem.episode.podcast.title).to.equal('Recode Decode')
@@ -436,6 +435,124 @@ describe('User endpoints', () => {
             chaiExpect(queueItems[2].name).to.equal('Premium Expired - Test User')
 
            
+            done()
+          })
+      })
+    })
+
+    describe('History Item - Add or Update', () => {
+
+      const queueItem1 = {
+        "historyItem": {
+        "clipEndTime": 1199,
+        "clipId": "jxv22OGr",
+        "clipStartTime": 1114,
+        "clipTitle": "Test clip title",
+        "episodeDescription": "Test episode description",
+        "episodeId": "gRgjd3YcKb",
+        "episodeImageUrl": "http://example.com/imageUrl",
+        "episodeMediaUrl": "http://example.com/mediaUrl",
+        "episodePubDate": "2019-01-01T23:54:08.000Z",
+        "episodeTitle": "Test episode title",
+        "isPublic": true,
+        "ownerId": "EVHDBRZY",
+        "ownerIsPublic": true,
+        "ownerName": "Free Trial Valid - Test User",
+        "podcastAuthors": ["Rk1zs7vs"],
+        "podcastCategories": ["5vNa3RnSZpC"],
+        "podcastId": "0RMk6UYGq",
+        "podcastImageUrl": "http://example.com/imageUrl",
+        "podcastTitle": "Test podcast title",
+        "userPlaybackPosition": 123
+        }
+      }
+
+      const queueItem2 = {
+        "historyItem": {
+          "episodeDescription": "Test episode description 2",
+          "episodeId": "4s2CiyLsJJ",
+          "episodeImageUrl": "http://example.com/imageUrl",
+          "episodeMediaUrl": "http://example.com/mediaUrl",
+          "episodePubDate": "2020-01-01T23:54:08.000Z",
+          "episodeTitle": "Test episode title 2",
+          "isPublic": true,
+          "ownerId": "",
+          "ownerIsPublic": null,
+          "ownerName": "",
+          "podcastAuthors": ["Rk1zs7vs"],
+          "podcastCategories": ["5vNa3RnSZpC"],
+          "podcastId": "0RMk6UYGq",
+          "podcastImageUrl": "http://example.com/imageUrl",
+          "podcastTitle": "Test podcast title 2",
+          "userPlaybackPosition": 345
+        }
+      }      
+      
+      test('update user history with sample 1', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user/add-or-update-history-item`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .send(queueItem1)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Updated user history')
+  
+            done()
+          })
+      })
+
+      test('update user history with sample 2', async (done) => {
+        chai.request(global.app)
+          .patch(`${v1Path}/user/add-or-update-history-item`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .send(queueItem2)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Updated user history')
+  
+            done()
+          })
+      })
+    })
+
+    describe('history - clear all', () => {
+
+      test('clear', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user/history-item/clear-all`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+
+            chaiExpect(res.body.message).to.equal('Cleared all history items.')
+  
+            done()
+          })
+      })
+    })
+
+    
+
+    describe('user delete', () => {
+
+      test('when the user is not logged in', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+  
+            done()
+          })
+      })
+      test('when the user is logged in', async (done) => {
+        chai.request(global.app)
+          .delete(`${v1Path}/user`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+  
             done()
           })
       })

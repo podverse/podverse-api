@@ -15,27 +15,46 @@ export const testUsers = {
   }
 }
 
-export const sampleQueueItem = {
-  'clipEndTime': 1199,
-  'clipId': 'jxv22OGr',
-  'clipStartTime': 1114,
-  'clipTitle': 'Test clip title',
-  'episodeDescription': 'Test episode description',
-  'episodeId': 'gRgjd3YcKb',
-  'episodeImageUrl': 'http://example.com/imageUrl',
-  'episodeMediaUrl': 'http://example.com/mediaUrl',
-  'episodePubDate': '2019-01-01T23:54:08.000Z',
-  'episodeTitle': 'Test episode title',
-  'isPublic': true,
-  'ownerId': 'EVHDBRZY',
-  'ownerIsPublic': true,
-  'ownerName': 'Free Trial Valid - Test User',
-  'podcastAuthors': ['Rk1zs7vs'],
-  'podcastCategories': ['5vNa3RnSZpC'],
-  'podcastId': '0RMk6UYGq',
-  'podcastImageUrl': 'http://example.com/imageUrl',
-  'podcastTitle': 'Test podcast title',
-  'userPlaybackPosition': 123
+export const sampleQueueItem1 = {
+  "clipEndTime": 1199,
+  "clipId": "jxv22OGr",
+  "clipStartTime": 1114,
+  "clipTitle": "Test clip title",
+  "episodeDescription": "Test episode description",
+  "episodeId": "gRgjd3YcKb",
+  "episodeImageUrl": "http://example.com/imageUrl",
+  "episodeMediaUrl": "http://example.com/mediaUrl",
+  "episodePubDate": "2019-01-01T23:54:08.000Z",
+  "episodeTitle": "Test episode title",
+  "isPublic": true,
+  "ownerId": "EVHDBRZY",
+  "ownerIsPublic": true,
+  "ownerName": "Free Trial Valid - Test User",
+  "podcastAuthors": ["Rk1zs7vs"],
+  "podcastCategories": ["5vNa3RnSZpC"],
+  "podcastId": "0RMk6UYGq",
+  "podcastImageUrl": "http://example.com/imageUrl",
+  "podcastTitle": "Test podcast title",
+  "userPlaybackPosition": 123
 }
 
-export const sampleQueueItems = [sampleQueueItem]
+export const sampleQueueItem2 = {
+  "episodeDescription": "Test episode description 2",
+  "episodeId": "4s2CiyLsJJ",
+  "episodeImageUrl": "http://example.com/imageUrl",
+  "episodeMediaUrl": "http://example.com/mediaUrl",
+  "episodePubDate": "2020-01-01T23:54:08.000Z",
+  "episodeTitle": "Test episode title 2",
+  "isPublic": true,
+  "ownerId": "",
+  "ownerIsPublic": null,
+  "ownerName": "",
+  "podcastAuthors": ["Rk1zs7vs"],
+  "podcastCategories": ["5vNa3RnSZpC"],
+  "podcastId": "0RMk6UYGq",
+  "podcastImageUrl": "http://example.com/imageUrl",
+  "podcastTitle": "Test podcast title 2",
+  "userPlaybackPosition": 345
+}
+
+export const sampleQueueItems = [sampleQueueItem1, sampleQueueItem2]
