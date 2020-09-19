@@ -216,17 +216,21 @@ const getEpisodes = async (query, includeNSFW) => {
 
     return [episodes, count]
   } else {
-    if (podcastIds.length > 1 || podcastIds.length === 0) {
-      qb.offset(skip)
-      qb.limit(take)
-    }
+    qb.offset(skip)
+    qb.limit(take)
 
     const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
     
     query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
     const episodes = await qb.getRawMany()
 
-    return [episodes, count]
+    // Limit the description length since we don't need the full description in list views.
+    const cleanedEpisodes = episodes.map((x) => {
+      x.description = x.description ? x.description.substr(0, 500) : '';
+      return x
+    })
+
+    return [cleanedEpisodes, count]
   }
 }
 
