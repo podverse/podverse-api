@@ -36,14 +36,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
-
-          /* START TEMP CODE! RE-UPLOAD ALL PODCAST IMAGES TO CORRECT CONTENT-TYPE ERROR */
-          const podcastRepo = getRepository(Podcast)
-
-          await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
-          resolve()
-          return
-          /* END TEMP CODE! RE-UPLOAD ALL PODCAST IMAGES TO CORRECT CONTENT-TYPE ERROR */
         }
 
 
