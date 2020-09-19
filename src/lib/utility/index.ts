@@ -145,7 +145,17 @@ export const cleanFileExtension = (fileExtension: string) => {
   } else if (fileExtension.indexOf('jpeg') >= 0) {
     return 'jpeg'
   } else {
-    return
+    return 'png'
+  }
+}
+
+export const getImageContentTypeHeader = (cleanedFileExtension: string) => {
+  if (cleanedFileExtension === 'jpg') {
+    return 'image/jpg'
+  } else if (cleanedFileExtension === 'jpeg') {
+    return 'image/jpeg'
+  } else {
+    return 'image/png'
   }
 }
 
