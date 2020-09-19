@@ -36,7 +36,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
+
+          /* START TEMP CODE! RE-UPLOAD ALL PODCAST IMAGES TO CORRECT CONTENT-TYPE ERROR */
+          const podcastRepo = getRepository(Podcast)
+
+          await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+          resolve()
+          return
+          /* END TEMP CODE! RE-UPLOAD ALL PODCAST IMAGES TO CORRECT CONTENT-TYPE ERROR */
         }
+
 
         // Stop parsing if the feed has not been updated since it was last parsed.
         if (
@@ -180,20 +189,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         await podcastRepo.save(podcast)
         logPerformance('podcast save', _logEnd)
 
-        // Only shrinkImages and upload to server in production
-        if (process.env.NODE_ENV === 'production') {
-          if (podcast && podcast.imageUrl) {
-            logPerformance('shrinkImage', _logStart)
-            const shrunkImageUrl = await shrinkImage(podcast)
-            logPerformance('shrinkImage', _logEnd)
-            if (shrunkImageUrl) {
-              podcast.shrunkImageUrl = shrunkImageUrl
-              logPerformance('shrunkImageUrl podcast save', _logStart)
-              await podcastRepo.save(podcast)
-              logPerformance('shrunkImageUrl podcast save', _logEnd)
-            }
-          }
-        }
+        await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
 
         logPerformance('save updatedSavedEpisodes', _logStart)
         await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
@@ -224,6 +220,23 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       logPerformance('parseFeedUrl', _logEnd, 'feedUrl.url = ' + feedUrl.url)
     })
   })
+}
+
+const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) => {
+  // Only shrinkImages and upload to server in production
+  if (process.env.NODE_ENV === 'production') {
+    if (podcast && podcast.imageUrl) {
+      logPerformance('shrinkImage', _logStart)
+      const shrunkImageUrl = await shrinkImage(podcast)
+      logPerformance('shrinkImage', _logEnd)
+      if (shrunkImageUrl) {
+        podcast.shrunkImageUrl = shrunkImageUrl
+        logPerformance('shrunkImageUrl podcast save', _logStart)
+        await podcastRepo.save(podcast)
+        logPerformance('shrunkImageUrl podcast save', _logEnd)
+      }
+    }
+  }
 }
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
