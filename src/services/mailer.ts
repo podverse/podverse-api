@@ -5,10 +5,7 @@ export const createTransporter = () => {
     service: process.env.MAILER_SERVICE,
     host: process.env.MAILER_HOST,
     port: process.env.MAILER_PORT,
-    secure: process.env.NODE_ENV !== 'development',
-    tls: {
-      minVersion: 'TLSv1'
-    },
+    requireTLS: true,
     auth: {
       user: process.env.MAILER_USERNAME,
       pass: process.env.MAILER_PASSWORD
