@@ -226,7 +226,7 @@ const getEpisodes = async (query, includeNSFW) => {
 
     // Limit the description length since we don't need the full description in list views.
     const cleanedEpisodes = episodes.map((x) => {
-      x.description = x.description ? x.description.substr(0, 5000) : '';
+      x.description = x.description ? x.description.substr(0, 2500) : '';
       return x
     })
 
