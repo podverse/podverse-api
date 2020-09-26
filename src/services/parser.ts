@@ -419,7 +419,7 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
   // Make sure to remove duplicate values to avoid unique slug/name value collisions
-  const authorNamesArray = [...new Set(authorNames.split(',').map(x => x.replace(/\s/g, '').trim()))]
+  const authorNamesArray = [...new Set(authorNames.split(',').map(x => x.trim()))]
   const allAuthorSlugs = authorNamesArray.map(x => convertToSlug(x))
 
   let existingAuthors = [] as any
