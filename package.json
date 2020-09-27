@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.9.13",
+  "version": "2.9.14",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -150,6 +150,7 @@
     "pg": "7.14.0",
     "podverse-shared": "^1.0.3",
     "reflect-metadata": "0.1.13",
+    "request-promise-native": "^1.0.9",
     "sharp": "0.23.4",
     "shortid": "2.2.15",
     "ts-jest": "26.1.1",
