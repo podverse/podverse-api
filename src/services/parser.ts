@@ -29,11 +29,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
       try {
         let podcast = new Podcast()
-        let savedPodcast
-
+        
         if (feedUrl.podcast) {
           logPerformance('getPodcast', _logStart, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
-          savedPodcast = await getPodcast(feedUrl.podcast.id, false)
+          const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
           logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
