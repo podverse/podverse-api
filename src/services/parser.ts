@@ -12,7 +12,7 @@ import { shrinkImage } from './imageShrinker'
 const { awsConfig, parserSupportedLanguages } = config
 const queueUrls = awsConfig.queueUrls
 
-export const parseFeedUrl = async (feedUrl, /*forceReparsing = false*/) => {
+export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
   logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
   const response = await request(feedUrl.url, { method: 'GET' })
@@ -39,17 +39,17 @@ export const parseFeedUrl = async (feedUrl, /*forceReparsing = false*/) => {
         }
 
         // Stop parsing if the feed has not been updated since it was last parsed.
-        // if (
-        //     !forceReparsing
-        //     && podcast.feedLastUpdated
-        //     && data.updated
-        //     && new Date(podcast.feedLastUpdated) >= new Date(data.updated)
-        //     && !podcast.alwaysFullyParse
-        // ) {
-        //   console.log('Stop parsing if the feed has not been updated since it was last parsed')
-        //   resolve()
-        //   return
-        // }
+        if (
+            !forceReparsing
+            && podcast.feedLastUpdated
+            && data.updated
+            && new Date(podcast.feedLastUpdated) >= new Date(data.updated)
+            && !podcast.alwaysFullyParse
+        ) {
+          console.log('Stop parsing if the feed has not been updated since it was last parsed')
+          resolve()
+          return
+        }
 
         // Do not parse a feed if it does not use a supported langugage
         if (!data.language) {
@@ -250,11 +250,11 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const feedUrls = await getFeedUrls({ podcastId: podcastIds })
-  /*const forceReparsing = true*/
+  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl/*, forceReparsing*/)
+      await parseFeedUrl(feedUrl, forceReparsing)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
