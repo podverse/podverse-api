@@ -658,4 +658,4 @@ const extractFeedMessage = message => {
     } : {}),
     receiptHandle: message.ReceiptHandle
   } as any
-}
+} 
