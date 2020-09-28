@@ -12,7 +12,9 @@ import { shrinkImage } from './imageShrinker'
 const { awsConfig, parserSupportedLanguages } = config
 const queueUrls = awsConfig.queueUrls
 
-export const parseFeedUrl = async (feedUrl, /*forceReparsing = false*/) => {
+export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
+  console.log('TEMP', forceReparsing)
+
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
   logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
   const response = await request(feedUrl.url, { method: 'GET' })
