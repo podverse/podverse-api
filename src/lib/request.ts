@@ -4,6 +4,7 @@ const { userAgent } = config
 
 export const request = async (url: string, options?: any) => {
   const headers = (options && options.headers) || {}
+
   const response = await axios({
     timeout: 10000,
     url,
@@ -14,5 +15,5 @@ export const request = async (url: string, options?: any) => {
     }
   })
 
-  return response
+  return response.data
 }

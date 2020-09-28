@@ -1,5 +1,5 @@
 import { config } from '~/config'
-import { request } from '~/lib/request'
+import * as request from 'request-promise-native'
 import { cleanFileExtension, convertToSlug, getImageContentTypeHeader } from '~/lib/utility'
 import { s3 } from '~/services/aws'
 

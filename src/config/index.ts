@@ -54,6 +54,7 @@ export interface Config {
   socialRedditPageUrl: string
   socialTwitterImageUrl: string
   socialTwitterPageUrl: string
+  parserSupportedLanguages: any[]
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -115,6 +116,9 @@ const appStoreConfig = {
   sharedSecret: process.env.APP_STORE_API_SHARED_SECRET
 }
 
+let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || 'en' as any
+parserSupportedLanguages = parserSupportedLanguages.split(',')
+
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
 const config: Config = {
@@ -169,6 +173,7 @@ const config: Config = {
   socialRedditPageUrl,
   socialTwitterImageUrl,
   socialTwitterPageUrl,
+  parserSupportedLanguages,
   legalName,
   legalAddress,
   websiteDomain,

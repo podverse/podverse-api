@@ -9,17 +9,16 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 
-const { awsConfig } = config
+const { awsConfig, parserSupportedLanguages } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
   logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
-  const response = await request(feedUrl.url)
+  const response = await request(feedUrl.url, { method: 'GET' })
   logPerformance('request feedUrl.url', _logEnd, 'feedUrl.url ' + feedUrl.url)
 
   return new Promise(async (resolve, reject) => {
-
     logPerformance('parsePodcast', _logStart)
     await parsePodcast(response, async (error, data) => {
       logPerformance('parsePodcast', _logEnd)
@@ -30,9 +29,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
       try {
         let podcast = new Podcast()
+        let savedPodcast
+
         if (feedUrl.podcast) {
           logPerformance('getPodcast', _logStart, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
-          const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
+          savedPodcast = await getPodcast(feedUrl.podcast.id, false)
           logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
           if (!savedPodcast) throw Error('Invalid podcast id provided.')
           podcast = savedPodcast
@@ -51,6 +52,25 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           return
         }
 
+        // Do not parse a feed if it does not use a supported langugage
+        if (!data.language) {
+          console.log('Stop parsing if no language tag provided.')
+          resolve()
+          return
+        } else {
+          const hasSupportedLanguage = parserSupportedLanguages.some((x: string) => {
+            const firstLang = data && data.language && data.language.split('-')[0]
+            return x && (x.indexOf(firstLang) >= 0)
+          })
+
+          if (!hasSupportedLanguage) {
+            console.log('Stop parsing if the language tag does not match a supported language tag.')
+            resolve()
+            return
+          }
+        }
+        
+        podcast.language = data.language
         podcast.isPublic = true
         podcast.feedLastParseFailed = false
 
@@ -161,7 +181,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
         podcast.isExplicit = !!data.explicit
         podcast.guid = data.guid
-        podcast.language = data.language
         podcast.linkUrl = data.link
         podcast.sortableTitle = data.title ? data.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '').trim() : ''
         podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
