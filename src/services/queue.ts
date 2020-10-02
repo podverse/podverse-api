@@ -28,13 +28,13 @@ export const addAllPublicFeedUrlsToQueue = async () => {
 
     const feedUrls = await qb.getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls)
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
   } catch (error) {
     console.log('queue:addAllPublicFeedUrlsToQueue', error)
   }
 }
 
-export const addAllOrphanFeedUrlsToQueue = async () => {
+export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
 
@@ -49,13 +49,13 @@ export const addAllOrphanFeedUrlsToQueue = async () => {
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
       .getMany()
 
-    await sendFeedUrlsToParsingQueue(feedUrls)
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
-    console.log('queue:addAllOrphanFeedUrlsToQueue', error)
+    console.log('queue:addAllOrphanFeedUrlsToPriorityQueue', error)
   }
 }
 
-export const addExistingFeedUrlsByIdToQueue = async (feedUrlIds) => {
+export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
   await connectToDb()
 
@@ -75,15 +75,39 @@ export const addExistingFeedUrlsByIdToQueue = async (feedUrlIds) => {
 
     console.log('Total feedUrls found:', feedUrls.length)
 
-    await sendFeedUrlsToParsingQueue(feedUrls)
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
   } catch (error) {
-    console.log('queue:addExistingFeedUrlsByIdToQueue', error)
+    console.log('queue:addFeedUrlsByFeedIdToQueue', error)
   }
 }
 
-export const sendFeedUrlsToParsingQueue = async (feedUrls) => {
-  const queueUrl = queueUrls.feedsToParse.queueUrl
+export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: string[]) => {
 
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+      .where(
+        'feedUrl.isAuthority = true AND podcast.authorityId IN (:...authorityIds)',
+        { authorityIds }
+      )
+      .getMany()
+
+    console.log('Total feedUrls found:', feedUrls.length)
+
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
+  } catch (error) {
+    console.log('queue:addFeedUrlsByAuthorityIdToPriorityQueue', error)
+  }
+}
+
+export const sendFeedUrlsToQueue = async (feedUrls, queueUrl) => {
   const attributes = []
   for (const feedUrl of feedUrls) {
     const attribute = generateFeedMessageAttributes(feedUrl) as never
@@ -164,7 +188,7 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
         }
       }
       console.log('')
-      await deleteMessage(msg.receiptHandle)
+      await deleteMessage(queueUrls.feedsToParse.errorsQueueUrl, msg.receiptHandle)
     } else {
       console.log('no message found')
       console.log('')
@@ -198,9 +222,7 @@ export const receiveMessageFromQueue = async queue => {
   return message
 }
 
-export const deleteMessage = async (receiptHandle) => {
-  const queueUrl = queueUrls.feedsToParse.queueUrl
-
+export const deleteMessage = async (queueUrl, receiptHandle) => {
   if (receiptHandle) {
     const params = {
       QueueUrl: queueUrl,
