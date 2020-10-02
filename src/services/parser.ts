@@ -325,23 +325,21 @@ export const parseOrphanFeedUrls = async () => {
   }
 }
 
-export const parseFeedUrlsFromQueue = async (restartTimeOut) => {
-  const shouldContinue = await parseNextFeedFromQueue()
+export const parseFeedUrlsFromQueue = async (queueUrl, restartTimeOut) => {
+  const shouldContinue = await parseNextFeedFromQueue(queueUrl)
 
   if (shouldContinue) {
-    await parseFeedUrlsFromQueue(restartTimeOut)
+    await parseFeedUrlsFromQueue(queueUrl, restartTimeOut)
   } else if (restartTimeOut) {
     
     setTimeout(() => {
-      parseFeedUrlsFromQueue(restartTimeOut)
+      parseFeedUrlsFromQueue(queueUrl, restartTimeOut)
     }, restartTimeOut)
   }
 }
 
-export const parseNextFeedFromQueue = async () => {
+export const parseNextFeedFromQueue = async (queueUrl: string) => {
   logPerformance('parseNextFeedFromQueue', _logStart)
-
-  const queueUrl = queueUrls.feedsToParse.queueUrl
 
   logPerformance('parseNextFeedFromQueue > receiveMessageFromQueue', _logStart, 'queueUrl ' + queueUrl)
   const message = await receiveMessageFromQueue(queueUrl)
@@ -396,7 +394,7 @@ export const parseNextFeedFromQueue = async () => {
   }
 
   logPerformance('parseNextFeedFromQueue > deleteMessage', _logStart)
-  await deleteMessage(feedUrlMsg.receiptHandle)
+  await deleteMessage(queueUrl, feedUrlMsg.receiptHandle)
   logPerformance('parseNextFeedFromQueue > deleteMessage', _logEnd)
 
   logPerformance('parseNextFeedFromQueue', _logEnd)
