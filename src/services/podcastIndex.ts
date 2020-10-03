@@ -43,7 +43,7 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
     const recentlyUpdatedFeeds = response.feeds
 
     console.log('original recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
-    
+    console.log('recentlyUpdatedFeeds', recentlyUpdatedFeeds)
     const recentlyUpdatedAuthorityIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
       const { itunesId, language } = item
@@ -56,6 +56,8 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
       }
     }
     
+    console.log('raw recentlyUpdatedAuthorityIds', recentlyUpdatedAuthorityIds)
+
     const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)];
 
     console.log('unique recentlyUpdatedAuthorityIds', uniqueAuthorityIds)
