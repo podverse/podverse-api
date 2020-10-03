@@ -1,10 +1,9 @@
 import { request } from '../lib/request'
-import { hasSupportedLanguageMatch } from '../lib/utility'
 import { config } from '~/config'
 import { addFeedUrlsByAuthorityIdToPriorityQueue } from './queue'
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
-const { parserSupportedLanguages, podcastIndexConfig, userAgent } = config
+const { podcastIndexConfig, userAgent } = config
 
 const apiHeaderTime = new Date().getTime() / 1000;
 const hash = sha1(
@@ -42,25 +41,20 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
     const response = await getRecentlyUpdatedPodcastFeeds()
     const recentlyUpdatedFeeds = response.feeds
 
-    console.log('original recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
-    console.log('recentlyUpdatedFeeds', recentlyUpdatedFeeds)
+    console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
+
     const recentlyUpdatedAuthorityIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
+      console.log('recentlyUpdatedFeed:', item)
       const { itunesId, language } = item
       if (itunesId && language) {
-        const hasSupportedLanguage = parserSupportedLanguages.some((supportedLang: string) => hasSupportedLanguageMatch(supportedLang, language))
-
-        if (hasSupportedLanguage) {
-          recentlyUpdatedAuthorityIds.push(itunesId)
-        }
+        recentlyUpdatedAuthorityIds.push(itunesId)
       }
     }
     
-    console.log('raw recentlyUpdatedAuthorityIds', recentlyUpdatedAuthorityIds)
-
     const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)];
 
-    console.log('unique recentlyUpdatedAuthorityIds', uniqueAuthorityIds)
+    console.log('unique recentlyUpdatedAuthorityIds count', uniqueAuthorityIds.length)
 
     // Send the feedUrls with matching authorityIds found in our database to
     // the priority parsing queue for immediate parsing.
