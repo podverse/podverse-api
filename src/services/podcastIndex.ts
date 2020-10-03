@@ -12,8 +12,15 @@ const hash = sha1(
 
 const getRecentlyUpdatedPodcastFeeds = async () => {
   const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
-  const startRangeTime = Math.floor((new Date().getTime() - getRecentlyUpdatedSinceTime) / 1000)
+  const currentTime = new Date().getTime()
+  const startRangeTime = Math.floor((currentTime - getRecentlyUpdatedSinceTime) / 1000)
+
+  console.log('currentTime----', currentTime)
+  console.log('startRangeTime-', startRangeTime)
+
   const url = `${podcastIndexConfig.baseUrl}/recent/feeds?since=${startRangeTime}&max=1000`
+
+  console.log('url------------', url)
 
   const response = await request(url, {
     method: 'GET',
@@ -45,7 +52,6 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
 
     const recentlyUpdatedAuthorityIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
-      console.log('recentlyUpdatedFeed:', item)
       const { itunesId, language } = item
       if (itunesId && language) {
         recentlyUpdatedAuthorityIds.push(itunesId)
