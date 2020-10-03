@@ -9,7 +9,7 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 
-const { awsConfig, parserSupportedLanguages } = config
+const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
@@ -49,24 +49,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
           console.log('Stop parsing if the feed has not been updated since it was last parsed')
           resolve()
           return
-        }
-
-        // Do not parse a feed if it does not use a supported langugage
-        if (!data.language) {
-          console.log('Stop parsing if no language tag provided.')
-          resolve()
-          return
-        } else {
-          const hasSupportedLanguage = parserSupportedLanguages.some((x: string) => {
-            const firstLang = data && data.language && data.language.split('-')[0]
-            return x && (x.indexOf(firstLang) >= 0)
-          })
-
-          if (!hasSupportedLanguage) {
-            console.log('Stop parsing if the language tag does not match a supported language tag.')
-            resolve()
-            return
-          }
         }
         
         podcast.language = data.language
