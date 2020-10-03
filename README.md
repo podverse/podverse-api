@@ -122,5 +122,3 @@ npm run dev:scripts:queryUniquePageviews -- podcasts allTime
 
 See the [podverse-ops repo](https://github.com/podverse/podverse-ops) for a sample
 cron configuration for querying the Google API on a timer.
-```
-
