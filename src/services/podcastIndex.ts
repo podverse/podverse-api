@@ -41,6 +41,8 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
   try {
     const response = await getRecentlyUpdatedPodcastFeeds()
     const recentlyUpdatedFeeds = response.feeds
+
+    console.log('original recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
     
     const recentlyUpdatedAuthorityIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
@@ -53,13 +55,15 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
         }
       }
     }
+    
+    const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)];
 
-    console.log('recentlyUpdatedAuthorityIds', recentlyUpdatedAuthorityIds)
+    console.log('unique recentlyUpdatedAuthorityIds', uniqueAuthorityIds)
 
     // Send the feedUrls with matching authorityIds found in our database to
     // the priority parsing queue for immediate parsing.
     if (recentlyUpdatedAuthorityIds.length > 0) {
-      await addFeedUrlsByAuthorityIdToPriorityQueue(recentlyUpdatedAuthorityIds)
+      await addFeedUrlsByAuthorityIdToPriorityQueue(uniqueAuthorityIds)
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
