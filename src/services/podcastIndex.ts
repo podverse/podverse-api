@@ -58,7 +58,7 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
       }
     }
     
-    const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)];
+    const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)].slice(0, 1000);
 
     console.log('unique recentlyUpdatedAuthorityIds count', uniqueAuthorityIds.length)
 
