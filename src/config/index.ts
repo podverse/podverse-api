@@ -55,6 +55,7 @@ export interface Config {
   socialTwitterImageUrl: string
   socialTwitterPageUrl: string
   parserSupportedLanguages: any[]
+  podcastIndexConfig: any
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -95,6 +96,12 @@ const socialTwitterImageUrl = process.env.SOCIAL_TWITTER_IMAGE_URL || ''
 const socialTwitterPageUrl = process.env.SOCIAL_TWITTER_PAGE_URL || ''
 const legalName = process.env.LEGAL_NAME || ''
 const legalAddress = process.env.LEGAL_ADDRESS || ''
+const podcastIndexAuthKey = process.env.PODCAST_INDEX_AUTH_KEY || ''
+const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
+const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
+// default 30 minutes (1800000 milliseconds)
+const podcastIndexRecentlyUpdatedSinceTime =
+  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '1800000'
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -110,6 +117,7 @@ const paypalConfig = {
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
   mode: process.env.PAYPAL_MODE
 }
+
 const appStoreConfig = {
   apiUrlProd: process.env.APP_STORE_API_URL_PROD,
   apiUrlSandbox: process.env.APP_STORE_API_URL_SANDBOX,
@@ -118,6 +126,13 @@ const appStoreConfig = {
 
 let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || 'en' as any
 parserSupportedLanguages = parserSupportedLanguages.split(',')
+
+const podcastIndexConfig = {
+  authKey: podcastIndexAuthKey,
+  secretKey: podcastIndexSecretKey,
+  baseUrl: podcastIndexBaseUrl,
+  getRecentlyUpdatedSinceTime: parseInt(podcastIndexRecentlyUpdatedSinceTime, 10)
+}
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
@@ -174,6 +189,7 @@ const config: Config = {
   socialTwitterImageUrl,
   socialTwitterPageUrl,
   parserSupportedLanguages,
+  podcastIndexConfig,
   legalName,
   legalAddress,
   websiteDomain,

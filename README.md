@@ -92,7 +92,7 @@ npm run scripts:parsePublicFeedUrls
 This project uses AWS SQS for its remote queue.
 
 ```
-npm run dev:scripts:addAllOrphanFeedUrlsToQueue
+npm run dev:scripts:addAllOrphanFeedUrlsToPriorityQueue
 ```
 
 or:
@@ -101,11 +101,18 @@ or:
 npm run dev:scripts:addAllPublicFeedUrlsToQueue
 ```
 
+or to add all recently updated (according to Podcast Index), public feeds to the priority queue:
+
+```
+yarn dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue
+```
+
 After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
 ```
-npm run dev:scripts:parseFeedUrlsFromQueue
+npm run dev:scripts:parseFeedUrlsFromQueue <restartTimeOut> <queueType>
+# restartTimeOut in milliseconds; queueType is optional and only acceptable value is "priority"
 ```
 
 ### Request Google Analytics pageview data and save to database

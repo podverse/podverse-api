@@ -157,6 +157,15 @@ export const getImageContentTypeHeader = (cleanedFileExtension: string) => {
   }
 }
 
+export const hasSupportedLanguageMatch = (lang1, lang2) => {
+  if (lang1 && lang2) {
+    const firstLang = lang1.split('-')[0]
+    return lang2.indexOf(firstLang) >= 0
+  } else {
+    return false
+  }
+}
+
 export const logPerformance = (subject: string, stage: string, notes = '') => {
   console.log(subject + ',' + stage + ',' + Math.ceil(performance.now()).toString() + 'ms' + ',' + notes + ',')
 }

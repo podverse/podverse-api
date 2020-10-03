@@ -1,4 +1,4 @@
-import { addExistingFeedUrlsByIdToQueue } from '~/services/queue'
+import { addFeedUrlsByFeedIdToQueue } from '~/services/queue'
 
 (async function () {
   let feedUrls = []
@@ -13,7 +13,7 @@ import { addExistingFeedUrlsByIdToQueue } from '~/services/queue'
       return
     }
 
-    await addExistingFeedUrlsByIdToQueue(feedUrls)
+    await addFeedUrlsByFeedIdToQueue(feedUrls)
   } catch (error) {
     console.log(error)
   }
