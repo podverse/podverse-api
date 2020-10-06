@@ -1,7 +1,31 @@
 .git
-node_modules
-.env
-/src/public/samples
+
 /src/config/bitpay/api.key
 /src/config/google/jwt.keys.json
 /src/config/parser/addFeedUrlsFile.json
+
+/image_storage
+
+# API keys and secrets
+.env
+
+# Dependency directory
+node_modules
+bower_components
+
+# Editors
+.idea
+*.iml
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore built ts files
+dist/**/*
+
+# Logging files
+*.log
+
+package-lock.json
+yarn.lock
