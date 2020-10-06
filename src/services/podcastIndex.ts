@@ -18,7 +18,7 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
   console.log('currentTime----', currentTime)
   console.log('startRangeTime-', startRangeTime)
 
-  const url = `${podcastIndexConfig.baseUrl}/recent/feeds?since=${startRangeTime}&max=1000`
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/updated?since=${startRangeTime}&max=1000`
 
   console.log('url------------', url)
 
