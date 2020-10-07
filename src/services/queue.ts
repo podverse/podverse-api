@@ -107,7 +107,7 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
   }
 }
 
-export const addNonAuthorityFeedUrlsToQueue = async () => {
+export const addNonAuthorityFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
 
@@ -126,7 +126,7 @@ export const addNonAuthorityFeedUrlsToQueue = async () => {
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
-    console.log('queue:addNonAuthorityFeedUrlsToQueue', error)
+    console.log('queue:addNonAuthorityFeedUrlsToPriorityQueue', error)
   }
 }
 
