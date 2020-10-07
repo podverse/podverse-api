@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.10.4",
+  "version": "2.10.5",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -15,6 +15,7 @@
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "dev:scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "dev:scripts:addFeedUrlsFromFile": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
+    "dev:scripts:addNonAuthorityFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonAuthorityFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "dev:scripts:parseExistingFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/parseFeedUrls.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
@@ -33,6 +34,7 @@
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "scripts:addFeedUrlsFromFile": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
+    "scripts:addNonAuthorityFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addNonAuthorityFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:parseExistingFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/queue/parseFeedUrls.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
