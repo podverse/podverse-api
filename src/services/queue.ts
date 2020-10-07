@@ -107,6 +107,29 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
   }
 }
 
+export const addNonAuthorityFeedUrlsToQueue = async () => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .leftJoinAndSelect('feedUrl.podcast', 'podcast')
+      .where(`feedUrl.isAuthority = true AND coalesce(TRIM(podcast.authorityId), '') = ''`)
+      .getMany()
+
+    console.log('Total feedUrls found:', feedUrls.length)
+
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
+  } catch (error) {
+    console.log('queue:addNonAuthorityFeedUrlsToQueue', error)
+  }
+}
+
 export const sendFeedUrlsToQueue = async (feedUrls, queueUrl) => {
   const attributes = []
   for (const feedUrl of feedUrls) {

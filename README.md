@@ -101,6 +101,12 @@ or:
 npm run dev:scripts:addAllPublicFeedUrlsToQueue
 ```
 
+or:
+
+```
+npm run dev:scripts:addNonAuthorityFeedUrlsToQueue
+```
+
 or to add all recently updated (according to Podcast Index), public feeds to the priority queue:
 
 ```
