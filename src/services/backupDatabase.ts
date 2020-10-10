@@ -1,17 +1,22 @@
 import { config } from '~/config'
 import { s3 } from '~/services/aws'
 const fs = require('fs')
-const path = require('path')
 
 const { awsConfig } = config
 const { backupDatbaseS3BucketName } = awsConfig
 
 export const backupDatabaseToS3 = async () => {
   try {
+    const fileRoot = process.argv[2]
+
+    if (!fileRoot) {
+      console.log('Must provide a fileRoot argument.')
+      return
+    }
 
     const yyyymmdd = new Date().toISOString().slice(0, 10)
     const filename = `${yyyymmdd}-daily/postgres.sql.gz`
-    const fileContent = fs.createReadStream(path.resolve(__dirname, `../../../db-backups/${filename}`))
+    const fileContent = fs.createReadStream(`${fileRoot}/db-backups/${filename}`)
 
     const s3Params = {
       Bucket: backupDatbaseS3BucketName,
