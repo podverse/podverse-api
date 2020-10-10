@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.10.9",
+  "version": "2.10.10",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -37,7 +37,7 @@
     "scripts:addFeedUrlsFromFile": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
     "scripts:addNonAuthorityFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonAuthorityFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
-    "scripts:backupDatabase": "./scripts/backupDatabase.sh",
+    "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
     "scripts:parseExistingFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/queue/parseFeedUrls.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
