@@ -1,4 +1,4 @@
-import { request } from '../lib/request'
+import axios from 'axios'
 import { config } from '~/config'
 import { addFeedUrlsByAuthorityIdToPriorityQueue } from './queue'
 const sha1 = require('crypto-js/sha1')
@@ -22,7 +22,8 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
 
   console.log('url------------', url)
 
-  const response = await request(url, {
+  const response = await axios({
+    url,
     method: 'GET',
     headers: {
       'User-Agent': userAgent,
@@ -32,7 +33,7 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
     }
   })
 
-  return response
+  return response && response.data
 }
 
 /**
