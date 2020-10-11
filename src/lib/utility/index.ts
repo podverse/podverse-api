@@ -166,6 +166,10 @@ export const hasSupportedLanguageMatch = (lang1, lang2) => {
   }
 }
 
+export const removeProtocol = (str: string) => {
+  return str ? str.replace(/^https?\:\/\//i, '') : ''
+}
+
 export const logPerformance = (subject: string, stage: string, notes = '') => {
   console.log(subject + ',' + stage + ',' + Math.ceil(performance.now()).toString() + 'ms' + ',' + notes + ',')
 }
