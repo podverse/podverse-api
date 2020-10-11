@@ -17,11 +17,14 @@ export class Podcast {
   })
   id: string
 
-  @Column({ default: false })
-  alwaysFullyParse?: boolean
+  @Column({ nullable: true, unique: true })
+  podcastIndexId?: string
 
   @Column({ nullable: true, unique: true })
   authorityId?: string
+
+  @Column({ default: false })
+  alwaysFullyParse?: boolean
 
   @Column({ nullable: true })
   description?: string
