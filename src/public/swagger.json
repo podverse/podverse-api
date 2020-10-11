@@ -2612,11 +2612,14 @@
         "id": {
           "type": "string"
         },
-        "alwaysFullyParse": {
-          "type": "boolean"
+        "podcastIndexId": {
+          "type": "string"
         },
         "authorityId": {
           "type": "string"
+        },
+        "alwaysFullyParse": {
+          "type": "boolean"
         },
         "description": {
           "type": "string"
