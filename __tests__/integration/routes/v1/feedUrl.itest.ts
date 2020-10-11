@@ -22,6 +22,7 @@ describe('FeedUrl endpoints', () => {
           const podcast = res.body.podcast
           chaiExpect(podcast.id).to.equal('Q_QCTJbNR')
           chaiExpect(podcast.alwaysFullyParse).to.equal(false)
+          chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast.authorityId).to.equal(null)
           chaiExpect(podcast).to.have.property('description')
           chaiExpect(podcast.feedLastParseFailed).to.equal(false)
@@ -87,6 +88,7 @@ describe('FeedUrl endpoints', () => {
 
           chaiExpect(podcast.id).to.equal('Q_QCTJbNR')
           chaiExpect(podcast.alwaysFullyParse).to.equal(false)
+          chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast.authorityId).to.equal(null)
           chaiExpect(podcast).to.have.property('description')
           chaiExpect(podcast.feedLastParseFailed).to.equal(false)
