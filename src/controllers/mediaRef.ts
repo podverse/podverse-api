@@ -6,7 +6,7 @@ const createError = require('http-errors')
 
 const relations = [
   'authors', 'categories', 'episode', 'episode.podcast', 'owner',
-  'episode.podcast.authors', 'episode.podcast.categories'
+  'episode.podcast.authors', 'episode.podcast.categories', 'episode.podcast.feedUrls'
 ]
 
 const createMediaRef = async obj => {
