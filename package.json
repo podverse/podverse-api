@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.10.16",
+  "version": "2.10.17",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -25,6 +25,7 @@
     "dev:scripts:parsePublicFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
     "dev:scripts:queryUniquePageviews": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "dev:scripts:receiveErrorMessageFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
+    "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
     "dev:scripts:syncWithFeedUrlsCSVDump": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
@@ -46,6 +47,7 @@
     "scripts:parsePublicFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
     "scripts:queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "scripts:receiveErrorMessageFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
+    "scripts:removeDeadEpisodes": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
     "scripts:syncWithFeedUrlsCSVDump": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
