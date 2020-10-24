@@ -234,7 +234,43 @@ const getEpisodes = async (query, includeNSFW) => {
   }
 }
 
+const getDeadEpisodes = async () => {
+  const repository = getRepository(Episode)
+
+  const qb = repository
+    .createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .where('episode."isPublic" = FALSE')
+    .leftJoin(
+      'episode.mediaRefs',
+      'mediaRef',
+      'mediaRef.id IS NULL'
+    )
+    .limit(100)
+
+  const episodes = await qb.getRawMany()
+  console.log('dead episode count:', episodes.length)
+
+  return episodes
+}
+
+const removeDeadEpisodes = async () => {
+  const deadEpisodes = await getDeadEpisodes()
+  await removeEpisodes(deadEpisodes)
+  await new Promise(r => setTimeout(r, 1000));
+  const shouldContinue = deadEpisodes.length > 0
+  return shouldContinue
+}
+
+const removeEpisodes = async (episodes: any[]) => {
+  const repository = getRepository(Episode)
+  for (const episode of episodes) {
+    await repository.remove(episode)
+  }
+}
+
 export {
   getEpisode,
-  getEpisodes
+  getEpisodes,
+  removeDeadEpisodes
 }
