@@ -258,7 +258,7 @@ const removeDeadEpisodes = async () => {
   const deadEpisodes = await getDeadEpisodes()
   await removeEpisodes(deadEpisodes)
   await new Promise(r => setTimeout(r, 1000));
-  const shouldContinue = deadEpisodes.length > 0
+  const shouldContinue = deadEpisodes.length === 100
   return shouldContinue
 }
 
