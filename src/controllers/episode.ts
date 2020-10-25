@@ -266,6 +266,7 @@ const removeEpisodes = async (episodes: any[]) => {
   const repository = getRepository(Episode)
   for (const episode of episodes) {
     await repository.remove(episode)
+    await new Promise(r => setTimeout(r, 100));
   }
 }
 
