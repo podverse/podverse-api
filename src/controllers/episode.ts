@@ -8,7 +8,7 @@ const createError = require('http-errors')
 const { superUserId } = config
 
 const relations = [
-  'authors', 'categories', 'mediaRefs', 'podcast', 'podcast.feedUrls',
+  'authors', 'categories', 'podcast', 'podcast.feedUrls',
   'podcast.authors', 'podcast.categories'
 ]
 
@@ -274,8 +274,10 @@ const removeEpisodes = async (episodes: any[]) => {
 }
 
 const retrieveLatestChapters = async (id) => {
-  const repository = getRepository(Episode)
-  const qb = repository
+  const episodeRepository = getRepository(Episode)
+  const mediaRefRepository = getRepository(MediaRef)
+
+  const qb = episodeRepository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
     .addSelect('episode.chaptersUrl', 'chaptersUrl')
@@ -293,13 +295,12 @@ const retrieveLatestChapters = async (id) => {
 
   if (chaptersUrl && (!chaptersUrlLastParsed || halfDay < chaptersUrlLastParsedDate)) {
     try {
-      await repository.update(episode.id, { chaptersUrlLastParsed: new Date() })
+      await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
       const response = await request(chaptersUrl)
       const parsedResponse = JSON.parse(response)
       const { chapters: newChapters } = parsedResponse
       if (newChapters) {
-        const repository = getRepository(MediaRef)
-        const qb = repository
+        const qb = mediaRefRepository
           .createQueryBuilder('mediaRef')
           .select('mediaRef.id', 'id')
           .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
@@ -358,18 +359,20 @@ const retrieveLatestChapters = async (id) => {
     }
   }
 
-  const officialChapters = await repository
+  const officialChapters = await mediaRefRepository
     .createQueryBuilder('mediaRef')
-    .select('mediaRef.id', 'id')
-    .addSelect('mediaRef.endTime', 'endTime')
-    .addSelect('mediaRef.imageUrl', 'imageUrl')
-    .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
-    .addSelect('mediaRef.linkUrl', 'linkUrl')
-    .addSelect('mediaRef.startTime', 'startTime')
-    .addSelect('mediaRef.title', 'title')
-    .where('mediaRef.isOfficialChapter = TRUE')
-    .orderBy('mediaRef.startTime', 'DESC')
-    .getRawMany()
+    .select('mediaRef.id')
+    .addSelect('mediaRef.endTime')
+    .addSelect('mediaRef.imageUrl')
+    .addSelect('mediaRef.isOfficialChapter')
+    .addSelect('mediaRef.linkUrl')
+    .addSelect('mediaRef.startTime')
+    .addSelect('mediaRef.title')
+    .where({
+      isOfficialChapter: true
+    })
+    .orderBy('mediaRef.startTime', 'ASC')
+    .getManyAndCount()
 
   return officialChapters
 }

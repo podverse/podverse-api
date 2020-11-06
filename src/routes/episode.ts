@@ -50,8 +50,9 @@ router.get('/:id',
 router.get('/:id/retrieve-latest-chapters',
   async ctx => {
     try {
+      if (!ctx.params.id) throw new Error('An episodeId is required.')
       const latestChapters = await retrieveLatestChapters(ctx.params.id)
-      ctx.body = { latestChapters }
+      ctx.body = latestChapters
     } catch (error) {
       emitRouterError(error, ctx)
     }
