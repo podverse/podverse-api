@@ -113,6 +113,7 @@
   },
   "dependencies": {
     "@koa/cors": "3.0.0",
+    "@podverse/podcast-feed-parser": "^1.0.1",
     "@types/crypto-js": "^3.1.47",
     "@types/jest": "26.0.3",
     "@typescript-eslint/eslint-plugin": "2.x",
@@ -154,7 +155,6 @@
     "koa-static": "5.0.0",
     "koa2-ratelimit": "0.9.0",
     "lint-staged": "9.5.0",
-    "node-podcast-parser": "2.3.0",
     "nodemailer": "6.3.1",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",

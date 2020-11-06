@@ -7,6 +7,11 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, Jo
 
 const shortid = require('shortid')
 
+type Funding = {
+  url: string
+  value: string
+}
+
 @Entity('podcasts')
 export class Podcast {
 
@@ -35,6 +40,9 @@ export class Podcast {
   @Index()
   @Column({ nullable: true })
   feedLastUpdated?: Date
+
+  @Column('simple-json', { nullable: true })
+  funding: Funding[]
 
   @Index()
   @Column({ nullable: true })
