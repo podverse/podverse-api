@@ -1,7 +1,11 @@
 import { getRepository } from 'typeorm'
-import { Episode } from '~/entities'
+import { config } from '~/config'
+import { Episode, MediaRef } from '~/entities'
+import { request } from '~/lib/request'
 import { getQueryOrderColumn } from '~/lib/utility'
+import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
+const { superUserId } = config
 
 const relations = [
   'authors', 'categories', 'mediaRefs', 'podcast', 'podcast.feedUrls',
@@ -269,8 +273,110 @@ const removeEpisodes = async (episodes: any[]) => {
   }
 }
 
+const retrieveLatestChapters = async (id) => {
+  const repository = getRepository(Episode)
+  const qb = repository
+    .createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .addSelect('episode.chaptersUrl', 'chaptersUrl')
+    .addSelect('episode.chaptersUrlLastParsed', 'chaptersUrlLastParsed')
+    .where('episode.id = :id', { id })
+
+  const episode = await qb.getRawOne() as Episode
+  if (!episode) throw new Error('Episode not found') 
+  const { chaptersUrl, chaptersUrlLastParsed } = episode
+
+  // Update the latest chapters only once every 12 hours for an episode.
+  // If less than 12 hours, then just return the latest chapters from the database.
+  const halfDay = new Date().getTime() + (1 * 12 * 60 * 60 * 1000)
+  const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
+
+  if (chaptersUrl && (!chaptersUrlLastParsed || halfDay < chaptersUrlLastParsedDate)) {
+    try {
+      await repository.update(episode.id, { chaptersUrlLastParsed: new Date() })
+      const response = await request(chaptersUrl)
+      const parsedResponse = JSON.parse(response)
+      const { chapters: newChapters } = parsedResponse
+      if (newChapters) {
+        const repository = getRepository(MediaRef)
+        const qb = repository
+          .createQueryBuilder('mediaRef')
+          .select('mediaRef.id', 'id')
+          .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
+          .addSelect('mediaRef.startTime', 'startTime')
+          .where('mediaRef.isOfficialChapter = TRUE')
+        const existingChapters = await qb.getRawMany()
+
+        // If existing chapter with current chapter's startTime does not exist,
+        // then set the existingChapter to isPublic = false.
+        const deadChapters = existingChapters.filter(x => {
+          return newChapters.every(y => y.startTime !== x.startTime)
+        })
+
+        for (const deadChapter of deadChapters) {
+          await updateMediaRef({
+            ...deadChapter,
+            isPublic: false
+          }, superUserId)
+        }
+
+        for (const newChapter of newChapters) {
+          try {
+            // If a chapter with that startTime already exists, then update it.
+            // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
+            const existingChapter = existingChapters.find(x => x.startTime === newChapter.startTime)
+            if (existingChapter && existingChapter.id) {
+              await updateMediaRef({
+                id: existingChapter.id,
+                imageUrl: newChapter.img || null,
+                isOfficialChapter: true,
+                isPublic: true,
+                linkUrl: newChapter.url || null,
+                startTime: newChapter.startTime,
+                title: newChapter.title,
+                episodeId: id
+              }, superUserId)
+            } else {
+              await createMediaRef({
+                imageUrl: newChapter.img || null,
+                isOfficialChapter: true,
+                isPublic: true,
+                linkUrl: newChapter.url || null,
+                startTime: newChapter.startTime,
+                title: newChapter.title,
+                owner: superUserId,
+                episodeId: id
+              })
+            }
+          } catch (error) {
+            console.log('retrieveLatestChapters newChapter', error)
+          }
+        }
+      }
+    } catch (error) {
+      console.log('retrieveLatestChapters request', error)
+    }
+  }
+
+  const officialChapters = await repository
+    .createQueryBuilder('mediaRef')
+    .select('mediaRef.id', 'id')
+    .addSelect('mediaRef.endTime', 'endTime')
+    .addSelect('mediaRef.imageUrl', 'imageUrl')
+    .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
+    .addSelect('mediaRef.linkUrl', 'linkUrl')
+    .addSelect('mediaRef.startTime', 'startTime')
+    .addSelect('mediaRef.title', 'title')
+    .where('mediaRef.isOfficialChapter = TRUE')
+    .orderBy('mediaRef.startTime', 'DESC')
+    .getRawMany()
+
+  return officialChapters
+}
+
 export {
   getEpisode,
   getEpisodes,
-  removeDeadEpisodes
+  removeDeadEpisodes,
+  retrieveLatestChapters
 }

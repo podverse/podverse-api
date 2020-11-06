@@ -31,6 +31,17 @@ export class Episode {
   id: string
 
   @Column({ nullable: true })
+  chaptersType?: string
+
+  @ValidateIf(a => a.chaptersUrl != null)
+  @IsUrl()
+  @Column({ nullable: true })
+  chaptersUrl?: string
+
+  @Column({ nullable: true })
+  chaptersUrlLastParsed: Date
+
+  @Column({ nullable: true })
   description?: string
 
   @ValidateIf(a => a.duration != null)

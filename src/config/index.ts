@@ -20,6 +20,7 @@ export interface Config {
   userAgent: string
   cookieDomain: string
   cookieIsSecure: boolean
+  superUserId: string
   shrunkImageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
@@ -74,6 +75,7 @@ const membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540
 const mailerPort = process.env.MAILER_PORT || '587'
 const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
 const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
+const superUserId = process.env.SUPER_USER_ID || ''
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
@@ -154,6 +156,7 @@ const config: Config = {
   userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
   cookieDomain,
   cookieIsSecure,
+  superUserId,
   shrunkImageSize: parseInt(shrunkImageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,

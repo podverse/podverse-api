@@ -133,9 +133,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast
     }
     await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-
-    // handle podcast:chapters
-
   } catch (error) {
     console.log('parseFeedUrl error:', error)
     throw(error)
@@ -412,9 +409,13 @@ const findCategories = async (categories: string[]) => {
 
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.isPublic = true
+
+  if (parsedEpisode.chapters) {
+    episode.chaptersUrl = parsedEpisode.chapters.url
+    episode.chaptersType = parsedEpisode.chapters.type
+  }
   episode.description = parsedEpisode.description
-  // episode.duration = parsedEpisode.duration
-  //   ? parseInt(parsedEpisode.duration, 10) : 0
+  episode.duration = parsedEpisode.duration ? parseInt(parsedEpisode.duration, 10) : 0
   episode.episodeType = parsedEpisode.type
   episode.funding = parsedEpisode.funding
   episode.guid = parsedEpisode.guid
@@ -447,7 +448,6 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   // episode.categories = categories
 
   episode.podcast = podcast
-
   return episode
 }
 
@@ -457,9 +457,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // Parsed episodes are only valid if they have enclosure.url tags,
   // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
-    if (x.enclosure && x.enclosure.url) {
-      result.push(x)
-    }
+    if (x.enclosure && x.enclosure.url) result.push(x)
     return result
   }, [])
   // Create an array of only the episode media URLs from the parsed object
@@ -519,8 +517,8 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 
   return {
-    updatedSavedEpisodes,
-    newEpisodes
+    newEpisodes,
+    updatedSavedEpisodes
   }
 }
 

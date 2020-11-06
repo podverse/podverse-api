@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { IsInt, Min, ValidateIf } from 'class-validator'
+import { IsInt, IsUrl, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { Author, Category, Episode, User } from '~/entities'
@@ -23,8 +23,24 @@ export class MediaRef {
   @Column({ nullable: true })
   endTime: number
 
+  @ValidateIf(a => a.imageUrl != null)
+  @IsUrl()
+  @Column({ nullable: true })
+  imageUrl?: string
+
+  @Column({ default: false })
+  isOfficialChapter: boolean
+
+  @Column({ default: false })
+  isOfficialSoundBite: boolean
+
   @Column({ default: false })
   isPublic: boolean
+
+  @ValidateIf(a => a.linkUrl != null)
+  @IsUrl()
+  @Column({ nullable: true })
+  linkUrl?: string
 
   @Index()
   @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
