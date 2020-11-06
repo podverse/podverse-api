@@ -6,7 +6,7 @@ export const request = async (url: string, options?: any) => {
   const headers = (options && options.headers) || {}
   const response = await requestPromiseNative(url, {
     ...options,
-    timeout: 20000,
+    timeout: 15000,
     headers: {
       ...headers,
       'User-Agent': userAgent

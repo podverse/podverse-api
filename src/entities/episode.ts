@@ -8,6 +8,18 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
 
 const shortid = require('shortid')
 
+type Funding = {
+  url: string
+  value: string
+}
+
+type Transcript = {
+  language?: string
+  rel?: string
+  type?: string
+  value?: string
+}
+
 @Entity('episodes')
 export class Episode {
 
@@ -17,6 +29,17 @@ export class Episode {
     length: 14
   })
   id: string
+
+  @Column({ nullable: true })
+  chaptersType?: string
+
+  @ValidateIf(a => a.chaptersUrl != null)
+  @IsUrl()
+  @Column({ nullable: true })
+  chaptersUrl?: string
+
+  @Column({ nullable: true })
+  chaptersUrlLastParsed: Date
 
   @Column({ nullable: true })
   description?: string
@@ -29,6 +52,9 @@ export class Episode {
 
   @Column({ nullable: true })
   episodeType?: string
+
+  @Column('simple-json', { nullable: true })
+  funding: Funding[]
 
   @Index()
   @Column({ nullable: true })
@@ -113,6 +139,9 @@ export class Episode {
   @Index()
   @Column({ nullable: true })
   title?: string
+
+  @Column('simple-json', { nullable: true })
+  transcript: Transcript[]
 
   @ManyToMany(type => Author)
   @JoinTable()

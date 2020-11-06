@@ -22,8 +22,7 @@ import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parse
 
     for (const feedUrl of existingFeedUrls) {
       try {
-        const forceReparsing = true
-        await parseFeedUrl(feedUrl, forceReparsing)
+        await parseFeedUrl(feedUrl)
       } catch (error) {
         await handlePodcastFeedLastParseFailed(feedUrl, error)
       }

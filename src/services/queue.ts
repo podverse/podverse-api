@@ -165,15 +165,17 @@ export const sendFeedUrlsToQueue = async (feedUrls, queueUrl) => {
 }
 
 export const sendMessageToQueue = async (attrs, queue) => {
-  const message = {
-    MessageAttributes: attrs,
-    MessageBody: 'aws sqs requires a message body - podverse rules',
-    QueueUrl: queue
+  if (process.env.NODE_ENV === 'production') {
+    const message = {
+      MessageAttributes: attrs,
+      MessageBody: 'aws sqs requires a message body - podverse rules',
+      QueueUrl: queue
+    }
+  
+    await sqs.sendMessage(message)
+      .promise()
+      .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
   }
-
-  await sqs.sendMessage(message)
-    .promise()
-    .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
 }
 
 export const receiveErrorMessageFromQueue = async (count: number) => {

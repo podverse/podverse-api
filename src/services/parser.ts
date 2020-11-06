@@ -1,220 +1,145 @@
-import * as parsePodcast from 'node-podcast-parser'
 import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { request } from '~/lib/request'
 import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
+const podcastFeedParser = require('@podverse/podcast-feed-parser')
 
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
-  logPerformance('request', _logStart, 'feedUrl.url ' + feedUrl.url)
-  const response = await request(feedUrl.url, { method: 'GET' })
-  logPerformance('request feedUrl.url', _logEnd, 'feedUrl.url ' + feedUrl.url)
 
-  return new Promise(async (resolve, reject) => {
-    logPerformance('parsePodcast', _logStart)
-    await parsePodcast(response, async (error, data) => {
-      logPerformance('parsePodcast', _logEnd)
-      if (error) {
-        reject(error)
-        return
+  try {
+    const result = await podcastFeedParser.getPodcastFromURL(feedUrl.url)
+    const { episodes, meta } = result
+
+    let podcast = new Podcast()
+    if (feedUrl.podcast) {
+      const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
+      if (!savedPodcast) throw Error('Invalid podcast id provided.')
+      podcast = savedPodcast
+    }
+
+    // Stop parsing if the feed has not been updated since it was last parsed.
+    if (
+      !forceReparsing
+      && podcast.feedLastUpdated
+      && meta.lastUpdated
+      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastUpdated)
+      && !podcast.alwaysFullyParse
+    ) {
+      console.log('Stop parsing if the feed has not been updated since it was last parsed')
+      return
+    }
+
+    let authors = meta.author || meta['itunes:author']
+    if (authors.length > 0) {
+      authors = await findOrGenerateAuthors(authors) as never
+    }
+    const authorRepo = getRepository(Author)
+    await authorRepo.save(authors)
+    podcast.authors = authors
+
+    let categories: Category[] = []
+    if (meta.categories && meta.categories.length > 0) {
+      categories = await findCategories(meta.categories)
+    }
+    const categoryRepo = getRepository(Category)
+    await categoryRepo.save(categories)
+    podcast.categories = categories
+
+    podcast.description = meta.description
+    podcast.feedLastParseFailed = false
+
+    const feedLastUpdated = new Date(meta.lastBuildDate || meta.pubDate)
+    podcast.feedLastUpdated = isValidDate(feedLastUpdated) ? feedLastUpdated : new Date()
+
+    podcast.funding = meta.funding
+    podcast.guid = meta.guid
+    
+    podcast.imageUrl = meta.imageURL
+    if (podcast.imageUrl) {
+      let cleanedImageUrl = ''
+      if (cleanFileExtension(podcast.imageUrl)) {
+        cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.lastIndexOf('.'))
+        cleanedImageUrl = cleanedImageUrl + '.' + cleanFileExtension(podcast.imageUrl)
+      } else {
+        cleanedImageUrl = podcast.imageUrl
       }
+      podcast.imageUrl = cleanedImageUrl
+    }
 
-      try {
-        let podcast = new Podcast()
-        
-        if (feedUrl.podcast) {
-          logPerformance('getPodcast', _logStart, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
-          const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
-          logPerformance('getPodcast', _logEnd, 'feedUrl.podcast.id ' + feedUrl.podcast.id)
-          if (!savedPodcast) throw Error('Invalid podcast id provided.')
-          podcast = savedPodcast
-        }
+    podcast.isExplicit = meta.explicit
+    podcast.isPublic = true
+    podcast.language = meta.language
+    podcast.linkUrl = meta.link
 
-        // Stop parsing if the feed has not been updated since it was last parsed.
-        if (
-            !forceReparsing
-            && podcast.feedLastUpdated
-            && data.updated
-            && new Date(podcast.feedLastUpdated) >= new Date(data.updated)
-            && !podcast.alwaysFullyParse
-        ) {
-          console.log('Stop parsing if the feed has not been updated since it was last parsed')
-          resolve()
-          return
-        }
-        
-        podcast.language = data.language
-        podcast.isPublic = true
-        podcast.feedLastParseFailed = false
+    /*
+      Generate the episode data to be saved later,
+      and also set podcast fields based on the most recent episode's data.
+    */
+    let newEpisodes = []
+    let updatedSavedEpisodes = []
+    if (episodes && Array.isArray(episodes)) {
+      const results = await findOrGenerateParsedEpisodes(episodes, podcast) as any
 
-        let authors = []
+      newEpisodes = results.newEpisodes
+      updatedSavedEpisodes = results.updatedSavedEpisodes
+      newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
+      updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
 
-        if (data.author && data.author.length > 0) {
-          logPerformance('findOrGenerateAuthors', _logStart)
-          authors = await findOrGenerateAuthors(data.author) as never
-          logPerformance('findOrGenerateAuthors', _logEnd)
-        }
+      const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
+        return r.pubDate > a.pubDate ? r : a
+      }, [])
 
-        let categories: Category[] = []
-        if (data.categories && data.categories.length > 0) {
-          logPerformance('findCategories', _logStart)
-          categories = await findCategories(data.categories)
-          logPerformance('findCategories', _logEnd)
-        }
+      const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r: any, a: any) => {
+        return r.pubDate > a.pubDate ? r : a
+      }, [])
 
-        logPerformance('getRepository Author', _logStart)
-        const authorRepo = getRepository(Author)
-        logPerformance('getRepository Author', _logEnd)
+      const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
+        || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
+      const lastEpisodePubDate = new Date(latestEpisode.pubDate)
+      podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
+      podcast.lastEpisodeTitle = latestEpisode.title
+    } else {
+      podcast.lastEpisodePubDate = undefined
+      podcast.lastEpisodeTitle = ''
+    }
 
-        logPerformance('save Authors', _logStart)
-        await authorRepo.save(authors)
-        logPerformance('save Authors', _logEnd)
-        podcast.authors = authors
+    podcast.sortableTitle = meta.title ? meta.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '').trim() : ''
+    podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
+    podcast.title = meta.title
+    podcast.type = meta.type
 
-        logPerformance('getRepository Category', _logStart)
-        const categoryRepo = getRepository(Category)
-        logPerformance('getRepository Category', _logEnd)
+    const podcastRepo = getRepository(Podcast)
+    await podcastRepo.save(podcast)
 
-        logPerformance('save Categories', _logStart)
-        await categoryRepo.save(categories)
-        logPerformance('save Categories', _logEnd)
+    await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
 
-        podcast.categories = categories
+    const episodeRepo = getRepository(Episode)
+    await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
+    await episodeRepo.save(newEpisodes, { chunk: 400 })
 
-        // if parsing an already existing podcast, hide all existing episodes for the podcast,
-        // in case they have been removed from the RSS feed.
-        // if they still exist, they will be re-added during findOrGenerateParsedEpisodes.
-        logPerformance('getRepository Episode', _logStart)
-        const episodeRepo = getRepository(Episode)
-        logPerformance('getRepository Episode', _logEnd)
-
-        if (feedUrl.podcast && feedUrl.podcast.id) {
-          logPerformance('episodeRepo update', _logStart)
-          await episodeRepo
-            .createQueryBuilder()
-            .update(Episode)
-            .set({ isPublic: false })
-            .where({ podcastId: feedUrl.podcast.id })
-            .execute()
-          logPerformance('episodeRepo update', _logEnd)
-        }
-
-        let newEpisodes = []
-        let updatedSavedEpisodes = []
-
-        if (data.episodes && Array.isArray(data.episodes)) {
-          logPerformance('findOrGenerateParsedEpisodes', _logStart)
-          const results = await findOrGenerateParsedEpisodes(data.episodes, podcast) as any
-          logPerformance('findOrGenerateParsedEpisodes', _logEnd)
-
-          newEpisodes = results.newEpisodes
-          updatedSavedEpisodes = results.updatedSavedEpisodes
-          newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
-          updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
-
-          logPerformance('episode reduce latestNewEpisode', _logStart)
-          const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
-            return r.pubDate > a.pubDate ? r : a
-          }, [])
-          logPerformance('episode reduce latestNewEpisode', _logEnd)
-
-          logPerformance('episode reduce latestUpdatedSavedEpisode', _logStart)
-          const latestUpdatedSavedEpisode = updatedSavedEpisodes.reduce((r: any, a: any) => {
-            return r.pubDate > a.pubDate ? r : a
-          }, [])
-          logPerformance('episode reduce latestUpdatedSavedEpisode', _logEnd)
-
-          const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
-            || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
-
-          podcast.lastEpisodePubDate = isValidDate(latestEpisode.pubDate) ? latestEpisode.pubDate : undefined
-          podcast.lastEpisodeTitle = latestEpisode.title
-        } else {
-          podcast.lastEpisodePubDate = undefined
-          podcast.lastEpisodeTitle = ''
-        }
-
-        if (data.description && data.description.long) {
-          podcast.description = data.description.long
-        }
-
-        podcast.feedLastUpdated = isValidDate(data.updated) ? data.updated : new Date()
-
-        podcast.imageUrl = data.image
-        if (podcast.imageUrl) {
-          let cleanedImageUrl = ''
-          if (cleanFileExtension(podcast.imageUrl)) {
-            cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.lastIndexOf('.'))
-            cleanedImageUrl = cleanedImageUrl + '.' + cleanFileExtension(podcast.imageUrl)
-          } else {
-            cleanedImageUrl = podcast.imageUrl
-          }
-          podcast.imageUrl = cleanedImageUrl
-        }
-
-        podcast.isExplicit = !!data.explicit
-        podcast.guid = data.guid
-        podcast.linkUrl = data.link
-        podcast.sortableTitle = data.title ? data.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '').trim() : ''
-        podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
-        podcast.title = data.title
-        podcast.type = data.type
-
-        delete podcast.createdAt
-        delete podcast.updatedAt
-        delete podcast.episodes
-
-        logPerformance('getRepository podcast', _logStart)
-        const podcastRepo = getRepository(Podcast)
-        logPerformance('getRepository podcast', _logEnd)
-
-        logPerformance('podcast save', _logStart)
-        await podcastRepo.save(podcast)
-        logPerformance('podcast save', _logEnd)
-
-        await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
-
-        logPerformance('save updatedSavedEpisodes', _logStart)
-        await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
-        logPerformance('save updatedSavedEpisodes', _logEnd)
-
-        logPerformance('save newEpisodes', _logStart)
-        await episodeRepo.save(newEpisodes, { chunk: 400 })
-        logPerformance('save newEpisodes', _logEnd)
-
-        logPerformance('getRepository feedUrl', _logStart)
-        const feedUrlRepo = getRepository(FeedUrl)
-        logPerformance('getRepository feedUrl', _logEnd)
-
-        const cleanedFeedUrl = {
-          id: feedUrl.id,
-          url: feedUrl.url,
-          podcast
-        }
-
-        logPerformance('cleanedFeedUrl update', _logStart)
-        await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
-        logPerformance('cleanedFeedUrl update', _logEnd)
-
-        resolve()
-      } catch (error) {
-        reject(error)
-      }
-      logPerformance('parseFeedUrl', _logEnd, 'feedUrl.url = ' + feedUrl.url)
-    })
-  })
+    const feedUrlRepo = getRepository(FeedUrl)
+    const cleanedFeedUrl = {
+      id: feedUrl.id,
+      url: feedUrl.url,
+      podcast
+    }
+    await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
+  } catch (error) {
+    console.log('parseFeedUrl error:', error)
+    throw(error)
+  }
 }
 
 const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) => {
-  // Only shrinkImages and upload to server in production
   if (process.env.NODE_ENV === 'production') {
     if (podcast && podcast.imageUrl) {
       logPerformance('shrinkImage', _logStart)
@@ -232,11 +157,11 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const feedUrls = await getFeedUrls({ podcastId: podcastIds })
-  const forceReparsing = true
+  /* const forceReparsing = true */
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl, forceReparsing)
+      await parseFeedUrl(feedUrl)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
@@ -414,10 +339,11 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
   }
 }
 
+
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
   // Make sure to remove duplicate values to avoid unique slug/name value collisions
-  const authorNamesArray = [...new Set(authorNames.split(',').map(x => x.trim()))]
+  const authorNamesArray = [...new Set(authorNames.map(x => x.trim()))]
   const allAuthorSlugs = authorNamesArray.map(x => convertToSlug(x))
 
   let existingAuthors = [] as any
@@ -483,10 +409,15 @@ const findCategories = async (categories: string[]) => {
 
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.isPublic = true
+
+  if (parsedEpisode.chapters) {
+    episode.chaptersUrl = parsedEpisode.chapters.url
+    episode.chaptersType = parsedEpisode.chapters.type
+  }
   episode.description = parsedEpisode.description
-  // episode.duration = parsedEpisode.duration
-  //   ? parseInt(parsedEpisode.duration, 10) : 0
-  episode.episodeType = parsedEpisode.episodeType
+  episode.duration = parsedEpisode.duration ? parseInt(parsedEpisode.duration, 10) : 0
+  episode.episodeType = parsedEpisode.type
+  episode.funding = parsedEpisode.funding
   episode.guid = parsedEpisode.guid
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
@@ -495,8 +426,12 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   //   ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
-  episode.pubDate = isValidDate(parsedEpisode.published) ? parsedEpisode.published : new Date()
+
+  const pubDate = new Date(parsedEpisode.pubDate)
+  episode.pubDate = isValidDate(pubDate) ? pubDate : new Date()
+
   episode.title = parsedEpisode.title
+  episode.transcript = parsedEpisode.transcript
 
   // Since episode authors and categories aren't being used by the app,
   // skip saving this info to the episode.
@@ -513,7 +448,6 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   // episode.categories = categories
 
   episode.podcast = podcast
-
   return episode
 }
 
@@ -523,9 +457,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // Parsed episodes are only valid if they have enclosure.url tags,
   // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
-    if (x.enclosure && x.enclosure.url) {
-      result.push(x)
-    }
+    if (x.enclosure && x.enclosure.url) result.push(x)
     return result
   }, [])
   // Create an array of only the episode media URLs from the parsed object
@@ -533,7 +465,6 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   // Find episodes in the database that have matching episode media URLs to
   // those found in the parsed object, then store an array of just those URLs.
-  logPerformance('findOrGenerateParsedEpisodes > savedEpisodes', _logStart)
   let savedEpisodes = [] as any
   if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
     savedEpisodes = await episodeRepo.find({
@@ -542,15 +473,12 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       }
     })
   }
-  logPerformance('findOrGenerateParsedEpisodes > savedEpisodes', _logEnd)
 
-  logPerformance('findOrGenerateParsedEpisodes > nonPublicEpisodes', _logStart)
   const nonPublicEpisodes = [] as any
   for (const e of savedEpisodes) {
     e.isPublic = false
     nonPublicEpisodes.push(e)
   }
-  logPerformance('findOrGenerateParsedEpisodes > nonPublicEpisodes', _logStart)
 
   const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
 
@@ -589,8 +517,8 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 
   return {
-    updatedSavedEpisodes,
-    newEpisodes
+    newEpisodes,
+    updatedSavedEpisodes
   }
 }
 
