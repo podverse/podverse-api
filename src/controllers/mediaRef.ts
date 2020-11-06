@@ -137,14 +137,13 @@ const getMediaRefs = async (query, includeNSFW) => {
   } else {
     qb.where({ isPublic: true })
   }
-
+  qb.andWhere('"mediaRef"."isOfficialChapter" = false')
   
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   const mediaRefs = await qb
     .offset(skip)
     .limit(take)
-    
     .getManyAndCount()
 
   const PIIScrubbedMediaRefs = mediaRefs[0].map((x: any) => {
