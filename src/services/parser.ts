@@ -38,7 +38,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       return
     }
 
-    let authors = meta.author || meta['itunes:author']
+    let authors = meta.author
     if (authors.length > 0) {
       authors = await findOrGenerateAuthors(authors) as never
     }

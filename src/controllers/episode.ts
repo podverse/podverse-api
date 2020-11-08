@@ -244,11 +244,10 @@ const getDeadEpisodes = async () => {
   const qb = repository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
-    .where('episode."isPublic" = FALSE')
+    .where('episode."isPublic" = FALSE AND mediaRef.id IS NULL')
     .leftJoin(
       'episode.mediaRefs',
-      'mediaRef',
-      'mediaRef.id IS NULL'
+      'mediaRef'
     )
     .limit(100)
 
