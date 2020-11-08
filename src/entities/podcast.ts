@@ -12,6 +12,20 @@ type Funding = {
   value: string
 }
 
+type Value = {
+  method: string
+  suggested: string
+  type: string
+  valueRecipient: ValueRecipient
+}
+
+type ValueRecipient = {
+  address: string
+  name?: string
+  split: string
+  type: string
+}
+
 @Entity('podcasts')
 export class Podcast {
 
@@ -134,6 +148,9 @@ export class Podcast {
 
   @Column({ nullable: true })
   type?: string
+
+  @Column('simple-json', { nullable: true })
+  value: Value[]
 
   @ManyToMany(type => Author, author => author.podcasts)
   @JoinTable()

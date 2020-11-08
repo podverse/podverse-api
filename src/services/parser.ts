@@ -116,6 +116,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
     podcast.title = meta.title
     podcast.type = meta.type
+    podcast.value = meta.value
 
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcast)
