@@ -142,6 +142,7 @@ const getEpisodes = async (query, includeNSFW) => {
     .addSelect('SUBSTR(episode.description, 1, 10000)', 'description')
     .addSelect('episode.duration', 'duration')
     .addSelect('episode.episodeType', 'episodeType')
+    .addSelect('episode.funding', 'funding')
     .addSelect('episode.guid', 'guid')
     .addSelect('episode.imageUrl', 'imageUrl')
     .addSelect('episode.isExplicit', 'isExplicit')
