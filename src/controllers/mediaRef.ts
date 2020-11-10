@@ -141,6 +141,10 @@ const getMediaRefs = async (query, includeNSFW) => {
     qb.andWhere('"mediaRef"."isPublic" = true')
   } else {
     qb.where({ isPublic: true })
+    qb.andWhere(`
+      mediaRef.title IS NOT NULL AND
+      mediaRef.title <> ''
+    `)
   }
   qb.andWhere('"mediaRef"."isOfficialChapter" = false')
   
