@@ -370,7 +370,7 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.title')
     .where({
       isOfficialChapter: true,
-      episodeId: id
+      episode: id
     })
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
