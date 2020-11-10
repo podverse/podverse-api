@@ -8,8 +8,7 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 const podcastFeedParser = require('@podverse/podcast-feed-parser')
-
-const { awsConfig } = config
+const { awsConfig, userAgent } = config
 const queueUrls = awsConfig.queueUrls
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,7 +16,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   try {
-    const result = await podcastFeedParser.getPodcastFromURL(feedUrl.url)
+    const result = await podcastFeedParser.getPodcastFromURL({
+      url: feedUrl.url,
+      headers: { 'User-Agent': userAgent }
+    })
     const { episodes, meta } = result
 
     let podcast = new Podcast()
