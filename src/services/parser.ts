@@ -87,8 +87,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       Generate the episode data to be saved later,
       and also set podcast fields based on the most recent episode's data.
     */
-    let newEpisodes = []
-    let updatedSavedEpisodes = []
+    let newEpisodes = [] as any
+    let updatedSavedEpisodes = [] as any
     if (episodes && Array.isArray(episodes)) {
       const results = await findOrGenerateParsedEpisodes(episodes, podcast) as any
 
@@ -137,6 +137,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast
     }
     await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
+
+    for (const updatedSavedEpisode of updatedSavedEpisodes) {
+      const soundBiteArray = updatedSavedEpisode.soundbite
+      if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
+        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite)
+      }
+    }
+    for (const newEpisode of newEpisodes) {
+      const soundBiteArray = newEpisode.soundbite
+      if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
+        await updateSoundBites(newEpisode.id, newEpisode.soundbite)
+      }
+    }
   } catch (error) {
     console.log('parseFeedUrl error:', error)
     throw(error)
@@ -434,11 +447,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   const pubDate = new Date(parsedEpisode.pubDate)
   episode.pubDate = isValidDate(pubDate) ? pubDate : new Date()
 
-  const soundBiteArray = parsedEpisode.soundbite
-  if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-    await updateSoundBites(episode.id, soundBiteArray)
-  }
-
+  episode.soundbite = parsedEpisode.soundbite
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
 
