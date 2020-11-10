@@ -359,7 +359,7 @@ const retrieveLatestChapters = async (id) => {
     }
   }
 
-  const officialChapters = await mediaRefRepository
+  const officialChaptersForEpisode = await mediaRefRepository
     .createQueryBuilder('mediaRef')
     .select('mediaRef.id')
     .addSelect('mediaRef.endTime')
@@ -369,12 +369,13 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.title')
     .where({
-      isOfficialChapter: true
+      isOfficialChapter: true,
+      episodeId: id
     })
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
 
-  return officialChapters
+  return officialChaptersForEpisode
 }
 
 export {
