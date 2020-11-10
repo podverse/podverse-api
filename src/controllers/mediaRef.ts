@@ -1,8 +1,10 @@
 import { getRepository } from 'typeorm'
+import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 import { getQueryOrderColumn } from '~/lib/utility'
 const createError = require('http-errors')
+const { superUserId } = config
 
 const relations = [
   'authors', 'categories', 'episode', 'episode.podcast', 'owner',
@@ -13,6 +15,9 @@ const createMediaRef = async obj => {
   const repository = getRepository(MediaRef)
   const mediaRef = new MediaRef()
   const newMediaRef = Object.assign(mediaRef, obj)
+  
+  if (!newMediaRef.episodeId) throw new Error('An episodeId is required to create a mediaRef') 
+
   newMediaRef.episode = newMediaRef.episodeId
   delete newMediaRef.episodeId
 
@@ -188,10 +193,77 @@ const updateMediaRef = async (obj, loggedInUserId) => {
   return newMediaRef
 }
 
+const updateSoundBites = async (episodeId, newSoundBites) => {
+  const repository = getRepository(MediaRef)
+  const existingSoundBitesResult = await repository
+    .createQueryBuilder('mediaRef')
+    .select('mediaRef.id')
+    .addSelect('mediaRef.endTime')
+    .addSelect('mediaRef.imageUrl')
+    .addSelect('mediaRef.isOfficialSoundBite')
+    .addSelect('mediaRef.isPublic')
+    .addSelect('mediaRef.linkUrl')
+    .addSelect('mediaRef.startTime')
+    .addSelect('mediaRef.title')
+    .where({
+      isOfficialSoundBite: true,
+      isPublic: true,
+      episode: episodeId
+    })
+    .orderBy('mediaRef.startTime', 'ASC')
+    .getManyAndCount() as any
+  let existingSoundBites = existingSoundBitesResult[0]
+
+  for (const newSoundBite of newSoundBites) {
+    const { title } = newSoundBite
+    let { duration, startTime } = newSoundBite
+    duration = Math.floor(duration)
+    startTime = Math.floor(startTime)
+
+    if (duration <= 0) continue 
+    const endTime = startTime + duration
+
+    // use duck-typing to find an existingSoundBite with the same startTime
+    // and duration as the newSoundBite
+    const existingSoundBite = existingSoundBites.find((x: any) => {
+      return (x.startTime === startTime) && (x.endTime === endTime)
+    })
+
+    if (existingSoundBite) {
+      existingSoundBite.startTime = startTime
+      existingSoundBite.endTime = endTime
+      existingSoundBite.title = title
+      await updateMediaRef(existingSoundBite, superUserId)
+
+      // remove existing soundbite from existingSoundBites
+      existingSoundBites = existingSoundBites.filter((x: any) => {
+        return !((x.startTime === startTime) && (x.endTime === endTime))
+      })
+    } else {
+      await createMediaRef({
+        episodeId,
+        isOfficialSoundBite: true,
+        isPublic: true,
+        startTime,
+        endTime,
+        owner: superUserId
+      })
+    }
+  }
+
+  // hide leftoverExistingSoundBites by setting the isPublic = false flag on each
+  const leftoverExistingSoundBites = existingSoundBites
+  for (const leftoverExistingSoundBite of leftoverExistingSoundBites) {
+    leftoverExistingSoundBite.isPublic = false
+    await updateMediaRef(leftoverExistingSoundBite, superUserId)
+  }
+}
+
 export {
   createMediaRef,
   deleteMediaRef,
   getMediaRef,
   getMediaRefs,
-  updateMediaRef
+  updateMediaRef,
+  updateSoundBites
 }

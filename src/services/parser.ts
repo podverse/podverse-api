@@ -1,5 +1,6 @@
 import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
+import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
@@ -430,6 +431,11 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
 
   const pubDate = new Date(parsedEpisode.pubDate)
   episode.pubDate = isValidDate(pubDate) ? pubDate : new Date()
+
+  const soundBiteArray = parsedEpisode.soundbite
+  if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
+    await updateSoundBites(episode.id, soundBiteArray)
+  }
 
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
