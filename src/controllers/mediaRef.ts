@@ -67,7 +67,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const podcastIds = query.podcastId && query.podcastId.split(',') || []
   const episodeIds = query.episodeId && query.episodeId.split(',') || []
   const categoriesIds = query.categories && query.categories.split(',') || []
-  const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
+  const { allowUntitled, includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
     episode.isPublic = true
@@ -134,19 +134,18 @@ const getMediaRefs = async (query, includeNSFW) => {
       LOWER(podcast.title) LIKE :searchAllFieldsText`,
       { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%` }
     )
-    qb.andWhere(`
-      mediaRef.title IS NOT NULL AND
-      mediaRef.title <> ''
-    `)
     qb.andWhere('"mediaRef"."isPublic" = true')
   } else {
     qb.where({ isPublic: true })
+  }
+  qb.andWhere('"mediaRef"."isOfficialChapter" = false')
+
+  if (!allowUntitled) {
     qb.andWhere(`
       mediaRef.title IS NOT NULL AND
       mediaRef.title <> ''
     `)
   }
-  qb.andWhere('"mediaRef"."isOfficialChapter" = false')
   
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
