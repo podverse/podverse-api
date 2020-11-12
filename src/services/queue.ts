@@ -217,6 +217,7 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
     } else {
       console.log('no message found')
       console.log('')
+      break
     }
   }
   console.log('END receiveErrorMessageFromQueue')
