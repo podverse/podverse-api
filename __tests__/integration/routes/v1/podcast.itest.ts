@@ -15,6 +15,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('mN25xFjDG')
           chaiExpect(res.body.alwaysFullyParse).to.equal(false)
+          chaiExpect(res.body.podcastIndexId).to.equal(null)
           chaiExpect(res.body.authorityId).to.equal(null)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)

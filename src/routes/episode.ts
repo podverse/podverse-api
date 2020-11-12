@@ -2,7 +2,7 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { getEpisode, getEpisodes } from '~/controllers/episode'
+import { getEpisode, getEpisodes, retrieveLatestChapters } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
@@ -42,6 +42,17 @@ router.get('/:id',
       const episode = await getEpisode(ctx.params.id)
 
       ctx.body = episode
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+router.get('/:id/retrieve-latest-chapters',
+  async ctx => {
+    try {
+      if (!ctx.params.id) throw new Error('An episodeId is required.')
+      const latestChapters = await retrieveLatestChapters(ctx.params.id)
+      ctx.body = latestChapters
     } catch (error) {
       emitRouterError(error, ctx)
     }

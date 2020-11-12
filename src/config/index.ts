@@ -20,6 +20,7 @@ export interface Config {
   userAgent: string
   cookieDomain: string
   cookieIsSecure: boolean
+  superUserId: string
   shrunkImageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
@@ -55,6 +56,7 @@ export interface Config {
   socialTwitterImageUrl: string
   socialTwitterPageUrl: string
   parserSupportedLanguages: any[]
+  podcastIndexConfig: any
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -73,6 +75,7 @@ const membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540
 const mailerPort = process.env.MAILER_PORT || '587'
 const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
 const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
+const superUserId = process.env.SUPER_USER_ID || ''
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
@@ -95,6 +98,12 @@ const socialTwitterImageUrl = process.env.SOCIAL_TWITTER_IMAGE_URL || ''
 const socialTwitterPageUrl = process.env.SOCIAL_TWITTER_PAGE_URL || ''
 const legalName = process.env.LEGAL_NAME || ''
 const legalAddress = process.env.LEGAL_ADDRESS || ''
+const podcastIndexAuthKey = process.env.PODCAST_INDEX_AUTH_KEY || ''
+const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
+const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
+// default 10 minutes (600000 milliseconds)
+const podcastIndexRecentlyUpdatedSinceTime =
+  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '600000'
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -110,6 +119,7 @@ const paypalConfig = {
   clientSecret: process.env.PAYPAL_CLIENT_SECRET,
   mode: process.env.PAYPAL_MODE
 }
+
 const appStoreConfig = {
   apiUrlProd: process.env.APP_STORE_API_URL_PROD,
   apiUrlSandbox: process.env.APP_STORE_API_URL_SANDBOX,
@@ -118,6 +128,13 @@ const appStoreConfig = {
 
 let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || 'en' as any
 parserSupportedLanguages = parserSupportedLanguages.split(',')
+
+const podcastIndexConfig = {
+  authKey: podcastIndexAuthKey,
+  secretKey: podcastIndexSecretKey,
+  baseUrl: podcastIndexBaseUrl,
+  getRecentlyUpdatedSinceTime: parseInt(podcastIndexRecentlyUpdatedSinceTime, 10)
+}
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
@@ -139,6 +156,7 @@ const config: Config = {
   userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
   cookieDomain,
   cookieIsSecure,
+  superUserId,
   shrunkImageSize: parseInt(shrunkImageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,
@@ -174,6 +192,7 @@ const config: Config = {
   socialTwitterImageUrl,
   socialTwitterPageUrl,
   parserSupportedLanguages,
+  podcastIndexConfig,
   legalName,
   legalAddress,
   websiteDomain,

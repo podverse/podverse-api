@@ -7,6 +7,25 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, Jo
 
 const shortid = require('shortid')
 
+type Funding = {
+  url: string
+  value: string
+}
+
+type Value = {
+  method: string
+  suggested: string
+  type: string
+  valueRecipient: ValueRecipient
+}
+
+type ValueRecipient = {
+  address: string
+  name?: string
+  split: string
+  type: string
+}
+
 @Entity('podcasts')
 export class Podcast {
 
@@ -17,11 +36,14 @@ export class Podcast {
   })
   id: string
 
-  @Column({ default: false })
-  alwaysFullyParse?: boolean
+  @Column({ nullable: true, unique: true })
+  podcastIndexId?: string
 
   @Column({ nullable: true, unique: true })
   authorityId?: string
+
+  @Column({ default: false })
+  alwaysFullyParse?: boolean
 
   @Column({ nullable: true })
   description?: string
@@ -32,6 +54,9 @@ export class Podcast {
   @Index()
   @Column({ nullable: true })
   feedLastUpdated?: Date
+
+  @Column('simple-json', { nullable: true })
+  funding: Funding[]
 
   @Index()
   @Column({ nullable: true })
@@ -123,6 +148,9 @@ export class Podcast {
 
   @Column({ nullable: true })
   type?: string
+
+  @Column('simple-json', { nullable: true })
+  value: Value[]
 
   @ManyToMany(type => Author, author => author.podcasts)
   @JoinTable()

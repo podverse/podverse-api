@@ -2,14 +2,15 @@ import { config } from '~/config'
 
 export const parseQueryPageOptions = async (ctx, next, type = '') => {
   const query = ctx.request.query
-  const { categories, episodeId, id, includeAuthors, includeCategories, includeEpisode, includePodcast,
-    maxResults, mediaRefId, name, page, playlistId, podcastId, searchAllFieldsText, searchAuthor,
-    searchTitle, sincePubDate, slug, sort, title, topLevelCategories, userIds } = query
+  const { allowUntitled, categories, episodeId, id, includeAuthors, includeCategories, includeEpisode,
+    includePodcast, maxResults, mediaRefId, name, page, playlistId, podcastId, searchAllFieldsText,
+    searchAuthor, searchTitle, sincePubDate, slug, sort, title, topLevelCategories, userIds } = query
 
   const options = {
     sort: 'top-past-week',
     skip: 0,
     take: 50,
+    ...(allowUntitled ? { allowUntitled } : {}),
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
     ...(includeAuthors ? { includeAuthors: includeAuthors === 'true' } : {}),

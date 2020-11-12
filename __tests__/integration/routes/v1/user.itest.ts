@@ -199,7 +199,7 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.linkUrl).to.equal(null)
             chaiExpect(queueItem.episode.mediaFilesize).to.equal(0)
             chaiExpect(queueItem.episode.mediaType).to.equal('audio/mpeg')
-            chaiExpect(queueItem.episode.mediaUrl).to.equal('http://traffic.libsyn.com/joeroganexp/p1428.mp3?dest-id=19997')
+            chaiExpect(queueItem.episode.mediaUrl).to.equal('https://stage.podverse.fm/sampleAudio/2B-F3-50-63-terkel-a0a0i2-a.mp3')
             chaiExpect(queueItem.episode.pastHourTotalUniquePageviews).to.equal(1)
             chaiExpect(queueItem.episode.pastDayTotalUniquePageviews).to.equal(2)
             chaiExpect(queueItem.episode.pastWeekTotalUniquePageviews).to.equal(3)
@@ -214,6 +214,7 @@ describe('User endpoints', () => {
 
             chaiExpect(queueItem.episode.podcast.id).to.equal('yKyjZDxsB')
             chaiExpect(queueItem.episode.podcast.alwaysFullyParse).to.equal(false)
+            chaiExpect(queueItem.episode.podcast.podcastIndexId).to.equal(null)
             chaiExpect(queueItem.episode.podcast.authorityId).to.equal(null)
             chaiExpect(queueItem.episode.podcast.description).to.equal('The podcast of Comedian Joe Rogan..')
             chaiExpect(queueItem.episode.podcast.feedLastParseFailed).to.equal(false)
@@ -296,6 +297,7 @@ describe('User endpoints', () => {
 
             chaiExpect(queueItem.episode.podcast.id).to.equal('zRo1jwx67')
             chaiExpect(queueItem.episode.podcast.alwaysFullyParse).to.equal(false)
+            chaiExpect(queueItem.episode.podcast.podcastIndexId).to.equal(null)
             chaiExpect(queueItem.episode.podcast.authorityId).to.equal(null)
             chaiExpect(queueItem.episode.podcast).to.have.property('description')
             chaiExpect(queueItem.episode.podcast.feedLastParseFailed).to.equal(false)

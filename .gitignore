@@ -1,3 +1,5 @@
+.git
+
 /src/config/bitpay/api.key
 /src/config/google/jwt.keys.json
 /src/config/parser/addFeedUrlsFile.json
@@ -27,3 +29,5 @@ dist/**/*
 
 package-lock.json
 yarn.lock
+
+temp
