@@ -213,7 +213,7 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
         }
       }
       console.log('')
-      await deleteMessage(queueUrls.feedsToParse.errorsQueueUrl, msg.receiptHandle)
+      await deleteMessage(queueUrls.feedsToParse.errorsQueueUrl, msg.ReceiptHandle)
     } else {
       console.log('no message found')
       console.log('')
