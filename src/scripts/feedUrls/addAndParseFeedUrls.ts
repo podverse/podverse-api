@@ -24,7 +24,6 @@ import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parse
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
-        console.log('addAndParseFeedUrls error', error)
         await handlePodcastFeedLastParseFailed(feedUrl, error)
       }
     }
