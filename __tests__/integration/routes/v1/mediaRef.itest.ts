@@ -14,7 +14,11 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('9rA5BhWp')
           chaiExpect(res.body.endTime).to.equal(1680)
+          chaiExpect(res.body.imageUrl).to.equal(null)
+          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.isPublic).to.equal(true)
+          chaiExpect(res.body.linkUrl).to.equal(null)
           chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(7)
           chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(8)
           chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(9)
@@ -27,13 +31,18 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
+          chaiExpect(Object.keys(res.body).length).to.equal(21)
           
 
           const episode = res.body.episode
           chaiExpect(episode.id).to.equal('fFmGXkgIM')
+          chaiExpect(episode.chaptersType).to.equal(null)
+          chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.chaptersUrlLastParsed).to.equal(null)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
+          chaiExpect(episode.funding).to.equal(null)
           chaiExpect(episode.guid).to.equal('465b2bdc-eebd-11e9-85c8-171e42a72b35')
           chaiExpect(episode.imageUrl).to.equal(null)
           chaiExpect(episode.isExplicit).to.equal(false)
@@ -53,6 +62,10 @@ describe('MediaRef endpoints', () => {
           chaiExpect(episode.podcastId).to.equal('zRo1jwx67')
           chaiExpect(episode).to.have.property('createdAt')
           chaiExpect(episode).to.have.property('updatedAt')
+
+          //TODO within "episode": > add entire "podcast": {} field 
+
+          //TODO add "owner": {}
 
           done()
         })

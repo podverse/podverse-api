@@ -16,7 +16,7 @@ describe('AccountClaimToken endpoints', () => {
           chaiExpect(res.body.id).to.equal('6fc489b1-46b1-4f89-8734-e2f3725da3d8')
           chaiExpect(res.body.claimed).to.equal(false)
           chaiExpect(res.body.yearsToAdd).to.equal(100)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(3)
 
           done()
         })
@@ -29,6 +29,7 @@ describe('AccountClaimToken endpoints', () => {
           chaiExpect(res).to.have.status(400);
 
           chaiExpect(res.body.message).to.equal('This token has already been claimed.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
