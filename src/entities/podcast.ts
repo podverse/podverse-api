@@ -58,7 +58,6 @@ export class Podcast {
   @Column('simple-json', { nullable: true })
   funding: Funding[]
 
-  @Index()
   @Column({ nullable: true })
   guid?: string
 
@@ -79,7 +78,6 @@ export class Podcast {
   @Column({ nullable: true })
   language?: string
 
-  @Index()
   @Column({ nullable: true })
   lastEpisodePubDate?: Date
 
