@@ -106,7 +106,7 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
       .fromFile(csvFilePath)
       .subscribe((json) => {
         return new Promise(async (resolve) => {
-          await new Promise(r => setTimeout(r, 2000));
+          await new Promise(r => setTimeout(r, 500));
 
           try {
             await createOrUpdatePodcastFromPodcastIndex(client, json)
@@ -131,9 +131,9 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   } else {
     const url = item.url
     const podcastIndexId = item.id
-    const itunesId = item.itunes_id
+    const itunesId = item.itunes_id ? item.itunes_id : null
 
-    console.log('feed url', url)
+    console.log('feed url', url, podcastIndexId, itunesId)
     
     let existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
 
@@ -148,9 +148,12 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
 
       existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
     } else {
+      const setSQLCommand = itunesId
+        ? `SET ("podcastIndexId", "authorityId") = (${podcastIndexId}, ${itunesId})`
+        : `SET "podcastIndexId" = ${podcastIndexId}`
       await client.query(`
         UPDATE "podcasts"
-        SET ("podcastIndexId", "authorityId") = ('${podcastIndexId}', '${itunesId}')
+        ${setSQLCommand}
         WHERE id=$1
       `, [existingPodcast.id])
       console.log('updatedPodcast id: ', existingPodcast.id)
@@ -201,11 +204,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
 }
 
 const getExistingPodcast = async (client, podcastIndexId, authorityId) => {
-  if (!authorityId) {
-    return null
-  }
-
-  let podcasts = [[], 0] as any
+  let podcasts = [] as any
 
   if (podcastIndexId) {
     podcasts = await client.query(`
