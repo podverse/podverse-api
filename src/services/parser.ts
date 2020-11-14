@@ -33,8 +33,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     if (
       !forceReparsing
       && podcast.feedLastUpdated
-      && meta.lastUpdated
-      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastUpdated)
+      && meta.lastBuildDate
+      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastBuildDate)
       && !podcast.alwaysFullyParse
     ) {
       console.log('Stop parsing if the feed has not been updated since it was last parsed')
@@ -124,7 +124,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcast)
 
-    await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+    // Limit podcast image PUTs to once per week
+    const oneWeek = 7 * 24 * 60 * 60 * 1000
+    const wasUpdatedThisWeek = new Date(podcast.feedLastUpdated).getTime() + oneWeek >= new Date(meta.lastBuildDate).getTime()
+    if (!wasUpdatedThisWeek || podcast.alwaysFullyParse) {
+      await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+    }
 
     const episodeRepo = getRepository(Episode)
     await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
@@ -174,11 +179,11 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const feedUrls = await getFeedUrls({ podcastId: podcastIds })
-  /* const forceReparsing = true */
+  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl)
+      await parseFeedUrl(feedUrl, forceReparsing)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
