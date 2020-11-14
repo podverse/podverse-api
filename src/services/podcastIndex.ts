@@ -87,16 +87,14 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
  * 
  * Longer explanation...
  * This looks for a file named podcastIndexFeedUrlsDump.csv, then iterates through
- * every podcastIndexItem in the file, and if the podcastIndexItem has an itunes_id (authorityId),
- * then it retrieves all existing feedUrls in our database that have a matching
- * itunes_id. If no matching feedUrls exist, then it creates a new feedUrl
- * using the podcastIndexItem's information. If matching feedUrls do exist, then it
- * promotes the podcastIndexItem's url to be the current feedUrl for that podcast,
- * and demotes any other feedUrls for that podcast.
+ * every podcastIndexItem in the file, then retrieves all existing feedUrls in our database 
+ * that have a matching podcastIndexIds.
  * 
- * The feedUrl promotion/demotion step is needed because a single podcast can have
- * numerous feedUrl's over its lifetime. Our database keeps references to old feedUrls,
- * so we need to make sure only the current feedUrl is the current "authority" for that podcast.
+ * When no feedUrl for that podcastIndexId exists, then creates a new feedUrl
+ * using the podcastIndexItem's information.
+ * 
+ * When a feedUrl for that podcastIndexId exists, then promote the item's url
+ * to be the authority feedUrl for that podcast, and demote any other feedUrls for that podcast.
  */
 export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
   await connectToDb()
@@ -131,31 +129,33 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   if (!item) {
     console.log('no item found')
   } else {
-    const podcastTitle = item.title
     const url = item.url
     const podcastIndexId = item.id
     const itunesId = item.itunes_id
 
-    // Currently only adding podcasts automatically that have an itunes_id
-    if (!itunesId) return
-
-    console.log('podcast title', podcastTitle)
     console.log('feed url', url)
     
-    let existingPodcast = await getExistingPodcast(client, itunesId)
+    let existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
 
     if (!existingPodcast) {
       console.log('podcast does not already exist')
       const isPublic = true
 
       await client.query(`
-        INSERT INTO podcasts (id, "authorityId", "podcastIndexId", "title", "isPublic")
-        VALUES ($1, $2, $3, $4, $5);
-      `, [shortid(), itunesId, podcastIndexId, podcastTitle, isPublic])
+        INSERT INTO podcasts (id, "authorityId", "podcastIndexId", "isPublic")
+        VALUES ($1, $2, $3, $4);
+      `, [shortid(), itunesId, podcastIndexId, isPublic])
 
-      existingPodcast = await getExistingPodcast(client, itunesId)
+      existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
     } else {
-      console.log('podcast already exists')
+      await client.query(`
+        UPDATE "podcasts"
+        SET ("podcastIndexId", "authorityId") = ('${podcastIndexId}', '${itunesId}')
+        WHERE id=$1
+      `, [existingPodcast.id])
+      console.log('updatedPodcast id: ', existingPodcast.id)
+      console.log('updatedPodcast podcastIndexId: ', podcastIndexId)
+      console.log('updatedPodcast itunesId: ', itunesId)
     }
 
     const existingFeedUrls = await client.query(`
@@ -169,7 +169,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
     for (const existingFeedUrl of existingFeedUrls) {
       console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
 
-      const isMatchingFeedUrl = removeProtocol(url) === removeProtocol(url)
+      const isMatchingFeedUrl = removeProtocol(url) === removeProtocol(existingFeedUrl.url)
 
       await client.query(`
         UPDATE "feedUrls"
@@ -200,16 +200,28 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   console.log('*** finished entry')
 }
 
-const getExistingPodcast = async (client, authorityId) => {
+const getExistingPodcast = async (client, podcastIndexId, authorityId) => {
   if (!authorityId) {
     return null
   }
 
-  const podcasts = await client.query(`
-    SELECT "authorityId", "podcastIndexId", id, title
-    FROM podcasts
-    WHERE "authorityId"=$1;
-  `, [authorityId])
+  let podcasts = [[], 0] as any
+
+  if (podcastIndexId) {
+    podcasts = await client.query(`
+      SELECT "authorityId", "podcastIndexId", id, title
+      FROM podcasts
+      WHERE "podcastIndexId"=$1;
+    `, [podcastIndexId])
+  }
+
+  if ((!podcasts || podcasts.length === 0) && authorityId) {
+    podcasts = await client.query(`
+      SELECT "authorityId", "podcastIndexId", id, title
+      FROM podcasts
+      WHERE "authorityId"=$1;
+    `, [authorityId])
+  }
 
   return podcasts[0]
 }
