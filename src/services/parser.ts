@@ -278,7 +278,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     return false
   }
 
-  const feedUrlMsg = extractFeedMessage(message)
+  let feedUrlMsg = extractFeedMessage(message)
 
   try {
     const feedUrlRepo = getRepository(FeedUrl)
@@ -297,6 +297,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logEnd, 'queueUrl ' + queueUrl)
 
     if (feedUrl) {
+      feedUrlMsg = feedUrl
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
@@ -354,7 +355,9 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
     } catch (err) {
       console.log('setPodcastFeedLastParseFailed', feedUrlMsg.podcast.id, err)
     }
-  } else if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
+  }
+  
+  if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
     const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
     const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError)
     await sendMessageToQueue(attrs, errorsQueueUrl)

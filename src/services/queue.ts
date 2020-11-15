@@ -191,20 +191,20 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
     const msg = await receiveMessageFromQueue(queueUrls.feedsToParse.errorsQueueUrl)
     if (msg) {
       if (msg.MessageAttributes) {
-        if (msg.MessageAttributes.url) {
-          console.log('url:', msg.MessageAttributes.url.StringValue)
-          console.log('')
-        }
-        if (msg.MessageAttributes.id) {
-          console.log('feedUrlId:', msg.MessageAttributes.id.StringValue)
-          console.log('')
-        }
         if (msg.MessageAttributes.podcastTitle) {
           console.log('podcastTitle:', msg.MessageAttributes.podcastTitle.StringValue)
           console.log('')
         }
         if (msg.MessageAttributes.podcastId) {
           console.log('podcastId:', msg.MessageAttributes.podcastId.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.url) {
+          console.log('url:', msg.MessageAttributes.url.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.id) {
+          console.log('feedUrlId:', msg.MessageAttributes.id.StringValue)
           console.log('')
         }
         if (msg.MessageAttributes.errorMessage) {
