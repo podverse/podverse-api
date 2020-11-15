@@ -106,8 +106,7 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
       .fromFile(csvFilePath)
       .subscribe((json) => {
         return new Promise(async (resolve) => {
-          await new Promise(r => setTimeout(r, 250));
-
+          await new Promise(r => setTimeout(r, 10));
           try {
             await createOrUpdatePodcastFromPodcastIndex(client, json)
           } catch (error) {
