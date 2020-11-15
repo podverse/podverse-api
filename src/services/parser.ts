@@ -278,13 +278,14 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     return false
   }
 
-  let feedUrlMsg = extractFeedMessage(message)
+  const feedUrlMsg = extractFeedMessage(message)
+  let feedUrl
 
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logStart, 'queueUrl ' + queueUrl)
-    const feedUrl = await feedUrlRepo
+    feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
@@ -297,7 +298,6 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logEnd, 'queueUrl ' + queueUrl)
 
     if (feedUrl) {
-      feedUrlMsg = feedUrl
       try {
         await parseFeedUrl(feedUrl)
       } catch (error) {
@@ -319,7 +319,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
   } catch (error) {
     console.error('parseNextFeedFromQueue:parseFeed', error)
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
-    await handlePodcastFeedLastParseFailed(feedUrlMsg, error)
+    await handlePodcastFeedLastParseFailed(feedUrl || feedUrlMsg, error)
     logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
   }
 
