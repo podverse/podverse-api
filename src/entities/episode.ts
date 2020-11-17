@@ -164,6 +164,7 @@ export class Episode {
   // use the TypeORM query builder with nested relational properties.
   // See the getMediaRefs query in the mediaRef controller for example of where I
   // needed to query for mediaRefs filtered by episode.id and episode.podcast.id.
+  @Index()
   @Column()
   podcastId: string
 
