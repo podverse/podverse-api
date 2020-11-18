@@ -70,6 +70,7 @@ describe('AccountClaimToken endpoints', () => {
           chaiExpect(res).to.have.status(400);
 
           chaiExpect(res.body.message).to.equal('This offer has already been claimed.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -83,6 +84,7 @@ describe('AccountClaimToken endpoints', () => {
           chaiExpect(res).to.have.status(500);
 
           chaiExpect(res.body.message).to.equal('invalid input syntax for type uuid: \"6fc489bz-46b1-4f89-8734-e2f3725da3d8\"')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })

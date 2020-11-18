@@ -15,6 +15,17 @@ describe('User endpoints', () => {
             chaiExpect(res.body.id).to.equal('EVHDBRZY')
             chaiExpect(res.body.isPublic).to.equal(true)
             chaiExpect(res.body.name).to.equal('Free Trial Valid - Test User')
+            const subscribedPodcastIds = res.body.subscribedPodcastIds
+            chaiExpect(subscribedPodcastIds[0]).to.equal('0RMk6UYGq')
+            chaiExpect(subscribedPodcastIds[1]).to.equal('XdbkHTiH9')
+            chaiExpect(subscribedPodcastIds[2]).to.equal('kS9ZnQNWlQc')
+            chaiExpect(subscribedPodcastIds[3]).to.equal('mN25xFjDG')        
+            chaiExpect(subscribedPodcastIds[4]).to.equal('nG6sRiNDv')
+            chaiExpect(subscribedPodcastIds[5]).to.equal('zRo1jwx67')
+            chaiExpect(subscribedPodcastIds[6]).to.equal('Yqft_RG8j')
+            chaiExpect(Object.keys(res.body).length).to.equal(4)
+
+
 
             done()
           })
