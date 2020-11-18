@@ -62,7 +62,7 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
-    const feedUrls = await feedUrlRepo
+    const feedUrlsCount = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
@@ -72,10 +72,29 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         'podcast.title IS NULL'
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
-      .limit(100000)
-      .getMany()
+      .getCount()
 
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+    const ceilCount = Math.ceil(feedUrlsCount / 10000)
+    console.log('ceilCount', ceilCount)
+
+    for (let i = 1; i <= ceilCount; i++) {
+      console.log('index', i)
+      const feedUrls = await feedUrlRepo
+        .createQueryBuilder('feedUrl')
+        .select('feedUrl.id')
+        .addSelect('feedUrl.url')
+        .innerJoinAndSelect(
+          'feedUrl.podcast',
+          'podcast',
+          'podcast.title IS NULL'
+        )
+        .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+        .offset(i * 10000)
+        .limit(10000)
+        .getMany()
+
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+    }
   } catch (error) {
     console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
   }
