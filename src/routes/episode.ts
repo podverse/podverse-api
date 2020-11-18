@@ -25,7 +25,7 @@ router.get('/',
       if (query.page > 1) {
         query.skip = (((parseInt(query.page, 10) - 1) * query.take))
       }
-      const episodes = await getEpisodes(ctx.state.query)
+      const episodes = await getEpisodes(ctx.state.query, ctx.state.includeNSFW)
 
       ctx.body = episodes
     } catch (error) {
