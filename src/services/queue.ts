@@ -55,6 +55,31 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
   }
 }
 
+export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const feedUrls = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .innerJoinAndSelect(
+        'feedUrl.podcast',
+        'podcast',
+        'podcast.title IS NULL'
+      )
+      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+      .getMany()
+
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+  } catch (error) {
+    console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
+  }
+}
+
 export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
   await connectToDb()

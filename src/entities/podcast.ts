@@ -36,9 +36,11 @@ export class Podcast {
   })
   id: string
 
+  @Index()
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
+  @Index()
   @Column({ nullable: true, unique: true })
   authorityId?: string
 

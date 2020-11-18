@@ -18,7 +18,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   try {
     const result = await podcastFeedParser.getPodcastFromURL({
       url: feedUrl.url,
-      headers: { 'User-Agent': userAgent }
+      headers: { 'User-Agent': userAgent },
+      timeout: 15000
     })
     const { episodes, meta } = result
 
@@ -156,7 +157,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
   } catch (error) {
-    console.log('parseFeedUrl error:', error)
     throw(error)
   }
 }
@@ -317,7 +317,6 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     }
 
   } catch (error) {
-    console.error('parseNextFeedFromQueue:parseFeed', error)
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
     await handlePodcastFeedLastParseFailed(feedUrl || feedUrlMsg, error)
     logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
