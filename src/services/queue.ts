@@ -72,6 +72,7 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         'podcast.title IS NULL'
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+      .limit(100000)
       .getMany()
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
