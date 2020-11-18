@@ -19,7 +19,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const result = await podcastFeedParser.getPodcastFromURL({
       url: feedUrl.url,
       headers: { 'User-Agent': userAgent },
-      timeout: 15000
+      timeout: 10000
     })
     const { episodes, meta } = result
 
