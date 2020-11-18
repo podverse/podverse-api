@@ -160,10 +160,7 @@ export class Episode {
   })
   podcast: Podcast
 
-  // This podcastId field is Mitch's hacky workaround for not knowing how to
-  // use the TypeORM query builder with nested relational properties.
-  // See the getMediaRefs query in the mediaRef controller for example of where I
-  // needed to query for mediaRefs filtered by episode.id and episode.podcast.id.
+  // TODO: can/should this be removed?
   @Index()
   @Column()
   podcastId: string
