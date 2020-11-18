@@ -72,6 +72,7 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         'podcast.title IS NULL'
       )
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+      .limit(100000)
       .getMany()
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
@@ -132,7 +133,7 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
   }
 }
 
-export const addNonAuthorityFeedUrlsToPriorityQueue = async () => {
+export const addNonPodcastIndexFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
 
@@ -144,14 +145,14 @@ export const addNonAuthorityFeedUrlsToPriorityQueue = async () => {
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
-      .where(`feedUrl.isAuthority = true AND coalesce(TRIM(podcast.authorityId), '') = ''`)
+      .where(`feedUrl.isAuthority = true AND coalesce(TRIM(podcast.podcastIndexId), '') = ''`)
       .getMany()
 
     console.log('Total feedUrls found:', feedUrls.length)
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
-    console.log('queue:addNonAuthorityFeedUrlsToPriorityQueue', error)
+    console.log('queue:addNonPodcastIndexFeedUrlsToPriorityQueue', error)
   }
 }
 

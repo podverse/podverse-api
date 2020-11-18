@@ -1,8 +1,8 @@
-import { addNonAuthorityFeedUrlsToPriorityQueue } from '~/services/queue'
+import { addNonPodcastIndexFeedUrlsToPriorityQueue } from '~/services/queue'
 
 (async function () {
   try {
-    await addNonAuthorityFeedUrlsToPriorityQueue()
+    await addNonPodcastIndexFeedUrlsToPriorityQueue()
   } catch (error) {
     console.log(error)
   }
