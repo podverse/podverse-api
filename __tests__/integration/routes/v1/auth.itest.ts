@@ -27,6 +27,7 @@ describe('Auth endpoints', () => {
           
           
           chaiExpect(res.body.message).to.equal('Invalid username or password')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -83,6 +84,7 @@ describe('Auth endpoints', () => {
             "QMReJmbE",
             "EVHDBRZY"
         ])
+        chaiExpect(Object.keys(res.body).length).to.equal(13)
         
           done()
       })
@@ -95,14 +97,14 @@ describe('Auth endpoints', () => {
         .post(`${v1Path}/auth/logout`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
     })
   })
 
   describe('Get Authenticated User Info', () => {
-    test('logged in', async (done) => {
+    test('User Logged In', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/auth/get-authenticated-user-info`)
         .set('Cookie', testUsers.premiumExpired.authCookie)
@@ -155,11 +157,11 @@ describe('Auth endpoints', () => {
             "QMReJmbE",
             "EVHDBRZY"
         ])
-
+        chaiExpect(Object.keys(res.body).length).to.equal(14)
           done()
         })
     })
-    test('logged out', async (done) => {
+    test('No User Logged in', async (done) => {
       chai.request(global.app)
         .post(`${v1Path}/auth/get-authenticated-user-info`)
         .end((err, res) => {
