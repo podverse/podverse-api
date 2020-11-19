@@ -55,9 +55,9 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
     } else if (sort === 'most-recent') {
       const date = new Date()
       if (podcastIds.length === 0) {
-        date.setDate(date.getDate() - 14)
+        date.setDate(date.getDate() - 3)
       } else if (podcastIds.length > 10) {
-        date.setMonth(date.getMonth() - 3)
+        date.setMonth(date.getMonth() - 1)
       }
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
       qb.andWhere(`episode."pubDate" > '${dateString}'`)
@@ -67,75 +67,14 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
   return qb
 }
 
-const getEpisodes = async (query, includeNSFW) => {
+const getEpisodes = async (query) => {
   const repository = getRepository(Episode)
   const { categories, includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
   const { sincePubDate } = query
 
   const podcastIds = podcastId && podcastId.split(',') || []
   const categoriesIds = categories && categories.split(',') || []
-
-  const podcastJoinConditions = `
-    ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
-    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
-  `
-
-  const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
-
-  // the names of these whereConditions make no sense :(
-  const episodeWhereConditions = `
-    LOWER(episode.title) LIKE :searchAllFieldsText
-    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
-    ${sincePubDate ? 'AND episode.pubDate >= :sincePubDate' : ''}
-  `
-
-  const episodeWhereSincePubDateConditions = `
-    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds)' : ''}
-    ${sincePubDate ? `${podcastIds.length > 0 ? 'AND ' : ''}episode.pubDate >= :sincePubDate` : ''}
-  `
-
-  // Is there a better way to do this? I'm not sure how to get the count
-  // with getRawMany...
-  let countQB = repository
-    .createQueryBuilder('episode')
-  if (searchAllFieldsText || sincePubDate) {
-    countQB.where(
-      sincePubDate ? episodeWhereSincePubDateConditions : episodeWhereConditions,
-      {
-        podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`,
-        sincePubDate
-      }
-    )
-    countQB.andWhere('episode."isPublic" IS true')
-  } else {
-    if (podcastIds.length > 0) {
-      countQB.where(
-        episodeWhereSincePubDateConditions,
-        { podcastIds }
-      )
-      countQB.andWhere('episode."isPublic" IS true')
-    } else if (categoriesIds.length > 0) {
-      countQB.innerJoin(
-        'episode.podcast',
-        'podcast'
-      )
-      countQB.innerJoin(
-        'podcast.categories',
-        'categories',
-        categoryJoinConditions,
-        { categoriesIds }
-      )
-
-      countQB.where('episode."isPublic" IS true')
-    } else {
-      countQB.where({ isPublic: true })
-    }
-    countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
-  }
-
-  const count = await countQB.getCount()
-
+  
   let qb = repository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
@@ -160,64 +99,91 @@ const getEpisodes = async (query, includeNSFW) => {
     .addSelect('episode.pubDate', 'pubDate')
     .addSelect('episode.title', 'title')
 
-  if (includePodcast) {
-    qb.innerJoinAndSelect(
+  const episodeWhereConditions = `
+    ${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : ''}
+    ${searchAllFieldsText && podcastIds.length > 0 ? ' AND ' : ''}
+    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds)' : ''}
+    ${sincePubDate && (searchAllFieldsText || podcastIds.length > 0) ? ' AND ' : ''}
+    ${sincePubDate ? 'episode.pubDate >= :sincePubDate' : ''}
+  `.trim() || 'true'
+
+  let countQB = repository.createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .addSelect('episode.title', 'title')
+    .addSelect('episode.podcastId', 'podcastId')
+    .addSelect('episode.pubDate', 'pubDate')
+    .addSelect('episode.isPublic', 'isPublic')
+  countQB.where(
+    episodeWhereConditions,
+    {
+      podcastIds,
+      searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`,
+      sincePubDate
+    }
+  )
+  countQB.andWhere('episode."isPublic" IS true')
+  countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
+
+  if (podcastIds.length > 0) {
+    const podcastJoinConditions = 'episode.podcastId IN (:...podcastIds)'
+
+    qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
       'episode.podcast',
       'podcast',
       podcastJoinConditions,
       { podcastIds }
     )
-  } else {
-    qb.innerJoin(
+  } else if (categoriesIds.length > 0) {
+    countQB.innerJoin(
       'episode.podcast',
-      'podcast',
-        podcastJoinConditions,
-      { podcastIds }
+      'podcast'
     )
-  }
+    countQB.innerJoin(
+      'podcast.categories',
+      'categories',
+      'categories.id IN (:...categoriesIds)',
+      { categoriesIds }
+    )
 
-  if (categoryJoinConditions) {
+    qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
+      'episode.podcast',
+      'podcast'
+    )
+
     qb.innerJoin(
       'podcast.categories',
       'categories',
-      categoryJoinConditions,
+      'categories.id IN (:...categoriesIds)',
       { categoriesIds }
     )
-  }
-
-  if (searchAllFieldsText) {
-    qb.where(
-      episodeWhereConditions,
-      {
-        podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
-      }
-    )
-  } else if (sincePubDate) {
-    if (podcastIds.length === 0) return [[], 0]
-
-    qb.where(
-      episodeWhereSincePubDateConditions,
-      {
-        podcastIds,
-        sincePubDate
-      }
-    )
   } else {
-    qb = limitEpisodesQuerySize(qb, podcastIds, sort)
+    qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
+      'episode.podcast',
+      'podcast'
+    )
   }
 
-  qb.andWhere('episode."isPublic" IS true')
+  const count = await countQB.getCount()
 
+  qb.where(
+    episodeWhereConditions,
+    {
+      podcastIds,
+      searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`,
+      sincePubDate
+    }
+  )
+  qb = limitEpisodesQuerySize(qb, podcastIds, sort)
+  qb.andWhere('episode."isPublic" IS true')
+  
   if (sincePubDate) {
     qb.offset(0)
     qb.limit(50)
 
     const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
-    const episodes = await qb
-      
-      .orderBy(orderColumn[0], orderColumn[1] as any)
-      .getRawMany()
+    qb.orderBy(orderColumn[0], orderColumn[1] as any)
+
+    const episodes = await qb.getRawMany()
 
     return [episodes, count]
   } else {
@@ -225,8 +191,9 @@ const getEpisodes = async (query, includeNSFW) => {
     qb.limit(take)
 
     const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-    
+
     query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+
     const episodes = await qb.getRawMany()
 
     // Limit the description length since we don't need the full description in list views.

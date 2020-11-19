@@ -68,6 +68,7 @@ export class Episode {
   @Column({ default: false })
   isExplicit: boolean
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 

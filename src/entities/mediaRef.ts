@@ -34,6 +34,7 @@ export class MediaRef {
   @Column({ default: false })
   isOfficialSoundBite: boolean
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 

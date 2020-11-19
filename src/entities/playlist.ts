@@ -19,6 +19,7 @@ export class Playlist {
   @Column({ nullable: true })
   description?: string
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 

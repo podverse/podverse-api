@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.11.22",
+  "version": "2.11.23",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -8,7 +8,7 @@
   "main": "dist/bundle.js",
   "scripts": {
     "build": "webpack --progress --colors",
-    "dev": "NODE_ENV=development DB_SHOULD_SYNC=true nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
     "dev:scripts:addAllOrphanFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "dev:scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
