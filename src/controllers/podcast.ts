@@ -23,12 +23,34 @@ const getPodcast = async (id, includeRelations = true) => {
   return podcast
 }
 
+// Use where clause to reduce the size of very large data sets and speed up queries
+const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
+  if (!podcastIds || podcastIds.length === 0) {
+    if (sort === 'top-past-hour') {
+      qb.andWhere('podcast."pastHourTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-day') {
+      qb.andWhere('podcast."pastDayTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-week') {
+      qb.andWhere('podcast."pastWeekTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-month') {
+      qb.andWhere('podcast."pastMonthTotalUniquePageviews" > 0')
+    } else if (sort === 'top-past-year') {
+      qb.andWhere('podcast."pastYearTotalUniquePageviews" > 0')
+    } else if (sort === 'top-all-time') {
+      qb.andWhere('podcast."pastAllTimeTotalUniquePageviews" > 0')
+    }
+  }
+
+  return qb
+}
+
 const getPodcasts = async (query, includeNSFW) => {
   const repository = getRepository(Podcast)
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
     skip, take } = query
+  const podcastIds = (podcastId && podcastId.split(',')) || []
 
-  const qb = repository
+  let qb = repository
     .createQueryBuilder('podcast')
     .select('podcast.id')
     .addSelect('podcast.feedLastUpdated')
@@ -75,7 +97,6 @@ const getPodcasts = async (query, includeNSFW) => {
       )
       qb.innerJoinAndSelect('podcast.categories', 'categories')
     } else if (podcastId && podcastId.split(',').length > 0) {
-      const podcastIds = podcastId.split(',')
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }
@@ -96,6 +117,8 @@ const getPodcasts = async (query, includeNSFW) => {
   }
 
   qb.andWhere('"isPublic" = true')
+
+  qb = limitPodcastsQuerySize(qb, podcastIds, query.sort)
 
   const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
   

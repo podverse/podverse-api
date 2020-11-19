@@ -63,6 +63,7 @@ export class User {
   })
   freeTrialExpiration: Date
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 
