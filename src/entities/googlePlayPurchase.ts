@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
 // https://developers.google.com/android-publisher/api-ref/purchases/products#resource
@@ -8,7 +8,6 @@ import { User } from '~/entities'
 @Entity('googlePlayPurchase')
 export class GooglePlayPurchase {
 
-  @Index()
   @PrimaryColumn('varchar')
   transactionId: string
 

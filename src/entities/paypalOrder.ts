@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn,
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
 @Entity('paypalOrders')
 export class PayPalOrder {
 
-  @Index()
   @PrimaryColumn('varchar')
   paymentID: string
 

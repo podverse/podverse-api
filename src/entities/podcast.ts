@@ -26,10 +26,10 @@ type ValueRecipient = {
   type: string
 }
 
+
 @Entity('podcasts')
 export class Podcast {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

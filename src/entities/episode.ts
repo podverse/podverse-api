@@ -23,7 +23,6 @@ type Transcript = {
 @Entity('episodes')
 export class Episode {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
