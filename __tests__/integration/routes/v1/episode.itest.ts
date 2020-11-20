@@ -13,10 +13,13 @@ describe('_episode endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('gRgjd3YcKb')
+          chaiExpect(res.body.chaptersType).to.equal(null)
+          chaiExpect(res.body.chaptersUrl).to.equal(null)
+          chaiExpect(res.body.chaptersUrlLastParsed).to.equal(null)
           chaiExpect(res.body).to.have.property('description')
-          chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.duration).to.equal(0)
           chaiExpect(res.body.episodeType).to.equal('full')
+          chaiExpect(res.body.funding).to.equal(null)
           chaiExpect(res.body.guid).to.equal('prx_96_99a841bb-27cf-44de-908a-2d33f1265c83')
           chaiExpect(res.body.imageUrl).to.equal('https://f.prxu.org/96/99a841bb-27cf-44de-908a-2d33f1265c83/images/1c3def2b-b305-4903-8df2-bfe1821aaf7c/99pi_iTunes_Badge_Zag_1400.jpg')
           chaiExpect(res.body.isExplicit).to.equal(false)
@@ -33,26 +36,21 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(res.body).to.have.property('pubDate')
           chaiExpect(res.body.title).to.equal('335- Gathering the Magic')
+          chaiExpect(res.body.transcript).to.equal(null)
           chaiExpect(res.body.podcastId).to.equal('0RMk6UYGq')
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
 
-          const mediaRef = res.body.mediaRefs[0]
-          chaiExpect(mediaRef.id).to.equal('o0WTxqON')
-          chaiExpect(mediaRef.endTime).to.equal(660)
-          chaiExpect(mediaRef.isPublic).to.equal(true)
-          chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastMonthTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastYearTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.startTime).to.equal(480)
-          chaiExpect(mediaRef.title).to.equal('Consectetur lorem donec massa sapien faucibus et molestie ac. Purus semper eget duis at tellus.')
-          chaiExpect(mediaRef).to.have.property('createdAt')
-          chaiExpect(mediaRef).to.have.property('updatedAt')
+          const podcast = res.body.podcast[0]
+          chaiExpect(podcast.id).to.equal('0RMk6UYGq')
+          chaiExpect(podcast.podcastIndexId).to.equal(null)
+          chaiExpect(podcast.authorityId).to.equal(null)
+          chaiExpect(podcast.alwaysFullyParse).to.equal(null)
+          chaiExpect(podcast).to.have.property('description')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(31)
           
           
 
@@ -65,6 +63,8 @@ describe('_episode endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Episode not found')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -111,6 +111,8 @@ describe('_episode endpoints', () => {
           chaiExpect(episode1.id).to.equal('W7-RAalET')
 
           chaiExpect(episode2.id).to.equal('CBfXbA5c0Y8')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })

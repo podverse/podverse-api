@@ -166,7 +166,7 @@ describe('Auth endpoints', () => {
         .post(`${v1Path}/auth/get-authenticated-user-info`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
     })
@@ -207,6 +207,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(400)
 
           chaiExpect(res.body.message).to.equal('Invalid password provided.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -220,6 +221,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(200)
 
           chaiExpect(res.body.message).to.equal('Password reset successful.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -233,6 +235,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(200)
 
           chaiExpect(res.body.message).to.equal('Password reset successful.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -246,6 +249,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(200)
 
           chaiExpect(res.body.message).to.equal('Password reset successful.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -259,6 +263,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(200)
 
           chaiExpect(res.body.message).to.equal('Password reset successful.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -278,6 +283,8 @@ describe('Auth endpoints', () => {
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(400)
+          chaiExpect(res.body.message).to.equal('Development mode: sendResetPassword endpoint is disabled.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -300,6 +307,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res).to.have.status(460)
           
           chaiExpect(res.body.message).to.equal('Please verify your email address to login.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -311,6 +319,7 @@ describe('Auth endpoints', () => {
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -336,6 +345,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([])
           chaiExpect(res.body.subscribedUserIds).to.eql([])
+          chaiExpect(Object.keys(res.body).length).to.equal(13)
 
 
 
