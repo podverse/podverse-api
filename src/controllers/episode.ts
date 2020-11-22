@@ -67,7 +67,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
-    .addSelect('SUBSTR(episode.description, 1, 10000)')
+    .addSelect('episode.description')
     .addSelect('episode.duration')
     .addSelect('episode.episodeType')
     .addSelect('episode.funding')
