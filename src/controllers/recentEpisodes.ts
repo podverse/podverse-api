@@ -122,7 +122,7 @@ const dropTempTables = async (em) => {
 const getDateString = (i, isEndDate = false) => {
   const date = new Date()
   i = isEndDate ? i + 1 : i
-  date.setDate(date.getDate() - 14 + i)
+  date.setDate(date.getDate() - days + i)
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
