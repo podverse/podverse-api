@@ -2,7 +2,7 @@ import { getConnection } from 'typeorm'
 
 const updateRecentEpisodesTables = async () => {
   const date = new Date()
-  date.setMonth(date.getMonth() - 1)
+  date.setDate(date.getDate() - 14)
   const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
   const em = await getConnection().createEntityManager()
 
