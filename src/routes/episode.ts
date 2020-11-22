@@ -2,7 +2,8 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { getEpisode, getEpisodes, retrieveLatestChapters } from '~/controllers/episode'
+import { getEpisode, getEpisodes, getEpisodesByCategoryIds, getEpisodesByPodcastIds,
+  retrieveLatestChapters } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
@@ -25,7 +26,16 @@ router.get('/',
       if (query.page > 1) {
         query.skip = (((parseInt(query.page, 10) - 1) * query.take))
       }
-      const episodes = await getEpisodes(ctx.state.query)
+
+      let episodes
+      if (ctx.state.query.categories) {
+        episodes = await getEpisodesByCategoryIds(ctx.state.query)
+      } else if (ctx.state.query.podcastId) {
+        episodes = await getEpisodesByPodcastIds(ctx.state.query)
+      } else {
+        episodes = await getEpisodes(ctx.state.query)
+      }
+
 
       ctx.body = episodes
     } catch (error) {

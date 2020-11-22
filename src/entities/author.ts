@@ -9,7 +9,6 @@ const shortid = require('shortid')
 @Entity('authors')
 export class Author {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

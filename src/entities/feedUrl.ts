@@ -9,7 +9,6 @@ const shortid = require('shortid')
 @Entity('feedUrls')
 export class FeedUrl {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14

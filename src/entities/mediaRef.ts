@@ -10,7 +10,6 @@ const shortid = require('shortid')
 @Entity('mediaRefs')
 export class MediaRef {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -103,6 +102,7 @@ export class MediaRef {
   @JoinTable()
   categories: Category[]
 
+  @Index()
   @ManyToOne(type => Episode, episode => episode.mediaRefs, {
     onDelete: 'CASCADE'
   })
