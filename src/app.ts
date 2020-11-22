@@ -9,9 +9,9 @@ import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
-import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter, authorRouter,
-  categoryRouter, episodeRouter, feedUrlRouter, googlePlayRouter, mediaRefRouter, paypalRouter,
-  playlistRouter, podcastRouter, userRouter } from '~/routes'
+import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter,
+  authorRouter, categoryRouter, clipsRouter, episodeRouter, feedUrlRouter, googlePlayRouter,
+  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
   
 const cookie = require('cookie')
@@ -97,6 +97,9 @@ export const createApp = (conn: Connection) => {
 
   app.use(categoryRouter.routes())
   app.use(categoryRouter.allowedMethods())
+
+  app.use(clipsRouter.routes())
+  app.use(clipsRouter.allowedMethods())
 
   app.use(episodeRouter.routes())
   app.use(episodeRouter.allowedMethods())

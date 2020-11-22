@@ -3,8 +3,8 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef }
-  from '~/controllers/mediaRef'
+import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs,
+  updateMediaRef } from '~/controllers/mediaRef'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
