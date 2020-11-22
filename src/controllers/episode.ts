@@ -134,6 +134,8 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   if (recentEpisodeIds.length <= 0) return [[], totalCount]
 
   qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
+  const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
+  qb.orderBy(orderColumn[0], orderColumn[1] as any)
   
   const episodes = await qb.getMany()
   const cleanedEpisodes = cleanEpisodes(episodes)
