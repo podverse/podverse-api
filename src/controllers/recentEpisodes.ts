@@ -1,7 +1,7 @@
 import { getConnection } from 'typeorm'
 
 const days = process.env.RECENT_EPISODES_DATE_RANGE ?
-  parseInt(process.env.RECENT_EPISODES_DATE_RANGE) : 21
+  parseInt(process.env.RECENT_EPISODES_DATE_RANGE) : 14
 
 const updateRecentEpisodesTables = async () => {
   const promises = [] as any
