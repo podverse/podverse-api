@@ -16,7 +16,7 @@ router.get('/',
     try {
       const { mediaUrl } = ctx.query
       const mediaRefsResult = await getPublicMediaRefsByEpisodeMediaUrl(mediaUrl)
-      ctx.body = mediaRefsResult
+      ctx.body = JSON.stringify(mediaRefsResult, null, 4)
     } catch (error) {
       emitRouterError(error, ctx)
     }
