@@ -61,6 +61,23 @@ const getMediaRef = async id => {
   return mediaRef
 }
 
+const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
+  return getRepository(MediaRef)
+    .createQueryBuilder('mediaRef')
+    .select('mediaRef.id')
+    .addSelect('mediaRef.startTime')
+    .addSelect('mediaRef.endTime')
+    .addSelect('mediaRef.title')
+    .innerJoin(
+      'mediaRef.episode',
+      'episode'
+    )
+    .where('episode.mediaUrl = :mediaUrl', { mediaUrl })
+    .andWhere('mediaRef.isPublic = TRUE')
+    .orderBy('mediaRef.startTime', 'ASC')
+    .getManyAndCount()
+}
+
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
   const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
@@ -267,6 +284,7 @@ export {
   deleteMediaRef,
   getMediaRef,
   getMediaRefs,
+  getPublicMediaRefsByEpisodeMediaUrl,
   updateMediaRef,
   updateSoundBites
 }

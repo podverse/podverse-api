@@ -55,6 +55,51 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
   }
 }
 
+export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const feedUrlsCount = await feedUrlRepo
+      .createQueryBuilder('feedUrl')
+      .select('feedUrl.id')
+      .addSelect('feedUrl.url')
+      .innerJoinAndSelect(
+        'feedUrl.podcast',
+        'podcast',
+        'podcast.title IS NULL'
+      )
+      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+      .getCount()
+
+    const ceilCount = Math.ceil(feedUrlsCount / 10000)
+    console.log('ceilCount', ceilCount)
+
+    for (let i = 1; i <= ceilCount; i++) {
+      console.log('index', i)
+      const feedUrls = await feedUrlRepo
+        .createQueryBuilder('feedUrl')
+        .select('feedUrl.id')
+        .addSelect('feedUrl.url')
+        .innerJoinAndSelect(
+          'feedUrl.podcast',
+          'podcast',
+          'podcast.title IS NULL'
+        )
+        .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+        .offset(i * 10000)
+        .limit(10000)
+        .getMany()
+
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+    }
+  } catch (error) {
+    console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
+  }
+}
+
 export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
   await connectToDb()
@@ -107,7 +152,7 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
   }
 }
 
-export const addNonAuthorityFeedUrlsToPriorityQueue = async () => {
+export const addNonPodcastIndexFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
 
@@ -119,14 +164,14 @@ export const addNonAuthorityFeedUrlsToPriorityQueue = async () => {
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
-      .where(`feedUrl.isAuthority = true AND coalesce(TRIM(podcast.authorityId), '') = ''`)
+      .where(`feedUrl.isAuthority = true AND coalesce(TRIM(podcast.podcastIndexId), '') = ''`)
       .getMany()
 
     console.log('Total feedUrls found:', feedUrls.length)
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
-    console.log('queue:addNonAuthorityFeedUrlsToPriorityQueue', error)
+    console.log('queue:addNonPodcastIndexFeedUrlsToPriorityQueue', error)
   }
 }
 
@@ -191,20 +236,20 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
     const msg = await receiveMessageFromQueue(queueUrls.feedsToParse.errorsQueueUrl)
     if (msg) {
       if (msg.MessageAttributes) {
-        if (msg.MessageAttributes.url) {
-          console.log('url:', msg.MessageAttributes.url.StringValue)
-          console.log('')
-        }
-        if (msg.MessageAttributes.id) {
-          console.log('feedUrlId:', msg.MessageAttributes.id.StringValue)
-          console.log('')
-        }
         if (msg.MessageAttributes.podcastTitle) {
           console.log('podcastTitle:', msg.MessageAttributes.podcastTitle.StringValue)
           console.log('')
         }
         if (msg.MessageAttributes.podcastId) {
           console.log('podcastId:', msg.MessageAttributes.podcastId.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.url) {
+          console.log('url:', msg.MessageAttributes.url.StringValue)
+          console.log('')
+        }
+        if (msg.MessageAttributes.id) {
+          console.log('feedUrlId:', msg.MessageAttributes.id.StringValue)
           console.log('')
         }
         if (msg.MessageAttributes.errorMessage) {

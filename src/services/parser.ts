@@ -18,7 +18,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   try {
     const result = await podcastFeedParser.getPodcastFromURL({
       url: feedUrl.url,
-      headers: { 'User-Agent': userAgent }
+      headers: { 'User-Agent': userAgent },
+      timeout: 10000
     })
     const { episodes, meta } = result
 
@@ -33,8 +34,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     if (
       !forceReparsing
       && podcast.feedLastUpdated
-      && meta.lastUpdated
-      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastUpdated)
+      && meta.lastBuildDate
+      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastBuildDate)
       && !podcast.alwaysFullyParse
     ) {
       console.log('Stop parsing if the feed has not been updated since it was last parsed')
@@ -124,7 +125,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcast)
 
-    await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+    // Limit podcast image PUTs to once per week
+    const oneWeek = 7 * 24 * 60 * 60 * 1000
+    const wasUpdatedThisWeek = new Date(podcast.feedLastUpdated).getTime() + oneWeek >= new Date(meta.lastBuildDate).getTime()
+    if (!wasUpdatedThisWeek || podcast.alwaysFullyParse) {
+      await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+    }
 
     const episodeRepo = getRepository(Episode)
     await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
@@ -151,7 +157,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
   } catch (error) {
-    console.log('parseFeedUrl error:', error)
     throw(error)
   }
 }
@@ -174,11 +179,11 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   const feedUrls = await getFeedUrls({ podcastId: podcastIds })
-  /* const forceReparsing = true */
+  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl)
+      await parseFeedUrl(feedUrl, forceReparsing)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
@@ -274,12 +279,13 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
   }
 
   const feedUrlMsg = extractFeedMessage(message)
+  let feedUrl
 
   try {
     const feedUrlRepo = getRepository(FeedUrl)
 
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logStart, 'queueUrl ' + queueUrl)
-    const feedUrl = await feedUrlRepo
+    feedUrl = await feedUrlRepo
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
@@ -311,9 +317,8 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
     }
 
   } catch (error) {
-    console.error('parseNextFeedFromQueue:parseFeed', error)
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
-    await handlePodcastFeedLastParseFailed(feedUrlMsg, error)
+    await handlePodcastFeedLastParseFailed(feedUrl || feedUrlMsg, error)
     logPerformance('parseNextFeedFromQueue > error handling', _logEnd)
   }
 
@@ -349,7 +354,9 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
     } catch (err) {
       console.log('setPodcastFeedLastParseFailed', feedUrlMsg.podcast.id, err)
     }
-  } else if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
+  }
+  
+  if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
     const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
     const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError)
     await sendMessageToQueue(attrs, errorsQueueUrl)

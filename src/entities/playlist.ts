@@ -9,7 +9,6 @@ const shortid = require('shortid')
 @Entity('playlists')
 export class Playlist {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -19,6 +18,7 @@ export class Playlist {
   @Column({ nullable: true })
   description?: string
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 

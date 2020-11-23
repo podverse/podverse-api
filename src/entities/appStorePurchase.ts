@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { User } from '~/entities'
 
 // https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
@@ -8,7 +8,6 @@ import { User } from '~/entities'
 @Entity('appStorePurchase')
 export class AppStorePurchase {
 
-  @Index()
   @PrimaryColumn('varchar')
   transactionId: string
 

@@ -26,19 +26,21 @@ type ValueRecipient = {
   type: string
 }
 
+
 @Entity('podcasts')
 export class Podcast {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
   })
   id: string
 
+  @Index()
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
+  @Index()
   @Column({ nullable: true, unique: true })
   authorityId?: string
 
@@ -58,7 +60,6 @@ export class Podcast {
   @Column('simple-json', { nullable: true })
   funding: Funding[]
 
-  @Index()
   @Column({ nullable: true })
   guid?: string
 
@@ -73,13 +74,13 @@ export class Podcast {
   @Column({ default: false })
   isExplicit: boolean
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 
   @Column({ nullable: true })
   language?: string
 
-  @Index()
   @Column({ nullable: true })
   lastEpisodePubDate?: Date
 

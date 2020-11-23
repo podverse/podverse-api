@@ -8,7 +8,6 @@ import { User } from '~/entities'
 @Entity('bitpayInvoices')
 export class BitPayInvoice {
 
-  @Index()
   @PrimaryColumn('varchar')
   id: string
 

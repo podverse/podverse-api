@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
 import { config } from '~/config'
-import { Episode, MediaRef } from '~/entities'
+import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
 import { request } from '~/lib/request'
 import { getQueryOrderColumn } from '~/lib/utility'
 import { createMediaRef, updateMediaRef } from './mediaRef'
@@ -38,8 +38,8 @@ const getEpisode = async id => {
 }
 
 // Use where clause to reduce the size of very large data sets and speed up queries
-const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
-  if (!podcastIds || podcastIds.length === 0 || podcastIds.length > 10) {
+const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => {
+  if (shouldLimit) {
     if (sort === 'top-past-hour') {
       qb.andWhere('episode."pastHourTotalUniquePageviews" > 0')
     } else if (sort === 'top-past-day') {
@@ -54,11 +54,7 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
       qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
     } else if (sort === 'most-recent') {
       const date = new Date()
-      if (podcastIds.length === 0) {
-        date.setDate(date.getDate() - 14)
-      } else if (podcastIds.length > 10) {
-        date.setMonth(date.getMonth() - 3)
-      }
+      date.setDate(date.getDate() - 1)
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
       qb.andWhere(`episode."pubDate" > '${dateString}'`)
     }
@@ -67,175 +63,164 @@ const limitEpisodesQuerySize = (qb: any, podcastIds: any[], sort: string) => {
   return qb
 }
 
-const getEpisodes = async (query, includeNSFW) => {
-  const repository = getRepository(Episode)
-  const { categories, includePodcast, podcastId, searchAllFieldsText = '', skip, sort, take } = query
-  const { sincePubDate } = query
+const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
+  const qb = getRepository(Episode)
+    .createQueryBuilder('episode')
+    .select('episode.id')
+    .addSelect('episode.description')
+    .addSelect('episode.duration')
+    .addSelect('episode.episodeType')
+    .addSelect('episode.funding')
+    .addSelect('episode.guid')
+    .addSelect('episode.imageUrl')
+    .addSelect('episode.isExplicit')
+    .addSelect('episode.isPublic')
+    .addSelect('episode.linkUrl')
+    .addSelect('episode.mediaFilesize')
+    .addSelect('episode.mediaType')
+    .addSelect('episode.mediaUrl')
+    .addSelect('episode.pastHourTotalUniquePageviews')
+    .addSelect('episode.pastDayTotalUniquePageviews')
+    .addSelect('episode.pastWeekTotalUniquePageviews')
+    .addSelect('episode.pastMonthTotalUniquePageviews')
+    .addSelect('episode.pastYearTotalUniquePageviews')
+    .addSelect('episode.pastAllTimeTotalUniquePageviews')
+    .addSelect('episode.pubDate')
+    .addSelect('episode.title')
 
-  const podcastIds = podcastId && podcastId.split(',') || []
+  qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
+    'episode.podcast',
+    'podcast'
+  )
+
+  qb.where(
+    `${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : 'true'}`,
+    {
+      searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
+    }
+  )
+
+  return qb    
+}
+
+// Limit the description length since we don't need the full description in list views.
+const cleanEpisodes = (episodes) => {
+  return episodes.map((x) => {
+    x.description = x.description ? x.description.substr(0, 2500) : '';
+    return x
+  })
+}
+
+const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
+  const table = type === 'categoriesIds' ? RecentEpisodeByCategory : RecentEpisodeByPodcast
+  const select = type === 'categoriesIds' ? 'recentEpisode.categoryId' : 'recentEpisode.podcastId'
+  const where = type === 'categoriesIds' ? 'recentEpisode.categoryId IN (:...ids)' : 'recentEpisode.podcastId IN (:...ids)'
+
+  const recentEpisodesResult = await getRepository(table)
+    .createQueryBuilder('recentEpisode')
+    .select('recentEpisode.episodeId')
+    .addSelect(select)
+    .addSelect('recentEpisode.pubDate')
+    .where(where, { ids })
+    .orderBy('recentEpisode.pubDate', 'DESC')
+    .offset(skip)
+    .limit(take)
+    .getManyAndCount()
+
+  const totalCount = recentEpisodesResult[1]
+  if (!totalCount) return [[], 0]
+
+  const recentEpisodeIds = recentEpisodesResult[0].map(x => x.episodeId)
+  if (recentEpisodeIds.length <= 0) return [[], totalCount]
+
+  qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
+  const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
+  qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  
+  const episodes = await qb.getMany()
+  const cleanedEpisodes = cleanEpisodes(episodes)
+  return [cleanedEpisodes, totalCount]
+}
+
+const handleGetEpisodesWithOrdering = async (obj) => {
+  const { qb, query, skip, sort, take } = obj
+  qb.offset(skip)
+  qb.limit(take)
+
+  const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
+  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+
+  const episodesResults = await qb.getManyAndCount()
+  const episodes = episodesResults[0]
+  const episodesCount = episodesResults[1]
+
+  const cleanedEpisodes = cleanEpisodes(episodes)
+
+  return [cleanedEpisodes, episodesCount]
+}
+
+const getEpisodes = async (query) => {
+  const { includePodcast, searchAllFieldsText, skip, sort, take } = query
+
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  const shouldLimit = true
+  qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+  qb.andWhere('episode."isPublic" IS true')
+
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+}
+
+const getEpisodesByCategoryIds = async (query) => {
+  const { categories, includePodcast, searchAllFieldsText, skip, sort, take } = query
   const categoriesIds = categories && categories.split(',') || []
 
-  const podcastJoinConditions = `
-    ${includeNSFW ? 'true' : 'podcast.isExplicit = false'}
-    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
-  `
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
 
-  const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
-
-  // the names of these whereConditions make no sense :(
-  const episodeWhereConditions = `
-    LOWER(episode.title) LIKE :searchAllFieldsText
-    ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
-    ${sincePubDate ? 'AND episode.pubDate >= :sincePubDate' : ''}
-  `
-
-  const episodeWhereSincePubDateConditions = `
-    ${podcastIds.length > 0 ? 'episode.podcastId IN (:...podcastIds)' : ''}
-    ${sincePubDate ? `${podcastIds.length > 0 ? 'AND ' : ''}episode.pubDate >= :sincePubDate` : ''}
-  `
-
-  // Is there a better way to do this? I'm not sure how to get the count
-  // with getRawMany...
-  let countQB = repository
-    .createQueryBuilder('episode')
-  if (searchAllFieldsText || sincePubDate) {
-    countQB.where(
-      sincePubDate ? episodeWhereSincePubDateConditions : episodeWhereConditions,
-      {
-        podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`,
-        sincePubDate
-      }
-    )
-    countQB.andWhere('episode."isPublic" IS true')
+  if (sort === 'most-recent') {
+    return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
   } else {
-    if (podcastIds.length > 0) {
-      countQB.where(
-        episodeWhereSincePubDateConditions,
-        { podcastIds }
-      )
-      countQB.andWhere('episode."isPublic" IS true')
-    } else if (categoriesIds.length > 0) {
-      countQB.innerJoin(
-        'episode.podcast',
-        'podcast'
-      )
-      countQB.innerJoin(
-        'podcast.categories',
-        'categories',
-        categoryJoinConditions,
-        { categoriesIds }
-      )
-
-      countQB.where('episode."isPublic" IS true')
-    } else {
-      countQB.where({ isPublic: true })
-    }
-    countQB = limitEpisodesQuerySize(countQB, podcastIds, sort)
-  }
-
-  const count = await countQB.getCount()
-
-  let qb = repository
-    .createQueryBuilder('episode')
-    .select('episode.id', 'id')
-    .addSelect('SUBSTR(episode.description, 1, 10000)', 'description')
-    .addSelect('episode.duration', 'duration')
-    .addSelect('episode.episodeType', 'episodeType')
-    .addSelect('episode.funding', 'funding')
-    .addSelect('episode.guid', 'guid')
-    .addSelect('episode.imageUrl', 'imageUrl')
-    .addSelect('episode.isExplicit', 'isExplicit')
-    .addSelect('episode.isPublic', 'isPublic')
-    .addSelect('episode.linkUrl', 'linkUrl')
-    .addSelect('episode.mediaFilesize', 'mediaFilesize')
-    .addSelect('episode.mediaType', 'mediaType')
-    .addSelect('episode.mediaUrl', 'mediaUrl')
-    .addSelect('episode.pastHourTotalUniquePageviews', 'pastHourTotalUniquePageviews')
-    .addSelect('episode.pastDayTotalUniquePageviews', 'pastDayTotalUniquePageviews')
-    .addSelect('episode.pastWeekTotalUniquePageviews', 'pastWeekTotalUniquePageviews')
-    .addSelect('episode.pastMonthTotalUniquePageviews', 'pastMonthTotalUniquePageviews')
-    .addSelect('episode.pastYearTotalUniquePageviews', 'pastYearTotalUniquePageviews')
-    .addSelect('episode.pastAllTimeTotalUniquePageviews', 'pastAllTimeTotalUniquePageviews')
-    .addSelect('episode.pubDate', 'pubDate')
-    .addSelect('episode.title', 'title')
-
-  if (includePodcast) {
-    qb.innerJoinAndSelect(
-      'episode.podcast',
-      'podcast',
-      podcastJoinConditions,
-      { podcastIds }
-    )
-  } else {
-    qb.innerJoin(
-      'episode.podcast',
-      'podcast',
-        podcastJoinConditions,
-      { podcastIds }
-    )
-  }
-
-  if (categoryJoinConditions) {
     qb.innerJoin(
       'podcast.categories',
       'categories',
-      categoryJoinConditions,
+      'categories.id IN (:...categoriesIds)',
       { categoriesIds }
     )
+    
+    const shouldLimit = true
+    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+    qb.andWhere('episode."isPublic" IS true')
+
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
   }
+}
 
-  if (searchAllFieldsText) {
-    qb.where(
-      episodeWhereConditions,
-      {
-        podcastIds,
-        searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
-      }
-    )
-  } else if (sincePubDate) {
-    if (podcastIds.length === 0) return [[], 0]
-
-    qb.where(
-      episodeWhereSincePubDateConditions,
-      {
-        podcastIds,
-        sincePubDate
-      }
-    )
-  } else {
-    qb = limitEpisodesQuerySize(qb, podcastIds, sort)
-  }
-
+const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
+  const { skip, sort, take } = query
+  qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
   qb.andWhere('episode."isPublic" IS true')
 
-  if (sincePubDate) {
-    qb.offset(0)
-    qb.limit(50)
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+}
 
-    const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
-    const episodes = await qb
-      
-      .orderBy(orderColumn[0], orderColumn[1] as any)
-      .getRawMany()
+const getEpisodesByPodcastIds = async (query) => {
+  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
+  const podcastIds = podcastId && podcastId.split(',') || []
 
-    return [episodes, count]
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+
+  if (podcastIds.length === 1) {
+    return getEpisodesByPodcastId(query, qb, podcastIds)
+  }
+  
+  if (sort === 'most-recent') {
+    return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
   } else {
-    qb.offset(skip)
-    qb.limit(take)
+    qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
+    const shouldLimit = podcastIds.length > 10
+    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+    qb.andWhere('episode."isPublic" IS true')
 
-    const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-    
-    query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
-    const episodes = await qb.getRawMany()
-
-    // Limit the description length since we don't need the full description in list views.
-    const cleanedEpisodes = episodes.map((x) => {
-      x.description = x.description ? x.description.substr(0, 2500) : '';
-      return x
-    })
-
-    return [cleanedEpisodes, count]
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
   }
 }
 
@@ -381,6 +366,8 @@ const retrieveLatestChapters = async (id) => {
 export {
   getEpisode,
   getEpisodes,
+  getEpisodesByCategoryIds,
+  getEpisodesByPodcastIds,
   removeDeadEpisodes,
   retrieveLatestChapters
 }

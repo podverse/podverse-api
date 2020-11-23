@@ -10,7 +10,6 @@ const shortid = require('shortid')
 @Entity('mediaRefs')
 export class MediaRef {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -34,6 +33,7 @@ export class MediaRef {
   @Column({ default: false })
   isOfficialSoundBite: boolean
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 
@@ -102,6 +102,7 @@ export class MediaRef {
   @JoinTable()
   categories: Category[]
 
+  @Index()
   @ManyToOne(type => Episode, episode => episode.mediaRefs, {
     onDelete: 'CASCADE'
   })

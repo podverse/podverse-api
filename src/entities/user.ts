@@ -14,7 +14,6 @@ const shortid = require('shortid')
 @Entity('users')
 export class User {
 
-  @Index()
   @PrimaryColumn('varchar', {
     default: shortid.generate(),
     length: 14
@@ -63,6 +62,7 @@ export class User {
   })
   freeTrialExpiration: Date
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 
