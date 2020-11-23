@@ -18,15 +18,15 @@ describe('FeedUrl endpoints', () => {
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
-
           const podcast = res.body.podcast
           chaiExpect(podcast.id).to.equal('Q_QCTJbNR')
-          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
           chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast.authorityId).to.equal(null)
+          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
           chaiExpect(podcast).to.have.property('description')
           chaiExpect(podcast.feedLastParseFailed).to.equal(false)
           chaiExpect(podcast).to.have.property('feedLastUpdated')
+          chaiExpect(podcast.funding).to.equal(null)
           chaiExpect(podcast.guid).to.equal(null)
           chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/T1-cdD07uD/wethepeoplelive.jpg')
@@ -48,10 +48,9 @@ describe('FeedUrl endpoints', () => {
           chaiExpect(podcast.type).to.equal('episodic')
           chaiExpect(podcast).to.have.property('createdAt')
           chaiExpect(podcast).to.have.property('updatedAt')
-          
-          
-          
 
+          chaiExpect(Object.keys(res.body).length).to.equal(6)
+  
           done()
         })
     })
@@ -62,6 +61,7 @@ describe('FeedUrl endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('FeedUrl not found')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
          
           
 
@@ -87,9 +87,9 @@ describe('FeedUrl endpoints', () => {
           chaiExpect(feedUrl).to.have.property('updatedAt')
 
           chaiExpect(podcast.id).to.equal('Q_QCTJbNR')
-          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
           chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast.authorityId).to.equal(null)
+          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
           chaiExpect(podcast).to.have.property('description')
           chaiExpect(podcast.feedLastParseFailed).to.equal(false)
           chaiExpect(podcast).to.have.property('feedLastUpdated')
@@ -112,10 +112,11 @@ describe('FeedUrl endpoints', () => {
           chaiExpect(podcast.sortableTitle).to.equal('wethepeople live')
           chaiExpect(podcast.title).to.equal('#WeThePeople LIVE')
           chaiExpect(podcast.type).to.equal('episodic')
+          chaiExpect(podcast.value).to.equal(null)
           chaiExpect(podcast).to.have.property('createdAt')
           chaiExpect(podcast).to.have.property('updatedAt')
           
-
+          chaiExpect(Object.keys(res.body).length).to.equal(46)
           
 
           done()

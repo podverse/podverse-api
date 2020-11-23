@@ -77,16 +77,35 @@ describe('_episode endpoints', () => {
 
           const feedUrls = res.body.podcast.feedUrls[0]
           chaiExpect(feedUrls.id).to.equal('yJlpeBbN0-')
-          chaiExpect(feedUrls.isAuthority).to.equal('yJlpeBbN0-')
-          chaiExpect(feedUrls.url).to.equal('yJlpeBbN0-')
-          chaiExpect(feedUrls.id).to.have.property('createdAt')
-          chaiExpect(feedUrls.id).to.have.property('updatedAt')
+          chaiExpect(feedUrls.isAuthority).to.equal(true)
+          chaiExpect(feedUrls.url).to.equal('http://feeds.99percentinvisible.org/99percentinvisible')
+          chaiExpect(feedUrls).to.have.property('createdAt')
+          chaiExpect(feedUrls).to.have.property('updatedAt')
 
+          const authors = res.body.podcast.authors[0]
+          chaiExpect(authors.id).to.equal('rHB1EJna')
+          chaiExpect(authors.name).to.equal('Roman Mars')
+          chaiExpect(authors.slug).to.equal('romanmars')
+          chaiExpect(authors).to.have.property('createdAt')
+          chaiExpect(authors).to.have.property('updatedAt')
+
+          const categories = res.body.podcast.categories
+          chaiExpect(categories[0].id).to.equal('jeW7cF_Pv')
+          chaiExpect(categories[0].fullPath).to.equal('Arts')
+          chaiExpect(categories[0].slug).to.equal('arts')
+          chaiExpect(categories[0].title).to.equal('Arts')
+          chaiExpect(categories[0]).to.have.property('createdAt')
+          chaiExpect(categories[0]).to.have.property('updatedAt')
+
+          chaiExpect(categories[1].id).to.equal('2ELHNnfE9Y')
+          chaiExpect(categories[1].fullPath).to.equal('Arts>Design')
+          chaiExpect(categories[1].slug).to.equal('design')
+          chaiExpect(categories[1].title).to.equal('Design')
+          chaiExpect(categories[1]).to.have.property('createdAt')
+          chaiExpect(categories[1]).to.have.property('updatedAt')
 
           chaiExpect(Object.keys(res.body).length).to.equal(31)
           
-          
-
           done()
         })
     })
