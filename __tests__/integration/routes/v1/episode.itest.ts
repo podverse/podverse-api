@@ -43,12 +43,45 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
 
-          const podcast = res.body.podcast[0]
+          const podcast = res.body.podcast
           chaiExpect(podcast.id).to.equal('0RMk6UYGq')
           chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast.authorityId).to.equal(null)
-          chaiExpect(podcast.alwaysFullyParse).to.equal(null)
+          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
           chaiExpect(podcast).to.have.property('description')
+          chaiExpect(podcast.feedLastParseFailed).to.equal(false)
+          chaiExpect(podcast).to.have.property('feedLastUpdated')
+          chaiExpect(podcast.funding).to.equal(null)
+          chaiExpect(podcast.guid).to.equal(null)
+          chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
+          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/Fl1_e2DuIH/99invisible.png')
+          chaiExpect(podcast.isExplicit).to.equal(false)
+          chaiExpect(podcast.isPublic).to.equal(true)
+          chaiExpect(podcast.language).to.equal('en-us')
+          chaiExpect(podcast).to.have.property('lastEpisodePubDate')
+          chaiExpect(podcast.lastEpisodeTitle).to.equal('396- This Day in Esoteric Political History')
+          chaiExpect(podcast.linkUrl).to.equal('http://99percentinvisible.org')
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.shrunkImageUrl).to.equal(null)
+          chaiExpect(podcast.sortableTitle).to.equal('99% invisible')
+          chaiExpect(podcast.title).to.equal('99% Invisible')
+          chaiExpect(podcast.type).to.equal('episodic')
+          chaiExpect(podcast.value).to.equal(null)
+          chaiExpect(podcast).to.have.property('createdAt')
+          chaiExpect(podcast).to.have.property('updatedAt')
+
+          const feedUrls = res.body.podcast.feedUrls[0]
+          chaiExpect(feedUrls.id).to.equal('yJlpeBbN0-')
+          chaiExpect(feedUrls.isAuthority).to.equal('yJlpeBbN0-')
+          chaiExpect(feedUrls.url).to.equal('yJlpeBbN0-')
+          chaiExpect(feedUrls.id).to.have.property('createdAt')
+          chaiExpect(feedUrls.id).to.have.property('updatedAt')
+
 
           chaiExpect(Object.keys(res.body).length).to.equal(31)
           
