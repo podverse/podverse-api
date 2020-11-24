@@ -3,7 +3,7 @@ import { config } from '~/config'
 import { getConnection } from "typeorm"
 import { connectToDb } from '~/lib/db'
 import { removeProtocol } from '~/lib/utility'
-import { addFeedUrlsByAuthorityIdToPriorityQueue } from './queue'
+import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from './queue'
 const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
@@ -15,21 +15,8 @@ const hash = sha1(
   config.podcastIndexConfig.authKey + config.podcastIndexConfig.secretKey + apiHeaderTime
 ).toString(encHex);
 
-const getRecentlyUpdatedPodcastFeeds = async () => {
-  const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
-  const currentTime = new Date().getTime()
-  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
-  const offset = 30000
-  const startRangeTime = Math.floor((currentTime - (getRecentlyUpdatedSinceTime + offset)) / 1000)
-
-  console.log('currentTime----', currentTime)
-  console.log('startRangeTime-', startRangeTime)
-
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/updated?since=${startRangeTime}&max=1000`
-
-  console.log('url------------', url)
-
-  const response = await axios({
+const axiosRequest = async (url) => {
+  return axios({
     url,
     method: 'GET',
     headers: {
@@ -39,6 +26,20 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
       'Authorization': hash
     }
   })
+}
+
+const getRecentlyUpdatedPodcastFeeds = async () => {
+  const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
+  const currentTime = new Date().getTime()
+  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
+  const offset = 30000
+  const startRangeTime = Math.floor((currentTime - (getRecentlyUpdatedSinceTime + offset)) / 1000)
+
+  console.log('currentTime----', currentTime)
+  console.log('startRangeTime-', startRangeTime)
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/updated?since=${startRangeTime}&max=1000`
+  console.log('url------------', url)
+  const response = await axiosRequest(url)
 
   return response && response.data
 }
@@ -48,7 +49,7 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
  * 
  * Request a list of all podcast feeds that have been updated
  * within the past X minutes from Podcast Index, then add
- * the feeds that have a matching authorityId in our database
+ * the feeds that have a matching podcastIndexId in our database
  * to the queue for parsing.
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
@@ -58,25 +59,77 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
 
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
 
-    const recentlyUpdatedAuthorityIds = [] as any[]
+    const recentlyUpdatedPodcastIndexIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
-      const { itunesId, language } = item
-      if (itunesId && language) {
-        recentlyUpdatedAuthorityIds.push(itunesId)
+      const { itunesId } = item
+      if (itunesId) {
+        recentlyUpdatedPodcastIndexIds.push(itunesId)
       }
     }
     
-    const uniqueAuthorityIds = [...new Set(recentlyUpdatedAuthorityIds)].slice(0, 1000);
+    const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 1000);
 
-    console.log('unique recentlyUpdatedAuthorityIds count', uniqueAuthorityIds.length)
+    console.log('unique recentlyUpdatedPodcastIndexIds count', uniquePodcastIndexIds.length)
 
-    // Send the feedUrls with matching authorityIds found in our database to
+    // Send the feedUrls with matching podcastIndexIds found in our database to
     // the priority parsing queue for immediate parsing.
-    if (recentlyUpdatedAuthorityIds.length > 0) {
-      await addFeedUrlsByAuthorityIdToPriorityQueue(uniqueAuthorityIds)
+    if (recentlyUpdatedPodcastIndexIds.length > 0) {
+      await addFeedUrlsByPodcastIndexIdToPriorityQueue(uniquePodcastIndexIds)
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
+  }
+}
+
+const getNewFeeds = async () => {
+  const currentTime = new Date().getTime()
+  const { podcastIndexNewFeedsSinceTime } = podcastIndexConfig
+  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
+  const offset = 30000
+  const startRangeTime = Math.floor((currentTime - (podcastIndexNewFeedsSinceTime + offset)) / 1000)
+
+  console.log('currentTime----', currentTime)
+  console.log('startRangeTime-', startRangeTime)
+  const url = `${podcastIndexConfig.baseUrl}/recent/newfeeds?since=${startRangeTime}&max=1000`
+  console.log('url------------', url)
+  const response = await axiosRequest(url)
+
+  return response && response.data
+}
+
+/**
+ * addNewFeedsToPriorityQueue
+ * 
+ * Request a list of all podcast feeds that have been added
+ * within the past X minutes from Podcast Index, then add
+ * that feed to our database if it doesn't already exist.
+ */
+export const addNewFeedsToPriorityQueue = async () => {
+  try {
+    const response = await getNewFeeds()
+    const newFeeds = response.feeds
+
+    console.log('total newFeeds count', newFeeds.length)
+
+    const newPodcastIndexIds = [] as any[]
+    for (const item of newFeeds) {
+      const { itunesId } = item
+      if (itunesId) {
+        newPodcastIndexIds.push(itunesId)
+      }
+    }
+
+    const uniquePodcastIndexIds = [...new Set(newPodcastIndexIds)].slice(0, 1000);
+
+    console.log('unique newPodcastIndexIds count', uniquePodcastIndexIds.length)
+
+    // Send the feedUrls with matching podcastIndexIds found in our database to
+    // the priority parsing queue for immediate parsing.
+    if (newPodcastIndexIds.length > 0) {
+      await addFeedUrlsByPodcastIndexIdToPriorityQueue(uniquePodcastIndexIds)
+    }
+  } catch (error) {
+    console.log('addNewFeedUrlsToPriorityQueue', error)
   }
 }
 

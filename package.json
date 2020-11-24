@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.11.33",
+  "version": "2.11.34",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -18,6 +18,7 @@
     "dev:scripts:addFeedUrlsFromFile": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
+    "dev:scripts:addNewFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedUrlsToPriorityQueue.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
@@ -39,6 +40,7 @@
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "scripts:addFeedUrlsFromFile": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
+    "scripts:addNewFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedUrlsToPriorityQueue.ts",
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
