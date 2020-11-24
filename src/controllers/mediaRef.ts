@@ -3,6 +3,7 @@ import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 import { getQueryOrderColumn } from '~/lib/utility'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 const createError = require('http-errors')
 const { superUserId } = config
 
@@ -145,6 +146,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   qb.addSelect('user.isPublic')
 
   if (searchAllFieldsText) {
+    validateSearchQueryString(searchAllFieldsText)
     qb.where(
       `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
       LOWER(episode.title) LIKE :searchAllFieldsText OR

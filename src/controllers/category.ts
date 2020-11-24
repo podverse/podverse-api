@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Category } from '~/entities'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 const createError = require('http-errors')
 
 const deleteCategoryByTitle = async (title) => {
@@ -49,6 +50,7 @@ const getCategories = async query => {
     )
   } else if (slug) {
     const slugLowerCase = `%${slug.toLowerCase().trim()}%`
+    validateSearchQueryString(slugLowerCase)
     qb.where(
       'LOWER(category.slug) LIKE :slug',
       { slug: slugLowerCase }
