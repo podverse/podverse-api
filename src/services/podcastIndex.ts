@@ -98,38 +98,24 @@ const getNewFeeds = async () => {
 }
 
 /**
- * addNewFeedsToPriorityQueue
+ * addNewFeedsFromPodcastIndex
  * 
  * Request a list of all podcast feeds that have been added
  * within the past X minutes from Podcast Index, then add
  * that feed to our database if it doesn't already exist.
  */
-export const addNewFeedsToPriorityQueue = async () => {
+export const addNewFeedsFromPodcastIndex = async () => {
+  await connectToDb()
+  const client = await getConnection().createEntityManager()
   try {
     const response = await getNewFeeds()
     const newFeeds = response.feeds
-
     console.log('total newFeeds count', newFeeds.length)
-
-    const newPodcastIndexIds = [] as any[]
     for (const item of newFeeds) {
-      const { id } = item
-      if (id) {
-        newPodcastIndexIds.push(id)
-      }
-    }
-
-    const uniquePodcastIndexIds = [...new Set(newPodcastIndexIds)].slice(0, 1000);
-
-    console.log('unique newPodcastIndexIds count', uniquePodcastIndexIds.length)
-
-    // Send the feedUrls with matching podcastIndexIds found in our database to
-    // the priority parsing queue for immediate parsing.
-    if (newPodcastIndexIds.length > 0) {
-      await addFeedUrlsByPodcastIndexIdToPriorityQueue(uniquePodcastIndexIds)
+      await createOrUpdatePodcastFromPodcastIndex(client, item)
     }
   } catch (error) {
-    console.log('addNewFeedUrlsToPriorityQueue', error)
+    console.log('addNewFeedsFromPodcastIndex', error)
   }
 }
 
@@ -241,7 +227,6 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
       WHERE url=$1
     `, [url])
     const updatedFeedUrl = updatedFeedUrlResults[0]
-    console.log('updatedFeedUrl', updatedFeedUrl)
 
     if (updatedFeedUrl) {
       console.log('updatedFeedUrl already exists url / id', updatedFeedUrl.url, updatedFeedUrl.id)
