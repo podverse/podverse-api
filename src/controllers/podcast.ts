@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { Podcast, User } from '~/entities'
 import { getQueryOrderColumn } from '~/lib/utility'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 
 const createError = require('http-errors')
 
@@ -83,12 +84,14 @@ const getPodcasts = async (query, includeNSFW) => {
   } else {
     if (searchTitle) {
       const title = `%${searchTitle.toLowerCase().trim()}%`
+      validateSearchQueryString(title)
       qb.where(
         'LOWER(podcast.title) LIKE :title',
         { title }
       )
     } else if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase().trim()}%`
+      validateSearchQueryString(name)
       qb.innerJoinAndSelect(
         'podcast.authors',
         'authors',

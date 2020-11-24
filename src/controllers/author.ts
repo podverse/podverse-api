@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { Author } from '~/entities'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 const createError = require('http-errors')
 
 const relations = []
@@ -33,12 +34,14 @@ const getAuthors = async (query) => {
     )
   } else if (name) {
     const nameLowerCase = `%${name.toLowerCase().trim()}%`
+    validateSearchQueryString(nameLowerCase)
     qb.where(
       'LOWER(author.name) LIKE :name',
       { name: nameLowerCase }
     )
   } else if (slug) {
     const slugLowerCase = `%${slug.toLowerCase().trim()}%`
+    validateSearchQueryString(slugLowerCase)
     qb.where(
       'LOWER(author.slug) LIKE :slug',
       { slug: slugLowerCase }
