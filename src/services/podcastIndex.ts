@@ -116,7 +116,6 @@ export const addNewFeedsFromPodcastIndex = async () => {
     for (const item of newFeeds) {
       await createOrUpdatePodcastFromPodcastIndex(client, item)
       const feedUrl = await getFeedUrlByUrl(item.url)
-      console.log(feedUrl)
       await parseFeedUrl(feedUrl)
     }
   } catch (error) {
