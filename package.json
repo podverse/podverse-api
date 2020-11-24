@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.11.35",
+  "version": "2.11.36",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -16,9 +16,9 @@
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "dev:scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "dev:scripts:addFeedUrlsFromFile": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
+    "dev:scripts:addNewFeedsFromPodcastIndex": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
-    "dev:scripts:addNewFeedsFromPodcastIndex": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
