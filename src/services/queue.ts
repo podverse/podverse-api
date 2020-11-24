@@ -126,7 +126,7 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
   }
 }
 
-export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: string[]) => {
+export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds: string[]) => {
 
   await connectToDb()
 
@@ -139,8 +139,8 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
       .where(
-        'feedUrl.isAuthority = true AND podcast.authorityId IN (:...authorityIds)',
-        { authorityIds }
+        'feedUrl.isAuthority = true AND podcast.podcastIndexId IN (:...podcastIndexIds)',
+        { podcastIndexIds }
       )
       .getMany()
 
@@ -148,7 +148,7 @@ export const addFeedUrlsByAuthorityIdToPriorityQueue = async (authorityIds: stri
 
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
-    console.log('queue:addFeedUrlsByAuthorityIdToPriorityQueue', error)
+    console.log('queue:addFeedUrlsByPodcastIndexIdToPriorityQueue', error)
   }
 }
 
