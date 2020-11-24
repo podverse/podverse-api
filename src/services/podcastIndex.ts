@@ -61,9 +61,9 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
 
     const recentlyUpdatedPodcastIndexIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
-      const { itunesId } = item
-      if (itunesId) {
-        recentlyUpdatedPodcastIndexIds.push(itunesId)
+      const { id } = item
+      if (id) {
+        recentlyUpdatedPodcastIndexIds.push(id)
       }
     }
     
@@ -113,9 +113,9 @@ export const addNewFeedsToPriorityQueue = async () => {
 
     const newPodcastIndexIds = [] as any[]
     for (const item of newFeeds) {
-      const { itunesId } = item
-      if (itunesId) {
-        newPodcastIndexIds.push(itunesId)
+      const { id } = item
+      if (id) {
+        newPodcastIndexIds.push(id)
       }
     }
 
