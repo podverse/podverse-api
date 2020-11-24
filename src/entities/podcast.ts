@@ -81,6 +81,7 @@ export class Podcast {
   @Column({ nullable: true })
   language?: string
 
+  @Index()
   @Column({ nullable: true })
   lastEpisodePubDate?: Date
 
