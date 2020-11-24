@@ -18,7 +18,9 @@ const hash = sha1(
 const getRecentlyUpdatedPodcastFeeds = async () => {
   const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
   const currentTime = new Date().getTime()
-  const startRangeTime = Math.floor((currentTime - getRecentlyUpdatedSinceTime) / 1000)
+  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
+  const offset = 30000
+  const startRangeTime = Math.floor((currentTime - (getRecentlyUpdatedSinceTime + offset)) / 1000)
 
   console.log('currentTime----', currentTime)
   console.log('startRangeTime-', startRangeTime)
