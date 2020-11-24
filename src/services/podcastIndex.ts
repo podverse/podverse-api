@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { config } from '~/config'
 import { getConnection } from "typeorm"
+import { getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { removeProtocol } from '~/lib/utility'
-import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from './queue'
+import { parseFeedUrl } from '~/services/parser'
+import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
 const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
@@ -113,6 +115,9 @@ export const addNewFeedsFromPodcastIndex = async () => {
     console.log('total newFeeds count', newFeeds.length)
     for (const item of newFeeds) {
       await createOrUpdatePodcastFromPodcastIndex(client, item)
+      const feedUrl = await getFeedUrlByUrl(item.url)
+      console.log(feedUrl)
+      await parseFeedUrl(feedUrl)
     }
   } catch (error) {
     console.log('addNewFeedsFromPodcastIndex', error)
