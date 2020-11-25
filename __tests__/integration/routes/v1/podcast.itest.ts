@@ -14,12 +14,13 @@ describe('Podcast endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('mN25xFjDG')
-          chaiExpect(res.body.alwaysFullyParse).to.equal(false)
           chaiExpect(res.body.podcastIndexId).to.equal(null)
           chaiExpect(res.body.authorityId).to.equal(null)
+          chaiExpect(res.body.alwaysFullyParse).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)
           chaiExpect(res.body).to.have.property('feedLastUpdated')
+          chaiExpect(res.body.funding).to.equal(null)
           chaiExpect(res.body.guid).to.equal(null)
           chaiExpect(res.body.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(res.body.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/SfjLyq3660/duncantrussellfamilyhour.jpg')
@@ -39,6 +40,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(res.body.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(res.body.title).to.equal('Duncan Trussell Family Hour')
           chaiExpect(res.body.type).to.equal('episodic')
+          chaiExpect(res.body.value).to.equal(null)
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
@@ -50,13 +52,37 @@ describe('Podcast endpoints', () => {
           chaiExpect(author).to.have.property('createdAt')
           chaiExpect(author).to.have.property('updatedAt')
 
-          const category = res.body.categories[0]
-          chaiExpect(category.id).to.equal('SuCRgv5pdf')
-          chaiExpect(category.fullPath).to.equal('Comedy')
-          chaiExpect(category.slug).to.equal('comedy')
-          chaiExpect(category.title).to.equal('Comedy')
-          chaiExpect(category).to.have.property('createdAt')
-          chaiExpect(category).to.have.property('updatedAt')
+          const category0 = res.body.categories[0]
+          chaiExpect(category0.id).to.equal('SuCRgv5pdf')
+          chaiExpect(category0.fullPath).to.equal('Comedy')
+          chaiExpect(category0.slug).to.equal('comedy')
+          chaiExpect(category0.title).to.equal('Comedy')
+          chaiExpect(category0).to.have.property('createdAt')
+          chaiExpect(category0).to.have.property('updatedAt')
+
+          const category1 = res.body.categories[1]
+          chaiExpect(category1.id).to.equal('OBvOcKSZl3')
+          chaiExpect(category1.fullPath).to.equal('Religion & Spirituality')
+          chaiExpect(category1.slug).to.equal('religionspirituality')
+          chaiExpect(category1.title).to.equal('Religion & Spirituality')
+          chaiExpect(category1).to.have.property('createdAt')
+          chaiExpect(category1).to.have.property('updatedAt')
+
+          const category2 = res.body.categories[2]
+          chaiExpect(category2.id).to.equal('jTvNqx0NeK')
+          chaiExpect(category2.fullPath).to.equal('Society & Culture')
+          chaiExpect(category2.slug).to.equal('societyculture')
+          chaiExpect(category2.title).to.equal('Society & Culture')
+          chaiExpect(category2).to.have.property('createdAt')
+          chaiExpect(category2).to.have.property('updatedAt')
+
+          const category3 = res.body.categories[3]
+          chaiExpect(category3.id).to.equal('VsNtKy7T-0x')
+          chaiExpect(category3.fullPath).to.equal('Society & Culture>Philosophy')
+          chaiExpect(category3.slug).to.equal('philosophy')
+          chaiExpect(category3.title).to.equal('Philosophy')
+          chaiExpect(category3).to.have.property('createdAt')
+          chaiExpect(category3).to.have.property('updatedAt')
 
           const feedUrl = res.body.feedUrls[0]
           chaiExpect(feedUrl.id).to.equal('abHIMhblL')

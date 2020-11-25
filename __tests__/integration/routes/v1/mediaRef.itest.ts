@@ -184,6 +184,10 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body.owner).to.equal('QMReJmbE')
           chaiExpect(res.body.episode).to.equal('gRgjd3YcKb')
           chaiExpect(res.body).to.have.property('id')
+          chaiExpect(res.body.imageUrl).to.equal(null)
+          chaiExpect(res.body.linkUrl).to.equal(null)
+          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(0)
@@ -233,7 +237,11 @@ describe('MediaRef endpoints', () => {
           
           chaiExpect(mediaRef.id).to.equal('9rA5BhWp')
           chaiExpect(mediaRef.endTime).to.equal(1680)
+          chaiExpect(mediaRef.imageUrl).to.equal(null)
+          chaiExpect(mediaRef.isOfficialChapter).to.equal(false)
+          chaiExpect(mediaRef.isOfficialSoundBite).to.equal(false)
           chaiExpect(mediaRef.isPublic).to.equal(true)
+          chaiExpect(mediaRef.linkUrl).to.equal(null)
           chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(7)
           chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(8)
           chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(9)
@@ -246,7 +254,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef).to.have.property('updatedAt')
           
           chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
-          chaiExpect(mediaRef.owner).to.have.property('isPublic')
+          chaiExpect(mediaRef.owner.isPublic).to.equal(true)
           chaiExpect(mediaRef.owner).to.have.property('name')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
