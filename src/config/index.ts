@@ -101,9 +101,9 @@ const legalAddress = process.env.LEGAL_ADDRESS || ''
 const podcastIndexAuthKey = process.env.PODCAST_INDEX_AUTH_KEY || ''
 const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
-// default 10 minutes (600000 milliseconds)
+// default 1 minute (60000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime =
-  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '600000'
+  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '60000'
 const podcastIndexNewFeedsSinceTime =
   process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '3600000'
 
