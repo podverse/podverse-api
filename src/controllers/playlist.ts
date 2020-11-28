@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { Episode, Playlist, MediaRef, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
+import { getUserSubscribedPlaylistIds } from './user'
 const createError = require('http-errors')
 
 const createPlaylist = async (obj) => {
@@ -55,6 +56,12 @@ const getPlaylist = async id => {
   return playlist
 }
 
+const getSubscribedPlaylists = async (query, loggedInUserId) => {
+  const subscribedPlaylistIds = await getUserSubscribedPlaylistIds(loggedInUserId)
+  query.playlistId = subscribedPlaylistIds.join(',')
+  return getPlaylists(query)
+}
+
 const getPlaylists = async (query) => {
   const repository = getRepository(Playlist)
 
@@ -63,7 +70,7 @@ const getPlaylists = async (query) => {
   } else if (query.playlistId) {
     query.id = [query.playlistId]
   } else {
-    return
+    return []
   }
 
   const playlists = await repository
@@ -78,6 +85,7 @@ const getPlaylists = async (query) => {
     .addSelect('playlist.updatedAt')
     .innerJoin('playlist.owner', 'user')
     .addSelect('user.id')
+    .addSelect('user.name')
     .where('playlist.id IN (:...playlistIds)', { playlistIds: query.id })
     .getMany()
 
@@ -246,6 +254,7 @@ export {
   deletePlaylist,
   getPlaylist,
   getPlaylists,
+  getSubscribedPlaylists,
   toggleSubscribeToPlaylist,
   updatePlaylist
 }

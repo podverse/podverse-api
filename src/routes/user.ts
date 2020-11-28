@@ -3,8 +3,9 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { addOrUpdateHistoryItem, clearAllHistoryItems, deleteLoggedInUser,
-  getCompleteUserDataAsJSON, getPublicUser, getPublicUsers, getUserMediaRefs, getUserPlaylists, removeHistoryItem,
-  toggleSubscribeToUser, updateQueueItems, updateLoggedInUser, updateHistoryItemPlaybackPosition } from '~/controllers/user'
+  getCompleteUserDataAsJSON, getPublicUser, getPublicUsers, getSubscribedPublicUsers,
+  getUserMediaRefs, getUserPlaylists, removeHistoryItem, toggleSubscribeToUser,
+  updateQueueItems, updateLoggedInUser, updateHistoryItemPlaybackPosition } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -244,6 +245,26 @@ router.get('/',
       const users = await getPublicUsers(ctx.state.query)
 
       ctx.body = users
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Search Subscribed Public Users
+router.get('/subscribed',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
+  validateUserSearch,
+  jwtAuth,
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+
+      if (ctx.state.user && ctx.state.user.id) {
+        const publicUsers = await getSubscribedPublicUsers(ctx.state.query, ctx.state.user.id)
+        ctx.body = publicUsers
+      } else {
+        throw new Error('You must be logged in to get your subscribed public users.')
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }
