@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getMetadata, getPodcast, getPodcasts, toggleSubscribeToPodcast
+import { getMetadata, getPodcast, getPodcasts, getSubscribedPodcasts, toggleSubscribeToPodcast
   } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -40,9 +40,29 @@ router.get('/',
   async ctx => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getPodcasts(ctx.state.query, ctx.state.includeNSFW)
+      const podcasts = await getPodcasts(ctx.state.query)
 
       ctx.body = podcasts
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Search Subscribed Podcasts
+router.get('/subscribed',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
+  validatePodcastSearch,
+  jwtAuth,
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+
+      if (ctx.state.user && ctx.state.user.id) {
+        const podcasts = await getSubscribedPodcasts(ctx.state.query, ctx.state.user.id)
+        ctx.body = podcasts
+      } else {
+        throw new Error('You must be logged in to get your subscribed podcasts.')
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }
