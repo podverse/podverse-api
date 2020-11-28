@@ -21,6 +21,7 @@ type Transcript = {
 }
 
 @Entity('episodes')
+@Index(['isPublic', 'pubDate'])
 export class Episode {
 
   @PrimaryColumn('varchar', {
@@ -67,7 +68,6 @@ export class Episode {
   @Column({ default: false })
   isExplicit: boolean
 
-  @Index()
   @Column({ default: false })
   isPublic: boolean
 
@@ -132,7 +132,6 @@ export class Episode {
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
-  @Index()
   @Column({ nullable: true })
   pubDate?: Date
 
