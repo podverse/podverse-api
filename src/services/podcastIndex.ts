@@ -33,8 +33,8 @@ const axiosRequest = async (url) => {
 const getRecentlyUpdatedPodcastFeeds = async () => {
   const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
   const currentTime = new Date().getTime()
-  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
-  const offset = 30000
+  // add 5 seconds to the query to prevent podcasts falling through the cracks between requests
+  const offset = 5000
   const startRangeTime = Math.floor((currentTime - (getRecentlyUpdatedSinceTime + offset)) / 1000)
 
   console.log('currentTime----', currentTime)
@@ -86,8 +86,8 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
 const getNewFeeds = async () => {
   const currentTime = new Date().getTime()
   const { podcastIndexNewFeedsSinceTime } = podcastIndexConfig
-  // add 30 seconds to the query to prevent podcasts falling through the cracks between requests
-  const offset = 30000
+  // add 5 seconds to the query to prevent podcasts falling through the cracks between requests
+  const offset = 5000
   const startRangeTime = Math.floor((currentTime - (podcastIndexNewFeedsSinceTime + offset)) / 1000)
 
   console.log('currentTime----', currentTime)
