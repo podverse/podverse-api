@@ -196,6 +196,41 @@ const getPublicUsers = async query => {
   return users
 }
 
+const getSubscribedPublicUsers = async (query, loggedInUserId) => {
+  const subscribedPublicUserIds = await getUserSubscribedPublicUserIds(loggedInUserId)
+  query.userIds = subscribedPublicUserIds.join(',')
+  return getPublicUsers(query)
+}
+
+const getUserSingleField = async (id, field) => {
+  const repository = getRepository(User)
+
+  const user = await repository
+    .createQueryBuilder('user')
+    .select('user.id')
+    .addSelect(`user.${field}`)
+    .where({ id })
+    .getOne()
+
+  if (!user) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  return user[field]
+}
+
+const getUserSubscribedPlaylistIds = async id => {
+  return getUserSingleField(id, 'subscribedPlaylistIds')
+}
+
+const getUserSubscribedPodcastIds = async id => {
+  return getUserSingleField(id, 'subscribedPodcastIds')
+}
+
+const getUserSubscribedPublicUserIds = async id => {
+  return getUserSingleField(id, 'subscribedUserIds')
+}
+
 const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => {
   const { skip, sort, take } = query
   const repository = getRepository(MediaRef)
@@ -244,12 +279,7 @@ const getUserPlaylists = async (query, ownerId) => {
     .addSelect('playlist.updatedAt')
     .innerJoin('playlist.owner', 'user')
     .addSelect('user.id')
-    .where(
-      {
-        // ...(includePrivate ? {} : { isPublic: true }),
-        owner: ownerId
-      }
-    )
+    .where({ owner: ownerId })
     .skip(skip)
     .take(take)
     .orderBy('playlist.title', 'ASC')
@@ -825,6 +855,9 @@ export {
   getUserByVerificationToken,
   getUserMediaRefs,
   getUserPlaylists,
+  getUserSubscribedPlaylistIds,
+  getUserSubscribedPodcastIds,
+  getSubscribedPublicUsers,
   removeHistoryItem,
   toggleSubscribeToUser,
   updateHistoryItemPlaybackPosition,

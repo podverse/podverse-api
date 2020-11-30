@@ -2,7 +2,8 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
 import { request } from '~/lib/request'
-import { getQueryOrderColumn } from '~/lib/utility'
+import { getQueryOrderColumn,  } from '~/lib/utility'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
 const { superUserId } = config
@@ -92,7 +93,8 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
     'episode.podcast',
     'podcast'
   )
-
+  
+  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText) 
   qb.where(
     `${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : 'true'}`,
     {

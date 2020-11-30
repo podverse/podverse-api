@@ -1,6 +1,8 @@
 import { getRepository } from 'typeorm'
 import { Podcast, User } from '~/entities'
 import { getQueryOrderColumn } from '~/lib/utility'
+import { validateSearchQueryString } from '~/lib/utility/validation'
+import { getUserSubscribedPodcastIds } from './user'
 
 const createError = require('http-errors')
 
@@ -44,7 +46,13 @@ const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
   return qb
 }
 
-const getPodcasts = async (query, includeNSFW) => {
+const getSubscribedPodcasts = async (query, loggedInUserId) => {
+  const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
+  query.podcastId = subscribedPodcastIds.join(',')
+  return getPodcasts(query)
+}
+
+const getPodcasts = async (query) => {
   const repository = getRepository(Podcast)
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
     skip, take } = query
@@ -83,12 +91,14 @@ const getPodcasts = async (query, includeNSFW) => {
   } else {
     if (searchTitle) {
       const title = `%${searchTitle.toLowerCase().trim()}%`
+      validateSearchQueryString(title)
       qb.where(
         'LOWER(podcast.title) LIKE :title',
         { title }
       )
     } else if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase().trim()}%`
+      validateSearchQueryString(name)
       qb.innerJoinAndSelect(
         'podcast.authors',
         'authors',
@@ -110,10 +120,6 @@ const getPodcasts = async (query, includeNSFW) => {
 
   if (includeCategories && !searchTitle) {
     qb.leftJoinAndSelect('podcast.categories', 'categories')
-  }
-
-  if (!includeNSFW) {
-    qb.andWhere('"isExplicit" = false')
   }
 
   qb.andWhere('"isPublic" = true')
@@ -219,5 +225,6 @@ export {
   getPodcast,
   getPodcasts,
   getMetadata,
+  getSubscribedPodcasts,
   toggleSubscribeToPodcast
 }

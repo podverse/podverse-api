@@ -4,7 +4,7 @@ import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
-  toggleSubscribeToPlaylist, updatePlaylist } from '~/controllers/playlist'
+  getSubscribedPlaylists, toggleSubscribeToPlaylist, updatePlaylist } from '~/controllers/playlist'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -32,6 +32,26 @@ router.get('/',
       const playlists = await getPlaylists(ctx.state.query)
 
       ctx.body = playlists
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Search Subscribed Playlists
+router.get('/subscribed',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
+  validatePlaylistSearch,
+  jwtAuth,
+  async ctx => {
+    try {
+      ctx = delimitQueryValues(ctx, delimitKeys)
+
+      if (ctx.state.user && ctx.state.user.id) {
+        const playlists = await getSubscribedPlaylists(ctx.state.query, ctx.state.user.id)
+        ctx.body = playlists
+      } else {
+        throw new Error('You must be logged in to get your subscribed playlists.')
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }

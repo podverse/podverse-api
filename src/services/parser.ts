@@ -1,4 +1,4 @@
-import { getRepository, In } from 'typeorm'
+import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
@@ -19,7 +19,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const result = await podcastFeedParser.getPodcastFromURL({
       url: feedUrl.url,
       headers: { 'User-Agent': userAgent },
-      timeout: 10000
+      timeout: 20000
     })
     const { episodes, meta } = result
 
@@ -497,6 +497,24 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
         mediaUrl: In(parsedEpisodeMediaUrls)
       }
     })
+
+    /*
+      If episodes exist in the database for this podcast,
+      but they aren't currently in the feed, then retrieve
+      and set them to isPublic = false
+    */
+    const episodesToHide = await episodeRepo.find({
+      where: {
+        podcast,
+        isPublic: true,
+        mediaUrl: Not(In(parsedEpisodeMediaUrls))
+      }
+    })
+    const updatedEpisodesToHide = episodesToHide.map((x: Episode) => {
+      x.isPublic = false
+      return x
+    })
+    await episodeRepo.save(updatedEpisodesToHide, { chunk: 400 })
   }
 
   const nonPublicEpisodes = [] as any

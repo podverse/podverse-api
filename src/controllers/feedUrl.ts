@@ -60,6 +60,26 @@ const getFeedUrl = async id => {
   return feedUrl
 }
 
+const getFeedUrlByUrl = async url => {
+  const repository = getRepository(FeedUrl)
+
+  const feedUrl = await repository
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.id')
+    .addSelect('feedUrl.url')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
+    .where({ url })
+    .getOne()
+
+  console.log('yep 2.0', feedUrl)
+
+  if (!feedUrl) {
+    throw new createError.NotFound('FeedUrl not found')
+  }
+
+  return feedUrl
+}
+
 const getFeedUrls = (query) => {
   const repository = getRepository(FeedUrl)
 
@@ -105,6 +125,7 @@ export {
   addFeedUrls,
   deleteFeedUrl,
   getFeedUrl,
+  getFeedUrlByUrl,
   getFeedUrls,
   updateFeedUrl
 }
