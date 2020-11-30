@@ -89,7 +89,9 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl.isAuthority).to.equal(true)
           chaiExpect(feedUrl.url).to.equal('https://audioboom.com/channels/4954758.rss')
           chaiExpect(feedUrl).to.have.property('createdAt')
-          chaiExpect(feedUrl).to.have.property('updatedAt')         
+          chaiExpect(feedUrl).to.have.property('updatedAt')      
+          
+          chaiExpect(Object.keys(res.body).length).to.equal(33)
 
           done()
         })
@@ -101,6 +103,8 @@ describe('Podcast endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Podcast not found')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -136,6 +140,8 @@ describe('Podcast endpoints', () => {
           chaiExpect(podcast.title).to.equal('Dan Carlin\'s Hardcore History')
           chaiExpect(podcast).to.have.property('createdAt')
 
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+
           done()
         })
     })
@@ -148,6 +154,8 @@ describe('Podcast endpoints', () => {
         .get(`${v1Path}/podcast/toggle-subscribe/XdbkHTiH9`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -169,7 +177,9 @@ describe('Podcast endpoints', () => {
             "Yqft_RG8j",
             "GZsvTjDH0",
             "Q_QCTJbNR"
-        ])
+          ])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(8)
 
           done()
         })
@@ -192,7 +202,9 @@ describe('Podcast endpoints', () => {
             "GZsvTjDH0",
             "Q_QCTJbNR",
             "XdbkHTiH9"
-        ])
+          ])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
 
           done()
         })
@@ -212,24 +224,31 @@ describe('Podcast endpoints', () => {
 
           chaiExpect(podcast0.id).to.equal('mN25xFjDG')
           chaiExpect(podcast0).to.have.property('feedLastUpdated')
+          chaiExpect(podcast0.funding).to.equal(null)
           chaiExpect(podcast0.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast0).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast0.lastEpisodeTitle).to.equal('378: David Nichtern')
           chaiExpect(podcast0.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(podcast0.title).to.equal('Duncan Trussell Family Hour')
+          chaiExpect(podcast0.value).to.equal(null)
+
 
 
           chaiExpect(podcast1.id).to.equal('gyEGNwJud')
           chaiExpect(podcast1).to.have.property('feedLastUpdated')
+          chaiExpect(podcast1.funding).to.equal(null)
           chaiExpect(podcast1.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast1).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast1.lastEpisodeTitle).to.equal('Rob Gronkowski, This Is March, James Harden Pooped Himself, And Lebron Is Still Insane')
           chaiExpect(podcast1.sortableTitle).to.equal('pardon my take')
           chaiExpect(podcast1.title).to.equal('Pardon My Take')
+          chaiExpect(podcast1.value).to.equal(null)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })
     })
-  })
+  }) 
 
 })

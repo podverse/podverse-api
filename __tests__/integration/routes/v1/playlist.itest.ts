@@ -106,6 +106,8 @@ describe('Playlist endpoints', () => {
           chaiExpect(podcast).to.have.property('createdAt')
           chaiExpect(podcast).to.have.property('updatedAt')
 
+          chaiExpect(Object.keys(res.body).length).to.equal(11)
+
           done()
         })
     })
@@ -116,6 +118,8 @@ describe('Playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Playlist not found')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -139,6 +143,8 @@ describe('Playlist endpoints', () => {
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -165,6 +171,8 @@ describe('Playlist endpoints', () => {
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
+          chaiExpect(Object.keys(res.body).length).to.equal(10)
+
           done()
         })
     })
@@ -188,6 +196,8 @@ describe('Playlist endpoints', () => {
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -216,7 +226,9 @@ describe('Playlist endpoints', () => {
 
           chaiExpect(res.body.owner.id).to.equal('QMReJmbE')
           chaiExpect(res.body.owner).to.not.have.property('isPublic') 
-          chaiExpect(res.body.owner).to.not.have.property('name') 
+          chaiExpect(res.body.owner).to.not.have.property('name')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(11)
 
           done()
         })
@@ -231,6 +243,8 @@ describe('Playlist endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
 
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
+
           done()
         })
     })
@@ -240,6 +254,8 @@ describe('Playlist endpoints', () => {
         .set('Cookie', testUsers.premium.authCookie)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -253,6 +269,8 @@ describe('Playlist endpoints', () => {
         .get(`${v1Path}/playlist/toggle-subscribe/wgOok7Xp`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -269,6 +287,8 @@ describe('Playlist endpoints', () => {
             "zXSkVlr7",
           ])
 
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
           done()
         })
     })
@@ -284,6 +304,8 @@ describe('Playlist endpoints', () => {
             "zXSkVlr7",
             "wgOok7Xp"
           ])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })

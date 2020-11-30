@@ -23,9 +23,8 @@ describe('User endpoints', () => {
             chaiExpect(subscribedPodcastIds[4]).to.equal('nG6sRiNDv')
             chaiExpect(subscribedPodcastIds[5]).to.equal('zRo1jwx67')
             chaiExpect(subscribedPodcastIds[6]).to.equal('Yqft_RG8j')
+
             chaiExpect(Object.keys(res.body).length).to.equal(4)
-
-
 
             done()
           })
@@ -37,6 +36,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(404);
             chaiExpect(res.body.message).to.equal('User not found.')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
 
             done()
           })
@@ -58,6 +59,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
 
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -71,6 +74,8 @@ describe('User endpoints', () => {
             chaiExpect(res).to.have.status(200)
 
             chaiExpect(res.body).to.eql(sendBody)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(4)
 
             done()
           })
@@ -89,6 +94,8 @@ describe('User endpoints', () => {
           .send(sendBody)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+            
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -124,6 +131,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.podcastTitle).to.equal('Test podcast title')
             chaiExpect(queueItem.userPlaybackPosition).to.equal(123)
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -136,6 +145,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -153,6 +164,8 @@ describe('User endpoints', () => {
               "oAbPPRF9"
             ])
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -169,6 +182,8 @@ describe('User endpoints', () => {
               "oAbPPRF9",
               "EVHDBRZY"
             ])
+
+            chaiExpect(Object.keys(res.body).length).to.equal(3)
 
             done()
           })
@@ -251,6 +266,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast.type).to.equal('episodic')
             chaiExpect(queueItem.episode.podcast).to.have.property('createdAt')
             chaiExpect(queueItem.episode.podcast).to.have.property('updatedAt')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
 
             done()
           })
@@ -335,6 +352,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('createdAt')
             chaiExpect(queueItem.episode.podcast).to.have.property('updatedAt')
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -343,6 +362,8 @@ describe('User endpoints', () => {
             .get(`${v1Path}/user/mediaRefs`)
             .end((err, res) => {
               chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
               done()
             })
@@ -387,6 +408,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.owner).to.not.have.property('isPublic')
             chaiExpect(queueItem.owner).to.not.have.property('name')
             
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -396,6 +419,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/playlists`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -411,6 +436,8 @@ describe('User endpoints', () => {
 
             chaiExpect(res).to.have.status(200);
            
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -420,6 +447,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/download`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401);
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -447,7 +476,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItems[2].id).to.equal('oAbPPRF9')
             chaiExpect(queueItems[2].name).to.equal('Premium Expired - Test User')
 
-           
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -511,6 +541,8 @@ describe('User endpoints', () => {
 
             chaiExpect(res.body.message).to.equal('Updated user history')
   
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
+
             done()
           })
       })
@@ -524,6 +556,8 @@ describe('User endpoints', () => {
             chaiExpect(res).to.have.status(200)
 
             chaiExpect(res.body.message).to.equal('Updated user history')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
   
             done()
           })
@@ -541,6 +575,8 @@ describe('User endpoints', () => {
 
             chaiExpect(res.body.message).to.equal('Cleared all history items.')
   
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
+
             done()
           })
       })
@@ -556,6 +592,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
   
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -566,6 +604,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(200)
   
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
