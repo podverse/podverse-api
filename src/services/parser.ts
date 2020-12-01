@@ -3,7 +3,8 @@ import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
+import { _logEnd, _logStart, cleanFileExtension, convertToSlug, convertToSortableTitle,
+  isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
@@ -82,7 +83,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.isExplicit = meta.explicit
     podcast.isPublic = true
     podcast.language = meta.language
-    podcast.linkUrl = meta.link
 
     /*
       Generate the episode data to be saved later,
@@ -116,8 +116,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast.lastEpisodeTitle = ''
     }
 
-    podcast.sortableTitle = meta.title ? meta.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '').trim() : ''
-    podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
+    podcast.linkUrl = meta.link
+    podcast.sortableTitle = meta.title ? convertToSortableTitle(meta.title) : ''
     podcast.title = meta.title
     podcast.type = meta.type
     podcast.value = meta.value
@@ -446,8 +446,6 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
-  // episode.mediaFilesize = parsedEpisode.enclosure.filesize
-  //   ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
 
