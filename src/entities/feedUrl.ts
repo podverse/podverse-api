@@ -2,7 +2,7 @@
 
 import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToOne,
+import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, Index, ManyToOne,
   PrimaryColumn, UpdateDateColumn } from 'typeorm'
 const shortid = require('shortid')
 
@@ -14,6 +14,10 @@ export class FeedUrl {
     length: 14
   })
   id: string
+
+  @Column()
+  @Generated('increment')
+  int_id: number
 
   @Column({ default: false })
   isAuthority: boolean
