@@ -582,7 +582,51 @@ describe('User endpoints', () => {
       })
     })
 
-    
+    describe('find by query subscribed', () => {
+
+      test('Top past week - Invalid user', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/subscribed?sort=top-past-week`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+  
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+  
+            done()
+          })
+      })
+  
+      test('Top past week - Premium Valid', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/subscribed?sort=top-past-week`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+  
+            const podcast0 = res.body[0][0]
+  
+            chaiExpect(podcast0.id).to.equal('bvVjsQCH')
+            chaiExpect(podcast0.name).to.equal('Free Trial Expired - Test User')
+
+            const podcast1 = res.body[0][1]
+            
+            chaiExpect(podcast1.id).to.equal('EVHDBRZY')
+            chaiExpect(podcast1.name).to.equal('Free Trial Valid - Test User')
+
+            const podcast2 = res.body[0][2]
+            
+            chaiExpect(podcast2.id).to.equal('oAbPPRF9')
+            chaiExpect(podcast2.name).to.equal('Premium Expired - Test User')
+
+            chaiExpect(Object.keys(res.body[0]).length).to.equal(3)
+            chaiExpect(Object.keys(res.body[0][0]).length).to.equal(2)
+  
+  
+            done()
+          })
+      })
+      
+    })
 
     describe('user delete', () => {
 
@@ -610,7 +654,5 @@ describe('User endpoints', () => {
           })
       })
     })
-
-    
 
 })

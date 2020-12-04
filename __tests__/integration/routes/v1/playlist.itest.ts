@@ -311,4 +311,59 @@ describe('Playlist endpoints', () => {
         })
     })
   })
+
+  describe('find by query subscribed', () => {
+
+    test('Top past week - Invalid user', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?page=1&sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
+
+          done()
+        })
+    })
+
+    test('Top past week - Premium Valid', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?page=1&sort=top-past-week`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          const podcast0 = res.body[0]
+
+          chaiExpect(podcast0.id).to.equal('zXSkVlr7')
+          chaiExpect(podcast0).to.have.property('description')
+          chaiExpect(podcast0.isPublic).to.equal(false)
+          chaiExpect(podcast0.itemCount).to.equal(4)
+          chaiExpect(podcast0.itemsOrder).to.eql([])
+          chaiExpect(podcast0.title).to.equal('Free Trial - Test Playlist 2')
+          chaiExpect(podcast0).to.have.property('createdAt')
+          chaiExpect(podcast0).to.have.property('updatedAt')
+          chaiExpect(podcast0.owner.id).to.equal('EVHDBRZY')
+          chaiExpect(podcast0.owner.name).to.equal('Free Trial Valid - Test User')
+
+          const podcast1 = res.body[1]
+
+          chaiExpect(podcast1.id).to.equal('wgOok7Xp')
+          chaiExpect(podcast1).to.have.property('description')
+          chaiExpect(podcast1.isPublic).to.equal(false)
+          chaiExpect(podcast1.itemCount).to.equal(9)
+          chaiExpect(podcast1.itemsOrder).to.eql([])
+          chaiExpect(podcast1.title).to.equal('Free Trial - Test Playlist 1')
+          chaiExpect(podcast1).to.have.property('createdAt')
+          chaiExpect(podcast1).to.have.property('updatedAt')
+          chaiExpect(podcast1.owner.id).to.equal('EVHDBRZY')
+          chaiExpect(podcast1.owner.name).to.equal('Free Trial Valid - Test User')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+
+          done()
+        })
+    })
+    
+  })
 })

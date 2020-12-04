@@ -136,8 +136,8 @@ describe('Podcast endpoints', () => {
           chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.shrunkImageUrl).to.equal(null)
-          chaiExpect(podcast.sortableTitle).to.equal('dan carlin\'s hardcore history')
-          chaiExpect(podcast.title).to.equal('Dan Carlin\'s Hardcore History')
+          chaiExpect(podcast.sortableTitle).to.equal(`dan carlin's hardcore history`)
+          chaiExpect(podcast.title).to.equal(`Dan Carlin's Hardcore History`)
           chaiExpect(podcast).to.have.property('createdAt')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
@@ -250,5 +250,59 @@ describe('Podcast endpoints', () => {
         })
     })
   }) 
+
+  describe('find by query subscribed', () => {
+
+    test('Top past week - Invalid user', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
+
+          done()
+        })
+    })
+
+    test('Top past week - Premium Valid', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?sort=top-past-week`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          const podcast0 = res.body[0]
+
+          chaiExpect(podcast0.id).to.equal('zXSkVlr7')
+          chaiExpect(podcast0).to.have.property('feedLastUpdated')
+          chaiExpect(podcast0.funding).to.equal(null)
+          chaiExpect(podcast0.hideDynamicAdsWarning).to.equal(false)
+          chaiExpect(podcast0.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/JbhIM2rFLFw/dancarlinshardcorehistory.jpg')
+          chaiExpect(podcast0.isExplicit).to.equal(false)
+          chaiExpect(podcast0).to.have.property('lastEpisodePubDate')
+          chaiExpect(podcast0.lastEpisodeTitle).to.equal('Show 64 - Supernova in the East III')
+          chaiExpect(podcast0.linkUrl).to.equal('http://www.dancarlin.com')
+          chaiExpect(podcast0.pastAllTimeTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast0.pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast0.pastDayTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast0.pastWeekTotalUniquePageviews).to.equal(5)
+          chaiExpect(podcast0.pastMonthTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast0.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast0.shrunkImageUrl).to.equal(null)
+          chaiExpect(podcast0.sortableTitle).to.equal(`dan carlin's hardcore history`)
+          chaiExpect(podcast0.title).to.equal(`Dan Carlin's Hardcore History`)
+          chaiExpect(podcast0.value).to.equal(null)
+          chaiExpect(podcast0).to.have.property('createdAt')
+          
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+          chaiExpect(Object.keys(res.body[0][0]).length).to.equal(2)
+
+
+          done()
+        })
+    })
+    
+  })
 
 })
