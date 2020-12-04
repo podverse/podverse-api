@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Episode, MediaRef, User } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index, JoinTable,
-  ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
+  JoinTable, ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
 
@@ -14,6 +14,10 @@ export class Playlist {
     length: 14
   })
   id: string
+
+  @Column()
+  @Generated('increment')
+  int_id: number
 
   @Column({ nullable: true })
   description?: string

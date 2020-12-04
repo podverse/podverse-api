@@ -2,7 +2,7 @@
 
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { NowPlayingItem } from 'podverse-shared'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
@@ -19,6 +19,10 @@ export class User {
     length: 14
   })
   id: string
+
+  @Column()
+  @Generated('increment')
+  int_id: number
 
   @Column('varchar', {
     array: true,

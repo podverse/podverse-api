@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
-  ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated,
+  Index, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn }
   from 'typeorm'
 import { Podcast } from '~/entities'
 const shortid = require('shortid')
@@ -14,6 +14,10 @@ export class Category {
     length: 14
   })
   id: string
+
+  @Column()
+  @Generated('increment')
+  int_id: number
 
   @Index()
   @Column({ unique: true })
