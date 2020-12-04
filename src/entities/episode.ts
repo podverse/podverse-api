@@ -30,9 +30,10 @@ export class Episode {
   })
   id: string
 
-  @Column()
-  @Generated('increment')
-  int_id: number
+  // TODO: generate this column without server downtime
+  // @Column()
+  // @Generated('increment')
+  // int_id: number
 
   @Column({ nullable: true })
   chaptersType?: string
