@@ -2,7 +2,7 @@
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, MediaRef, Podcast } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   Index, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 
