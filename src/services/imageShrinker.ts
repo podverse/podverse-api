@@ -40,7 +40,7 @@ export const shrinkImage = async (podcast: any) => {
     console.log('Image saving failed')
     console.log('title', podcast.title)
     console.log('imageUrl', podcast.imageUrl)
-    console.log(error)
+    console.log(error.message)
     return null
   }
 }
