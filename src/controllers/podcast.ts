@@ -61,17 +61,19 @@ const getSubscribedPodcasts = async (query, loggedInUserId) => {
 }
 
 const getPodcastsFromSearchEngine = async (query) => {
-  const { searchTitle } = query
+  const { searchTitle, skip, take } = query
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
   const result = await searchApi.search({
-    "index": 'idx_podcast',
-    "query": {
-      "match": {
-        "title": `*${searchTitle}*`
+    index: 'idx_podcast',
+    query: {
+      match: {
+        title: `*${searchTitle}*`
       }
-    }
+    },
+    limit: take,
+    offset: skip
   })
 
   let podcastIds = [] as any[]  
@@ -83,6 +85,7 @@ const getPodcastsFromSearchEngine = async (query) => {
   if (!podcastIdsString) return [[], 0]
   
   delete query.searchTitle
+  delete query.skip
   query.podcastId = podcastIdsString
 
   return getPodcasts(query)
