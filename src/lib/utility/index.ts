@@ -159,14 +159,6 @@ export const cleanFileExtension = (fileExtension: string) => {
   }
 }
 
-export const getImageContentTypeHeader = (cleanedFileExtension: string) => {
-  if (cleanedFileExtension === 'jpg' || cleanedFileExtension === 'jpeg') {
-    return 'image/jpeg'
-  } else {
-    return 'image/png'
-  }
-}
-
 export const hasSupportedLanguageMatch = (lang1, lang2) => {
   if (lang1 && lang2) {
     const firstLang = lang1.split('-')[0]
