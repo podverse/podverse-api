@@ -64,6 +64,7 @@ export interface Config {
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
   rateLimiterMaxOverride: any
+  manticore: any
 }
 
 const port = process.env.PORT || '1234'
@@ -202,7 +203,12 @@ const config: Config = {
   websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
   websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '',
-  rateLimiterMaxOverride
+  rateLimiterMaxOverride,
+  manticore: {
+    domain: process.env.MANTICORE_DOMAIN || 'localhost',
+    port: process.env.MANTICORE_PORT ? parseInt(process.env.MANTICORE_PORT, 10) : 9308,
+    protocol: process.env.MANTICORE_PROTOCOL || 'http'
+  }
 }
 
 export { config }

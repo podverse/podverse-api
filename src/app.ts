@@ -13,7 +13,7 @@ import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, 
   authorRouter, categoryRouter, clipsRouter, episodeRouter, feedUrlRouter, googlePlayRouter,
   mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
-  
+
 const cookie = require('cookie')
 const cors = require('@koa/cors')
 const swagger = require('koa2-swagger-ui')
@@ -26,7 +26,7 @@ declare module 'koa' {
 
 const rootRouter = new Router()
 
-export const createApp = (conn: Connection) => {
+export const createApp = async (conn: Connection) => {
 
   const app = new Koa()
   app.context.db = conn

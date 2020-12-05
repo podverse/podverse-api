@@ -1,8 +1,9 @@
 import { getRepository } from 'typeorm'
+import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { Podcast, User } from '~/entities'
 import { getQueryOrderColumn } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
-import { getUserSubscribedPodcastIds } from './user'
+import { searchApi } from '~/services/manticore'
 
 const createError = require('http-errors')
 
@@ -49,12 +50,47 @@ const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
 const getSubscribedPodcasts = async (query, loggedInUserId) => {
   const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
   query.podcastId = subscribedPodcastIds.join(',')
+
+  let podcasts
+  if (query.searchTitle) {
+    podcasts = await getPodcastsFromSearchEngine(query)
+  } else {
+    podcasts = await getPodcasts(query)
+  }
+  return podcasts
+}
+
+const getPodcastsFromSearchEngine = async (query) => {
+  const { searchTitle } = query
+
+  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+
+  const result = await searchApi.search({
+    "index": 'idx_podcast',
+    "query": {
+      "match": {
+        "title": `*${searchTitle}*`
+      }
+    }
+  })
+
+  let podcastIds = [] as any[]  
+  const hits = result && result.hits && result.hits.hits
+  if (Array.isArray(hits)) {
+    podcastIds = hits.map((x: any) => x._source.podverse_id)
+  }
+  const podcastIdsString = podcastIds.join(',')
+  if (!podcastIdsString) return [[], 0]
+  
+  delete query.searchTitle
+  query.podcastId = podcastIdsString
+
   return getPodcasts(query)
 }
 
 const getPodcasts = async (query) => {
   const repository = getRepository(Podcast)
-  const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
+  const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
     skip, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
@@ -89,14 +125,7 @@ const getPodcasts = async (query) => {
       { id: categories[0] }
     )
   } else {
-    if (searchTitle) {
-      const title = `%${searchTitle.toLowerCase().trim()}%`
-      validateSearchQueryString(title)
-      qb.where(
-        'LOWER(podcast.title) LIKE :title',
-        { title }
-      )
-    } else if (searchAuthor) {
+    if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase().trim()}%`
       validateSearchQueryString(name)
       qb.innerJoinAndSelect(
@@ -114,11 +143,11 @@ const getPodcasts = async (query) => {
     }
   }
 
-  if (includeAuthors && !searchTitle) {
+  if (includeAuthors) {
     qb.leftJoinAndSelect('podcast.authors', 'authors')
   }
 
-  if (includeCategories && !searchTitle) {
+  if (includeCategories) {
     qb.leftJoinAndSelect('podcast.categories', 'categories')
   }
 
@@ -224,6 +253,7 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 export {
   getPodcast,
   getPodcasts,
+  getPodcastsFromSearchEngine,
   getMetadata,
   getSubscribedPodcasts,
   toggleSubscribeToPodcast
