@@ -1,11 +1,11 @@
 import * as bodyParser from 'koa-bodyparser'
-const json = require('koa-json')
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { convertToChaptersFile } from '~/lib/podcastIndex'
 import { getPublicMediaRefsByEpisodeMediaUrl } from '~/controllers/mediaRef'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
+const json = require('koa-json')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/clips` })
 
