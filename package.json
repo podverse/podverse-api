@@ -151,6 +151,7 @@
     "koa": "2.11.0",
     "koa-bodyparser": "4.2.1",
     "koa-helmet": "5.2.0",
+    "koa-json": "^2.0.2",
     "koa-jwt": "3.6.0",
     "koa-mount": "4.0.0",
     "koa-passport": "4.1.3",
