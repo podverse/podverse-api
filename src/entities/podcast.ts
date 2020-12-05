@@ -146,6 +146,10 @@ export class Podcast {
 
   @Index()
   @Column({ nullable: true })
+  shrunkImageLastUpdated?: Date
+
+  @Index()
+  @Column({ nullable: true })
   sortableTitle?: string
 
   @Index()
