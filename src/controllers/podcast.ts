@@ -50,7 +50,14 @@ const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
 const getSubscribedPodcasts = async (query, loggedInUserId) => {
   const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
   query.podcastId = subscribedPodcastIds.join(',')
-  return getPodcasts(query)
+
+  let podcasts
+  if (query.searchTitle) {
+    podcasts = await getPodcastsFromSearchEngine(query)
+  } else {
+    podcasts = await getPodcasts(query)
+  }
+  return podcasts
 }
 
 const getPodcastsFromSearchEngine = async (query) => {
