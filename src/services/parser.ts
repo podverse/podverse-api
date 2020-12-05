@@ -10,7 +10,7 @@ import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 const podcastFeedParser = require('@podverse/podcast-feed-parser')
 const { awsConfig, userAgent } = config
-const queueUrls = awsConfig.queueUrls
+const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
@@ -125,11 +125,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcast)
 
-    // Limit podcast image PUTs to once per week
-    const oneWeek = 7 * 24 * 60 * 60 * 1000
-    const wasUpdatedThisWeek = new Date(podcast.feedLastUpdated).getTime() + oneWeek >= new Date(meta.lastBuildDate).getTime()
-    if (!wasUpdatedThisWeek || podcast.alwaysFullyParse) {
+    // Limit podcast image PUTs to save on server costs
+    const { shrunkImageLastUpdated } = podcast
+    const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
+    const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
+      ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date(meta.lastBuildDate).getTime()
+      : false
+    if (!wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+      podcast.shrunkImageLastUpdated = new Date()
+      await podcastRepo.save(podcast)
     }
 
     const episodeRepo = getRepository(Episode)

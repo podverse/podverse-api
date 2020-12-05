@@ -1,6 +1,6 @@
 import { config } from '~/config'
 import * as request from 'request-promise-native'
-import { cleanFileExtension, convertToSlug, getImageContentTypeHeader } from '~/lib/utility'
+import { convertToSlug } from '~/lib/utility'
 import { s3 } from '~/services/aws'
 
 const sharp = require('sharp')
@@ -17,21 +17,20 @@ export const shrinkImage = async (podcast: any) => {
       encoding: null
     })
 
-    const shrunkImage = await sharp(imgResponse).resize(shrunkImageSize).toBuffer()
-
-    const parts = podcast.imageUrl.split('.')
-    const fileExtension = parts[parts.length - 1]
-    const cleanedFileExtension = cleanFileExtension(fileExtension)
+    const shrunkImage = await sharp(imgResponse)
+      .resize(shrunkImageSize)
+      .toFormat('jpg')
+      .toBuffer()
 
     const slug = podcast.title ? convertToSlug(podcast.title) : 'image'
     const filePath = `podcast-images/${podcast.id}/`
-    const fileName = `${slug}.${cleanedFileExtension}`
+    const fileName = `${slug}.jpg`
 
     const s3Params = {
       Bucket: imageS3BucketName,
       Key: filePath + fileName,
       Body: shrunkImage,
-      ContentType: getImageContentTypeHeader(cleanedFileExtension)
+      ContentType: 'image/jpeg'
     }
 
     const result = await s3.upload(s3Params).promise()
