@@ -77,21 +77,21 @@ const getPodcastsFromSearchEngine = async (query) => {
   })
 
   let podcastIds = [] as any[]  
-  const hits = result && result.hits && result.hits.hits
+  const { hits, total } = result.hits
   if (Array.isArray(hits)) {
     podcastIds = hits.map((x: any) => x._source.podverse_id)
   }
   const podcastIdsString = podcastIds.join(',')
-  if (!podcastIdsString) return [[], 0]
+  if (!podcastIdsString) return [hits, total]
   
   delete query.searchTitle
   delete query.skip
   query.podcastId = podcastIdsString
 
-  return getPodcasts(query)
+  return getPodcasts(query, total)
 }
 
-const getPodcasts = async (query) => {
+const getPodcasts = async (query, countOverride?) => {
   const repository = getRepository(Podcast)
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
     skip, take } = query
@@ -155,11 +155,8 @@ const getPodcasts = async (query) => {
   }
 
   qb.andWhere('"isPublic" = true')
-
   qb = limitPodcastsQuerySize(qb, podcastIds, query.sort)
-
   const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-  
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   try {
@@ -167,6 +164,10 @@ const getPodcasts = async (query) => {
       .offset(skip)
       .limit((maxResults && 1000) || take)
       .getManyAndCount()
+
+    if (countOverride > 0) {
+      podcasts[1] = countOverride
+    }
 
     return podcasts
   } catch (error) {
