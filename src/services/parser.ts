@@ -129,7 +129,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const { shrunkImageLastUpdated } = podcast
     const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
     const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
-      ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date(meta.lastBuildDate).getTime()
+      ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
       : false
     if (!wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
