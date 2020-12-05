@@ -19,7 +19,7 @@ router.get('/',
       const mediaRefsResult = await getPublicMediaRefsByEpisodeMediaUrl(mediaUrl)
       const mediaRefs = mediaRefsResult[0]
       const chaptersFile = convertToChaptersFile(mediaRefs)
-      ctx.body = JSON.stringify(chaptersFile, null, 4)
+      ctx.body = chaptersFile
     } catch (error) {
       emitRouterError(error, ctx)
     }
