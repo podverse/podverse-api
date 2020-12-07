@@ -9,5 +9,7 @@ export default {
   region: process.env.AWS_REGION,
   imageS3BucketName: process.env.AWS_IMAGE_S3_BUCKET_NAME,
   imageCloudFrontOrigin: process.env.AWS_IMAGE_CLOUDFRONT_ORIGIN,
-  backupDatbaseS3BucketName: process.env.AWS_BACKUP_DATABASE_S3_BUCKET_NAME
+  backupDatbaseS3BucketName: process.env.AWS_BACKUP_DATABASE_S3_BUCKET_NAME,
+  s3ImageLimitUpdateDays: process.env.AWS_S3_IMAGE_LIMIT_UPDATE_DAYS
+    ? parseInt(process.env.AWS_S3_IMAGE_LIMIT_UPDATE_DAYS, 10) : 30
 }

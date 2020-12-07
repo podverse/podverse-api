@@ -134,6 +134,16 @@ export const removeObjectKeysWithEmptyValues = obj =>
 
 export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '').trim()
 
+export const convertToSortableTitle = (title: string) => {
+  const sortableTitle = title
+    ? title
+      .toLowerCase()
+      .replace(/\b^the\b|\b^a\b|\b^an\b/i, '')
+      .trim()
+    : ''
+  return sortableTitle ? sortableTitle.replace(/#/g, '') : ''
+}
+
 export const isValidDate = (date: any) => date instanceof Date && !isNaN(date as any)
 
 export const cleanFileExtension = (fileExtension: string) => {
@@ -146,14 +156,6 @@ export const cleanFileExtension = (fileExtension: string) => {
     return 'jpeg'
   } else {
     return 'png'
-  }
-}
-
-export const getImageContentTypeHeader = (cleanedFileExtension: string) => {
-  if (cleanedFileExtension === 'jpg' || cleanedFileExtension === 'jpeg') {
-    return 'image/jpeg'
-  } else {
-    return 'image/png'
   }
 }
 

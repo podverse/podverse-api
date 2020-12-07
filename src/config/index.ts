@@ -64,6 +64,7 @@ export interface Config {
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
   rateLimiterMaxOverride: any
+  manticore: any
 }
 
 const port = process.env.PORT || '1234'
@@ -101,9 +102,9 @@ const legalAddress = process.env.LEGAL_ADDRESS || ''
 const podcastIndexAuthKey = process.env.PODCAST_INDEX_AUTH_KEY || ''
 const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
-// default 1 minute (60000 milliseconds)
+// default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime =
-  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '60000'
+  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000'
 const podcastIndexNewFeedsSinceTime =
   process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '3600000'
 
@@ -202,7 +203,12 @@ const config: Config = {
   websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
   websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '',
-  rateLimiterMaxOverride
+  rateLimiterMaxOverride,
+  manticore: {
+    domain: process.env.MANTICORE_DOMAIN || 'localhost',
+    port: process.env.MANTICORE_PORT ? parseInt(process.env.MANTICORE_PORT, 10) : 9308,
+    protocol: process.env.MANTICORE_PROTOCOL || 'http'
+  }
 }
 
 export { config }

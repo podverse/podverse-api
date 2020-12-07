@@ -3,13 +3,14 @@ import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { _logEnd, _logStart, cleanFileExtension, convertToSlug, isValidDate, logPerformance } from '~/lib/utility'
+import { _logEnd, _logStart, cleanFileExtension, convertToSlug, convertToSortableTitle,
+  isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 const podcastFeedParser = require('@podverse/podcast-feed-parser')
 const { awsConfig, userAgent } = config
-const queueUrls = awsConfig.queueUrls
+const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
@@ -82,7 +83,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.isExplicit = meta.explicit
     podcast.isPublic = true
     podcast.language = meta.language
-    podcast.linkUrl = meta.link
 
     /*
       Generate the episode data to be saved later,
@@ -116,8 +116,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast.lastEpisodeTitle = ''
     }
 
-    podcast.sortableTitle = meta.title ? meta.title.toLowerCase().replace(/\b^the\b|\b^a\b|\b^an\b/i, '').trim() : ''
-    podcast.sortableTitle = podcast.sortableTitle ? podcast.sortableTitle.replace(/#/g, '') : ''
+    podcast.linkUrl = meta.link
+    podcast.sortableTitle = meta.title ? convertToSortableTitle(meta.title) : ''
     podcast.title = meta.title
     podcast.type = meta.type
     podcast.value = meta.value
@@ -125,11 +125,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcast)
 
-    // Limit podcast image PUTs to once per week
-    const oneWeek = 7 * 24 * 60 * 60 * 1000
-    const wasUpdatedThisWeek = new Date(podcast.feedLastUpdated).getTime() + oneWeek >= new Date(meta.lastBuildDate).getTime()
-    if (!wasUpdatedThisWeek || podcast.alwaysFullyParse) {
+    // Limit podcast image PUTs to save on server costs
+    const { shrunkImageLastUpdated } = podcast
+    const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
+    const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
+      ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
+      : false
+    if (!wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
+      podcast.shrunkImageLastUpdated = new Date()
+      await podcastRepo.save(podcast)
     }
 
     const episodeRepo = getRepository(Episode)
@@ -446,8 +451,6 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.imageUrl = parsedEpisode.image
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
-  // episode.mediaFilesize = parsedEpisode.enclosure.filesize
-  //   ? parseInt(parsedEpisode.enclosure.filesize, 10) : 0
   episode.mediaType = parsedEpisode.enclosure.type
   episode.mediaUrl = parsedEpisode.enclosure.url
 

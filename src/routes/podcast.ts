@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getMetadata, getPodcast, getPodcasts, getSubscribedPodcasts, toggleSubscribeToPodcast
+import { getMetadata, getPodcast, getPodcasts, getPodcastsFromSearchEngine, getSubscribedPodcasts, toggleSubscribeToPodcast
   } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -39,8 +39,15 @@ router.get('/',
   parseNSFWHeader,
   async ctx => {
     try {
+      const { query = {} } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const podcasts = await getPodcasts(ctx.state.query)
+
+      let podcasts
+      if (query.searchTitle) {
+        podcasts = await getPodcastsFromSearchEngine(query)
+      } else {
+        podcasts = await getPodcasts(query)
+      }
 
       ctx.body = podcasts
     } catch (error) {

@@ -1,8 +1,9 @@
 import { getRepository } from 'typeorm'
+import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { Podcast, User } from '~/entities'
 import { getQueryOrderColumn } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
-import { getUserSubscribedPodcastIds } from './user'
+import { searchApi } from '~/services/manticore'
 
 const createError = require('http-errors')
 
@@ -49,12 +50,50 @@ const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
 const getSubscribedPodcasts = async (query, loggedInUserId) => {
   const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
   query.podcastId = subscribedPodcastIds.join(',')
-  return getPodcasts(query)
+
+  let podcasts
+  if (query.searchTitle) {
+    podcasts = await getPodcastsFromSearchEngine(query)
+  } else {
+    podcasts = await getPodcasts(query)
+  }
+  return podcasts
 }
 
-const getPodcasts = async (query) => {
+const getPodcastsFromSearchEngine = async (query) => {
+  const { searchTitle, skip, take } = query
+
+  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+
+  const result = await searchApi.search({
+    index: 'idx_podcast',
+    query: {
+      match: {
+        title: `*${searchTitle}*`
+      }
+    },
+    limit: take,
+    offset: skip
+  })
+
+  let podcastIds = [] as any[]  
+  const { hits, total } = result.hits
+  if (Array.isArray(hits)) {
+    podcastIds = hits.map((x: any) => x._source.podverse_id)
+  }
+  const podcastIdsString = podcastIds.join(',')
+  if (!podcastIdsString) return [hits, total]
+  
+  delete query.searchTitle
+  delete query.skip
+  query.podcastId = podcastIdsString
+
+  return getPodcasts(query, total)
+}
+
+const getPodcasts = async (query, countOverride?) => {
   const repository = getRepository(Podcast)
-  const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor, searchTitle,
+  const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
     skip, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
@@ -89,14 +128,7 @@ const getPodcasts = async (query) => {
       { id: categories[0] }
     )
   } else {
-    if (searchTitle) {
-      const title = `%${searchTitle.toLowerCase().trim()}%`
-      validateSearchQueryString(title)
-      qb.where(
-        'LOWER(podcast.title) LIKE :title',
-        { title }
-      )
-    } else if (searchAuthor) {
+    if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase().trim()}%`
       validateSearchQueryString(name)
       qb.innerJoinAndSelect(
@@ -114,20 +146,17 @@ const getPodcasts = async (query) => {
     }
   }
 
-  if (includeAuthors && !searchTitle) {
+  if (includeAuthors) {
     qb.leftJoinAndSelect('podcast.authors', 'authors')
   }
 
-  if (includeCategories && !searchTitle) {
+  if (includeCategories) {
     qb.leftJoinAndSelect('podcast.categories', 'categories')
   }
 
   qb.andWhere('"isPublic" = true')
-
   qb = limitPodcastsQuerySize(qb, podcastIds, query.sort)
-
   const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-  
   query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   try {
@@ -135,6 +164,10 @@ const getPodcasts = async (query) => {
       .offset(skip)
       .limit((maxResults && 1000) || take)
       .getManyAndCount()
+
+    if (countOverride > 0) {
+      podcasts[1] = countOverride
+    }
 
     return podcasts
   } catch (error) {
@@ -224,6 +257,7 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 export {
   getPodcast,
   getPodcasts,
+  getPodcastsFromSearchEngine,
   getMetadata,
   getSubscribedPodcasts,
   toggleSubscribeToPodcast

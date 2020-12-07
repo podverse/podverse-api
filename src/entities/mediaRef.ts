@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsInt, IsUrl, Min, ValidateIf } from 'class-validator'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { Author, Category, Episode, User } from '~/entities'
 
@@ -15,6 +15,10 @@ export class MediaRef {
     length: 14
   })
   id: string
+
+  @Column()
+  @Generated('increment')
+  int_id: number
 
   @ValidateIf(a => a.endTime != null)
   @IsInt()

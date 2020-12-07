@@ -113,6 +113,71 @@ const cleanEpisodes = (episodes) => {
   })
 }
 
+const getEpisodes = async (query) => {
+  const { includePodcast, searchAllFieldsText, skip, sort, take } = query
+
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  const shouldLimit = true
+  qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+  qb.andWhere('episode."isPublic" IS true')
+
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+}
+
+const getEpisodesByCategoryIds = async (query) => {
+  const { categories, includePodcast, searchAllFieldsText, skip, sort, take } = query
+  const categoriesIds = categories && categories.split(',') || []
+
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+
+  if (sort === 'most-recent') {
+    return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
+  } else {
+    qb.innerJoin(
+      'podcast.categories',
+      'categories',
+      'categories.id IN (:...categoriesIds)',
+      { categoriesIds }
+    )
+
+    const shouldLimit = true
+    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+    qb.andWhere('episode."isPublic" IS true')
+
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+  }
+}
+
+const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
+  const { skip, sort, take } = query
+  qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
+  qb.andWhere('episode."isPublic" IS true')
+
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+}
+
+const getEpisodesByPodcastIds = async (query) => {
+  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
+  const podcastIds = podcastId && podcastId.split(',') || []
+
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+
+  if (podcastIds.length === 1) {
+    return getEpisodesByPodcastId(query, qb, podcastIds)
+  }
+
+  if (sort === 'most-recent') {
+    return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
+  } else {
+    qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
+    const shouldLimit = podcastIds.length > 10
+    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+    qb.andWhere('episode."isPublic" IS true')
+
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+  }
+}
+
 const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   const table = type === 'categoriesIds' ? RecentEpisodeByCategory : RecentEpisodeByPodcast
   const select = type === 'categoriesIds' ? 'recentEpisode.categoryId' : 'recentEpisode.podcastId'
@@ -159,71 +224,6 @@ const handleGetEpisodesWithOrdering = async (obj) => {
   const cleanedEpisodes = cleanEpisodes(episodes)
 
   return [cleanedEpisodes, episodesCount]
-}
-
-const getEpisodes = async (query) => {
-  const { includePodcast, searchAllFieldsText, skip, sort, take } = query
-
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
-  const shouldLimit = true
-  qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-  qb.andWhere('episode."isPublic" IS true')
-
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
-}
-
-const getEpisodesByCategoryIds = async (query) => {
-  const { categories, includePodcast, searchAllFieldsText, skip, sort, take } = query
-  const categoriesIds = categories && categories.split(',') || []
-
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
-
-  if (sort === 'most-recent') {
-    return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
-  } else {
-    qb.innerJoin(
-      'podcast.categories',
-      'categories',
-      'categories.id IN (:...categoriesIds)',
-      { categoriesIds }
-    )
-    
-    const shouldLimit = true
-    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-    qb.andWhere('episode."isPublic" IS true')
-
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
-  }
-}
-
-const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
-  const { skip, sort, take } = query
-  qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
-  qb.andWhere('episode."isPublic" IS true')
-
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
-}
-
-const getEpisodesByPodcastIds = async (query) => {
-  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
-  const podcastIds = podcastId && podcastId.split(',') || []
-
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
-
-  if (podcastIds.length === 1) {
-    return getEpisodesByPodcastId(query, qb, podcastIds)
-  }
-  
-  if (sort === 'most-recent') {
-    return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
-  } else {
-    qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
-    const shouldLimit = podcastIds.length > 10
-    qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-    qb.andWhere('episode."isPublic" IS true')
-
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
-  }
 }
 
 const getDeadEpisodes = async () => {

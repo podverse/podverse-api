@@ -2,8 +2,8 @@
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, MediaRef, Podcast } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Index,
-  JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
+  Index, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
@@ -29,6 +29,11 @@ export class Episode {
     length: 14
   })
   id: string
+
+  // TODO: generate this column without server downtime
+  // @Column()
+  // @Generated('increment')
+  // int_id: number
 
   @Column({ nullable: true })
   chaptersType?: string
