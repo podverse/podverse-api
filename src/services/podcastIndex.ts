@@ -31,18 +31,8 @@ const axiosRequest = async (url) => {
 }
 
 const getRecentlyUpdatedPodcastFeeds = async () => {
-  const { getRecentlyUpdatedSinceTime } = podcastIndexConfig
-  const currentTime = new Date().getTime()
-  // add 5 seconds to the query to prevent podcasts falling through the cracks between requests
-  const offset = 5000
-  const startRangeTime = Math.floor((currentTime - (getRecentlyUpdatedSinceTime + offset)) / 1000)
-
-  console.log('currentTime----', currentTime)
-  console.log('startRangeTime-', startRangeTime)
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/updated?since=${startRangeTime}&max=1000`
-  console.log('url------------', url)
+  const url = `${podcastIndexConfig.baseUrl}/recent/feeds?sort=discovery&max=1000`
   const response = await axiosRequest(url)
-
   return response && response.data
 }
 
