@@ -286,13 +286,17 @@ const retrieveLatestChapters = async (id) => {
       const response = await request(chaptersUrl)
       const parsedResponse = JSON.parse(response)
       const { chapters: newChapters } = parsedResponse
+
       if (newChapters) {
         const qb = mediaRefRepository
           .createQueryBuilder('mediaRef')
           .select('mediaRef.id', 'id')
           .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
           .addSelect('mediaRef.startTime', 'startTime')
-          .where('mediaRef.isOfficialChapter = TRUE')
+          .where({
+            isOfficialChapter: true,
+            episode: episode.id
+          })
         const existingChapters = await qb.getRawMany()
 
         // If existing chapter with current chapter's startTime does not exist,
