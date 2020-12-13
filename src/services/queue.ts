@@ -9,31 +9,6 @@ import { generateFeedMessageAttributes } from '~/services/parser'
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-export const addAllPublicFeedUrlsToQueue = async () => {
-  await connectToDb()
-
-  try {
-    const feedUrlRepo = getRepository(FeedUrl)
-    const qb = feedUrlRepo.createQueryBuilder('feedUrl')
-
-    qb.select('feedUrl.id')
-      .addSelect('feedUrl.url')
-      .innerJoinAndSelect(
-        'feedUrl.podcast',
-        'podcast',
-        'podcast.isPublic = :isPublic',
-        { isPublic: true }
-      )
-      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
-
-    const feedUrls = await qb.getMany()
-
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
-  } catch (error) {
-    console.log('queue:addAllPublicFeedUrlsToQueue', error)
-  }
-}
-
 export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
@@ -52,6 +27,44 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToPriorityQueue', error)
+  }
+}
+
+export const addAllPublicFeedUrlsToQueue = async () => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const recursivelySendFeedUrls = async (i: number) => {
+      console.log('parsing:', i * 1000)
+
+      const feedUrls = await feedUrlRepo
+        .createQueryBuilder('feedUrl')
+        .select('feedUrl.id')
+        .addSelect('feedUrl.url')
+        .innerJoinAndSelect(
+          'feedUrl.podcast',
+          'podcast',
+          'podcast.isPublic = :isPublic',
+          { isPublic: true }
+        )
+        .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+        .offset(i * 1000)
+        .limit(1000)
+        .getMany()
+
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+
+      if (feedUrls.length === 1000) {
+        recursivelySendFeedUrls(i + 1)
+      }
+    }
+
+    await recursivelySendFeedUrls(1)
+  } catch (error) {
+    console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
   }
 }
 
