@@ -38,7 +38,7 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
     const feedUrlRepo = getRepository(FeedUrl)
 
     const recursivelySendFeedUrls = async (i: number) => {
-      console.log('parsing:', i * 100)
+      console.log('parsing:', i * 1000)
 
       const feedUrls = await feedUrlRepo
         .createQueryBuilder('feedUrl')
@@ -51,13 +51,13 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
           { isPublic: true }
         )
         .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
-        .offset(i * 100)
-        .limit(100)
+        .offset(i * 1000)
+        .limit(1000)
         .getMany()
 
       await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
 
-      if (feedUrls.length === 100) {
+      if (feedUrls.length === 1000) {
         recursivelySendFeedUrls(i + 1)
       }
     }
