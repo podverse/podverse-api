@@ -30,7 +30,7 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
   }
 }
 
-export const addAllPublicFeedUrlsToQueue = async () => {
+export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
 
   await connectToDb()
 
@@ -62,7 +62,7 @@ export const addAllPublicFeedUrlsToQueue = async () => {
       }
     }
 
-    await recursivelySendFeedUrls(1)
+    await recursivelySendFeedUrls(offset)
   } catch (error) {
     console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
   }
