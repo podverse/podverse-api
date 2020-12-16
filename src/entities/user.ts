@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
+import { NowPlayingItem } from 'podverse-shared'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
@@ -127,10 +128,10 @@ export class User {
   subscribedUserIds: string[]
 
   @Column('simple-json', { select: false })
-  historyItems: any[]
+  historyItems: NowPlayingItem[]
 
   @Column('simple-json', { select: false })
-  queueItems: any[]
+  queueItems: NowPlayingItem[]
 
   @OneToMany(type => AppStorePurchase, appStorePurchase => appStorePurchase.owner)
   appStorePurchases: AppStorePurchase[]
