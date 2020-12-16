@@ -396,7 +396,12 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
     subscribedUserIds = filteredUsers
   }
 
-  await repository.update(loggedInUserId, { subscribedUserIds })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ subscribedUserIds })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 
   return subscribedUserIds
 }
@@ -533,7 +538,12 @@ const updateQueueItems = async (queueItems, loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  await repository.update(loggedInUserId, { queueItems })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ queueItems })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 
   return { queueItems }
 }
@@ -584,20 +594,26 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
     }
   }
 
-  return repository.update(loggedInUserId, { historyItems })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ historyItems })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 }
 
 // NOTE: there seems to be a flaw with user.historyItems where it will stop updating the row,
 // but it won't throw an error. I wonder if it is caused by invalid input a shows description?
 // Maybe we need to change user.historyItems to use a new entity type, instead of a json column.
 const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) => {
-
+  console.log('addOrUpdateHistoryItem')
+  console.log('addOrUpdateHistoryItem uncleanedNowPlayingItem', uncleanedNowPlayingItem)
   // NOTE: If invalid fields are present on a historyItem,
   // it can cause numerous failures across every app!
   // Make sure only valid NowPlayingItems are saved to the user.historyItems JSON field
   // by cleaning them before adding/updating them in the historyItems
   const nowPlayingItem = cleanNowPlayingItem(uncleanedNowPlayingItem)
-
+  console.log('addOrUpdateHistoryItem nowPlayingItem', nowPlayingItem)
   if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
   }
@@ -627,7 +643,7 @@ const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) =
   }
 
   let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
-
+  
   // NOTE: userPlaybackPosition should ONLY ever be updated in updateHistoryItemPlaybackPosition.
   // Remove historyItem if it already exists in the array, but retain the stored userPlaybackPosition,
   // then prepend it to the array.
@@ -651,8 +667,14 @@ const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) =
     const totalToRemove = (historyItems.length - 200)
     historyItems.splice(200, 200 + totalToRemove)
   }
-  
-  return repository.update(loggedInUserId, { historyItems })
+  console.log('historyItems[0]', Array.isArray(historyItems) && historyItems[0])
+
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ historyItems })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 }
 
 const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
@@ -698,7 +720,12 @@ const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
     throw new createError.BadRequest('historyItems must be an array.')
   }
 
-  return repository.update(loggedInUserId, { historyItems })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ historyItems })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 }
 
 const hasHistoryItemWithMatchingId = (episodeId: string, mediaRefId: string, item: any) => {
@@ -731,7 +758,12 @@ const clearAllHistoryItems = async (loggedInUserId) => {
     throw new createError.NotFound('User not found.')
   }
 
-  return repository.update(loggedInUserId, { historyItems: [] })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ historyItems: [] })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 }
 
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
@@ -801,7 +833,12 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
     addByRSSPodcastFeedUrls.push(url)
   }
 
-  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ addByRSSPodcastFeedUrls })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 
   return addByRSSPodcastFeedUrls
 }
@@ -833,7 +870,12 @@ const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string)
   const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
   addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
 
-  await repository.update(loggedInUserId, { addByRSSPodcastFeedUrls })
+  await repository
+    .createQueryBuilder()
+    .update(User)
+    .set({ addByRSSPodcastFeedUrls })
+    .where('id = :loggedInUserId', { loggedInUserId })
+    .execute()
 
   return addByRSSPodcastFeedUrls
 }
