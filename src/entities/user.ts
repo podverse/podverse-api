@@ -166,8 +166,8 @@ export class User {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
 
-    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
-    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
+    // this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
+    // this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
   }
 
   @BeforeUpdate()
@@ -177,7 +177,7 @@ export class User {
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
 
-    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
-    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
+    // this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
+    // this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
   }
 }
