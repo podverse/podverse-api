@@ -8,17 +8,17 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
 
 const shortid = require('shortid')
 
-type Funding = {
-  url: string
-  value: string
-}
+// type Funding = {
+//   url: string
+//   value: string
+// }
 
-type Transcript = {
-  language?: string
-  rel?: string
-  type?: string
-  value?: string
-}
+// type Transcript = {
+//   language?: string
+//   rel?: string
+//   type?: string
+//   value?: string
+// }
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
@@ -59,7 +59,7 @@ export class Episode {
   episodeType?: string
 
   @Column('simple-json', { nullable: true })
-  funding: Funding[]
+  funding: any[]
 
   @Index()
   @Column({ nullable: true })
@@ -145,7 +145,7 @@ export class Episode {
   title?: string
 
   @Column('simple-json', { nullable: true })
-  transcript: Transcript[]
+  transcript: any[]
 
   @ManyToMany(type => Author)
   @JoinTable()
