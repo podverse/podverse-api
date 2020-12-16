@@ -8617,10 +8617,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podverse-shared@^1.0.3:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-1.0.9.tgz#52137301bae86d87b89def0db7f2733b21bec176"
-  integrity sha512-sLyrfRrNBGCddmLNYir5Mk3IrFcS06VnlGbZOr1oHlDIB5SEyworkJ7vyFzutGb16GVzZ4URtj9OrSiphWBoWg==
+podverse-shared@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-1.0.10.tgz#528fcd293c00a18acfcc1077a46fa4ea028cda59"
+  integrity sha512-7RxWPoeHJsgOR8f6A9Uscto8/lyWSjnzhT9SivhoLLCBJKjZfX/GVKSGgzT3FQw53fIjN8UbhC9YNBgYZ7nBNQ==
   dependencies:
     typescript "3.7.2"
 

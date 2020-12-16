@@ -612,7 +612,7 @@ const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) =
   // it can cause numerous failures across every app!
   // Make sure only valid NowPlayingItems are saved to the user.historyItems JSON field
   // by cleaning them before adding/updating them in the historyItems
-  const nowPlayingItem = cleanNowPlayingItem(uncleanedNowPlayingItem)
+  const nowPlayingItem = cleanNowPlayingItem(uncleanedNowPlayingItem) as any
   console.log('addOrUpdateHistoryItem nowPlayingItem', nowPlayingItem)
   if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
@@ -728,10 +728,10 @@ const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
     .execute()
 }
 
-const hasHistoryItemWithMatchingId = (episodeId: string, mediaRefId: string, item: any) => {
-  if (mediaRefId && item.clipId === mediaRefId) {
+const hasHistoryItemWithMatchingId = (episodeId?: string, mediaRefId?: string, item?: any) => {
+  if (item && mediaRefId && item.clipId === mediaRefId) {
     return true
-  } else if (!mediaRefId && !item.clipId && item.episodeId === episodeId) {
+  } else if (item && episodeId && !mediaRefId && !item.clipId && item.episodeId === episodeId) {
     return true
   } else {
     return false
