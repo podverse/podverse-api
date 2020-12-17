@@ -96,6 +96,15 @@ const validateUserHistoryItemRemove = async (ctx, next) => {
   await validateBaseQuery(schema, ctx, next)
 }
 
+const validateUserNowPlayingItemUpdate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeId: Joi.string(),
+    mediaRefId: Joi.string()
+  }).min(1).max(1)
+
+  await validateBaseQuery(schema, ctx, next)
+}
+
 export {
   validateFeedUrlUpdate,
   validateMediaRefUpdate,
@@ -104,6 +113,7 @@ export {
   validateUserAddOrUpdateHistoryItem,
   validateUserHistoryItemRemove,
   validateUserMembershipUpdate,
+  validateUserNowPlayingItemUpdate,
   validateUserUpdate,
   validateUserUpdateQueue
 }
