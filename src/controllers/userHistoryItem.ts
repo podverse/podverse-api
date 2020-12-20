@@ -10,21 +10,25 @@ export const getUserHistoryItems = async (loggedInUserId, query) => {
     .select('userHistoryItem.id', 'id')
     .addSelect('userHistoryItem.lastPlaybackPosition', 'lastPlaybackPosition')
     .addSelect('userHistoryItem.orderChangedDate', 'orderChangedDate')
-    .addSelect('mediaRef.id', 'mediaRefId')
-    .addSelect('mediaRef.title', 'mediaRefTitle')
+    .addSelect('mediaRef.id', 'clipId')
+    .addSelect('mediaRef.title', 'clipTitle')
+    .addSelect('mediaRef.startTime', 'clipStartTime')
+    .addSelect('mediaRef.endTime', 'clipEndTime')
     .addSelect('episode.id', 'episodeId')
+    .addSelect('episode.description', 'episodeDescription')
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('podcast.id', 'podcastId')
     .addSelect('podcast.title', 'podcastTitle')
-    .addSelect('mediaRefEpisode.id', 'mediaRefEpisodeId')
-    .addSelect('mediaRefEpisode.title', 'mediaRefEpisodeTitle')
-    .addSelect('mediaRefPodcast.id', 'mediaRefPodcastId')
-    .addSelect('mediaRefPodcast.title', 'mediaRefPodcastTitle')
+    .addSelect('clipEpisode.id', 'clipEpisodeId')
+    .addSelect('clipEpisode.description', 'clipEpisodeDescription')
+    .addSelect('clipEpisode.title', 'clipEpisodeTitle')
+    .addSelect('clipPodcast.id', 'clipPodcastId')
+    .addSelect('clipPodcast.title', 'clipPodcastTitle')
     .leftJoin('userHistoryItem.episode', 'episode')
     .leftJoin('episode.podcast', 'podcast')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
-    .leftJoin('mediaRef.episode', 'mediaRefEpisode')
-    .leftJoin('mediaRefEpisode.podcast', 'mediaRefPodcast')
+    .leftJoin('mediaRef.episode', 'clipEpisode')
+    .leftJoin('clipEpisode.podcast', 'clipPodcast')
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
@@ -33,22 +37,23 @@ export const getUserHistoryItems = async (loggedInUserId, query) => {
     .getRawMany()
 
   const cleanResult = (result) => {
-    if (result.mediaRefId) {
+    if (result.clipId) {
       return {
+        episodeDescription: result.clipEpisodeDescription,
+        episodeId: result.clipEpisodeId,
+        episodeTitle: result.clipEpisodeTitle,
         id: result.id,
-        episodeId: result.mediaRefEpisodeId,
-        episodeTitle: result.mediaRefEpisodeTitle,
-        lastPlaybackPosition: result.lastPlaybackPosition,
-        mediaRefId: result.mediaRefId,
-        mediaRefTitle: result.mediaRefTitle,
-        podcastId: result.mediaRefPodcastId,
-        podcastTitle: result.mediaRefPodcastTitle
+        mediaRefId: result.clipId,
+        mediaRefTitle: result.clipTitle,
+        podcastId: result.clipPodcastId,
+        podcastTitle: result.clipPodcastTitle
       }
     } else {
       return {
-        id: result.id,
+        episodeDescription: result.episodeDescription,
         episodeId: result.episodeId,
         episodeTitle: result.episodeTitle,
+        id: result.id,
         lastPlaybackPosition: result.lastPlaybackPosition,
         podcastId: result.podcastId,
         podcastTitle: result.podcastTitle
@@ -124,8 +129,8 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
 
   userHistoryItem = userHistoryItem ? userHistoryItem : new UserHistoryItem()
   userHistoryItem.lastPlaybackPosition = lastPlaybackPosition
-  userHistoryItem.episode = episodeId
-  userHistoryItem.mediaRef = mediaRefId
+  userHistoryItem.episode = episodeId || null
+  userHistoryItem.mediaRef = mediaRefId || null
   userHistoryItem.owner = loggedInUserId
   userHistoryItem.orderChangedDate =
     forceUpdateOrderDate

@@ -89,10 +89,10 @@ const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
 
 const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
   const schema = Joi.object().keys({
-    episodeId: Joi.string().allow(null).allow(''),
+    episodeId: Joi.string().allow(null),
     forceUpdateOrderDate: Joi.boolean(),
     lastPlaybackPosition: Joi.number().required(),
-    mediaRefId: Joi.string().allow(null).allow('')
+    mediaRefId: Joi.string().allow(null)
   })
 
   await validateBaseBody(schema, ctx, next)
