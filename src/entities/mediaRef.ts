@@ -120,14 +120,10 @@ export class MediaRef {
   })
   owner: User
 
-  @ManyToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.mediaRefs)
-  @JoinTable()
+  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.mediaRef)
   userHistoryItems: UserHistoryItem[]
 
-  @OneToMany(
-    type => UserNowPlayingItem,
-    userNowPlayingItem => userNowPlayingItem.mediaRef
-  )
+  @OneToMany(type => UserNowPlayingItem, userNowPlayingItem => userNowPlayingItem.mediaRef)
   userNowPlayingItems: UserNowPlayingItem[]
 
   @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.mediaRef)

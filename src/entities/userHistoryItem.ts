@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsInt, Min } from 'class-validator'
-import { Column, CreateDateColumn, Entity, Index, JoinTable, ManyToMany,
-  ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn,
+  UpdateDateColumn } from 'typeorm'
 import { Episode, MediaRef, User } from '~/entities'
 
 @Entity('userHistoryItems')
@@ -16,12 +16,14 @@ export class UserHistoryItem {
   @Column({ default: 0 })
   lastPlaybackPosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userHistoryItems, { nullable: false })
+  @CreateDateColumn()
+  orderChangedDate: Date
+
+  @ManyToOne(type => Episode, episode => episode.userHistoryItems, { nullable: true })
   episode: Episode
 
-  @ManyToMany(type => MediaRef)
-  @JoinTable()
-  mediaRefs: MediaRef[]
+  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, { nullable: true })
+  mediaRef: MediaRef
 
   @Index()
   @ManyToOne(type => User, user => user.userHistoryItems, {

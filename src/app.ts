@@ -11,8 +11,8 @@ import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter,
   authorRouter, categoryRouter, clipsRouter, episodeRouter, feedUrlRouter, googlePlayRouter,
-  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userNowPlayingItemRouter,
-  userRouter } from '~/routes'
+  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userHistoryItemRouter,
+  userNowPlayingItemRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
 const cookie = require('cookie')
@@ -122,6 +122,9 @@ export const createApp = async (conn: Connection) => {
 
   app.use(podcastRouter.routes())
   app.use(podcastRouter.allowedMethods())
+
+  app.use(userHistoryItemRouter.routes())
+  app.use(userHistoryItemRouter.allowedMethods())
 
   app.use(userNowPlayingItemRouter.routes())
   app.use(userNowPlayingItemRouter.allowedMethods())
