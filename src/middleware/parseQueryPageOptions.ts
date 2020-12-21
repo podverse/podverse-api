@@ -65,6 +65,8 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     options.take = config.queryPodcastsLimit
   } else if (type === 'users') {
     options.take = config.queryUsersLimit
+  } else if (type === 'userHistoryItems') {
+    options.take = config.queryUserHistoryItemsLimit
   }
 
   if (page > 1) {

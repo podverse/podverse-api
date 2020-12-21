@@ -2,8 +2,10 @@
 
 import { IsInt, IsUrl, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  JoinTable,ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { Author, Category, Episode, User } from '~/entities'
+  JoinTable,ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
+  UpdateDateColumn } from 'typeorm'
+import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem,
+  UserQueueItem } from '~/entities'
 
 const shortid = require('shortid')
 
@@ -117,6 +119,15 @@ export class MediaRef {
     onDelete: 'CASCADE'
   })
   owner: User
+
+  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.mediaRef)
+  userHistoryItems: UserHistoryItem[]
+
+  @OneToMany(type => UserNowPlayingItem, userNowPlayingItem => userNowPlayingItem.mediaRef)
+  userNowPlayingItems: UserNowPlayingItem[]
+
+  @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.mediaRef)
+  userQueueItems: UserQueueItem[]
 
   @CreateDateColumn()
   createdAt: Date
