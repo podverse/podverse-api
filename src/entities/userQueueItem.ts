@@ -14,7 +14,7 @@ export class UserQueueItem {
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
-  position: number
+  queuePosition: number
 
   @ManyToOne(type => Episode, episode => episode.userQueueItems, { nullable: true })
   episode: Episode

@@ -2,14 +2,53 @@ import { getRepository } from 'typeorm'
 import { UserHistoryItem } from '~/entities'
 const createError = require('http-errors')
 
-export const getUserHistoryItems = async (loggedInUserId, query) => {
-  const { skip, take } = query
+export const cleanUserItemResult = (result) => {
+  if (result.clipId) {
+    return {
+      clipEndTime: result.clipEndTime,
+      clipId: result.clipId,
+      clipStartTime: result.clipStartTime,
+      clipTitle: result.clipTitle,
+      episodeDescription: result.clipEpisodeDescription,
+      episodeId: result.clipEpisodeId,
+      episodeTitle: result.clipEpisodeTitle,
+      id: result.id,
+      podcastId: result.clipPodcastId,
+      podcastTitle: result.clipPodcastTitle
+    }
+  } else {
+    return {
+      episodeDescription: result.episodeDescription,
+      episodeId: result.episodeId,
+      episodeTitle: result.episodeTitle,
+      id: result.id,
+      lastPlaybackPosition: result.lastPlaybackPosition,
+      podcastId: result.podcastId,
+      podcastTitle: result.podcastTitle
+    }
+  }
+}
 
-  const results = await getRepository(UserHistoryItem)
-    .createQueryBuilder('userHistoryItem')
-    .select('userHistoryItem.id', 'id')
-    .addSelect('userHistoryItem.lastPlaybackPosition', 'lastPlaybackPosition')
-    .addSelect('userHistoryItem.orderChangedDate', 'orderChangedDate')
+export const cleanUserItemResults = (results) => {
+  const cleanedResults = [] as any
+  for (const result of results) {
+    cleanedResults.push(cleanUserItemResult(result))
+  }
+
+  return cleanedResults
+}
+
+export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
+  const qb = getRepository(table)
+    .createQueryBuilder(`${tableName}`)
+    .select(`${tableName}.id`, 'id')
+  
+  if (tableName === 'userHistoryItem') {
+    qb.addSelect(`${tableName}.lastPlaybackPosition`, 'lastPlaybackPosition')
+      .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
+  }
+
+  return qb
     .addSelect('mediaRef.id', 'clipId')
     .addSelect('mediaRef.title', 'clipTitle')
     .addSelect('mediaRef.startTime', 'clipStartTime')
@@ -24,49 +63,24 @@ export const getUserHistoryItems = async (loggedInUserId, query) => {
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipPodcast.id', 'clipPodcastId')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
-    .leftJoin('userHistoryItem.episode', 'episode')
+    .leftJoin(`${tableName}.episode`, 'episode')
     .leftJoin('episode.podcast', 'podcast')
-    .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
+    .leftJoin(`${tableName}.mediaRef`, 'mediaRef')
     .leftJoin('mediaRef.episode', 'clipEpisode')
     .leftJoin('clipEpisode.podcast', 'clipPodcast')
-    .leftJoin('userHistoryItem.owner', 'owner')
-    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .leftJoin(`${tableName}.owner`, 'owner')
+    .where('owner.id = :loggedInUserId', { loggedInUserId }) as any
+}
+
+export const getUserHistoryItems = async (loggedInUserId, query) => {
+  const { skip, take } = query
+  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId) 
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
     .skip(skip)
     .take(take)
     .getRawMany()
 
-  const cleanResult = (result) => {
-    if (result.clipId) {
-      return {
-        episodeDescription: result.clipEpisodeDescription,
-        episodeId: result.clipEpisodeId,
-        episodeTitle: result.clipEpisodeTitle,
-        id: result.id,
-        mediaRefId: result.clipId,
-        mediaRefTitle: result.clipTitle,
-        podcastId: result.clipPodcastId,
-        podcastTitle: result.clipPodcastTitle
-      }
-    } else {
-      return {
-        episodeDescription: result.episodeDescription,
-        episodeId: result.episodeId,
-        episodeTitle: result.episodeTitle,
-        id: result.id,
-        lastPlaybackPosition: result.lastPlaybackPosition,
-        podcastId: result.podcastId,
-        podcastTitle: result.podcastTitle
-      }
-    }
-  }
-
-  const cleanedResults = [] as any
-  for (const result of results) {
-    cleanedResults.push(cleanResult(result))
-  }
-
-  return cleanedResults
+  return cleanUserItemResults(results)
 }
 
 export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
@@ -96,7 +110,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
     throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
   }
 
-  if (!lastPlaybackPosition) {
+  if (!lastPlaybackPosition && lastPlaybackPosition !== 0) {
     throw new createError.NotFound('A lastPlaybackPosition must be provided.')
   }
 
