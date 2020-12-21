@@ -2,7 +2,8 @@ import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from '~/config'
 import { AccountClaimToken, AppStorePurchase, Author, BitPayInvoice, Category,
   Episode, FeedUrl, GooglePlayPurchase,  MediaRef, PayPalOrder, Playlist,
-  Podcast, RecentEpisodeByCategory, RecentEpisodeByPodcast, User } from '~/entities'
+  Podcast, RecentEpisodeByCategory, RecentEpisodeByPodcast, User,
+  UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
 
 const entities = [
   AccountClaimToken,
@@ -19,7 +20,10 @@ const entities = [
   Podcast,
   RecentEpisodeByCategory,
   RecentEpisodeByPodcast,
-  User
+  User,
+  UserHistoryItem,
+  UserNowPlayingItem,
+  UserQueueItem
 ]
 
 const options = config.dbConfig
