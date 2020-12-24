@@ -10,6 +10,7 @@ export const cleanUserItemResult = (result) => {
       clipStartTime: result.clipStartTime,
       clipTitle: result.clipTitle,
       episodeDescription: result.clipEpisodeDescription,
+      episodeDuration: result.clipEpisodeDuration,
       episodeId: result.clipEpisodeId,
       episodeTitle: result.clipEpisodeTitle,
       id: result.id,
@@ -19,6 +20,7 @@ export const cleanUserItemResult = (result) => {
   } else {
     return {
       episodeDescription: result.episodeDescription,
+      episodeDuration: result.episodeDuration,
       episodeId: result.episodeId,
       episodeTitle: result.episodeTitle,
       id: result.id,
@@ -55,11 +57,13 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('mediaRef.endTime', 'clipEndTime')
     .addSelect('episode.id', 'episodeId')
     .addSelect('episode.description', 'episodeDescription')
+    .addSelect('episode.duration', 'episodeDuration')
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('podcast.id', 'podcastId')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
+    .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipPodcast.id', 'clipPodcastId')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
