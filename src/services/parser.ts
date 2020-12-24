@@ -284,6 +284,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
   }
 
   const feedUrlMsg = extractFeedMessage(message)
+  const { forceReparsing } = feedUrlMsg
   let feedUrl
 
   try {
@@ -304,7 +305,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
 
     if (feedUrl) {
       try {
-        await parseFeedUrl(feedUrl)
+        await parseFeedUrl(feedUrl, !!forceReparsing)
       } catch (error) {
         console.log('error parseNextFeedFromQueue parseFeedUrl', feedUrl.id, feedUrl.url)
         console.log('error', error)
@@ -312,11 +313,10 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
       }
     } else {
       try {
-        await parseFeedUrl(feedUrlMsg)
+        await parseFeedUrl(feedUrlMsg, !!forceReparsing)
       } catch (error) {
         console.log('parsePublicFeedUrls feedUrlMsg parseFeedUrl', feedUrlMsg)
         console.log('error', error)
-        console.log(feedUrlMsg)
         throw error
       }
     }
@@ -363,7 +363,8 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
   
   if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
     const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
-    const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError)
+    const forceReparsing = false
+    const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError, forceReparsing)
     await sendMessageToQueue(attrs, errorsQueueUrl)
   }
 }
@@ -568,7 +569,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 }
 
-export const generateFeedMessageAttributes = (feedUrl, error = {} as any) => {
+export const generateFeedMessageAttributes = (feedUrl, error = {} as any, forceReparsing) => {
   return {
     'id': {
       DataType: 'String',
@@ -588,6 +589,12 @@ export const generateFeedMessageAttributes = (feedUrl, error = {} as any) => {
       'podcastTitle': {
         DataType: 'String',
         StringValue: feedUrl.podcast && feedUrl.podcast.title
+      }
+    } : {}),
+    ...(forceReparsing ? {
+      'forceReparsing': {
+        DataType: 'String',
+        StringValue: 'TRUE'
       }
     } : {}),
     ...(error && error.message ? {
@@ -610,6 +617,7 @@ const extractFeedMessage = message => {
         title: attrs.podcastTitle.StringValue
       }
     } : {}),
+    ...(attrs.forceReparsing ? { forceReparsing: true } : {}),
     receiptHandle: message.ReceiptHandle
   } as any
 }
