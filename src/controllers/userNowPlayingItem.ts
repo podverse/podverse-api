@@ -25,7 +25,7 @@ export const getUserNowPlayingItem = async (loggedInUserId) => {
   return getRepository(UserNowPlayingItem)
     .createQueryBuilder('userNowPlayingItem')
     .select('userNowPlayingItem.id', 'id')
-    .addSelect('userNowPlayingItem.lastPlaybackPosition', 'lastPlaybackPosition')
+    .addSelect('userNowPlayingItem.userPlaybackPosition', 'userPlaybackPosition')
     .addSelect('episode.id', 'episodeId')
     .addSelect('mediaRef.id', 'mediaRefId')
     .leftJoin('userNowPlayingItem.episode', 'episode')
@@ -39,7 +39,7 @@ export const getUserNowPlayingItem = async (loggedInUserId) => {
 }
 
 export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) => {
-  const { clipId, episodeId, lastPlaybackPosition = 0 } = nowPlayingItem
+  const { clipId, episodeId, userPlaybackPosition = 0 } = nowPlayingItem
 
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to update the now playing item')
@@ -60,7 +60,7 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
 
   const userNowPlayingItem = currentNowPlayingItem || new UserNowPlayingItem()
   userNowPlayingItem.episode = episodeId
-  userNowPlayingItem.lastPlaybackPosition = lastPlaybackPosition
+  userNowPlayingItem.userPlaybackPosition = userPlaybackPosition
   userNowPlayingItem.mediaRef = clipId || null
   userNowPlayingItem.owner = loggedInUserId
 

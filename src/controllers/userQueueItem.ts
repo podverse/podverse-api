@@ -33,13 +33,13 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query) => {
 
   const queueItems = await getUserQueueItems(loggedInUserId)
   const existingIndex = queueItems.findIndex((x: any) => {
-    if (x.mediaRefId) {
-      return x.mediaRefId === mediaRefId
+    if (x.clipId && mediaRefId) {
+      return x.clipId === mediaRefId
     } else {
       return x.episodeId === episodeId
     }
   })
-  
+
   if (existingIndex >= 0) {
     if (queuePosition >= 0) {
       arrayMoveItemToNewPosition(queueItems, existingIndex, queuePosition)

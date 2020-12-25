@@ -15,7 +15,7 @@ export class UserNowPlayingItem {
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
-  lastPlaybackPosition: number
+  userPlaybackPosition: number
 
   @ManyToOne(type => Episode, episode => episode.userNowPlayingItems)
   episode: Episode

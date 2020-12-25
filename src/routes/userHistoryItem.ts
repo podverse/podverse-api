@@ -87,7 +87,7 @@ router.delete('/mediaRef/:mediaRefId',
   })
 
 // Remove all UserHistoryItems for logged-in user
-router.delete('/',
+router.delete('/remove-all',
   jwtAuth,
   hasValidMembership,
   async ctx => {

@@ -91,7 +91,7 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
   const schema = Joi.object().keys({
     episodeId: Joi.string().allow(null),
     forceUpdateOrderDate: Joi.boolean(),
-    lastPlaybackPosition: Joi.number().required(),
+    userPlaybackPosition: Joi.number().required(),
     mediaRefId: Joi.string().allow(null)
   })
 

@@ -11,13 +11,13 @@ export class UserHistoryItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @CreateDateColumn()
+  orderChangedDate: Date
+
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
-  lastPlaybackPosition: number
-
-  @CreateDateColumn()
-  orderChangedDate: Date
+  userPlaybackPosition: number
 
   @ManyToOne(type => Episode, episode => episode.userHistoryItems, { nullable: true })
   episode: Episode
