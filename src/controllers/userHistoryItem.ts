@@ -106,7 +106,7 @@ export const getUserHistoryItems = async (loggedInUserId, query) => {
 export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
   const repository = getRepository(UserHistoryItem)
 
-  return repository
+  const results = await repository
     .createQueryBuilder('userHistoryItem')
     .select('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
     .addSelect('mediaRef.id', 'mediaRefId')
@@ -117,6 +117,23 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
     .getRawMany()
+
+  const cleanMetaResults = (results) => {
+    const cleanedResults = [] as any[]
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]
+      const { episodeId, mediaRefId } = result
+      const cleanedResult = {
+        userPlaybackPosition: result.userPlaybackPosition,
+        ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
+        ...(!mediaRefId ? { episodeId: episodeId } : {}),
+      }
+      cleanedResults.push(cleanedResult)
+    }
+    return cleanedResults
+  }
+
+  return cleanMetaResults(results)
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
