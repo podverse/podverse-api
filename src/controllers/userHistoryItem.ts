@@ -94,13 +94,24 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
+
   const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId) 
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
-    .skip(skip)
-    .take(take)
+    .offset(skip)
+    .limit(take)
     .getRawMany()
 
-  return cleanUserItemResults(results)
+  const count = await getRepository(UserHistoryItem)
+    .createQueryBuilder('userHistoryItem')
+    .select('userHistoryItem.id', 'id')
+    .leftJoin('userHistoryItem.owner', 'owner')
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .getCount()
+
+  return {
+    userHistoryItems: cleanUserItemResults(results),
+    userHistoryItemsCount: count
+  }
 }
 
 export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
