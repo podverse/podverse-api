@@ -30,11 +30,11 @@ export const cleanUserItemResult = (result) => {
       episodePubDate: result.episodePubDate,
       episodeTitle: result.episodeTitle,
       id: result.id,
-      userPlaybackPosition: result.userPlaybackPosition,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
-      podcastTitle: result.podcastTitle
+      podcastTitle: result.podcastTitle,
+      userPlaybackPosition: result.userPlaybackPosition
     }
   }
 }
