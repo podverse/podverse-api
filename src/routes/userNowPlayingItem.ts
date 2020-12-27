@@ -30,7 +30,10 @@ router.get('/',
         ctx.body = { mediaRef }
       } else {
         const episode = await getEpisode(userNowPlayingItem.episodeId)
-        ctx.body = { episode }
+        ctx.body = {
+          episode,
+          userPlaybackPosition: userNowPlayingItem.userPlaybackPosition
+        }
       }
 
       ctx.status = 200
@@ -46,7 +49,7 @@ router.delete('/',
   async ctx => {
     try {
       await deleteUserNowPlayingItem(ctx.state.user.id)
-      ctx.body = { message: 'UserNowPlayingItem deleted' }
+      ctx.body = { message: 'UserNowPlayingItem deleted.' }
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
@@ -61,8 +64,9 @@ router.patch('/',
   async ctx => {
     try {
       const body = ctx.request.body
-      const userNowPlayingItem = await updateUserNowPlayingItem(body, ctx.state.user.id)
-      ctx.body = { userNowPlayingItem }
+      await updateUserNowPlayingItem(body, ctx.state.user.id)
+      ctx.body = { message: 'UserNowPlayingItem updated.' }
+      ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
     }
