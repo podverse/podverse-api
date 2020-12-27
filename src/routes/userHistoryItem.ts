@@ -20,8 +20,11 @@ router.get('/',
   hasValidMembership,
   async ctx => {
     try {
-      const userHistoryItems = await getUserHistoryItems(ctx.state.user.id, ctx.state.query)      
-      ctx.body = { userHistoryItems }
+      const results = await getUserHistoryItems(ctx.state.user.id, ctx.state.query)      
+      ctx.body = {
+        userHistoryItems: results.userHistoryItems,
+        userHistoryItemsCount: results.userHistoryItemsCount
+      }
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
