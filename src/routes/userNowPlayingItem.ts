@@ -22,7 +22,7 @@ router.get('/',
       const userNowPlayingItem = await getUserNowPlayingItem(ctx.state.user.id)
 
       if (!userNowPlayingItem || !userNowPlayingItem.episodeId) {
-        throw new createError.BadRequest('No now playing item found')
+        throw new createError.NotFound('No now playing item found')
       }
 
       if (userNowPlayingItem.mediaRefId) {
