@@ -59,10 +59,22 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
   const repository = getRepository(UserNowPlayingItem)
 
   const userNowPlayingItem = currentNowPlayingItem || new UserNowPlayingItem()
-  userNowPlayingItem.episode = episodeId
-  userNowPlayingItem.userPlaybackPosition = userPlaybackPosition
-  userNowPlayingItem.mediaRef = clipId || null
+  delete userNowPlayingItem.episode
+  delete userNowPlayingItem.episodeId
+  delete userNowPlayingItem.mediaRef
+  delete userNowPlayingItem.mediaRefId
+  delete userNowPlayingItem.owner
+
+  if (episodeId) {
+    userNowPlayingItem.episode = episodeId
+  }
+
+  if (clipId) {
+    userNowPlayingItem.mediaRef = clipId || null
+  }
+
   userNowPlayingItem.owner = loggedInUserId
+  userNowPlayingItem.userPlaybackPosition = userPlaybackPosition
 
   await validateClassOrThrow(userNowPlayingItem)
 
