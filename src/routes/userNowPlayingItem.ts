@@ -21,7 +21,7 @@ router.get('/',
     try {
       const userNowPlayingItem = await getUserNowPlayingItem(ctx.state.user.id)
 
-      if (!userNowPlayingItem || !userNowPlayingItem.episodeId) {
+      if (!userNowPlayingItem || (!userNowPlayingItem.episodeId && !userNowPlayingItem.mediaRefId)) {
         throw new createError.NotFound('No now playing item found')
       }
 
