@@ -9,31 +9,6 @@ import { generateFeedMessageAttributes } from '~/services/parser'
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
-export const addAllPublicFeedUrlsToQueue = async () => {
-  await connectToDb()
-
-  try {
-    const feedUrlRepo = getRepository(FeedUrl)
-    const qb = feedUrlRepo.createQueryBuilder('feedUrl')
-
-    qb.select('feedUrl.id')
-      .addSelect('feedUrl.url')
-      .innerJoinAndSelect(
-        'feedUrl.podcast',
-        'podcast',
-        'podcast.isPublic = :isPublic',
-        { isPublic: true }
-      )
-      .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
-
-    const feedUrls = await qb.getMany()
-
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
-  } catch (error) {
-    console.log('queue:addAllPublicFeedUrlsToQueue', error)
-  }
-}
-
 export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
 
   await connectToDb()
@@ -49,9 +24,49 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NULL')
       .getMany()
 
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
+    const forceReparsing = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToPriorityQueue', error)
+  }
+}
+
+export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
+
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const recursivelySendFeedUrls = async (i: number) => {
+      console.log('parsing:', i * 1000)
+
+      const feedUrls = await feedUrlRepo
+        .createQueryBuilder('feedUrl')
+        .select('feedUrl.id')
+        .addSelect('feedUrl.url')
+        .innerJoinAndSelect(
+          'feedUrl.podcast',
+          'podcast',
+          'podcast.isPublic = :isPublic',
+          { isPublic: true }
+        )
+        .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+        .offset(i * 1000)
+        .limit(1000)
+        .getMany()
+
+      const forceReparsing = true
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
+
+      if (feedUrls.length === 1000) {
+        recursivelySendFeedUrls(i + 1)
+      }
+    }
+
+    await recursivelySendFeedUrls(offset)
+  } catch (error) {
+    console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
   }
 }
 
@@ -93,7 +108,8 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         .limit(10000)
         .getMany()
 
-      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+      const forceReparsing = true
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
     }
   } catch (error) {
     console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
@@ -120,7 +136,8 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
     console.log('Total feedUrls found:', feedUrls.length)
 
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl)
+    const forceReparsing = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
   } catch (error) {
     console.log('queue:addFeedUrlsByFeedIdToQueue', error)
   }
@@ -146,7 +163,8 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
 
     console.log('Total feedUrls found:', feedUrls.length)
 
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
+    const forceReparsing = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
   } catch (error) {
     console.log('queue:addFeedUrlsByPodcastIndexIdToPriorityQueue', error)
   }
@@ -169,16 +187,18 @@ export const addNonPodcastIndexFeedUrlsToPriorityQueue = async () => {
 
     console.log('Total feedUrls found:', feedUrls.length)
 
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl)
+    const forceReparsing = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
   } catch (error) {
     console.log('queue:addNonPodcastIndexFeedUrlsToPriorityQueue', error)
   }
 }
 
-export const sendFeedUrlsToQueue = async (feedUrls, queueUrl) => {
+export const sendFeedUrlsToQueue = async (feedUrls, queueUrl, forceParsing) => {
   const attributes = []
+
   for (const feedUrl of feedUrls) {
-    const attribute = generateFeedMessageAttributes(feedUrl) as never
+    const attribute = generateFeedMessageAttributes(feedUrl, {}, forceParsing) as never
     attributes.push(attribute)
   }
 
@@ -189,6 +209,7 @@ export const sendFeedUrlsToQueue = async (feedUrls, queueUrl) => {
       MessageAttributes: key,
       MessageBody: 'aws sqs requires a message body - podverse rules'
     } as never
+
     entries.push(entry)
   }
 

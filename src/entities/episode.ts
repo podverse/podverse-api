@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Author, Category, MediaRef, Podcast } from '~/entities'
+import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem,
+  UserQueueItem } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   Index, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
@@ -168,6 +169,19 @@ export class Episode {
   @Index()
   @Column()
   podcastId: string
+
+  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.episode)
+  userHistoryItems: UserHistoryItem[]
+
+  @OneToMany(
+    type => UserNowPlayingItem,
+    userNowPlayingItem => userNowPlayingItem.episode,
+    { nullable: true }
+  )
+  userNowPlayingItems: UserNowPlayingItem[]
+
+  @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.episode)
+  userQueueItems: UserQueueItem[]
 
   @CreateDateColumn()
   createdAt: Date

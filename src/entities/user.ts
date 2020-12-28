@@ -3,11 +3,12 @@
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { NowPlayingItem } from 'podverse-shared'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-import { BitPayInvoice, MediaRef, PayPalOrder, Playlist } from '~/entities'
+  JoinColumn, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { BitPayInvoice, MediaRef, PayPalOrder, Playlist, UserHistoryItem, UserQueueItem } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { AppStorePurchase } from './appStorePurchase'
 import { GooglePlayPurchase } from './googlePlayPurchase'
+import { UserNowPlayingItem } from './userNowPlayingItem'
 
 const shortid = require('shortid')
 
@@ -151,6 +152,19 @@ export class User {
   @OneToMany(type => Playlist, playlist => playlist.owner)
   playlists: Playlist[]
 
+  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.owner)
+  userHistoryItems: UserHistoryItem[]
+
+  @OneToOne(
+    type => UserNowPlayingItem,
+    userNowPlayingItem => userNowPlayingItem.owner
+  )
+  @JoinColumn()
+  userNowPlayingItem: UserNowPlayingItem
+
+  @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.owner)
+  userQueueItems: UserQueueItem[]
+
   @CreateDateColumn({ select: false })
   createdAt: Date
 
@@ -165,9 +179,6 @@ export class User {
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
-
-    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
-    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
   }
 
   @BeforeUpdate()
@@ -176,8 +187,5 @@ export class User {
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []
     this.subscribedUserIds = this.subscribedUserIds || []
-
-    this.queueItems = (this.queueItems && Array.isArray(this.queueItems) && this.queueItems) || []
-    this.historyItems = (this.historyItems && Array.isArray(this.historyItems) && this.historyItems) || []
   }
 }

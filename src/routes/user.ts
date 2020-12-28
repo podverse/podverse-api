@@ -105,10 +105,11 @@ router.patch('/add-or-update-history-item',
     try {
       const body: any = ctx.request.body
       await addOrUpdateHistoryItem(body.historyItem, ctx.state.user.id)
-
+      console.log('add-or-update-history-item update success')
       ctx.status = 200
       ctx.body = { message: 'Updated user history' }
     } catch (error) {
+      console.log('add-or-update-history-item error', error)
       emitRouterError(error, ctx)
     }
   })

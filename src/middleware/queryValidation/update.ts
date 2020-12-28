@@ -87,11 +87,42 @@ const validateUserAddOrUpdateHistoryItem = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeId: Joi.string().allow(null),
+    forceUpdateOrderDate: Joi.boolean(),
+    userPlaybackPosition: Joi.number().integer().min(0).required(),
+    mediaRefId: Joi.string().allow(null)
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
+const validateAddOrUpdateUserQueueItem = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeId: Joi.string().allow(null),
+    mediaRefId: Joi.string().allow(null),
+    queuePosition: Joi.number().integer().min(0).required()
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateUserHistoryItemRemove = async (ctx, next) => {
   const schema = Joi.object().keys({
     episodeId: Joi.string(),
     mediaRefId: Joi.string()
   }).min(1).max(1)
+
+  await validateBaseQuery(schema, ctx, next)
+}
+
+const validateUserNowPlayingItemUpdate = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeId: Joi.string().allow(null),
+    mediaRefId: Joi.string().allow(null),
+    userPlaybackPosition: Joi.number().integer().min(0).required()
+  })
 
   await validateBaseQuery(schema, ctx, next)
 }
@@ -102,8 +133,11 @@ export {
   validatePayPalOrderUpdate,
   validatePlaylistUpdate,
   validateUserAddOrUpdateHistoryItem,
+  validateAddOrUpdateUserHistoryItem,
+  validateAddOrUpdateUserQueueItem,
   validateUserHistoryItemRemove,
   validateUserMembershipUpdate,
+  validateUserNowPlayingItemUpdate,
   validateUserUpdate,
   validateUserUpdateQueue
 }

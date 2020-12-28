@@ -32,6 +32,7 @@ export interface Config {
   queryPlaylistsLimit: number
   queryPodcastsLimit: number
   queryUsersLimit: number
+  queryUserHistoryItemsLimit: number
   jwtSecret: string
   resetPasswordTokenExpiration: number
   emailVerificationTokenExpiration: number
@@ -81,13 +82,14 @@ const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
 const shrunkImageSize = process.env.SHRUNK_IMAGE_SIZE || '400'
-const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '50'
-const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '50'
-const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '50'
-const queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '50'
-const queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '50'
-const queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '50'
-const queryUsersLimit = process.env.QUERY_USERS_LIMIT || '50'
+const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '20'
+const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '20'
+const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '20'
+const queryMediaRefsLimit = process.env.QUERY_MEDIA_REFS_LIMIT || '20'
+const queryPlaylistsLimit = process.env.QUERY_PLAYLISTS_LIMIT || '20'
+const queryPodcastsLimit = process.env.QUERY_PODCASTS_LIMIT || '20'
+const queryUsersLimit = process.env.QUERY_USERS_LIMIT || '20'
+const queryUserHistoryItemsLimit = process.env.QUERY_USER_HISTORY_ITEMS_LIMIT || '100'
 const rateLimiterMaxOverride = process.env.RATE_LIMITER_MAX_OVERRIDE || false
 const socialFacebookImageUrl = process.env.SOCIAL_FACEBOOK_IMAGE_URL || ''
 const socialFacebookPageUrl = process.env.SOCIAL_FACEBOOK_PAGE_URL || ''
@@ -172,6 +174,7 @@ const config: Config = {
   queryPlaylistsLimit: parseInt(queryPlaylistsLimit, 10),
   queryPodcastsLimit: parseInt(queryPodcastsLimit, 10),
   queryUsersLimit: parseInt(queryUsersLimit, 10),
+  queryUserHistoryItemsLimit: parseInt(queryUserHistoryItemsLimit, 10),
   jwtSecret: process.env.JWT_SECRET || '',
   resetPasswordTokenExpiration: parseInt(resetPasswordTokenExpiration, 10),
   emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),

@@ -25,6 +25,13 @@ export const chunkArray = (arr, chunkSize = 10) => {
   return chunks
 }
 
+export const arrayMoveItemToNewPosition = (arr, fromIndex, toIndex) => {
+  const element = arr[fromIndex]
+  arr.splice(fromIndex, 1)
+  arr.splice(toIndex, 0, element)
+  return arr
+}
+
 export const offsetDate = (minutesOffset = 0) => {
   const todayDate = new Date()
   todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) + minutesOffset)
