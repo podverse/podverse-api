@@ -19,10 +19,16 @@ export class UserHistoryItem {
   @Column({ default: 0 })
   userPlaybackPosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userHistoryItems, { nullable: true })
+  @ManyToOne(type => Episode, episode => episode.userHistoryItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, { nullable: true })
+  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   mediaRef: MediaRef
 
   @Index()
