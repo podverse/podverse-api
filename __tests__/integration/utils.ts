@@ -34,8 +34,7 @@ export const sampleQueueItem1 = {
   "podcastCategories": ["5vNa3RnSZpC"],
   "podcastId": "0RMk6UYGq",
   "podcastImageUrl": "http://example.com/imageUrl",
-  "podcastTitle": "Test podcast title",
-  "userPlaybackPosition": 123
+  "podcastTitle": "Test podcast title"
 }
 
 export const sampleQueueItem2 = {
@@ -53,8 +52,7 @@ export const sampleQueueItem2 = {
   "podcastCategories": ["5vNa3RnSZpC"],
   "podcastId": "0RMk6UYGq",
   "podcastImageUrl": "http://example.com/imageUrl",
-  "podcastTitle": "Test podcast title 2",
-  "userPlaybackPosition": 345
+  "podcastTitle": "Test podcast title 2"
 }
 
 export const sampleQueueItems = [sampleQueueItem1, sampleQueueItem2]

@@ -12,21 +12,33 @@ export const cleanUserItemResult = (result) => {
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.clipEpisodeDuration,
       episodeId: result.clipEpisodeId,
+      episodeMediaUrl: result.clipEpisodeMediaUrl,
+      episodePubDate: result.clipEpisodePubDate,
       episodeTitle: result.clipEpisodeTitle,
       id: result.id,
       podcastId: result.clipPodcastId,
-      podcastTitle: result.clipPodcastTitle
+      podcastImageUrl: result.clipPodcastImageUrl,
+      podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
+      podcastTitle: result.clipPodcastTitle,
+      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
   } else {
     return {
       episodeDescription: result.episodeDescription,
       episodeDuration: result.episodeDuration,
       episodeId: result.episodeId,
+      episodeMediaUrl: result.episodeMediaUrl,
+      episodePubDate: result.episodePubDate,
       episodeTitle: result.episodeTitle,
       id: result.id,
-      lastPlaybackPosition: result.lastPlaybackPosition,
       podcastId: result.podcastId,
-      podcastTitle: result.podcastTitle
+      podcastImageUrl: result.podcastImageUrl,
+      podcastShrunkImageUrl: result.podcastShrunkImageUrl,
+      podcastTitle: result.podcastTitle,
+      ...((result.userPlaybackPosition || result.userPlaybackPosition === 0)
+        ? { userPlaybackPosition: result.userPlaybackPosition }
+        : {}),
+      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
   }
 }
@@ -46,8 +58,10 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .select(`${tableName}.id`, 'id')
   
   if (tableName === 'userHistoryItem') {
-    qb.addSelect(`${tableName}.lastPlaybackPosition`, 'lastPlaybackPosition')
+    qb.addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
       .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
+  } else if (tableName === 'userQueueItem') {
+    qb.addSelect(`${tableName}.queuePosition`, 'queuePosition  ')
   }
 
   return qb
@@ -58,14 +72,22 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.id', 'episodeId')
     .addSelect('episode.description', 'episodeDescription')
     .addSelect('episode.duration', 'episodeDuration')
+    .addSelect('episode.mediaUrl', 'episodeMediaUrl')
+    .addSelect('episode.pubDate', 'episodePubDate')
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('podcast.id', 'podcastId')
+    .addSelect('podcast.imageUrl', 'podcastImageUrl')
+    .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
     .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
+    .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
+    .addSelect('clipEpisode.pubDate', 'clipEpisodePubDate')
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipPodcast.id', 'clipPodcastId')
+    .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
+    .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
     .leftJoin(`${tableName}.episode`, 'episode')
     .leftJoin('episode.podcast', 'podcast')
@@ -78,21 +100,32 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
+
   const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId) 
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
-    .skip(skip)
-    .take(take)
+    .offset(skip)
+    .limit(take)
     .getRawMany()
 
-  return cleanUserItemResults(results)
+  const count = await getRepository(UserHistoryItem)
+    .createQueryBuilder('userHistoryItem')
+    .select('userHistoryItem.id', 'id')
+    .leftJoin('userHistoryItem.owner', 'owner')
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .getCount()
+
+  return {
+    userHistoryItems: cleanUserItemResults(results),
+    userHistoryItemsCount: count
+  }
 }
 
 export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
   const repository = getRepository(UserHistoryItem)
 
-  return repository
+  const results = await repository
     .createQueryBuilder('userHistoryItem')
-    .select('userHistoryItem.lastPlaybackPosition', 'lastPlaybackPosition')
+    .select('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
     .addSelect('mediaRef.id', 'mediaRefId')
     .addSelect('episode.id', 'episodeId')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
@@ -101,10 +134,27 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
     .getRawMany()
+
+  const cleanMetaResults = (results) => {
+    const cleanedResults = [] as any[]
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]
+      const { episodeId, mediaRefId } = result
+      const cleanedResult = {
+        userPlaybackPosition: result.userPlaybackPosition,
+        ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
+        ...(!mediaRefId ? { episodeId: episodeId } : {}),
+      }
+      cleanedResults.push(cleanedResult)
+    }
+    return cleanedResults
+  }
+
+  return cleanMetaResults(results)
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { episodeId, forceUpdateOrderDate, lastPlaybackPosition, mediaRefId } = query
+  const { episodeId, forceUpdateOrderDate, userPlaybackPosition, mediaRefId } = query
 
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
@@ -114,8 +164,8 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
     throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
   }
 
-  if (!lastPlaybackPosition && lastPlaybackPosition !== 0) {
-    throw new createError.NotFound('A lastPlaybackPosition must be provided.')
+  if (!userPlaybackPosition && userPlaybackPosition !== 0) {
+    throw new createError.NotFound('A userPlaybackPosition must be provided.')
   }
 
   const repository = getRepository(UserHistoryItem)
@@ -125,7 +175,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
     userHistoryItem = await repository
       .createQueryBuilder('userHistoryItem')
       .select('userHistoryItem.id', 'id')
-      .addSelect('userHistoryItem.lastPlaybackPosition', 'lastPlaybackPosition')
+      .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
       .where('owner.id = :loggedInUserId', { loggedInUserId })
@@ -135,7 +185,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
     userHistoryItem = await repository
       .createQueryBuilder('userHistoryItem')
       .select('userHistoryItem.id', 'id')
-      .addSelect('userHistoryItem.lastPlaybackPosition', 'lastPlaybackPosition')
+      .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
       .leftJoin('userHistoryItem.episode', 'episode')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
@@ -146,7 +196,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   }
 
   userHistoryItem = userHistoryItem ? userHistoryItem : new UserHistoryItem()
-  userHistoryItem.lastPlaybackPosition = lastPlaybackPosition
+  userHistoryItem.userPlaybackPosition = userPlaybackPosition
   userHistoryItem.episode = episodeId || null
   userHistoryItem.mediaRef = mediaRefId || null
   userHistoryItem.owner = loggedInUserId

@@ -11,18 +11,24 @@ export class UserHistoryItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  lastPlaybackPosition: number
-
   @CreateDateColumn()
   orderChangedDate: Date
 
-  @ManyToOne(type => Episode, episode => episode.userHistoryItems, { nullable: true })
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  userPlaybackPosition: number
+
+  @ManyToOne(type => Episode, episode => episode.userHistoryItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, { nullable: true })
+  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   mediaRef: MediaRef
 
   @Index()

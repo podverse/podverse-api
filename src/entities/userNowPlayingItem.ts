@@ -15,7 +15,7 @@ export class UserNowPlayingItem {
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
-  lastPlaybackPosition: number
+  userPlaybackPosition: number
 
   @ManyToOne(type => Episode, episode => episode.userNowPlayingItems)
   episode: Episode
@@ -26,7 +26,10 @@ export class UserNowPlayingItem {
   @OneToOne(
     type => User,
     user => user.userNowPlayingItem,
-    { nullable: false }
+    {
+      nullable: false,
+      onDelete: 'CASCADE'
+    }
   )
   @JoinColumn()
   owner: User
