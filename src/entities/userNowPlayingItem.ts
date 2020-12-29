@@ -26,7 +26,10 @@ export class UserNowPlayingItem {
   @OneToOne(
     type => User,
     user => user.userNowPlayingItem,
-    { nullable: false }
+    {
+      nullable: false,
+      onDelete: 'CASCADE'
+    }
   )
   @JoinColumn()
   owner: User
