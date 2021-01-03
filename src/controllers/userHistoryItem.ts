@@ -61,7 +61,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     qb.addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
       .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
   } else if (tableName === 'userQueueItem') {
-    qb.addSelect(`${tableName}.queuePosition`, 'queuePosition  ')
+    qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
 
   return qb
