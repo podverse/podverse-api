@@ -61,8 +61,8 @@ router.delete('/episode/:episodeId',
   hasValidMembership,
   async ctx => {
     try {
-      await removeUserQueueItemByEpisodeId(ctx.state.user.id, ctx.params.episodeId)
-      ctx.body = { message: 'UserQueueItem removed.' }
+      const userQueueItems = await removeUserQueueItemByEpisodeId(ctx.state.user.id, ctx.params.episodeId)
+      ctx.body = userQueueItems
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
@@ -75,8 +75,8 @@ router.delete('/mediaRef/:mediaRefId',
   hasValidMembership,
   async ctx => {
     try {
-      await removeUserQueueItemByMediaRefId(ctx.state.user.id, ctx.params.mediaRefId)
-      ctx.body = { message: 'UserQueueItem removed.' }
+      const userQueueItems = await removeUserQueueItemByMediaRefId(ctx.state.user.id, ctx.params.mediaRefId)
+      ctx.body = userQueueItems
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
