@@ -2,6 +2,7 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { addOrUpdateQueueItem, getCleanedUserQueueItems, popNextFromQueue,
+  removeAllUserQueueItems,
   removeUserQueueItemByEpisodeId, removeUserQueueItemByMediaRefId } from '~/controllers/userQueueItem'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
@@ -60,8 +61,8 @@ router.delete('/episode/:episodeId',
   hasValidMembership,
   async ctx => {
     try {
-      const results = await removeUserQueueItemByEpisodeId(ctx.state.user.id, ctx.params.episodeId)
-      ctx.body = results
+      const userQueueItems = await removeUserQueueItemByEpisodeId(ctx.state.user.id, ctx.params.episodeId)
+      ctx.body = userQueueItems
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)
@@ -74,8 +75,22 @@ router.delete('/mediaRef/:mediaRefId',
   hasValidMembership,
   async ctx => {
     try {
-      const results = await removeUserQueueItemByMediaRefId(ctx.state.user.id, ctx.params.mediaRefId)
-      ctx.body = results
+      const userQueueItems = await removeUserQueueItemByMediaRefId(ctx.state.user.id, ctx.params.mediaRefId)
+      ctx.body = userQueueItems
+      ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Remove all UserQueueItem for logged-in user
+router.delete('/remove-all',
+  jwtAuth,
+  hasValidMembership,
+  async ctx => {
+    try {
+      await removeAllUserQueueItems(ctx.state.user.id)
+      ctx.body = { message: 'All UserQueueItems removed.'}
       ctx.status = 200
     } catch (error) {
       emitRouterError(error, ctx)

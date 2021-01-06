@@ -19,7 +19,8 @@ export const cleanUserItemResult = (result) => {
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
-      podcastTitle: result.clipPodcastTitle
+      podcastTitle: result.clipPodcastTitle,
+      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
   } else {
     return {
@@ -34,7 +35,10 @@ export const cleanUserItemResult = (result) => {
       podcastImageUrl: result.podcastImageUrl,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
-      userPlaybackPosition: result.userPlaybackPosition
+      ...((result.userPlaybackPosition || result.userPlaybackPosition === 0)
+        ? { userPlaybackPosition: result.userPlaybackPosition }
+        : {}),
+      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
   }
 }
@@ -56,6 +60,8 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
   if (tableName === 'userHistoryItem') {
     qb.addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
       .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
+  } else if (tableName === 'userQueueItem') {
+    qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
 
   return qb

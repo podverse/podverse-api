@@ -492,12 +492,13 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // Create an array of only the episode media URLs from the parsed object
   const parsedEpisodeMediaUrls = validParsedEpisodes.map(x => x.enclosure.url)
 
-  // Find episodes in the database that have matching episode media URLs to
+  // Find episodes in the database that have matching episode media URLs AND podcast ids to
   // those found in the parsed object, then store an array of just those URLs.
   let savedEpisodes = [] as any
   if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
     savedEpisodes = await episodeRepo.find({
       where: {
+        podcast,
         mediaUrl: In(parsedEpisodeMediaUrls)
       }
     })

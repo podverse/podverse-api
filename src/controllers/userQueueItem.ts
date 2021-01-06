@@ -1,7 +1,6 @@
 import { getRepository } from 'typeorm'
 import { cleanUserItemResults, generateGetUserItemsQuery } from '~/controllers/userHistoryItem'
 import { UserQueueItem } from '~/entities'
-import { arrayMoveItemToNewPosition } from '~/lib/utility'
 const createError = require('http-errors')
 
 export const getUserQueueItems = async (loggedInUserId) => {
@@ -22,7 +21,7 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query) => {
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
   }
-  
+
   if (episodeId && mediaRefId) {
     throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
   }
@@ -40,42 +39,36 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query) => {
     }
   })
 
+  // If the item is already in the queue, then remove it from the queue,
+  // then insert the item with the new queuePosition.
+  // Else, initialize a new UserQueueItem.
+  let userQueueItem
   if (existingIndex >= 0) {
-    if (queuePosition >= 0) {
-      arrayMoveItemToNewPosition(queueItems, existingIndex, queuePosition)
-    } else {
-      // if no queuePosition provided, assume add to queue last,
-      // so add to end of the array.
-      const userQueueItem = new UserQueueItem()
-      userQueueItem.episode = episodeId || null
-      userQueueItem.mediaRef = mediaRefId || null
-      userQueueItem.owner = loggedInUserId
-      queueItems.push(userQueueItem)
-    }
-  } else {
-    const userQueueItem = new UserQueueItem()
-    userQueueItem.episode = episodeId || null
-    userQueueItem.mediaRef = mediaRefId || null
-    userQueueItem.owner = loggedInUserId
-    if (queuePosition === 0) {
-      queueItems.unshift(userQueueItem)
-    } else if (queuePosition > 0) {
-      queueItems.splice(queuePosition, 0, userQueueItem)
-    } else {
-      queueItems.push(userQueueItem)
-    }
+    userQueueItem = queueItems[existingIndex]
+    queueItems.splice(existingIndex, 1)
   }
 
-  await updateQueueItemsPositions(queueItems)
+  userQueueItem = userQueueItem || new UserQueueItem()
+  userQueueItem.episode = episodeId || null
+  userQueueItem.mediaRef = mediaRefId || null
+  userQueueItem.owner = loggedInUserId
+  userQueueItem.queuePosition = queuePosition
+  queueItems.push(userQueueItem)
+
+  const sortedQueueItems = queueItems.sort((a, b) => a.queuePosition - b.queuePosition)
+
+  await updateQueueItemsPositions(sortedQueueItems)
   const newQueueItems = await getCleanedUserQueueItems(loggedInUserId)
   return newQueueItems
 }
 
 const updateQueueItemsPositions = async (queueItems) => {
   const newSortedUserQueueItems = [] as any
+  const queuePositionInterval = 1000
+
   for (let i = 0; i < queueItems.length; i++) {
     const item = queueItems[i]
-    item.queuePosition = i
+    item.queuePosition = (i + 1) * queuePositionInterval
     newSortedUserQueueItems.push(item)
   }
 
@@ -139,6 +132,16 @@ export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId
 
   const newQueueItems = await getCleanedUserQueueItems(loggedInUserId)
   return newQueueItems
+}
+
+export const removeAllUserQueueItems = async (loggedInUserId) => {
+  const repository = getRepository(UserQueueItem)
+
+  const userQueueItems = await repository.find({
+    where: { owner: loggedInUserId }
+  })
+
+  return repository.remove(userQueueItems)
 }
 
 const getRawQueueItems = async (loggedInUserId) => {
