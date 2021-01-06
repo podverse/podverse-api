@@ -61,7 +61,7 @@ describe('_category endpoints', () => {
           chaiExpect(category4).to.have.property('createdAt')
           chaiExpect(category4).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(8)
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
 
 
           done()
@@ -92,7 +92,7 @@ describe('_category endpoints', () => {
 
           chaiExpect(res.body.categories).to.eql([])
 
-          chaiExpect(Object.keys(res.body).length).to.equal(8)
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
 
           done()
         })

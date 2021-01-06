@@ -98,7 +98,7 @@ describe('Playlist endpoints', () => {
           chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.shrunkImageUrl).to.equal(null)
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
           chaiExpect(podcast.sortableTitle).to.equal('recode decode')
           chaiExpect(podcast.title).to.equal('Recode Decode')
           chaiExpect(podcast.type).to.equal('episodic')
@@ -106,7 +106,7 @@ describe('Playlist endpoints', () => {
           chaiExpect(podcast).to.have.property('createdAt')
           chaiExpect(podcast).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(11)
+          chaiExpect(Object.keys(res.body).length).to.equal(12)
 
           done()
         })
@@ -171,7 +171,7 @@ describe('Playlist endpoints', () => {
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(10)
+          chaiExpect(Object.keys(res.body).length).to.equal(11)
 
           done()
         })
@@ -228,7 +228,7 @@ describe('Playlist endpoints', () => {
           chaiExpect(res.body.owner).to.not.have.property('isPublic') 
           chaiExpect(res.body.owner).to.not.have.property('name')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(11)
+          chaiExpect(Object.keys(res.body).length).to.equal(12)
 
           done()
         })

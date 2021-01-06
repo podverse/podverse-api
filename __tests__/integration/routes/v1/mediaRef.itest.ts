@@ -31,7 +31,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
-          chaiExpect(Object.keys(res.body).length).to.equal(21)
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
           
 
           const episode = res.body.episode
@@ -87,7 +87,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.shrunkImageUrl).to.equal(null)
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
           chaiExpect(podcast.sortableTitle).to.equal('recode decode')
           chaiExpect(podcast.title).to.equal('Recode Decode')
           chaiExpect(podcast.type).to.equal('episodic')
@@ -122,7 +122,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(owner.isPublic).to.equal(true)
           chaiExpect(owner.name).to.equal('Premium Valid - Test User')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(21)
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
 
           done()
         })
@@ -197,7 +197,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(21)
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
 
           done()
         })
