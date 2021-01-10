@@ -11,6 +11,9 @@ export class UserHistoryItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column({ default: false })
+  completed: boolean
+
   @CreateDateColumn()
   orderChangedDate: Date
 
