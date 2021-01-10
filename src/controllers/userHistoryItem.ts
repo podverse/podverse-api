@@ -9,6 +9,7 @@ export const cleanUserItemResult = (result) => {
       clipId: result.clipId,
       clipStartTime: result.clipStartTime,
       clipTitle: result.clipTitle,
+      completed: result.completed,
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.clipEpisodeDuration,
       episodeId: result.clipEpisodeId,
@@ -20,6 +21,7 @@ export const cleanUserItemResult = (result) => {
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
+      ...(result.completed ? { completed: true } : {}),
       ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
   } else {
@@ -35,6 +37,7 @@ export const cleanUserItemResult = (result) => {
       podcastImageUrl: result.podcastImageUrl,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
+      ...(result.completed ? { completed: true } : {}),
       ...((result.userPlaybackPosition || result.userPlaybackPosition === 0)
         ? { userPlaybackPosition: result.userPlaybackPosition }
         : {}),
@@ -60,6 +63,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
   if (tableName === 'userHistoryItem') {
     qb.addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
       .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
+      .addSelect(`${tableName}.completed`, 'completed')
   } else if (tableName === 'userQueueItem') {
     qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
@@ -126,6 +130,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
   const results = await repository
     .createQueryBuilder('userHistoryItem')
     .select('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+    .addSelect('userHistoryItem.completed', 'completed')
     .addSelect('mediaRef.id', 'mediaRefId')
     .addSelect('episode.id', 'episodeId')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
@@ -139,9 +144,10 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     const cleanedResults = [] as any[]
     for (let i = 0; i < results.length; i++) {
       const result = results[i]
-      const { episodeId, mediaRefId } = result
+      const { completed, episodeId, mediaRefId } = result
       const cleanedResult = {
         userPlaybackPosition: result.userPlaybackPosition,
+        ...(completed ? { completed } : {}),
         ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
         ...(!mediaRefId ? { episodeId: episodeId } : {}),
       }
@@ -154,7 +160,8 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { episodeId, forceUpdateOrderDate, userPlaybackPosition, mediaRefId } = query
+  const { completed, episodeId, forceUpdateOrderDate, mediaRefId,
+    userPlaybackPosition } = query
 
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
@@ -176,6 +183,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
       .createQueryBuilder('userHistoryItem')
       .select('userHistoryItem.id', 'id')
       .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+      .addSelect('userHistoryItem.completed', 'completed')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
       .where('owner.id = :loggedInUserId', { loggedInUserId })
@@ -186,6 +194,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
       .createQueryBuilder('userHistoryItem')
       .select('userHistoryItem.id', 'id')
       .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+      .addSelect('userHistoryItem.completed', 'completed')
       .leftJoin('userHistoryItem.episode', 'episode')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
@@ -197,6 +206,11 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
 
   userHistoryItem = userHistoryItem ? userHistoryItem : new UserHistoryItem()
   userHistoryItem.userPlaybackPosition = userPlaybackPosition
+
+  if (completed === true || completed === false) {
+    userHistoryItem.completed = completed
+  }
+
   userHistoryItem.episode = episodeId || null
   userHistoryItem.mediaRef = mediaRefId || null
   userHistoryItem.owner = loggedInUserId
