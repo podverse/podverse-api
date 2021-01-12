@@ -6,7 +6,11 @@ import { connectToDb } from '~/lib/db'
 
 export const createTestApp = () => {
   return connectToDb()
-    .then(connection => {
-      return connection ? [createApp(connection).listen(), connection] : null
+    .then(async connection => {
+      if (connection) {
+        const app = await createApp(connection)
+        return [app.listen(), connection]
+      }
+      return null
     })
 }
