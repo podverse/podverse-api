@@ -61,6 +61,8 @@ describe('_category endpoints', () => {
           chaiExpect(category4).to.have.property('createdAt')
           chaiExpect(category4).to.have.property('updatedAt')
 
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
+
 
           done()
         })
@@ -90,6 +92,8 @@ describe('_category endpoints', () => {
 
           chaiExpect(res.body.categories).to.eql([])
 
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
+
           done()
         })
     })
@@ -99,7 +103,7 @@ describe('_category endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Category not found')
-          
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -127,6 +131,8 @@ describe('_category endpoints', () => {
           chaiExpect(category.category).to.have.property('updatedAt')
 
           chaiExpect(category.categories).to.eql([])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
                 
           done()
         })

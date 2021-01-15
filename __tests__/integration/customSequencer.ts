@@ -18,7 +18,9 @@ class CustomSequencer extends TestSequencer {
       path.join(__dirname, testsPath, 'paypal.itest.ts'),
       path.join(__dirname, testsPath, 'playlist.itest.ts'),
       path.join(__dirname, testsPath, 'podcast.itest.ts'),
-      path.join(__dirname, testsPath, 'user.itest.ts')
+      path.join(__dirname, testsPath, 'user.itest.ts'),
+      path.join(__dirname, testsPath, 'userHistoryItem.itest.ts'),
+      path.join(__dirname, testsPath, 'userQueueItem.itest.ts')
     ];
 
     return tests.sort((testA, testB) => {
