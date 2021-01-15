@@ -14,7 +14,11 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('9rA5BhWp')
           chaiExpect(res.body.endTime).to.equal(1680)
+          chaiExpect(res.body.imageUrl).to.equal(null)
+          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.isPublic).to.equal(true)
+          chaiExpect(res.body.linkUrl).to.equal(null)
           chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(7)
           chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(8)
           chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(9)
@@ -27,13 +31,18 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
           
 
           const episode = res.body.episode
           chaiExpect(episode.id).to.equal('fFmGXkgIM')
+          chaiExpect(episode.chaptersType).to.equal(null)
+          chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.chaptersUrlLastParsed).to.equal(null)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
+          chaiExpect(episode.funding).to.equal(null)
           chaiExpect(episode.guid).to.equal('465b2bdc-eebd-11e9-85c8-171e42a72b35')
           chaiExpect(episode.imageUrl).to.equal(null)
           chaiExpect(episode.isExplicit).to.equal(false)
@@ -54,6 +63,67 @@ describe('MediaRef endpoints', () => {
           chaiExpect(episode).to.have.property('createdAt')
           chaiExpect(episode).to.have.property('updatedAt')
 
+          const podcast = res.body.episode.podcast
+          chaiExpect(podcast.id).to.equal('zRo1jwx67')
+          chaiExpect(podcast.podcastIndexId).to.equal(null)
+          chaiExpect(podcast.authorityId).to.equal(null)
+          chaiExpect(podcast.alwaysFullyParse).to.equal(false)
+          chaiExpect(podcast).to.have.property('description')
+          chaiExpect(podcast.feedLastParseFailed).to.equal(false)
+          chaiExpect(podcast).to.have.property('feedLastUpdated')
+          chaiExpect(podcast.funding).to.equal(null)
+          chaiExpect(podcast.guid).to.equal(null)
+          chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
+          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
+          chaiExpect(podcast.isExplicit).to.equal(false)
+          chaiExpect(podcast.isPublic).to.equal(true)
+          chaiExpect(podcast.language).to.equal('en-us')
+          chaiExpect(podcast).to.have.property('lastEpisodePubDate')
+          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack's redesign`)
+          chaiExpect(podcast.linkUrl).to.equal('https://www.vox.com/recode-decode-podcast-kara-swisher')
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
+          chaiExpect(podcast.sortableTitle).to.equal('recode decode')
+          chaiExpect(podcast.title).to.equal('Recode Decode')
+          chaiExpect(podcast.type).to.equal('episodic')
+          chaiExpect(podcast.value).to.equal(null)
+          chaiExpect(podcast).to.have.property('createdAt')
+          chaiExpect(podcast).to.have.property('updatedAt')
+
+          const authors = res.body.episode.podcast.authors[0]
+          chaiExpect(authors.id).to.equal('9dZ9IY9j')
+          chaiExpect(authors.name).to.equal('Recode')
+          chaiExpect(authors.slug).to.equal('recode')
+          chaiExpect(authors).to.have.property('createdAt')
+          chaiExpect(authors).to.have.property('updatedAt')
+
+          const categories = res.body.episode.podcast.categories[0]
+          chaiExpect(categories.id).to.equal('qLzItpcUGch')
+          chaiExpect(categories.fullPath).to.equal('Technology')
+          chaiExpect(categories.slug).to.equal('technology')
+          chaiExpect(categories.title).to.equal('Technology')
+          chaiExpect(categories).to.have.property('createdAt')
+          chaiExpect(categories).to.have.property('updatedAt')
+
+          const feedUrls = res.body.episode.podcast.feedUrls[0]
+          chaiExpect(feedUrls.id).to.equal('qpvTtcUBQh')
+          chaiExpect(feedUrls.isAuthority).to.equal(true)
+          chaiExpect(feedUrls.url).to.equal('https://feeds.megaphone.fm/recodedecode')
+          chaiExpect(feedUrls).to.have.property('createdAt')
+          chaiExpect(feedUrls).to.have.property('updatedAt')
+
+          const owner = res.body.owner
+          chaiExpect(owner.id).to.equal('QMReJmbE')
+          chaiExpect(owner.isPublic).to.equal(true)
+          chaiExpect(owner.name).to.equal('Premium Valid - Test User')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
+
           done()
         })
     })
@@ -64,6 +134,7 @@ describe('MediaRef endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('MediaRef not found')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -88,7 +159,7 @@ describe('MediaRef endpoints', () => {
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
         
@@ -113,6 +184,10 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body.owner).to.equal('QMReJmbE')
           chaiExpect(res.body.episode).to.equal('gRgjd3YcKb')
           chaiExpect(res.body).to.have.property('id')
+          chaiExpect(res.body.imageUrl).to.equal(null)
+          chaiExpect(res.body.linkUrl).to.equal(null)
+          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(0)
@@ -121,6 +196,8 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body.pastAllTimeTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(22)
 
           done()
         })
@@ -131,7 +208,7 @@ describe('MediaRef endpoints', () => {
         .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
     })
@@ -142,7 +219,7 @@ describe('MediaRef endpoints', () => {
         .set('Cookie', testUsers.premium.authCookie)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
-
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
     })
@@ -160,7 +237,11 @@ describe('MediaRef endpoints', () => {
           
           chaiExpect(mediaRef.id).to.equal('9rA5BhWp')
           chaiExpect(mediaRef.endTime).to.equal(1680)
+          chaiExpect(mediaRef.imageUrl).to.equal(null)
+          chaiExpect(mediaRef.isOfficialChapter).to.equal(false)
+          chaiExpect(mediaRef.isOfficialSoundBite).to.equal(false)
           chaiExpect(mediaRef.isPublic).to.equal(true)
+          chaiExpect(mediaRef.linkUrl).to.equal(null)
           chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(7)
           chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(8)
           chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(9)
@@ -173,8 +254,10 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef).to.have.property('updatedAt')
           
           chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
-          chaiExpect(mediaRef.owner).to.have.property('isPublic')
+          chaiExpect(mediaRef.owner.isPublic).to.equal(true)
           chaiExpect(mediaRef.owner).to.have.property('name')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })
@@ -200,6 +283,8 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res).to.have.status(401);
           
           chaiExpect(res.body.message).to.equal('Log in to edit this media ref')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })

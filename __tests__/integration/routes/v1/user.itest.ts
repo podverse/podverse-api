@@ -15,6 +15,16 @@ describe('User endpoints', () => {
             chaiExpect(res.body.id).to.equal('EVHDBRZY')
             chaiExpect(res.body.isPublic).to.equal(true)
             chaiExpect(res.body.name).to.equal('Free Trial Valid - Test User')
+            const subscribedPodcastIds = res.body.subscribedPodcastIds
+            chaiExpect(subscribedPodcastIds[0]).to.equal('0RMk6UYGq')
+            chaiExpect(subscribedPodcastIds[1]).to.equal('XdbkHTiH9')
+            chaiExpect(subscribedPodcastIds[2]).to.equal('kS9ZnQNWlQc')
+            chaiExpect(subscribedPodcastIds[3]).to.equal('mN25xFjDG')        
+            chaiExpect(subscribedPodcastIds[4]).to.equal('nG6sRiNDv')
+            chaiExpect(subscribedPodcastIds[5]).to.equal('zRo1jwx67')
+            chaiExpect(subscribedPodcastIds[6]).to.equal('Yqft_RG8j')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(4)
 
             done()
           })
@@ -26,6 +36,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(404);
             chaiExpect(res.body.message).to.equal('User not found.')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
 
             done()
           })
@@ -47,6 +59,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
 
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -60,6 +74,8 @@ describe('User endpoints', () => {
             chaiExpect(res).to.have.status(200)
 
             chaiExpect(res.body).to.eql(sendBody)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(4)
 
             done()
           })
@@ -78,6 +94,8 @@ describe('User endpoints', () => {
           .send(sendBody)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+            
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -113,6 +131,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.podcastTitle).to.equal('Test podcast title')
             chaiExpect(queueItem.userPlaybackPosition).to.equal(123)
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -125,6 +145,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/toggle-subscribe/EVHDBRZY`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -142,6 +164,8 @@ describe('User endpoints', () => {
               "oAbPPRF9"
             ])
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -158,6 +182,8 @@ describe('User endpoints', () => {
               "oAbPPRF9",
               "EVHDBRZY"
             ])
+
+            chaiExpect(Object.keys(res.body).length).to.equal(3)
 
             done()
           })
@@ -240,6 +266,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast.type).to.equal('episodic')
             chaiExpect(queueItem.episode.podcast).to.have.property('createdAt')
             chaiExpect(queueItem.episode.podcast).to.have.property('updatedAt')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
 
             done()
           })
@@ -324,6 +352,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.episode.podcast).to.have.property('createdAt')
             chaiExpect(queueItem.episode.podcast).to.have.property('updatedAt')
 
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -332,6 +362,8 @@ describe('User endpoints', () => {
             .get(`${v1Path}/user/mediaRefs`)
             .end((err, res) => {
               chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
               done()
             })
@@ -376,6 +408,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItem.owner).to.not.have.property('isPublic')
             chaiExpect(queueItem.owner).to.not.have.property('name')
             
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -385,6 +419,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/playlists`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -400,6 +436,8 @@ describe('User endpoints', () => {
 
             chaiExpect(res).to.have.status(200);
            
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -409,6 +447,8 @@ describe('User endpoints', () => {
           .get(`${v1Path}/user/download`)
           .end((err, res) => {
             chaiExpect(res).to.have.status(401);
+
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
 
             done()
           })
@@ -436,7 +476,8 @@ describe('User endpoints', () => {
             chaiExpect(queueItems[2].id).to.equal('oAbPPRF9')
             chaiExpect(queueItems[2].name).to.equal('Premium Expired - Test User')
 
-           
+            chaiExpect(Object.keys(res.body).length).to.equal(2)
+
             done()
           })
       })
@@ -500,6 +541,8 @@ describe('User endpoints', () => {
 
             chaiExpect(res.body.message).to.equal('Updated user history')
   
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
+
             done()
           })
       })
@@ -513,6 +556,8 @@ describe('User endpoints', () => {
             chaiExpect(res).to.have.status(200)
 
             chaiExpect(res.body.message).to.equal('Updated user history')
+
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
   
             done()
           })
@@ -530,12 +575,58 @@ describe('User endpoints', () => {
 
             chaiExpect(res.body.message).to.equal('Cleared all history items.')
   
+            chaiExpect(Object.keys(res.body).length).to.equal(1)
+
             done()
           })
       })
     })
 
-    
+    describe('find by query subscribed', () => {
+
+      test('Top past week - Invalid user', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/subscribed?sort=top-past-week`)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(401)
+  
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+  
+            done()
+          })
+      })
+  
+      test('Top past week - Premium Valid', async (done) => {
+        chai.request(global.app)
+          .get(`${v1Path}/user/subscribed?sort=top-past-week`)
+          .set('Cookie', testUsers.premium.authCookie)
+          .end((err, res) => {
+            chaiExpect(res).to.have.status(200)
+  
+            const podcast0 = res.body[0][0]
+  
+            chaiExpect(podcast0.id).to.equal('bvVjsQCH')
+            chaiExpect(podcast0.name).to.equal('Free Trial Expired - Test User')
+
+            const podcast1 = res.body[0][1]
+            
+            chaiExpect(podcast1.id).to.equal('EVHDBRZY')
+            chaiExpect(podcast1.name).to.equal('Free Trial Valid - Test User')
+
+            const podcast2 = res.body[0][2]
+            
+            chaiExpect(podcast2.id).to.equal('oAbPPRF9')
+            chaiExpect(podcast2.name).to.equal('Premium Expired - Test User')
+
+            chaiExpect(Object.keys(res.body[0]).length).to.equal(3)
+            chaiExpect(Object.keys(res.body[0][0]).length).to.equal(2)
+  
+  
+            done()
+          })
+      })
+      
+    })
 
     describe('user delete', () => {
 
@@ -545,6 +636,8 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(401)
   
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
@@ -555,11 +648,11 @@ describe('User endpoints', () => {
           .end((err, res) => {
             chaiExpect(res).to.have.status(200)
   
+            chaiExpect(Object.keys(res.body).length).to.equal(0)
+
             done()
           })
       })
     })
-
-    
 
 })

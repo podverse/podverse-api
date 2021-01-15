@@ -14,12 +14,13 @@ describe('Podcast endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('mN25xFjDG')
-          chaiExpect(res.body.alwaysFullyParse).to.equal(false)
           chaiExpect(res.body.podcastIndexId).to.equal(null)
           chaiExpect(res.body.authorityId).to.equal(null)
+          chaiExpect(res.body.alwaysFullyParse).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)
           chaiExpect(res.body).to.have.property('feedLastUpdated')
+          chaiExpect(res.body.funding).to.equal(null)
           chaiExpect(res.body.guid).to.equal(null)
           chaiExpect(res.body.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(res.body.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/SfjLyq3660/duncantrussellfamilyhour.jpg')
@@ -35,10 +36,11 @@ describe('Podcast endpoints', () => {
           chaiExpect(res.body.pastWeekTotalUniquePageviews).to.equal(1)
           chaiExpect(res.body.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(res.body.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(res.body.shrunkImageUrl).to.equal(null)
+          chaiExpect(res.body.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/SfjLyq3660/duncantrussellfamilyhour.jpg')
           chaiExpect(res.body.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(res.body.title).to.equal('Duncan Trussell Family Hour')
           chaiExpect(res.body.type).to.equal('episodic')
+          chaiExpect(res.body.value).to.equal(null)
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
 
@@ -50,20 +52,46 @@ describe('Podcast endpoints', () => {
           chaiExpect(author).to.have.property('createdAt')
           chaiExpect(author).to.have.property('updatedAt')
 
-          const category = res.body.categories[0]
-          chaiExpect(category.id).to.equal('SuCRgv5pdf')
-          chaiExpect(category.fullPath).to.equal('Comedy')
-          chaiExpect(category.slug).to.equal('comedy')
-          chaiExpect(category.title).to.equal('Comedy')
-          chaiExpect(category).to.have.property('createdAt')
-          chaiExpect(category).to.have.property('updatedAt')
+          const category0 = res.body.categories[0]
+          chaiExpect(category0.id).to.equal('SuCRgv5pdf')
+          chaiExpect(category0.fullPath).to.equal('Comedy')
+          chaiExpect(category0.slug).to.equal('comedy')
+          chaiExpect(category0.title).to.equal('Comedy')
+          chaiExpect(category0).to.have.property('createdAt')
+          chaiExpect(category0).to.have.property('updatedAt')
+
+          const category1 = res.body.categories[1]
+          chaiExpect(category1.id).to.equal('OBvOcKSZl3')
+          chaiExpect(category1.fullPath).to.equal('Religion & Spirituality')
+          chaiExpect(category1.slug).to.equal('religionspirituality')
+          chaiExpect(category1.title).to.equal('Religion & Spirituality')
+          chaiExpect(category1).to.have.property('createdAt')
+          chaiExpect(category1).to.have.property('updatedAt')
+
+          const category2 = res.body.categories[2]
+          chaiExpect(category2.id).to.equal('jTvNqx0NeK')
+          chaiExpect(category2.fullPath).to.equal('Society & Culture')
+          chaiExpect(category2.slug).to.equal('societyculture')
+          chaiExpect(category2.title).to.equal('Society & Culture')
+          chaiExpect(category2).to.have.property('createdAt')
+          chaiExpect(category2).to.have.property('updatedAt')
+
+          const category3 = res.body.categories[3]
+          chaiExpect(category3.id).to.equal('VsNtKy7T-0x')
+          chaiExpect(category3.fullPath).to.equal('Society & Culture>Philosophy')
+          chaiExpect(category3.slug).to.equal('philosophy')
+          chaiExpect(category3.title).to.equal('Philosophy')
+          chaiExpect(category3).to.have.property('createdAt')
+          chaiExpect(category3).to.have.property('updatedAt')
 
           const feedUrl = res.body.feedUrls[0]
           chaiExpect(feedUrl.id).to.equal('abHIMhblL')
           chaiExpect(feedUrl.isAuthority).to.equal(true)
           chaiExpect(feedUrl.url).to.equal('https://audioboom.com/channels/4954758.rss')
           chaiExpect(feedUrl).to.have.property('createdAt')
-          chaiExpect(feedUrl).to.have.property('updatedAt')         
+          chaiExpect(feedUrl).to.have.property('updatedAt')      
+          
+          chaiExpect(Object.keys(res.body).length).to.equal(35)
 
           done()
         })
@@ -75,6 +103,8 @@ describe('Podcast endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Podcast not found')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
 
           done()
         })
@@ -105,10 +135,12 @@ describe('Podcast endpoints', () => {
           chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(5)
           chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.shrunkImageUrl).to.equal(null)
-          chaiExpect(podcast.sortableTitle).to.equal('dan carlin\'s hardcore history')
-          chaiExpect(podcast.title).to.equal('Dan Carlin\'s Hardcore History')
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/JbhIM2rFLFw/dancarlinshardcorehistory.jpg')
+          chaiExpect(podcast.sortableTitle).to.equal(`dan carlin's hardcore history`)
+          chaiExpect(podcast.title).to.equal(`Dan Carlin's Hardcore History`)
           chaiExpect(podcast).to.have.property('createdAt')
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })
@@ -122,6 +154,8 @@ describe('Podcast endpoints', () => {
         .get(`${v1Path}/podcast/toggle-subscribe/XdbkHTiH9`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
 
           done()
         })
@@ -143,7 +177,9 @@ describe('Podcast endpoints', () => {
             "Yqft_RG8j",
             "GZsvTjDH0",
             "Q_QCTJbNR"
-        ])
+          ])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(8)
 
           done()
         })
@@ -166,7 +202,9 @@ describe('Podcast endpoints', () => {
             "GZsvTjDH0",
             "Q_QCTJbNR",
             "XdbkHTiH9"
-        ])
+          ])
+
+          chaiExpect(Object.keys(res.body).length).to.equal(9)
 
           done()
         })
@@ -186,24 +224,85 @@ describe('Podcast endpoints', () => {
 
           chaiExpect(podcast0.id).to.equal('mN25xFjDG')
           chaiExpect(podcast0).to.have.property('feedLastUpdated')
+          chaiExpect(podcast0.funding).to.equal(null)
           chaiExpect(podcast0.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast0).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast0.lastEpisodeTitle).to.equal('378: David Nichtern')
           chaiExpect(podcast0.sortableTitle).to.equal('duncan trussell family hour')
           chaiExpect(podcast0.title).to.equal('Duncan Trussell Family Hour')
+          chaiExpect(podcast0.value).to.equal(null)
+
 
 
           chaiExpect(podcast1.id).to.equal('gyEGNwJud')
           chaiExpect(podcast1).to.have.property('feedLastUpdated')
+          chaiExpect(podcast1.funding).to.equal(null)
           chaiExpect(podcast1.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast1).to.have.property('lastEpisodePubDate')
           chaiExpect(podcast1.lastEpisodeTitle).to.equal('Rob Gronkowski, This Is March, James Harden Pooped Himself, And Lebron Is Still Insane')
           chaiExpect(podcast1.sortableTitle).to.equal('pardon my take')
           chaiExpect(podcast1.title).to.equal('Pardon My Take')
+          chaiExpect(podcast1.value).to.equal(null)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
         })
     })
+  }) 
+
+  describe('find by query subscribed', () => {
+
+    test('Top past week - Invalid user', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?sort=top-past-week`)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(401)
+
+          chaiExpect(Object.keys(res.body).length).to.equal(0)
+
+          done()
+        })
+    })
+
+    test('Top past week - Premium Valid', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/playlist/subscribed?sort=top-past-week`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200)
+
+          const podcast0 = res.body[0]
+
+          chaiExpect(podcast0.id).to.equal('zXSkVlr7')
+          // chaiExpect(podcast0).to.have.property('feedLastUpdated')
+          // chaiExpect(podcast0.funding).to.equal(null)
+          // chaiExpect(podcast0.hideDynamicAdsWarning).to.equal(false)
+          // chaiExpect(podcast0.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/JbhIM2rFLFw/dancarlinshardcorehistory.jpg')
+          // chaiExpect(podcast0.isExplicit).to.equal(false)
+          // chaiExpect(podcast0).to.have.property('lastEpisodePubDate')
+          // chaiExpect(podcast0.lastEpisodeTitle).to.equal('Show 64 - Supernova in the East III')
+          // chaiExpect(podcast0.linkUrl).to.equal('http://www.dancarlin.com')
+          // chaiExpect(podcast0.pastAllTimeTotalUniquePageviews).to.equal(1)
+          // chaiExpect(podcast0.pastHourTotalUniquePageviews).to.equal(1)
+          // chaiExpect(podcast0.pastDayTotalUniquePageviews).to.equal(1)
+          // chaiExpect(podcast0.pastWeekTotalUniquePageviews).to.equal(5)
+          // chaiExpect(podcast0.pastMonthTotalUniquePageviews).to.equal(1)
+          // chaiExpect(podcast0.pastYearTotalUniquePageviews).to.equal(1)
+          // chaiExpect(podcast0.shrunkImageUrl).to.equal(null)
+          // chaiExpect(podcast0.sortableTitle).to.equal(`dan carlin's hardcore history`)
+          // chaiExpect(podcast0.title).to.equal(`Dan Carlin's Hardcore History`)
+          // chaiExpect(podcast0.value).to.equal(null)
+          // chaiExpect(podcast0).to.have.property('createdAt')
+          
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+          // chaiExpect(Object.keys(res.body[0][0]).length).to.equal(2)
+
+
+          done()
+        })
+    })
+    
   })
 
 })

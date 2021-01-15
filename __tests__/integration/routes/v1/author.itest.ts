@@ -17,6 +17,7 @@ describe('_author endpoints', () => {
           chaiExpect(res.body.slug).to.equal('joshzeppspanoply')
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
+          chaiExpect(Object.keys(res.body).length).to.equal(6)
                 
           done()
         })
@@ -27,6 +28,7 @@ describe('_author endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(404);
           chaiExpect(res.body.message).to.equal('Author not found')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
                 
           done()
         })
@@ -46,6 +48,7 @@ describe('_author endpoints', () => {
           chaiExpect(author.id).to.equal('Rk1zs7vs')
           chaiExpect(author.name).to.equal('Josh Zepps / Panoply')
           chaiExpect(author.slug).to.equal('joshzeppspanoply')
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
                 
           done()
         })
