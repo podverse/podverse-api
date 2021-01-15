@@ -10,6 +10,7 @@ export const cleanUserItemResult = (result) => {
       clipStartTime: result.clipStartTime,
       clipTitle: result.clipTitle,
       completed: result.completed,
+      episodeChaptersUrl: result.clipEpisodeChaptersUrl,
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.clipEpisodeDuration,
       episodeId: result.clipEpisodeId,
@@ -26,6 +27,7 @@ export const cleanUserItemResult = (result) => {
     }
   } else {
     return {
+      episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
       episodeDuration: result.episodeDuration,
       episodeId: result.episodeId,
@@ -74,6 +76,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('mediaRef.startTime', 'clipStartTime')
     .addSelect('mediaRef.endTime', 'clipEndTime')
     .addSelect('episode.id', 'episodeId')
+    .addSelect('episode.chaptersUrl', 'episodeChaptersUrl')
     .addSelect('episode.description', 'episodeDescription')
     .addSelect('episode.duration', 'episodeDuration')
     .addSelect('episode.mediaUrl', 'episodeMediaUrl')
@@ -84,6 +87,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
+    .addSelect('clipEpisode.chaptersUrl', 'clipEpisodeChaptersUrl')
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
     .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
     .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
