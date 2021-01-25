@@ -87,6 +87,7 @@ const getPlaylists = async (query) => {
     .addSelect('user.id')
     .addSelect('user.name')
     .where('playlist.id IN (:...playlistIds)', { playlistIds: query.id })
+    .orderBy('playlist.title', 'ASC')
     .getMany()
 
   return playlists
