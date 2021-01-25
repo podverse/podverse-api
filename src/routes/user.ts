@@ -3,9 +3,10 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { addOrUpdateHistoryItem, clearAllHistoryItems, deleteLoggedInUser,
-  getCompleteUserDataAsJSON, getPublicUser, getPublicUsers, getSubscribedPublicUsers,
-  getUserMediaRefs, getUserPlaylists, removeHistoryItem, toggleSubscribeToUser,
-  updateQueueItems, updateLoggedInUser, updateHistoryItemPlaybackPosition } from '~/controllers/user'
+  getCompleteUserDataAsJSON, getLoggedInUserPlaylistsCombined, getPublicUser, getPublicUsers,
+  getSubscribedPublicUsers, getUserMediaRefs, getUserPlaylists, removeHistoryItem,
+  toggleSubscribeToUser, updateQueueItems, updateLoggedInUser,
+  updateHistoryItemPlaybackPosition } from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -206,6 +207,23 @@ router.get('/playlists',
         ctx.state.user.id
       )
       ctx.body = playlists
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get Logged In User's Playlists Combined
+router.get('/playlists/combined',
+  jwtAuth,
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
+  async ctx => {
+    try {
+      const { createdPlaylists, subscribedPlaylists } = await getLoggedInUserPlaylistsCombined(ctx.state.user.id)
+
+      ctx.body = {
+        createdPlaylists,
+        subscribedPlaylists
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }
