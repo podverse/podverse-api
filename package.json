@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "2.11.68",
+  "version": "2.11.76",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -124,7 +124,7 @@
     "@typescript-eslint/parser": "2.x",
     "awesome-typescript-loader": "5.2.1",
     "aws-sdk": "2.580.0",
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "bcryptjs": "2.4.3",
     "bitauth": "0.3.2",
     "bitpay-rest": "0.3.2",

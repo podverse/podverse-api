@@ -67,10 +67,12 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
 
   if (episodeId) {
     userNowPlayingItem.episode = episodeId
+    userNowPlayingItem.mediaRef = null
   }
 
   if (clipId) {
-    userNowPlayingItem.mediaRef = clipId || null
+    userNowPlayingItem.episode = null    
+    userNowPlayingItem.mediaRef = clipId
   }
 
   userNowPlayingItem.owner = loggedInUserId

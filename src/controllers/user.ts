@@ -1,6 +1,7 @@
 import { hash } from 'bcryptjs'
 import { cleanNowPlayingItem } from 'podverse-shared'
 import { getRepository } from 'typeorm'
+import { getPlaylists } from '~/controllers/playlist'
 import { MediaRef, Playlist, User } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
@@ -261,6 +262,41 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
     .getManyAndCount()
 
   return mediaRefs
+}
+
+const getLoggedInUserPlaylistsCombined = async (loggedInUserId) => {
+  const repository = getRepository(Playlist)
+
+  const loggedInUserCreatedPlaylists = await repository
+    .createQueryBuilder('playlist')
+    .select('playlist.id')
+    .addSelect('playlist.description')
+    .addSelect('playlist.isPublic')
+    .addSelect('playlist.itemCount')
+    .addSelect('playlist.itemsOrder')
+    .addSelect('playlist.title')
+    .addSelect('playlist.createdAt')
+    .addSelect('playlist.updatedAt')
+    .innerJoin('playlist.owner', 'user')
+    .addSelect('user.id')
+    .where({ owner: loggedInUserId })
+    .orderBy('playlist.title', 'ASC')
+    .getMany()
+
+  const loggedInUser = await getLoggedInUser(loggedInUserId)
+
+  if (!loggedInUser) {
+    throw new createError.NotFound('User not found.')
+  }
+
+  const { subscribedPlaylistIds } = loggedInUser
+  const subscribedPlaylistIdsString = subscribedPlaylistIds.join(',')
+  const loggedInUserSubscribedPlaylists = await getPlaylists({ playlistId: subscribedPlaylistIdsString })
+
+  return {
+    createdPlaylists: loggedInUserCreatedPlaylists,
+    subscribedPlaylists: loggedInUserSubscribedPlaylists
+  }
 }
 
 const getUserPlaylists = async (query, ownerId) => {
@@ -890,6 +926,7 @@ export {
   deleteLoggedInUser,
   getCompleteUserDataAsJSON,
   getLoggedInUser,
+  getLoggedInUserPlaylistsCombined,
   getPublicUser,
   getPublicUsers,
   getUserByEmail,

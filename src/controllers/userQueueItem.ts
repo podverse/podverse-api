@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { cleanUserItemResults, generateGetUserItemsQuery } from '~/controllers/userHistoryItem'
+import { cleanUserItemResult, cleanUserItemResults, generateGetUserItemsQuery } from '~/controllers/userHistoryItem'
 import { UserQueueItem } from '~/entities'
 const createError = require('http-errors')
 
@@ -78,7 +78,7 @@ const updateQueueItemsPositions = async (queueItems) => {
 
 export const popNextFromQueue = async (loggedInUserId) => {
   const queueItems = await getUserQueueItems(loggedInUserId)
-  const nextItem = queueItems.shift()
+  let nextItem = queueItems.shift()
   
   if (!nextItem) {
     return {
@@ -86,12 +86,14 @@ export const popNextFromQueue = async (loggedInUserId) => {
       userQueueItems: []
     }
   } else if (nextItem.clipId) {
+    nextItem = cleanUserItemResult(nextItem)
     const newQueueItems = await removeUserQueueItemByMediaRefId(loggedInUserId, nextItem.clipId)
     return {
       nextItem,
       userQueueItems: newQueueItems.userQueueItems
     }
   } else {
+    nextItem = cleanUserItemResult(nextItem)
     const newQueueItems = await removeUserQueueItemByEpisodeId(loggedInUserId, nextItem.episodeId)
     return {
       nextItem,

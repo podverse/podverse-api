@@ -68,6 +68,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
+    .addSelect('episode.chaptersUrl')
     .addSelect('episode.description')
     .addSelect('episode.duration')
     .addSelect('episode.episodeType')
@@ -275,12 +276,12 @@ const retrieveLatestChapters = async (id) => {
   if (!episode) throw new Error('Episode not found') 
   const { chaptersUrl, chaptersUrlLastParsed } = episode
 
-  // Update the latest chapters only once every 12 hours for an episode.
-  // If less than 12 hours, then just return the latest chapters from the database.
-  const halfDay = new Date().getTime() + (1 * 12 * 60 * 60 * 1000)
+  // Update the latest chapters only once every 6 hours for an episode.
+  // If less than 6 hours, then just return the latest chapters from the database.
+  const halfDay = new Date().getTime() - (1 * 6 * 60 * 60 * 1000)
   const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
 
-  if (chaptersUrl && (!chaptersUrlLastParsed || halfDay < chaptersUrlLastParsedDate)) {
+  if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
     try {
       await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
       const response = await request(chaptersUrl)
