@@ -6,6 +6,172 @@ chai.use(chaiHttp)
 
 describe('_userHistoryItem endpoints', () => {
 
+  describe('Add and Update + ForceUpdateOrderDate', () => {
+    const sendbodyMediaRef = {
+      "episodeId": null,
+      "forceUpdateOrderDate": false,
+      "mediaRefId": "9rA5BhWp",
+      "userPlaybackPosition": 100
+    }
+    const sendbodyEpisode = {
+      "episodeId": "3TENCQO2Q",
+      "forceUpdateOrderDate": false,
+      "mediaRefId": null,
+      "userPlaybackPosition": 100
+    }
+    const sendbodyEpisode2 = {
+      "episodeId": "gRgjd3YcKb",
+      "forceUpdateOrderDate": false,
+      "mediaRefId": null,
+      "userPlaybackPosition": 100
+    }
+    const sendbodyMediaRefUpdated =  {
+      "episodeId": null,
+      "forceUpdateOrderDate": true,
+      "mediaRefId": "9rA5BhWp",
+      "userPlaybackPosition": 100
+    }
+    test('Add First', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/user-history-item`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send(sendbodyMediaRef)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body.message).to.equal('Updated user history item.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+    test('Add Second', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/user-history-item`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send(sendbodyEpisode)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body.message).to.equal('Updated user history item.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+    test('Add Third', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/user-history-item`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send(sendbodyEpisode2)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body.message).to.equal('Updated user history item.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+    test('Current History', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/user-history-item?page=1`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const userHistoryItems = res.body.userHistoryItems
+          chaiExpect(userHistoryItems[0].episodeId).to.equal('gRgjd3YcKb')
+          chaiExpect(userHistoryItems[1].episodeId).to.equal('3TENCQO2Q')
+          chaiExpect(userHistoryItems[2].clipId).to.equal('9rA5BhWp')
+
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+
+          done()
+        })
+    })
+    test('Add Third - Again', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/user-history-item`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send(sendbodyEpisode2)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body.message).to.equal('Updated user history item.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+    test('Current History - Identical', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/user-history-item?page=1`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const userHistoryItems = res.body.userHistoryItems
+          chaiExpect(userHistoryItems[0].episodeId).to.equal('gRgjd3YcKb')
+          chaiExpect(userHistoryItems[1].episodeId).to.equal('3TENCQO2Q')
+          chaiExpect(userHistoryItems[2].clipId).to.equal('9rA5BhWp')
+          
+
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+
+          done()
+        })
+    })
+    test('Add Third - Updated', async (done) => {
+      chai.request(global.app)
+        .patch(`${v1Path}/user-history-item`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .send(sendbodyMediaRefUpdated)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+          
+          chaiExpect(res.body.message).to.equal('Updated user history item.')
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+    test('Current History - Updated', async (done) => {
+      chai.request(global.app)
+        .get(`${v1Path}/user-history-item?page=1`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          const userHistoryItems = res.body.userHistoryItems
+          chaiExpect(userHistoryItems[0].clipId).to.equal('9rA5BhWp')
+          chaiExpect(userHistoryItems[1].episodeId).to.equal('gRgjd3YcKb')
+          chaiExpect(userHistoryItems[2].episodeId).to.equal('3TENCQO2Q')
+          
+
+
+          chaiExpect(Object.keys(res.body).length).to.equal(2)
+
+          done()
+        })
+    })
+    test('Delete', async (done) => {
+      chai.request(global.app)
+        .delete(`${v1Path}/user-history-item/remove-all`)
+        .set('Cookie', testUsers.premium.authCookie)
+        .end((err, res) => {
+          chaiExpect(res).to.have.status(200);
+
+          chaiExpect(res.body.message).to.equal("All UserHistoryItems deleted.")
+
+          chaiExpect(Object.keys(res.body).length).to.equal(1)
+
+          done()
+        })
+    })
+  })
   describe('Add or Update', () => {
     const sendbodyNull = {
       "episodeId": null,
@@ -43,18 +209,7 @@ describe('_userHistoryItem endpoints', () => {
       "mediaRefId": "9rA5BhWp",
       "userPlaybackPosition": 100
     }
-    // const sendbodyMediaRefUpdated = {
-    //   "episodeId": null,
-    //   "forceUpdateOrderDate": true,
-    //   "mediaRefId": "9rA5BhWp",
-    //   "userPlaybackPosition": 100
-    // }
-    // const sendbodyEpisodeUpdated = {
-    //   "episodeId": "3TENCQO2Q",
-    //   "forceUpdateOrderDate": true,
-    //   "mediaRefId": null,
-    //   "userPlaybackPosition": 100
-    // }
+
     test('Null Values', async (done) => {
       chai.request(global.app)
         .patch(`${v1Path}/user-history-item`)
@@ -139,7 +294,7 @@ describe('_userHistoryItem endpoints', () => {
           done()
         })
     })
-  })
+  })  
 
   describe('Get Items', () => {
     test('Page 1', async (done) => {
