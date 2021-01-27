@@ -92,8 +92,9 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
     completed: Joi.boolean(),
     episodeId: Joi.string().allow(null),
     forceUpdateOrderDate: Joi.boolean(),
+    mediaFileDuration: Joi.number().integer().min(0),
+    mediaRefId: Joi.string().allow(null),
     userPlaybackPosition: Joi.number().integer().min(0).required(),
-    mediaRefId: Joi.string().allow(null)
   })
 
   await validateBaseBody(schema, ctx, next)

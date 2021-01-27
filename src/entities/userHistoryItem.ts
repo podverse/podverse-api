@@ -14,6 +14,11 @@ export class UserHistoryItem {
   @Column({ default: false })
   completed: boolean
 
+  @IsInt()
+  @Min(0)
+  @Column({ default: 0 })
+  mediaFileDuration: number
+
   @CreateDateColumn()
   orderChangedDate: Date
 
