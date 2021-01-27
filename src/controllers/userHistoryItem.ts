@@ -134,7 +134,8 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
 
   const results = await repository
     .createQueryBuilder('userHistoryItem')
-    .select('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+    .select('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
+    .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
     .addSelect('userHistoryItem.completed', 'completed')
     .addSelect('mediaRef.id', 'mediaRefId')
     .addSelect('episode.id', 'episodeId')
@@ -151,6 +152,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
       const result = results[i]
       const { completed, episodeId, mediaRefId } = result
       const cleanedResult = {
+        mediaFileDuration: result.mediaFileDuration,
         userPlaybackPosition: result.userPlaybackPosition,
         ...(completed ? { completed } : {}),
         ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
