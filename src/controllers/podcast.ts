@@ -119,6 +119,13 @@ const getPodcasts = async (query, countOverride?) => {
     .addSelect('podcast.title')
     .addSelect('podcast.value')
     .addSelect('podcast.createdAt')
+    .addSelect('feedUrls.url')
+    .innerJoin(
+      'podcast.feedUrls',
+      'feedUrls',
+      'feedUrls.isAuthority = :isAuthority',
+      { isAuthority: true }
+    )
 
   if (categories && categories.length > 0) {
     qb.innerJoinAndSelect(
