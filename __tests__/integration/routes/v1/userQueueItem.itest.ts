@@ -50,6 +50,9 @@ describe('_userQueueItem endpoints', () => {
           done()
         })
     })
+
+    //TODO> Invalid Table Schema
+
     test('Episode Invalid', async (done) => {
       chai.request(global.app)
         .patch(`${v1Path}/user-queue-item`)

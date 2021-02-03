@@ -59,6 +59,8 @@ describe('_userNowPlayingItem endpoints', () => {
         })
     })
 
+    //TODO> Invalid Table Schema
+
     test('Update Invalid', async (done) => {
       chai.request(global.app)
         .patch(`${v1Path}/user-now-playing-item`)

@@ -267,6 +267,8 @@ describe('Podcast endpoints', () => {
     })
   }) 
 
+//TODO> Change "playlist" to "podcast"
+
   describe('find by query subscribed', () => {
 
     test('Top past week - Invalid user', async (done) => {
