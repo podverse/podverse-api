@@ -22,7 +22,8 @@ export const shrinkImage = async (podcast: any) => {
       .toFormat('jpg')
       .toBuffer()
 
-    const slug = podcast.title ? convertToSlug(podcast.title) : 'image'
+    let slug = podcast.title ? convertToSlug(podcast.title) : 'image'
+    slug = `${slug}_${new Date().getSeconds()}`
     const filePath = `podcast-images/${podcast.id}/`
     const fileName = `${slug}.jpg`
 
