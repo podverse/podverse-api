@@ -133,36 +133,38 @@ describe('_episode endpoints', () => {
           const episodes = res.body[0]
           const episode = episodes[0]
           
-          chaiExpect(episode.id).to.equal('tfAg_PJjx9')
+          chaiExpect(episode.id).to.equal('z3kazYivU')
+          chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
-          chaiExpect(episode.guid).to.equal('72718914-ff3f-11e8-a2df-3b7ce7823cac')
-          chaiExpect(episode.imageUrl).to.equal(null)
+          chaiExpect(episode.funding).to.equal(null)
+          chaiExpect(episode.guid).to.equal('67fec643-473d-48b4-b888-e5ee619600b3')
+          chaiExpect(episode.imageUrl).to.equal('http://static.libsyn.com/p/assets/c/6/c/7/c6c723c38fb853b1/JRE1428.jpg')
           chaiExpect(episode.isExplicit).to.equal(false)
           chaiExpect(episode.isPublic).to.equal(true)
           chaiExpect(episode.linkUrl).to.equal(null)
           chaiExpect(episode.mediaFilesize).to.equal(0)
           chaiExpect(episode.mediaType).to.equal('audio/mpeg')
-          chaiExpect(episode.mediaUrl).to.equal('https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP8741400441.mp3')
-          chaiExpect(episode.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(episode.pastDayTotalUniquePageviews).to.equal(2)
-          chaiExpect(episode.pastWeekTotalUniquePageviews).to.equal(7)
-          chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(4)
-          chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
-          chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
+          chaiExpect(episode.mediaUrl).to.equal('https://stage.podverse.fm/sampleAudio/2B-F3-50-63-terkel-a0a0i2-a.mp3')
+          chaiExpect(episode.pastHourTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(episode.pastDayTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(episode.pastWeekTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(episode.pastMonthTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode).to.have.property('pubDate')
-          chaiExpect(episode.title).to.equal('\"Antisocial\" author Andrew Marantz on how the far right hijacked the internet')
-          chaiExpect(episode).to.have.property('description')
+          chaiExpect(episode.title).to.equal('#1428 - Brian Greene')
 
           const episode0 = episodes[1]
           const episode1 = episodes[2]
           const episode2 = episodes[3]
 
-          chaiExpect(episode0.id).to.equal('TKqJs3hoF7')
+          chaiExpect(episode0.id).to.equal('18z7yrPvI')
 
-          chaiExpect(episode1.id).to.equal('W7-RAalET')
+          chaiExpect(episode1.id).to.equal('rggkv66fR')
 
-          chaiExpect(episode2.id).to.equal('CBfXbA5c0Y8')
+          chaiExpect(episode2.id).to.equal('tfAg_PJjx9')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 
@@ -329,7 +331,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal(`A 'War Doctor' Shares Stories From The Front Line`)
 
-          chaiExpect(Object.keys(episode).length).to.equal(21)
+          chaiExpect(Object.keys(episode).length).to.equal(22)
           chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
 
           done()
@@ -368,7 +370,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('378: David Nichtern')
 
-          chaiExpect(Object.keys(episode).length).to.equal(21)
+          chaiExpect(Object.keys(episode).length).to.equal(22)
           chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
 
           done()
