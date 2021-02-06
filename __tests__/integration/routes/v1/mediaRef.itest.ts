@@ -233,29 +233,40 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res).to.have.status(200);
 
           const mediaRefs = res.body[0]
-          const mediaRef = mediaRefs[0]
+          const mediaRef0 = mediaRefs[0]
           
-          chaiExpect(mediaRef.id).to.equal('9rA5BhWp')
-          chaiExpect(mediaRef.endTime).to.equal(1680)
-          chaiExpect(mediaRef.imageUrl).to.equal(null)
-          chaiExpect(mediaRef.isOfficialChapter).to.equal(false)
-          chaiExpect(mediaRef.isOfficialSoundBite).to.equal(false)
-          chaiExpect(mediaRef.isPublic).to.equal(true)
-          chaiExpect(mediaRef.linkUrl).to.equal(null)
-          chaiExpect(mediaRef.pastHourTotalUniquePageviews).to.equal(7)
-          chaiExpect(mediaRef.pastDayTotalUniquePageviews).to.equal(8)
-          chaiExpect(mediaRef.pastWeekTotalUniquePageviews).to.equal(9)
-          chaiExpect(mediaRef.pastMonthTotalUniquePageviews).to.equal(0)
-          chaiExpect(mediaRef.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(mediaRef.pastAllTimeTotalUniquePageviews).to.equal(2)
-          chaiExpect(mediaRef.startTime).to.equal(1500)
-          chaiExpect(mediaRef.title).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
-          chaiExpect(mediaRef).to.have.property('createdAt')
-          chaiExpect(mediaRef).to.have.property('updatedAt')
+          chaiExpect(mediaRef0.id).to.equal('fgmGHz0o')
+          chaiExpect(mediaRef0.int_id).to.equal(41)
+          chaiExpect(mediaRef0.endTime).to.equal(7380)
+          chaiExpect(mediaRef0.imageUrl).to.equal(null)
+          chaiExpect(mediaRef0.isOfficialChapter).to.equal(false)
+          chaiExpect(mediaRef0.isOfficialSoundBite).to.equal(false)
+          chaiExpect(mediaRef0.isPublic).to.equal(true)
+          chaiExpect(mediaRef0.linkUrl).to.equal(null)
+          chaiExpect(mediaRef0.pastHourTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.pastDayTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.pastWeekTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.pastMonthTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.pastYearTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.pastAllTimeTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(mediaRef0.startTime).to.equal(7200)
+          chaiExpect(mediaRef0.title).to.equal('Non tellus orci ac auctor augue mauris augue neque. Aliquet risus feugiat in ante metus dictum at tempor. Vehicula ipsum a arcu cursus vitae congue mauris rhoncus.')
+          chaiExpect(mediaRef0).to.have.property('createdAt')
+          chaiExpect(mediaRef0).to.have.property('updatedAt')
           
-          chaiExpect(mediaRef.owner.id).to.equal('QMReJmbE')
-          chaiExpect(mediaRef.owner.isPublic).to.equal(true)
-          chaiExpect(mediaRef.owner).to.have.property('name')
+          chaiExpect(mediaRef0.owner.id).to.equal('bvVjsQCH')
+          chaiExpect(mediaRef0.owner.isPublic).to.equal(true)
+          chaiExpect(mediaRef0.owner).to.have.property('name')
+
+          const mediaRef1 = mediaRefs[1]
+          chaiExpect(mediaRef1.id).to.equal('uqBhM4ml')
+
+          const mediaRef2 = mediaRefs[2]
+          chaiExpect(mediaRef2.id).to.equal('U1CrtU3M')
+
+          const mediaRef3 = mediaRefs[3]
+          chaiExpect(mediaRef3.id).to.equal('9rA5BhWp')
+
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 

@@ -487,10 +487,12 @@ const updateUserEmailVerificationToken = async obj => {
     throw new createError.NotFound('User not found.')
   }
 
+  const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration } = obj
+
   const cleanedObj = {
-    emailVerified: obj.emailVerified,
-    emailVerificationToken: obj.emailVerificationToken,
-    emailVerificationTokenExpiration: obj.emailVerificationTokenExpiration
+    ...(emailVerified ? { emailVerified } : {}),
+    ...(emailVerificationToken ? { emailVerificationToken } : {}),
+    ...(emailVerificationTokenExpiration ? { emailVerificationTokenExpiration } : {})
   }
 
   await repository.update(obj.id, cleanedObj)

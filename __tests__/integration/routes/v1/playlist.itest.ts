@@ -335,12 +335,12 @@ describe('Playlist endpoints', () => {
 
           const podcast0 = res.body[0]
 
-          chaiExpect(podcast0.id).to.equal('zXSkVlr7')
+          chaiExpect(podcast0.id).to.equal('wgOok7Xp')
           chaiExpect(podcast0).to.have.property('description')
           chaiExpect(podcast0.isPublic).to.equal(false)
-          chaiExpect(podcast0.itemCount).to.equal(4)
+          chaiExpect(podcast0.itemCount).to.equal(9)
           chaiExpect(podcast0.itemsOrder).to.eql([])
-          chaiExpect(podcast0.title).to.equal('Free Trial - Test Playlist 2')
+          chaiExpect(podcast0.title).to.equal('Free Trial - Test Playlist 1')
           chaiExpect(podcast0).to.have.property('createdAt')
           chaiExpect(podcast0).to.have.property('updatedAt')
           chaiExpect(podcast0.owner.id).to.equal('EVHDBRZY')
@@ -348,12 +348,12 @@ describe('Playlist endpoints', () => {
 
           const podcast1 = res.body[1]
 
-          chaiExpect(podcast1.id).to.equal('wgOok7Xp')
+          chaiExpect(podcast1.id).to.equal('zXSkVlr7')
           chaiExpect(podcast1).to.have.property('description')
           chaiExpect(podcast1.isPublic).to.equal(false)
-          chaiExpect(podcast1.itemCount).to.equal(9)
+          chaiExpect(podcast1.itemCount).to.equal(4)
           chaiExpect(podcast1.itemsOrder).to.eql([])
-          chaiExpect(podcast1.title).to.equal('Free Trial - Test Playlist 1')
+          chaiExpect(podcast1.title).to.equal('Free Trial - Test Playlist 2')
           chaiExpect(podcast1).to.have.property('createdAt')
           chaiExpect(podcast1).to.have.property('updatedAt')
           chaiExpect(podcast1.owner.id).to.equal('EVHDBRZY')
