@@ -133,8 +133,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       : false
     if (!wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
-      podcast.shrunkImageLastUpdated = new Date()
-      await podcastRepo.save(podcast)
     }
 
     const episodeRepo = getRepository(Episode)
@@ -174,6 +172,7 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
       logPerformance('shrinkImage', _logEnd)
       if (shrunkImageUrl) {
         podcast.shrunkImageUrl = shrunkImageUrl
+        podcast.shrunkImageLastUpdated = new Date()
         logPerformance('shrunkImageUrl podcast save', _logStart)
         await podcastRepo.save(podcast)
         logPerformance('shrunkImageUrl podcast save', _logEnd)
