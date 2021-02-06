@@ -17,16 +17,20 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   try {
+    logPerformance('podcastFeedParser.getPodcastFromURL', _logStart)
     const result = await podcastFeedParser.getPodcastFromURL({
       url: feedUrl.url,
       headers: { 'User-Agent': userAgent },
       timeout: 20000
     })
+    logPerformance('podcastFeedParser.getPodcastFromURL', _logEnd)
     const { episodes, meta } = result
-
+    
     let podcast = new Podcast()
     if (feedUrl.podcast) {
+      logPerformance('feedUrl.podcast getPodcast', _logStart)
       const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
+      logPerformance('feedUrl.podcast getPodcast', _logEnd)
       if (!savedPodcast) throw Error('Invalid podcast id provided.')
       podcast = savedPodcast
     }
@@ -45,18 +49,26 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     let authors = meta.author
     if (authors.length > 0) {
+      logPerformance('findOrGenerateAuthors', _logStart)
       authors = await findOrGenerateAuthors(authors) as never
+      logPerformance('findOrGenerateAuthors', _logEnd)
     }
     const authorRepo = getRepository(Author)
+    logPerformance('authorRepo.save', _logStart)
     await authorRepo.save(authors)
+    logPerformance('authorRepo.save', _logEnd)
     podcast.authors = authors
 
     let categories: Category[] = []
     if (meta.categories && meta.categories.length > 0) {
+      logPerformance('findCategoreis', _logStart)
       categories = await findCategories(meta.categories)
+      logPerformance('findCategories', _logEnd)
     }
     const categoryRepo = getRepository(Category)
+    logPerformance('categoryRepo.save', _logStart)
     await categoryRepo.save(categories)
+    logPerformance('categoryRepo.save', _logEnd)
     podcast.categories = categories
 
     podcast.description = meta.description
@@ -91,8 +103,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     let newEpisodes = [] as any
     let updatedSavedEpisodes = [] as any
     if (episodes && Array.isArray(episodes)) {
+      logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const results = await findOrGenerateParsedEpisodes(episodes, podcast) as any
-
+      logPerformance('findOrGenerateParsedEpisodes', _logEnd)
       newEpisodes = results.newEpisodes
       updatedSavedEpisodes = results.updatedSavedEpisodes
       newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
@@ -123,8 +136,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.value = meta.value
 
     const podcastRepo = getRepository(Podcast)
-    await podcastRepo.save(podcast)
 
+    logPerformance('podcastRepo.save', _logStart)
+    await podcastRepo.save(podcast)
+    logPerformance('podcastRepo.save', _logEnd)
     // Limit podcast image PUTs to save on server costs
     const { shrunkImageLastUpdated } = podcast
     const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
@@ -136,8 +151,13 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     }
 
     const episodeRepo = getRepository(Episode)
+    logPerformance('episodeRepo.save updatedSavedEpisodes', _logStart)
     await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
+    logPerformance('episodeRepo.save updatedSavedEpisodes', _logEnd)
+
+    logPerformance('episodeRepo.save newEpisodes', _logStart)
     await episodeRepo.save(newEpisodes, { chunk: 400 })
+    logPerformance('episodeRepo.save updatedSavedEpisodes', _logEnd)
 
     const feedUrlRepo = getRepository(FeedUrl)
     const cleanedFeedUrl = {
@@ -145,20 +165,28 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       url: feedUrl.url,
       podcast
     }
-    await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
 
+    logPerformance('feedUrlRepo.update', _logStart)
+    await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
+    logPerformance('feedUrlRepo.update', _logEnd)
+
+    logPerformance('updatedSavedEpisodes updateSoundBites', _logStart)
     for (const updatedSavedEpisode of updatedSavedEpisodes) {
       const soundBiteArray = updatedSavedEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
         await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite)
       }
     }
+    logPerformance('updatedSavedEpisodes updateSoundBites', _logEnd)
+
+    logPerformance('newEpisodes updateSoundBites', _logStart)
     for (const newEpisode of newEpisodes) {
       const soundBiteArray = newEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
         await updateSoundBites(newEpisode.id, newEpisode.soundbite)
       }
     }
+    logPerformance('newEpisodes updateSoundBites', _logEnd)
   } catch (error) {
     throw(error)
   }
