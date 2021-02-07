@@ -111,7 +111,7 @@ export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
 
   const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId) 
-    .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
+    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .offset(skip)
     .limit(take)
     .getRawMany()
@@ -143,7 +143,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     .leftJoin('userHistoryItem.episode', 'episode')
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
-    .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
+    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .getRawMany()
 
   const cleanMetaResults = (results) => {
@@ -243,7 +243,7 @@ const getUserHistoryItemByEpisodeId = async (loggedInUserId, episodeId) => {
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .andWhere('episode.id = :episodeId', { episodeId })
-    .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
+    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .getRawOne()
 }
 
@@ -258,7 +258,7 @@ const getUserHistoryItemByMediaRefId = async (loggedInUserId, mediaRefId) => {
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .andWhere('mediaRef.id = :mediaRefId', { mediaRefId })
-    .orderBy({ 'userHistoryItem.orderChangedDate': 'DESC' })
+    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .getRawOne()
 }
 

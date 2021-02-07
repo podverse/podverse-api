@@ -88,13 +88,17 @@ const getPodcastsFromSearchEngine = async (query) => {
   delete query.skip
   query.podcastId = podcastIdsString
 
+  // Sort podcasts by all-time popularity by default
+  // to try to make search screen results more relevant.
+  query.sort = query.sort ? query.sort : 'top-all-time'
+
   return getPodcasts(query, total)
 }
 
 const getPodcasts = async (query, countOverride?) => {
   const repository = getRepository(Podcast)
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
-    skip, take } = query
+    skip, sort, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
   let qb = repository
@@ -162,9 +166,9 @@ const getPodcasts = async (query, countOverride?) => {
   }
 
   qb.andWhere('"isPublic" = true')
-  qb = limitPodcastsQuerySize(qb, podcastIds, query.sort)
-  const orderColumn = getQueryOrderColumn('podcast', query.sort, 'lastEpisodePubDate')
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = limitPodcastsQuerySize(qb, podcastIds, sort)
+  const orderColumn = getQueryOrderColumn('podcast', sort, 'lastEpisodePubDate')
+  sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
 
   try {
     const podcasts = await qb

@@ -49,6 +49,10 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
   }
 
+  if (clipId && episodeId) {
+    throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
+  }
+
   const currentNowPlayingItem = await getUserNowPlayingItem(loggedInUserId)
   const user = await getRepository(User).findOne({ id: loggedInUserId })
 
