@@ -19,7 +19,7 @@ export class UserHistoryItem {
   @Column({ default: 0 })
   mediaFileDuration: number
 
-  @CreateDateColumn()
+  @Column()
   orderChangedDate: Date
 
   @IsInt()
