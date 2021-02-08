@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
-import { getQueryOrderColumn } from '~/lib/utility'
+import { addOrderByToQuery } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 const createError = require('http-errors')
 const { superUserId } = config
@@ -81,7 +81,7 @@ const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
 
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
-  const orderColumn = getQueryOrderColumn('mediaRef', query.sort, 'createdAt')
+
   const podcastIds = query.podcastId && query.podcastId.split(',') || []
   const episodeIds = query.episodeId && query.episodeId.split(',') || []
   const categoriesIds = query.categories && query.categories.split(',') || []
@@ -96,7 +96,7 @@ const getMediaRefs = async (query, includeNSFW) => {
 
   const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
 
-  const qb = repository.createQueryBuilder('mediaRef')
+  let qb = repository.createQueryBuilder('mediaRef')
 
   if (includePodcast) {
     qb.innerJoinAndSelect(
@@ -166,7 +166,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     `)
   }
   
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt')
 
   const mediaRefs = await qb
     .offset(skip)

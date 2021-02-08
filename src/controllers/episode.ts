@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
 import { request } from '~/lib/request'
-import { getQueryOrderColumn,  } from '~/lib/utility'
+import { addOrderByToQuery } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
@@ -64,7 +64,7 @@ const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => 
   return qb
 }
 
-const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
+const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sincePubDate = '') => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
@@ -95,13 +95,19 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
     'podcast'
   )
   
-  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText) 
+  // Throws an error if searchAllFieldsText is defined but invalid
+  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText)
+
   qb.where(
     `${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : 'true'}`,
     {
       searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
     }
   )
+  
+  if (sincePubDate) {
+    qb.andWhere(`episode.pubDate >= :sincePubDate`, { sincePubDate })
+  }
 
   return qb    
 }
@@ -115,9 +121,9 @@ const cleanEpisodes = (episodes) => {
 }
 
 const getEpisodes = async (query) => {
-  const { includePodcast, searchAllFieldsText, skip, sort, take } = query
+  const { includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
   const shouldLimit = true
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
@@ -202,8 +208,7 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   if (recentEpisodeIds.length <= 0) return [[], totalCount]
 
   qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
-  const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
-  qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = addOrderByToQuery(qb, 'episode', 'most-recent', 'pubDate')
   
   const episodes = await qb.getMany()
   const cleanedEpisodes = cleanEpisodes(episodes)
@@ -211,12 +216,12 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
 }
 
 const handleGetEpisodesWithOrdering = async (obj) => {
-  const { qb, query, skip, sort, take } = obj
+  const { skip, sort, take } = obj
+  let { qb } = obj
   qb.offset(skip)
   qb.limit(take)
 
-  const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate')
 
   const episodesResults = await qb.getManyAndCount()
   const episodes = episodesResults[0]

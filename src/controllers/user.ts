@@ -5,7 +5,7 @@ import { getPlaylists } from '~/controllers/playlist'
 import { MediaRef, Playlist, User } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
-import { getQueryOrderColumn, validatePassword } from '~/lib/utility'
+import { addOrderByToQuery, validatePassword } from '~/lib/utility'
 import { validateEmail } from '~/lib/utility/validation'
 
 const createError = require('http-errors')
@@ -235,10 +235,9 @@ const getUserSubscribedPublicUserIds = async id => {
 const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => {
   const { skip, sort, take } = query
   const repository = getRepository(MediaRef)
-  const orderColumn = getQueryOrderColumn('mediaRef', sort, 'createdAt')
   const episodeJoinAndSelect = `${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}`
 
-  const mediaRefs = await repository
+  let qb = await repository
     .createQueryBuilder('mediaRef')
     .innerJoinAndSelect(
       'mediaRef.episode',
@@ -257,11 +256,12 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
     )
     .skip(skip)
     .take(take)
-    
-    .orderBy(orderColumn[0], orderColumn[1] as any)
-    .getManyAndCount()
 
-  return mediaRefs
+  qb = addOrderByToQuery(qb, 'mediaRef', sort, 'createdAt')
+    
+  const results = await qb.getManyAndCount()
+
+  return results
 }
 
 const getLoggedInUserPlaylistsCombined = async (loggedInUserId) => {

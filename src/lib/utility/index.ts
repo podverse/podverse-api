@@ -88,30 +88,41 @@ export const convertSecToHHMMSS = (sec: number) => {
   return result
 }
 
-export const getQueryOrderColumn = (type, sort, sortDateKey) => {
+export const addOrderByToQuery = (qb, type, sort, sortDateKey) => {
+  const ascKey = 'ASC'
+  const descKey = 'DESC'
+
   if (sort === 'top-past-hour') {
-    return [`${type}.pastHourTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastHourTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-day') {
-    return [`${type}.pastDayTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastDayTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-month') {
-    return [`${type}.pastMonthTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastMonthTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-year') {
-    return [`${type}.pastYearTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastYearTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-all-time') {
-    return [`${type}.pastAllTimeTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastAllTimeTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'most-recent') {
-    return [`${type}.${sortDateKey}`, 'DESC']
+    qb.orderBy(`${type}.${sortDateKey}`, descKey)
   } else if (sort === 'oldest') {
-    return [`${type}.${sortDateKey}`, 'ASC']
+    qb.orderBy(`${type}.${sortDateKey}`, ascKey)
   } else if (sort === 'alphabetical') {
-    return [`${type}.sortableTitle`, 'ASC']
+    qb.orderBy(`${type}.sortableTitle`, ascKey)
   } else if (sort === 'random') {
-    return [`RANDOM()`]
+    qb.orderBy('RANDOM()')
   } else if (sort === 'chronological' && type === 'mediaRef') {
-    return [`${type}.startTime`, 'ASC']
+    qb.orderBy(`${type}.startTime`, ascKey)
   } else { // sort = top-past-week
-    return [`${type}.pastWeekTotalUniquePageviews`, 'DESC']
+    qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)
+    qb.addOrderBy(`${type}.id`, descKey)
   }
+
+  return qb
 }
 
 // eslint-disable-next-line
