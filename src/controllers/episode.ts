@@ -132,10 +132,10 @@ const getEpisodes = async (query) => {
 }
 
 const getEpisodesByCategoryIds = async (query) => {
-  const { categories, includePodcast, searchAllFieldsText, skip, sort, take } = query
+  const { categories, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
   const categoriesIds = categories && categories.split(',') || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
 
   if (sort === 'most-recent') {
     return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
@@ -164,10 +164,10 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
 }
 
 const getEpisodesByPodcastIds = async (query) => {
-  const { includePodcast, podcastId, searchAllFieldsText, skip, sort, take } = query
+  const { includePodcast, podcastId, searchAllFieldsText, sincePubDate, skip, sort, take } = query
   const podcastIds = podcastId && podcastId.split(',') || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
 
   if (podcastIds.length === 1) {
     return getEpisodesByPodcastId(query, qb, podcastIds)
