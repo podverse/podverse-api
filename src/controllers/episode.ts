@@ -64,7 +64,7 @@ const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => 
   return qb
 }
 
-const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
+const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sincePubDate = '') => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
@@ -95,13 +95,19 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '') => {
     'podcast'
   )
   
-  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText) 
+  // Throws an error if searchAllFieldsText is defined but invalid
+  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText)
+
   qb.where(
     `${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : 'true'}`,
     {
       searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
     }
   )
+  
+  if (sincePubDate) {
+    qb.andWhere(`episode.pubDate >= :sincePubDate`, { sincePubDate })
+  }
 
   return qb    
 }
@@ -115,9 +121,9 @@ const cleanEpisodes = (episodes) => {
 }
 
 const getEpisodes = async (query) => {
-  const { includePodcast, searchAllFieldsText, skip, sort, take } = query
+  const { includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
   const shouldLimit = true
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
