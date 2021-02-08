@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { Podcast, User } from '~/entities'
-import { getQueryOrderColumn } from '~/lib/utility'
+import { addOrderByToQuery } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 
@@ -167,8 +167,8 @@ const getPodcasts = async (query, countOverride?) => {
 
   qb.andWhere('"isPublic" = true')
   qb = limitPodcastsQuerySize(qb, podcastIds, sort)
-  const orderColumn = getQueryOrderColumn('podcast', sort, 'lastEpisodePubDate')
-  sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+
+  qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate')
 
   try {
     const podcasts = await qb

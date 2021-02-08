@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
 import { request } from '~/lib/request'
-import { getQueryOrderColumn,  } from '~/lib/utility'
+import { addOrderByToQuery } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
@@ -208,8 +208,7 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   if (recentEpisodeIds.length <= 0) return [[], totalCount]
 
   qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
-  const orderColumn = getQueryOrderColumn('episode', 'most-recent', 'pubDate')
-  qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = addOrderByToQuery(qb, 'episode', 'most-recent', 'pubDate')
   
   const episodes = await qb.getMany()
   const cleanedEpisodes = cleanEpisodes(episodes)
@@ -217,12 +216,12 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
 }
 
 const handleGetEpisodesWithOrdering = async (obj) => {
-  const { qb, query, skip, sort, take } = obj
+  const { skip, sort, take } = obj
+  let { qb } = obj
   qb.offset(skip)
   qb.limit(take)
 
-  const orderColumn = getQueryOrderColumn('episode', sort, 'pubDate')
-  query.sort === 'random' ? qb.orderBy(orderColumn[0]) : qb.orderBy(orderColumn[0], orderColumn[1] as any)
+  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate')
 
   const episodesResults = await qb.getManyAndCount()
   const episodes = episodesResults[0]
