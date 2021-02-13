@@ -88,10 +88,6 @@ const getPodcastsFromSearchEngine = async (query) => {
   delete query.skip
   query.podcastId = podcastIdsString
 
-  // Sort podcasts by all-time popularity by default
-  // to try to make search screen results more relevant.
-  query.sort = query.sort ? query.sort : 'top-all-time'
-
   return getPodcasts(query, total)
 }
 

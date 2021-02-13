@@ -640,18 +640,9 @@ const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId)
     .execute()
 }
 
-// NOTE: there seems to be a flaw with user.historyItems where it will stop updating the row,
-// but it won't throw an error. I wonder if it is caused by invalid input a shows description?
-// Maybe we need to change user.historyItems to use a new entity type, instead of a json column.
 const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) => {
-  console.log('addOrUpdateHistoryItem')
-  console.log('addOrUpdateHistoryItem uncleanedNowPlayingItem', uncleanedNowPlayingItem)
-  // NOTE: If invalid fields are present on a historyItem,
-  // it can cause numerous failures across every app!
-  // Make sure only valid NowPlayingItems are saved to the user.historyItems JSON field
-  // by cleaning them before adding/updating them in the historyItems
   const nowPlayingItem = cleanNowPlayingItem(uncleanedNowPlayingItem) as any
-  console.log('addOrUpdateHistoryItem nowPlayingItem', nowPlayingItem)
+
   if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
     throw new createError.BadRequest('An episodeId or clipId must be provided.')
   }
