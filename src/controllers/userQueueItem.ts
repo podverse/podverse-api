@@ -152,5 +152,6 @@ const getRawQueueItems = async (loggedInUserId) => {
     .createQueryBuilder('userQueueItem')
     .select('userQueueItem.id', 'id')
     .leftJoin(`userQueueItem.owner`, 'owner')
-    .where('owner.id = :loggedInUserId', { loggedInUserId }) as any
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .getRawMany() as any
 }
