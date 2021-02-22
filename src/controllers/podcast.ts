@@ -75,6 +75,9 @@ const getPodcastsFromSearchEngine = async (query) => {
     limit: take,
     offset: skip
   })
+  
+  console.log("manticore search results:")
+  console.log(result.hits.hits)
 
   let podcastIds = [] as any[]  
   const { hits, total } = result.hits
