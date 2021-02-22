@@ -3,7 +3,6 @@ import { config } from '~/config'
 import { getConnection } from "typeorm"
 import { getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
-import { removeProtocol } from '~/lib/utility'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
 const shortid = require('shortid')
@@ -206,11 +205,11 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
     for (const existingFeedUrl of existingFeedUrls) {
       console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
 
-      const isMatchingFeedUrl = removeProtocol(url) === removeProtocol(existingFeedUrl.url)
+      const isMatchingFeedUrl = url === existingFeedUrl.url
 
       await client.query(`
         UPDATE "feedUrls"
-        SET "isAuthority"=${isMatchingFeedUrl ? 'TRUE' : 'FALSE'}
+        SET "isAuthority"=${isMatchingFeedUrl ? 'TRUE' : 'NULL'}
         WHERE id=$1
       `, [existingFeedUrl.id])
     }

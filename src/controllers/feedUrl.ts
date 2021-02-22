@@ -25,9 +25,7 @@ const addFeedUrls = async (urls: any[] = []) => {
       feedUrl.isAuthority = true
       await validateClassOrThrow(feedUrl)
       await repository.save(feedUrl)
-    }
-
-    if (feedUrl) {
+    } else {
       feeds.push(feedUrl)
     }
   }

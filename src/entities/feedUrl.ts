@@ -3,10 +3,11 @@
 import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, Index, ManyToOne,
-  PrimaryColumn, UpdateDateColumn } from 'typeorm'
+  PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm'
 const shortid = require('shortid')
 
 @Entity('feedUrls')
+@Unique('index_feedUrlId_isAuthority', ['id', 'isAuthority'])
 export class FeedUrl {
 
   @PrimaryColumn('varchar', {
@@ -19,7 +20,7 @@ export class FeedUrl {
   @Generated('increment')
   int_id: number
 
-  @Column({ default: false })
+  @Column({ default: null, nullable: true })
   isAuthority: boolean
 
   @Index()
