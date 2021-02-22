@@ -225,7 +225,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   userHistoryItem.mediaRef = mediaRefId || null
   userHistoryItem.owner = loggedInUserId
   userHistoryItem.orderChangedDate =
-    forceUpdateOrderDate
+    forceUpdateOrderDate || !userHistoryItem.orderChangedDate
     ? new Date()
     : userHistoryItem.orderChangedDate
 

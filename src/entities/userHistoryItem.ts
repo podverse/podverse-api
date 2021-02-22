@@ -2,10 +2,12 @@
 
 import { IsInt, Min } from 'class-validator'
 import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn,
-  UpdateDateColumn } from 'typeorm'
+  Unique, UpdateDateColumn } from 'typeorm'
 import { Episode, MediaRef, User } from '~/entities'
 
 @Entity('userHistoryItems')
+@Unique('index_episode_owner', ['episode', 'owner'])
+@Unique('index_mediaRef_owner', ['mediaRef', 'owner'])
 export class UserHistoryItem {
 
   @PrimaryGeneratedColumn('uuid')
