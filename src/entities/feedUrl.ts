@@ -8,7 +8,7 @@ const shortid = require('shortid')
 
 @Entity('feedUrls')
 @Unique('index_feedUrlId_isAuthority', ['id', 'isAuthority'])
-@Unique('feedUrl_index_podcastId_isAuthority', ['podcastId', 'isAuthority'])
+@Unique('feedUrl_index_podcastId_isAuthority', ['podcast', 'isAuthority'])
 export class FeedUrl {
 
   @PrimaryColumn('varchar', {
