@@ -148,7 +148,7 @@ const getPodcasts = async (query, countOverride?) => {
         { name }
       )
       qb.innerJoinAndSelect('podcast.categories', 'categories')
-    } else if (podcastId && podcastId.split(',').length > 0) {
+    } else if (podcastId.length) {
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }
@@ -170,16 +170,27 @@ const getPodcasts = async (query, countOverride?) => {
   qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate')
 
   try {
-    const podcasts = await qb
+    const podcastResults = await qb
       .offset(skip)
       .limit((maxResults && 1000) || take)
       .getManyAndCount()
 
+    const finalPodcastResults = [] as any
+    const podcasts = podcastResults[0]
+    let podcastsCount = podcastResults[1]
+    
+    podcasts.sort(function (p1, p2) {
+      return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id);
+    });
+
     if (countOverride > 0) {
-      podcasts[1] = countOverride
+      podcastsCount = countOverride
     }
 
-    return podcasts
+    finalPodcastResults.push(podcasts)
+    finalPodcastResults.push(podcastsCount)
+
+    return finalPodcastResults
   } catch (error) {
     console.log(error)
     return
