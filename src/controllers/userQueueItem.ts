@@ -107,7 +107,8 @@ export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId) 
 
   const queueItem = queueItems.find(x => x.episodeId === episodeId)
   if (!queueItem) {
-    throw new createError.NotFound('UserQueueItem not found with episodeId.')
+    // UserQueueItem not found with episodeId.
+    return queueItems
   }
   const repository = getRepository(UserQueueItem)
   await repository.remove(queueItem)
@@ -124,7 +125,8 @@ export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId
 
   const queueItem = queueItems.find(x => x.clipId === mediaRefId)
   if (!queueItem) {
-    throw new createError.NotFound('UserQueueItem not found with mediaRefId.')
+    // UserQueueItem not found with mediaRefId.
+    return queueItems
   }
   const repository = getRepository(UserQueueItem)
   await repository.remove(queueItem)
@@ -153,5 +155,6 @@ const getRawQueueItems = async (loggedInUserId) => {
     .select('userQueueItem.id', 'id')
     .leftJoin(`userQueueItem.owner`, 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .orderBy('userQueueItem.queuePosition', 'ASC')
     .getRawMany() as any
 }
