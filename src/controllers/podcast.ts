@@ -148,7 +148,7 @@ const getPodcasts = async (query, countOverride?) => {
         { name }
       )
       qb.innerJoinAndSelect('podcast.categories', 'categories')
-    } else if (podcastId.length) {
+    } else if (podcastIds.length) {
       qb.where(
         'podcast.id IN (:...podcastIds)',
         { podcastIds }
