@@ -122,9 +122,6 @@ const updatePlaylist = async (obj, loggedInUserId) => {
 
   await repository.save(newPlaylist)
 
-  delete newPlaylist.owner.isPublic
-  delete newPlaylist.owner.name
-
   return newPlaylist
 }
 
