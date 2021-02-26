@@ -279,6 +279,7 @@ const getLoggedInUserPlaylistsCombined = async (loggedInUserId) => {
     .addSelect('playlist.updatedAt')
     .innerJoin('playlist.owner', 'user')
     .addSelect('user.id')
+    .addSelect('user.name')
     .where({ owner: loggedInUserId })
     .orderBy('playlist.title', 'ASC')
     .getMany()
