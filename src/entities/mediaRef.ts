@@ -2,7 +2,7 @@
 
 import { IsInt, IsUrl, Min, ValidateIf } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  JoinTable,ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
+  JoinTable,ManyToMany, ManyToOne, OneToMany, PrimaryColumn, Unique,
   UpdateDateColumn } from 'typeorm'
 import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem,
   UserQueueItem } from '~/entities'
@@ -10,6 +10,7 @@ import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem,
 const shortid = require('shortid')
 
 @Entity('mediaRefs')
+@Unique('mediaRef_index_episode_isOfficialChapter_startTime', ['episode', 'isOfficialChapter', 'startTime'])
 export class MediaRef {
 
   @PrimaryColumn('varchar', {
@@ -33,7 +34,7 @@ export class MediaRef {
   @Column({ nullable: true })
   imageUrl?: string
 
-  @Column({ default: false })
+  @Column({ default: null, nullable: true })
   isOfficialChapter: boolean
 
   @Column({ default: false })
