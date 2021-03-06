@@ -4,7 +4,6 @@ docs/sampleFeedUrls.txt
 src/config/parser/feedUrlsArray.json
 src/initializers/seedDatabase.ts
 src/public/samples
-src/seeds/sampleEntities.ts
 src/seeds/podcasts.ts
 src/seeds/db.ts
 src/services/parser.ts

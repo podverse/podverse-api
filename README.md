@@ -12,7 +12,7 @@ For stage/prod deployment instructions, please refer to the
 
 ### Prereqs
 
-For podverse-api to work you will need a local Postgres database running.
+Before you can run podverse-api you will need a local Postgres version 11.5 database running.
 
 You can setup your own database, or go to the
 [podverse-ops repo](https://github.com/podverse/podverse-ops), add the podverse-db-local.env file as explained in the docs, then run this command:
@@ -39,11 +39,13 @@ npm run dev
 
 ### Sample database data
 
-If you want to add entities to the database quickly for development purposes only, run the following:
+The [podverse-ops repo](https://github.com/podverse/podverse-ops) contains the qa-database.sql file to help you get started quickly with a development database. You can clone the podverse-ops repo, then run the following command after the Postgres database is running:
 
 ```
-npm run dev:seeds:sampleEntities
+psql -h 0.0.0.0 -p 5432 -U postgres -W -f ./sample-database/qa-database.sql
 ```
+
+The password for the .sql file is: mysecretpw
 
 ### Add podcast categories to the database
 
@@ -66,25 +68,18 @@ A list of sample podcast feed urls can be found in
 npm run dev:scripts:addFeedUrls <feed urls>
 ```
 
-OR you can pass an array of feed urls in the /src/config/parser/addFeedUrlsFile.json file,
-then run the `npm run dev:scripts:addFeedUrlsFromFile` command.
-
-```
-npm run dev:scripts:addFeedUrlsFromFile
-```
-
 ### Parse feed urls to add podcasts and episodes to the database
 
 Orphan feed urls do not have a podcast associated with them.
 
 ```
-npm run scripts:parseOrphanFeedUrls
+npm run dev:scripts:parseOrphanFeedUrls
 ```
 
 To parse all non-orphan and public feed urls, you can run:
 
 ```
-npm run scripts:parsePublicFeedUrls
+npm run dev:scripts:parsePublicFeedUrls
 ```
 
 ### Use SQS to add feed urls to a queue, then parse them
