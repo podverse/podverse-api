@@ -214,7 +214,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   }
 
   userHistoryItem = userHistoryItem ? userHistoryItem : new UserHistoryItem()
-  userHistoryItem.mediaFileDuration = mediaFileDuration ? mediaFileDuration : 0
+  if (mediaFileDuration) userHistoryItem.mediaFileDuration = mediaFileDuration
   userHistoryItem.userPlaybackPosition = userPlaybackPosition
 
   if (completed === true || completed === false) {

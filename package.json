@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "3.0.16",
+  "version": "3.0.17",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -15,7 +15,6 @@
     "dev:scripts:addAndParseFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "dev:scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
-    "dev:scripts:addFeedUrlsFromFile": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
     "dev:scripts:addNewFeedsFromPodcastIndex": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
@@ -31,7 +30,6 @@
     "dev:scripts:updateRecentEpisodesTables": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
-    "dev:seeds:sampleEntities": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
     "lint:ts": "eslint src/**/*.ts",
     "scripts:addAllOrphanFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToPriorityQueue.ts",
     "scripts:addAllPublicFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
@@ -39,7 +37,6 @@
     "scripts:addAndParseFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
-    "scripts:addFeedUrlsFromFile": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrlsFromFile.ts",
     "scripts:addNewFeedsFromPodcastIndex": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
@@ -55,7 +52,6 @@
     "scripts:updateRecentEpisodesTables": "ts-node -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
-    "seeds:sampleEntities": "ts-node -r tsconfig-paths/register ./src/seeds/sampleEntities.ts",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "start:local": "ts-node -r tsconfig-paths/register src/server.local.ts",
     "test:integration": "./scripts/runIntegrationTests.sh",
