@@ -97,7 +97,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const categoryJoinConditions = `${categoriesIds.length > 0 ? 'categories.id IN (:...categoriesIds)' : ''}`
 
   let qb = repository.createQueryBuilder('mediaRef')
-  console.log('getMediaRefs', query)
+
   if (includePodcast) {
     qb.innerJoinAndSelect(
       'mediaRef.episode',
@@ -173,8 +173,6 @@ const getMediaRefs = async (query, includeNSFW) => {
     .limit(take)
     .getManyAndCount()
 
-  console.log('getMediaRefs mediaRefs', mediaRefs.length)
-
   const PIIScrubbedMediaRefs = mediaRefs[0].map((x: any) => {
     if (x.owner && !x.owner.isPublic) {
       delete x.owner.name
@@ -182,8 +180,6 @@ const getMediaRefs = async (query, includeNSFW) => {
     }
     return x
   })
-
-  console.log('getMediaRefs PIIScrubbedMediaRefs', PIIScrubbedMediaRefs)
 
   return [PIIScrubbedMediaRefs, mediaRefs[1]]
 }
