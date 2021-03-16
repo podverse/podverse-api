@@ -1,12 +1,14 @@
 import { hash } from 'bcryptjs'
 import { cleanNowPlayingItem } from 'podverse-shared'
 import { getRepository } from 'typeorm'
+import { getFeedUrlByUrlIgnoreProtocol } from '~/controllers/feedUrl'
 import { getPlaylists } from '~/controllers/playlist'
 import { MediaRef, Playlist, User } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
 import { addOrderByToQuery, validatePassword } from '~/lib/utility'
 import { validateEmail } from '~/lib/utility/validation'
+import { subscribeToPodcast } from './podcast'
 
 const createError = require('http-errors')
 
@@ -834,6 +836,15 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
   return JSON.stringify(user)
 }
 
+const addByRSSPodcastFeedUrlAddMany = async (urls: string[], loggedInUserId: string) => {
+  let addByRSSPodcastFeedUrls = []
+  for (const url of urls) {
+    addByRSSPodcastFeedUrls = await addByRSSPodcastFeedUrlAdd(url, loggedInUserId) as any
+  }
+
+  return addByRSSPodcastFeedUrls
+}
+
 const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) => {
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this profile.')
@@ -856,20 +867,26 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
     throw new createError.NotFound('Logged In user not found')
   }
 
+  const skipNotFound = true
+  const existingFeedUrl = await getFeedUrlByUrlIgnoreProtocol(url, skipNotFound)
   const addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
 
-  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
-  if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
-    addByRSSPodcastFeedUrls.push(url)
+  if (existingFeedUrl) {
+    await subscribeToPodcast(existingFeedUrl.podcast.id, loggedInUserId)
+  } else {  
+    const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+    if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
+      addByRSSPodcastFeedUrls.push(url)
+    }
+  
+    await repository
+      .createQueryBuilder()
+      .update(User)
+      .set({ addByRSSPodcastFeedUrls })
+      .where('id = :loggedInUserId', { loggedInUserId })
+      .execute()
   }
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ addByRSSPodcastFeedUrls })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-
+    
   return addByRSSPodcastFeedUrls
 }
 
@@ -912,6 +929,7 @@ const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string)
 
 export {
   addByRSSPodcastFeedUrlAdd,
+  addByRSSPodcastFeedUrlAddMany,
   addByRSSPodcastFeedUrlRemove,
   addOrUpdateHistoryItem,
   addYearsToUserMembershipExpiration,

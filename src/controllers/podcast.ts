@@ -76,9 +76,6 @@ const getPodcastsFromSearchEngine = async (query) => {
     offset: skip
   })
   
-  console.log("manticore search results:")
-  console.log(result.hits.hits)
-
   let podcastIds = [] as any[]  
   const { hits, total } = result.hits
   if (Array.isArray(hits)) {
@@ -236,7 +233,50 @@ const getMetadata = async query => {
   }
 }
 
+const getSubscribedPodcastIds = async (loggedInUserId) => {
+  const repository = getRepository(User)
+  const user = await repository.findOne(
+    {
+      where: {
+        id: loggedInUserId
+      },
+      select: [
+        'id',
+        'subscribedPodcastIds'
+      ]
+    }
+  )
+
+  if (!user) {
+    throw new createError.NotFound('User not found')
+  }
+
+  return user.subscribedPodcastIds
+}
+
 const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
+  if (!loggedInUserId) {
+    throw new createError.Unauthorized('Log in to subscribe to this podcast')
+  }
+
+  const repository = getRepository(User)
+  let subscribedPodcastIds = await getSubscribedPodcastIds(loggedInUserId)
+
+  // If no podcastIds match the filter, add the podcastId.
+  // Else, remove the podcastId.
+  const filteredPodcasts = subscribedPodcastIds.filter(x => x !== podcastId)
+  if (filteredPodcasts.length === subscribedPodcastIds.length) {
+    subscribedPodcastIds.push(podcastId)
+  } else {
+    subscribedPodcastIds = filteredPodcasts
+  }
+
+  await repository.update(loggedInUserId, { subscribedPodcastIds })
+
+  return subscribedPodcastIds
+}
+
+const subscribeToPodcast = async (podcastId, loggedInUserId) => {
 
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this podcast')
@@ -259,18 +299,15 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
     throw new createError.NotFound('User not found')
   }
 
-  let subscribedPodcastIds = user.subscribedPodcastIds
+  const subscribedPodcastIds = user.subscribedPodcastIds
 
   // If no podcastIds match the filter, add the podcastId.
-  // Else, remove the podcastId.
+  // Else, do nothing
   const filteredPodcasts = user.subscribedPodcastIds.filter(x => x !== podcastId)
   if (filteredPodcasts.length === user.subscribedPodcastIds.length) {
     subscribedPodcastIds.push(podcastId)
-  } else {
-    subscribedPodcastIds = filteredPodcasts
+    await repository.update(loggedInUserId, { subscribedPodcastIds })
   }
-
-  await repository.update(loggedInUserId, { subscribedPodcastIds })
 
   return subscribedPodcastIds
 }
@@ -281,5 +318,6 @@ export {
   getPodcastsFromSearchEngine,
   getMetadata,
   getSubscribedPodcasts,
+  subscribeToPodcast,
   toggleSubscribeToPodcast
 }
