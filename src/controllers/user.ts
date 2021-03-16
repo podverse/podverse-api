@@ -3,12 +3,12 @@ import { cleanNowPlayingItem } from 'podverse-shared'
 import { getRepository } from 'typeorm'
 import { getFeedUrlByUrlIgnoreProtocol } from '~/controllers/feedUrl'
 import { getPlaylists } from '~/controllers/playlist'
+import { subscribeToPodcast } from '~/controllers/podcast'
 import { MediaRef, Playlist, User } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
 import { addOrderByToQuery, validatePassword } from '~/lib/utility'
 import { validateEmail } from '~/lib/utility/validation'
-import { subscribeToPodcast } from './podcast'
 
 const createError = require('http-errors')
 
