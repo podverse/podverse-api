@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { addByRSSPodcastFeedUrlAdd, addByRSSPodcastFeedUrlRemove } from '~/controllers/user'
+import { addByRSSPodcastFeedUrlAdd, addByRSSPodcastFeedUrlAddMany, addByRSSPodcastFeedUrlRemove } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -38,6 +38,37 @@ router.post('/add',
         const addByRSSPodcastFeedUrls = await addByRSSPodcastFeedUrlAdd(addByRSSPodcastFeedUrl, ctx.state.user.id)
         ctx.body = addByRSSPodcastFeedUrls
       }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+const addManyLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: rateLimiterMaxOverride || 2,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/add-by-rss-podcast-feed-url/add-many'
+})
+
+router.post('/add-many',
+  addManyLimiter,
+  jwtAuth,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const { addByRSSPodcastFeedUrls } = ctx.request.body as any
+
+      if (!addByRSSPodcastFeedUrls) {
+        ctx.body = { message: 'An addByRSSPodcastFeedUrls field is required in the request body.' }
+        ctx.status = 400
+      } else if (!Array.isArray(addByRSSPodcastFeedUrls)) {
+        ctx.body = { message: 'Invalid addByRSSPodcastFeedUrls. Please check the value is an array.' }
+        ctx.status = 400
+      } else {
+        const results = await addByRSSPodcastFeedUrlAddMany(addByRSSPodcastFeedUrls, ctx.state.user.id)
+        ctx.body = results
+      }
+
     } catch (error) {
       emitRouterError(error, ctx)
     }

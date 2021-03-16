@@ -1,6 +1,7 @@
 import { getRepository, In } from 'typeorm'
 import { FeedUrl } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
+import { removeProtocol } from '~/lib/utility'
 const createError = require('http-errors')
 
 const relations = [
@@ -71,9 +72,29 @@ const getFeedUrlByUrl = async url => {
     .where({ url })
     .getOne()
 
-  console.log('yep 2.0', feedUrl)
-
   if (!feedUrl) {
+    throw new createError.NotFound('FeedUrl not found')
+  }
+
+  return feedUrl
+}
+
+const getFeedUrlByUrlIgnoreProtocol = async (url, skipNotFound) => {
+  const repository = getRepository(FeedUrl)
+  const feedUrlWithoutProtocol = removeProtocol(url)
+
+  const feedUrl = await repository
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.id')
+    .addSelect('feedUrl.url')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
+    .where(
+      'feedUrl.url LIKE :url',
+      { url: `%${feedUrlWithoutProtocol}` }
+    )
+    .getOne()
+
+  if (!feedUrl && !skipNotFound) {
     throw new createError.NotFound('FeedUrl not found')
   }
 
@@ -126,6 +147,7 @@ export {
   deleteFeedUrl,
   getFeedUrl,
   getFeedUrlByUrl,
+  getFeedUrlByUrlIgnoreProtocol,
   getFeedUrls,
   updateFeedUrl
 }
