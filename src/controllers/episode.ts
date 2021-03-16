@@ -320,9 +320,10 @@ const retrieveLatestChapters = async (id) => {
 
         for (const newChapter of newChapters) {
           try {
+            const startTime = Math.round(newChapter.startTime)
             // If a chapter with that startTime already exists, then update it.
             // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
-            const existingChapter = existingChapters.find(x => x.startTime === newChapter.startTime)
+            const existingChapter = existingChapters.find(x => x.startTime === startTime)
             if (existingChapter && existingChapter.id) {
               await updateMediaRef({
                 id: existingChapter.id,
@@ -330,7 +331,7 @@ const retrieveLatestChapters = async (id) => {
                 isOfficialChapter: true,
                 isPublic: true,
                 linkUrl: newChapter.url || null,
-                startTime: newChapter.startTime,
+                startTime,
                 title: newChapter.title,
                 episodeId: id
               }, superUserId)
@@ -340,7 +341,7 @@ const retrieveLatestChapters = async (id) => {
                 isOfficialChapter: true,
                 isPublic: true,
                 linkUrl: newChapter.url || null,
-                startTime: newChapter.startTime,
+                startTime,
                 title: newChapter.title,
                 owner: superUserId,
                 episodeId: id
