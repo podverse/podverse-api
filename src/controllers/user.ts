@@ -842,7 +842,12 @@ const addByRSSPodcastFeedUrlAddMany = async (urls: string[], loggedInUserId: str
     addByRSSPodcastFeedUrls = await addByRSSPodcastFeedUrlAdd(url, loggedInUserId) as any
   }
 
-  return addByRSSPodcastFeedUrls
+  const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
+
+  return {
+    addByRSSPodcastFeedUrls,
+    subscribedPodcastIds
+  }
 }
 
 const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) => {
