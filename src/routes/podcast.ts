@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getMetadata, getPodcast, getPodcasts, getPodcastsFromSearchEngine, getSubscribedPodcasts, toggleSubscribeToPodcast
-  } from '~/controllers/podcast'
+import { findPodcastsByFeedUrls, getMetadata, getPodcast, getPodcasts, getPodcastsFromSearchEngine,
+  getSubscribedPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -83,6 +83,19 @@ router.get('/:id',
       const podcast = await getPodcast(ctx.params.id)
 
       ctx.body = podcast
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Find Podcasts by FeedUrls
+router.post('/find-by-feed-urls',
+  parseNSFWHeader,
+  async ctx => {
+    try {
+      const body: any = ctx.request.body
+      const results = await findPodcastsByFeedUrls(body.feedUrls)
+      ctx.body = results
     } catch (error) {
       emitRouterError(error, ctx)
     }
