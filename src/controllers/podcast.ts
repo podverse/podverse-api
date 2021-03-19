@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
-import { Podcast, User } from '~/entities'
-import { addOrderByToQuery } from '~/lib/utility'
+import { FeedUrl, Podcast, User } from '~/entities'
+import { addOrderByToQuery, removeProtocol } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 
@@ -24,6 +24,40 @@ const getPodcast = async (id, includeRelations = true) => {
   }
 
   return podcast
+}
+
+const findPodcastsByFeedUrls = async (urls: string[]) => {
+  const foundPodcastIds = [] as any
+  const notFoundFeedUrls = [] as any
+
+  for (const url of urls) {
+    const podcastId = await getPodcastIdByFeedUrl(url)
+    if (podcastId) {
+      foundPodcastIds.push(podcastId)
+    } else {
+      notFoundFeedUrls.push(url)
+    }
+  }
+
+  return {
+    foundPodcastIds,
+    notFoundFeedUrls
+  }
+}
+
+const getPodcastIdByFeedUrl = async (url: string) => {
+  const urlWithoutProtocol = removeProtocol(url)
+  const repository = getRepository(FeedUrl)
+  const feedUrl = await repository
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.url')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
+    .where('feedUrl.url LIKE :url', { url: `%${urlWithoutProtocol}` })
+    .getOne()
+
+  if (!feedUrl || !feedUrl.podcast) return
+
+  return feedUrl.podcast.id
 }
 
 // Use where clause to reduce the size of very large data sets and speed up queries
@@ -313,6 +347,7 @@ const subscribeToPodcast = async (podcastId, loggedInUserId) => {
 }
 
 export {
+  findPodcastsByFeedUrls,
   getPodcast,
   getPodcasts,
   getPodcastsFromSearchEngine,
