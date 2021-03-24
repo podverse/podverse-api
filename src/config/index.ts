@@ -66,6 +66,7 @@ export interface Config {
   websiteVerifyEmailPagePath: string
   rateLimiterMaxOverride: any
   manticore: any
+  minimumMobileVersion: string
 }
 
 const port = process.env.PORT || '1234'
@@ -144,6 +145,8 @@ const podcastIndexConfig = {
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
+const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
+
 const config: Config = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
@@ -211,7 +214,8 @@ const config: Config = {
     domain: process.env.MANTICORE_DOMAIN || 'localhost',
     port: process.env.MANTICORE_PORT ? parseInt(process.env.MANTICORE_PORT, 10) : 9308,
     protocol: process.env.MANTICORE_PROTOCOL || 'http'
-  }
+  },
+  minimumMobileVersion
 }
 
 export { config }
