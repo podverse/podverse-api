@@ -11,7 +11,7 @@ import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter,
   authorRouter, categoryRouter, clipsRouter, episodeRouter, feedUrlRouter, googlePlayRouter,
-  mediaRefRouter, paypalRouter, playlistRouter, podcastRouter, userHistoryItemRouter,
+  mediaRefRouter, metaRouter, paypalRouter, playlistRouter, podcastRouter, userHistoryItemRouter,
   userNowPlayingItemRouter, userQueueItemRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
@@ -113,6 +113,9 @@ export const createApp = async (conn: Connection) => {
 
   app.use(mediaRefRouter.routes())
   app.use(mediaRefRouter.allowedMethods())
+
+  app.use(metaRouter.routes())
+  app.use(metaRouter.allowedMethods())
 
   app.use(paypalRouter.routes())
   app.use(paypalRouter.allowedMethods())
