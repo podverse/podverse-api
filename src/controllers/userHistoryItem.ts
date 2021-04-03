@@ -20,7 +20,7 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
-      podcastIndexPodcastId: result.clipPodcastIndexPodcastId,
+      podcastIndexPodcastId: result.clipPodcastIndexId,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
       ...(result.completed ? { completed: true } : {}),
@@ -38,7 +38,7 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
-      podcastIndexPodcastId: result.podcastIndexPodcastId,
+      podcastIndexPodcastId: result.podcastPodcastIndexId,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
       ...(result.completed ? { completed: true } : {}),
@@ -87,7 +87,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('podcast.id', 'podcastId')
     .addSelect('podcast.imageUrl', 'podcastImageUrl')
-    .addSelect('podcast.podcastIndexId', 'podcastIndexPodcastId')
+    .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
@@ -99,7 +99,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipPodcast.id', 'clipPodcastId')
     .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
-    .addSelect('clipPodcast.podcastIndexPodcastId', 'clipPodcastIndexPodcastId')
+    .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
     .leftJoin(`${tableName}.episode`, 'episode')
