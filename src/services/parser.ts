@@ -488,6 +488,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.soundbite = parsedEpisode.soundbite
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
+  episode.value = parsedEpisode.value
 
   // Since episode authors and categories aren't being used by the app,
   // skip saving this info to the episode.

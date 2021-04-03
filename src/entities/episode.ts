@@ -21,6 +21,23 @@ type Transcript = {
   value?: string
 }
 
+type Value = {
+  method: string
+  suggested: string
+  type: string
+  valueRecipient: ValueRecipient[]
+}
+
+type ValueRecipient = {
+  address: string
+  customKey?: string
+  customValue?: string
+  fee?: boolean
+  name?: string
+  split: string
+  type: string
+}
+
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
 export class Episode {
@@ -147,6 +164,9 @@ export class Episode {
 
   @Column('simple-json', { nullable: true })
   transcript: Transcript[]
+
+  @Column('simple-json', { nullable: true })
+  value: Value[]
 
   @ManyToMany(type => Author)
   @JoinTable()

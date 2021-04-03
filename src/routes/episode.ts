@@ -21,12 +21,6 @@ router.get('/',
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
 
-      const { query } = ctx.request
-      query.take = config.queryEpisodesLimit
-      if (query.page > 1) {
-        query.skip = (((parseInt(query.page, 10) - 1) * query.take))
-      }
-
       let episodes
       if (ctx.state.query.categories) {
         episodes = await getEpisodesByCategoryIds(ctx.state.query)
