@@ -11,12 +11,12 @@ const encHex = require('crypto-js/enc-hex')
 const csv = require('csvtojson')
 const { podcastIndexConfig, userAgent } = config
 
-const apiHeaderTime = new Date().getTime() / 1000;
-const hash = sha1(
-  config.podcastIndexConfig.authKey + config.podcastIndexConfig.secretKey + apiHeaderTime
-).toString(encHex);
-
 const axiosRequest = async (url) => {
+  const apiHeaderTime = new Date().getTime() / 1000;
+  const hash = sha1(
+    config.podcastIndexConfig.authKey + config.podcastIndexConfig.secretKey + apiHeaderTime
+  ).toString(encHex);
+
   return axios({
     url,
     method: 'GET',
@@ -70,6 +70,12 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
   }
+}
+
+export const getPodcastFromPodcastIndexById = async (id: string) => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/byfeedid?id=${id}`
+  const response = await axiosRequest(url)
+  return response && response.data
 }
 
 const getNewFeeds = async () => {

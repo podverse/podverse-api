@@ -11,8 +11,8 @@ import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import { accountClaimTokenRouter, addByRSSPodcastFeedUrlRouter, appStoreRouter, authRouter,
   authorRouter, categoryRouter, clipsRouter, episodeRouter, feedUrlRouter, googlePlayRouter,
-  mediaRefRouter, metaRouter, paypalRouter, playlistRouter, podcastRouter, userHistoryItemRouter,
-  userNowPlayingItemRouter, userQueueItemRouter, userRouter } from '~/routes'
+  mediaRefRouter, metaRouter, paypalRouter, playlistRouter, podcastRouter, podcastIndexRouter,
+  userHistoryItemRouter, userNowPlayingItemRouter, userQueueItemRouter, userRouter } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
 
 const cookie = require('cookie')
@@ -125,6 +125,9 @@ export const createApp = async (conn: Connection) => {
 
   app.use(podcastRouter.routes())
   app.use(podcastRouter.allowedMethods())
+
+  app.use(podcastIndexRouter.routes())
+  app.use(podcastIndexRouter.allowedMethods())
 
   app.use(userHistoryItemRouter.routes())
   app.use(userHistoryItemRouter.allowedMethods())
