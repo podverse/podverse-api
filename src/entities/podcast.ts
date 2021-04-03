@@ -16,7 +16,7 @@ type Value = {
   method: string
   suggested: string
   type: string
-  valueRecipient: ValueRecipient[]
+  valueRecipients: ValueRecipient[]
 }
 
 type ValueRecipient = {
