@@ -16,16 +16,18 @@ type Value = {
   method: string
   suggested: string
   type: string
-  valueRecipient: ValueRecipient
+  valueRecipient: ValueRecipient[]
 }
 
 type ValueRecipient = {
   address: string
+  customKey?: string
+  customValue?: string
+  fee?: boolean
   name?: string
   split: string
   type: string
 }
-
 
 @Entity('podcasts')
 export class Podcast {
