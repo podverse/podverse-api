@@ -134,6 +134,7 @@ const getPodcasts = async (query, countOverride?) => {
   let qb = repository
     .createQueryBuilder('podcast')
     .select('podcast.id')
+    .addSelect('podcast.podcastIndexId')
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.funding')
     .addSelect('podcast.hideDynamicAdsWarning')

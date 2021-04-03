@@ -20,6 +20,7 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
+      podcastIndexPodcastId: result.clipPodcastIndexPodcastId,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
       ...(result.completed ? { completed: true } : {}),
@@ -37,6 +38,7 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
+      podcastIndexPodcastId: result.podcastIndexPodcastId,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
       ...(result.completed ? { completed: true } : {}),
@@ -85,6 +87,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('podcast.id', 'podcastId')
     .addSelect('podcast.imageUrl', 'podcastImageUrl')
+    .addSelect('podcast.podcastIndexId', 'podcastIndexPodcastId')
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
@@ -96,6 +99,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipPodcast.id', 'clipPodcastId')
     .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
+    .addSelect('clipPodcast.podcastIndexPodcastId', 'clipPodcastIndexPodcastId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
     .leftJoin(`${tableName}.episode`, 'episode')
