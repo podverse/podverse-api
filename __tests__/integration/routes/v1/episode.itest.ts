@@ -42,6 +42,8 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
+          chaiExpect(res.body.value).to.equal(null)
+
 
           const podcast = res.body.podcast
           chaiExpect(podcast.id).to.equal('0RMk6UYGq')
@@ -104,7 +106,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories[1]).to.have.property('createdAt')
           chaiExpect(categories[1]).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(31)
+          chaiExpect(Object.keys(res.body).length).to.equal(32)
           
           done()
         })
@@ -155,16 +157,18 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('#1428 - Brian Greene')
+          chaiExpect(episode.value).to.equal(null)
+
 
           const episode0 = episodes[1]
           const episode1 = episodes[2]
           const episode2 = episodes[3]
 
-          chaiExpect(episode0.id).to.equal('18z7yrPvI')
+          chaiExpect(episode0.id).to.equal('rggkv66fR')
 
-          chaiExpect(episode1.id).to.equal('rggkv66fR')
+          chaiExpect(episode1.id).to.equal('18z7yrPvI')
 
-          chaiExpect(episode2.id).to.equal('tfAg_PJjx9')
+          chaiExpect(episode2.id).to.equal('zElB-mF59Y')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 
@@ -217,6 +221,7 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.title).to.equal(`\"Antisocial\" author Andrew Marantz on how the far right hijacked the internet`)
           chaiExpect(res.body.transcript).to.equal(null)
           chaiExpect(res.body.podcastId).to.equal('zRo1jwx67')
+          chaiExpect(res.body.value).to.equal(null)
           chaiExpect(res.body).to.have.property('createdAt')
           chaiExpect(res.body).to.have.property('updatedAt')
           chaiExpect(res.body.authors).to.eql([])
@@ -280,7 +285,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories).to.have.property('createdAt')
           chaiExpect(categories).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(31)
+          chaiExpect(Object.keys(res.body).length).to.equal(32)
 
           done()
         })
@@ -330,8 +335,9 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal(`A 'War Doctor' Shares Stories From The Front Line`)
+          chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(22)
+          chaiExpect(Object.keys(episode).length).to.equal(23)
           chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
 
           done()
@@ -369,8 +375,9 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('378: David Nichtern')
+          chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(22)
+          chaiExpect(Object.keys(episode).length).to.equal(23)
           chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
 
           done()

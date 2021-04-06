@@ -121,37 +121,41 @@ describe('Podcast endpoints', () => {
           const podcasts = res.body[0]
           const podcast = podcasts[0]
           
-          chaiExpect(podcast.id).to.equal('xSTqnMUb57K')
+          chaiExpect(podcast.id).to.equal('soTvfZpA')
+          chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast).to.have.property('feedLastUpdated')
+          chaiExpect(podcast.funding).to.equal(null)
           chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
-          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/hUSApydmOu/songexploder.png')
-          chaiExpect(podcast.isExplicit).to.equal(false)
+          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/u8DqWmAtXo/2dopequeens.png')
+          chaiExpect(podcast.isExplicit).to.equal(true)
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
-          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Nathaniel Rateliff - And It's Still Alright`)
-          chaiExpect(podcast.linkUrl).to.equal('http://www.songexploder.net')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/hUSApydmOu/songexploder.png')
-          chaiExpect(podcast.sortableTitle).to.equal(`song exploder`)
-          chaiExpect(podcast.title).to.equal(`Song Exploder`)
+          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Introducing Scattered with Chris Garcia`)
+          chaiExpect(podcast.linkUrl).to.equal('https://www.wnycstudios.org/podcasts/dopequeens')
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/u8DqWmAtXo/2dopequeens.png')
+          chaiExpect(podcast.sortableTitle).to.equal(`2 dope queens`)
+          chaiExpect(podcast.title).to.equal(`2 Dope Queens`)
           chaiExpect(podcast.value).to.equal(null)
           chaiExpect(podcast).to.have.property('createdAt')
+          chaiExpect(podcast.feedUrls[0].url).to.equal('http://feeds.wnyc.org/2DopeQueens')
+
 
           const podcast1 = podcasts[1]
           chaiExpect(podcast1.id).to.equal('Yqft_RG8j')
 
           const podcast2 = podcasts[2]
-          chaiExpect(podcast2.id).to.equal('yKyjZDxsB')
+          chaiExpect(podcast2.id).to.equal('xSTqnMUb57K')
 
           const podcast3 = podcasts[3]
           chaiExpect(podcast3.id).to.equal('kS9ZnQNWlQc')
 
           const podcast4 = podcasts[4]
-          chaiExpect(podcast4.id).to.equal('gyEGNwJud')
+          chaiExpect(podcast4.id).to.equal('zRo1jwx67')
 
           
 
