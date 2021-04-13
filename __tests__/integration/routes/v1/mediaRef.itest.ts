@@ -15,7 +15,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body.id).to.equal('9rA5BhWp')
           chaiExpect(res.body.endTime).to.equal(1680)
           chaiExpect(res.body.imageUrl).to.equal(null)
-          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialChapter).to.equal(null)
           chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.isPublic).to.equal(true)
           chaiExpect(res.body.linkUrl).to.equal(null)
@@ -186,7 +186,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body).to.have.property('id')
           chaiExpect(res.body.imageUrl).to.equal(null)
           chaiExpect(res.body.linkUrl).to.equal(null)
-          chaiExpect(res.body.isOfficialChapter).to.equal(false)
+          chaiExpect(res.body.isOfficialChapter).to.equal(null)
           chaiExpect(res.body.isOfficialSoundBite).to.equal(false)
           chaiExpect(res.body.pastHourTotalUniquePageviews).to.equal(0)
           chaiExpect(res.body.pastDayTotalUniquePageviews).to.equal(0)
@@ -235,11 +235,11 @@ describe('MediaRef endpoints', () => {
           const mediaRefs = res.body[0]
           const mediaRef0 = mediaRefs[0]
           
-          chaiExpect(mediaRef0.id).to.equal('fgmGHz0o')
-          chaiExpect(mediaRef0.int_id).to.equal(41)
-          chaiExpect(mediaRef0.endTime).to.equal(7380)
+          chaiExpect(mediaRef0.id).to.equal('uqBhM4ml')
+          chaiExpect(mediaRef0.int_id).to.equal(59)
+          chaiExpect(mediaRef0.endTime).to.equal(5640)
           chaiExpect(mediaRef0.imageUrl).to.equal(null)
-          chaiExpect(mediaRef0.isOfficialChapter).to.equal(false)
+          chaiExpect(mediaRef0.isOfficialChapter).to.equal(null)
           chaiExpect(mediaRef0.isOfficialSoundBite).to.equal(false)
           chaiExpect(mediaRef0.isPublic).to.equal(true)
           chaiExpect(mediaRef0.linkUrl).to.equal(null)
@@ -249,20 +249,20 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef0.pastMonthTotalUniquePageviews).to.equal(123456789)
           chaiExpect(mediaRef0.pastYearTotalUniquePageviews).to.equal(123456789)
           chaiExpect(mediaRef0.pastAllTimeTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(mediaRef0.startTime).to.equal(7200)
-          chaiExpect(mediaRef0.title).to.equal('Non tellus orci ac auctor augue mauris augue neque. Aliquet risus feugiat in ante metus dictum at tempor. Vehicula ipsum a arcu cursus vitae congue mauris rhoncus.')
+          chaiExpect(mediaRef0.startTime).to.equal(5370)
+          chaiExpect(mediaRef0.title).to.equal('Lacus sed turpis tincidunt id aliquet risus feugiat in ante.')
           chaiExpect(mediaRef0).to.have.property('createdAt')
           chaiExpect(mediaRef0).to.have.property('updatedAt')
           
-          chaiExpect(mediaRef0.owner.id).to.equal('bvVjsQCH')
+          chaiExpect(mediaRef0.owner.id).to.equal('EVHDBRZY')
           chaiExpect(mediaRef0.owner.isPublic).to.equal(true)
           chaiExpect(mediaRef0.owner).to.have.property('name')
 
           const mediaRef1 = mediaRefs[1]
-          chaiExpect(mediaRef1.id).to.equal('uqBhM4ml')
+          chaiExpect(mediaRef1.id).to.equal('U1CrtU3M')
 
           const mediaRef2 = mediaRefs[2]
-          chaiExpect(mediaRef2.id).to.equal('U1CrtU3M')
+          chaiExpect(mediaRef2.id).to.equal('fgmGHz0o')
 
           const mediaRef3 = mediaRefs[3]
           chaiExpect(mediaRef3.id).to.equal('9rA5BhWp')

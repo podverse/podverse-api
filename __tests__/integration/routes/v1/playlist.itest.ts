@@ -27,7 +27,7 @@ describe('Playlist endpoints', () => {
           chaiExpect(mediaRef.id).to.equal('6UFQc7Lq')
           chaiExpect(mediaRef.endTime).to.equal(1496)
           chaiExpect(mediaRef.imageUrl).to.equal(null)
-          chaiExpect(mediaRef.isOfficialChapter).to.equal(false)
+          chaiExpect(mediaRef.isOfficialChapter).to.equal(null)
           chaiExpect(mediaRef.isOfficialSoundBite).to.equal(false)
           chaiExpect(mediaRef.isPublic).to.equal(true)
           chaiExpect(mediaRef.linkUrl).to.equal(null)
@@ -181,6 +181,7 @@ describe('Playlist endpoints', () => {
   describe('playlist update', () => {
 
     const sendBody = {
+      "id": newPlaylistId,
       "description": "New test description",
       "isPublic": false,
       "itemsOrder": [],
@@ -225,8 +226,9 @@ describe('Playlist endpoints', () => {
           chaiExpect(res.body.mediaRefs).to.eql([])
 
           chaiExpect(res.body.owner.id).to.equal('QMReJmbE')
-          chaiExpect(res.body.owner).to.not.have.property('isPublic') 
-          chaiExpect(res.body.owner).to.not.have.property('name')
+          chaiExpect(res.body.owner).to.have.property('int_id')
+          chaiExpect(res.body.owner.isPublic).to.equal(true) 
+          chaiExpect(res.body.owner).to.have.property('name')
 
           chaiExpect(Object.keys(res.body).length).to.equal(12)
 
