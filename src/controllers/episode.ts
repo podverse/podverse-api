@@ -89,6 +89,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .addSelect('episode.pastAllTimeTotalUniquePageviews')
     .addSelect('episode.pubDate')
     .addSelect('episode.title')
+    .addSelect('episode.transcript')
     .addSelect('episode.value')
 
   qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
