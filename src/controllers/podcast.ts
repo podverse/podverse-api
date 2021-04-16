@@ -142,6 +142,7 @@ const getPodcasts = async (query, countOverride?) => {
     .addSelect('podcast.isExplicit')
     .addSelect('podcast.lastEpisodePubDate')
     .addSelect('podcast.lastEpisodeTitle')
+    .addSelect('podcast.lastFoundInPodcastIndex')
     .addSelect('podcast.linkUrl')
     .addSelect('podcast.pastHourTotalUniquePageviews')
     .addSelect('podcast.pastWeekTotalUniquePageviews')

@@ -94,6 +94,9 @@ export class Podcast {
   @Column({ nullable: true })
   lastEpisodeTitle?: string
 
+  @Column({ nullable: true })
+  lastFoundInPodcastIndex?: Date
+
   @ValidateIf(a => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
