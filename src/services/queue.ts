@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
 import { config } from '~/config'
-import { FeedUrl } from '~/entities'
+import { FeedUrl, Podcast } from '~/entities'
 import { chunkArray } from '~/lib/utility'
 import { connectToDb } from '~/lib/db'
 import { sqs } from '~/services/aws'
@@ -165,6 +165,15 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
 
     const forceReparsing = false
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
+    
+    const podcasts: Podcast[] = []
+    const newLastFoundInPodcastIndex = new Date()
+    for (const feedUrl of feedUrls) {
+      feedUrl.podcast.lastFoundInPodcastIndex = newLastFoundInPodcastIndex
+      podcasts.push(feedUrl.podcast)
+    }
+    const podcastRepo = getRepository(Podcast)
+    await podcastRepo.save(podcasts)
   } catch (error) {
     console.log('queue:addFeedUrlsByPodcastIndexIdToPriorityQueue', error)
   }
