@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
+import { Funding, Transcript, ValueTag } from 'podverse-shared'
 import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem,
   UserQueueItem } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
@@ -8,35 +9,6 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   UpdateDateColumn } from 'typeorm'
 
 const shortid = require('shortid')
-
-type Funding = {
-  url: string
-  value: string
-}
-
-type Transcript = {
-  language?: string
-  rel?: string
-  type?: string
-  value?: string
-}
-
-type Value = {
-  method: string
-  suggested: string
-  type: string
-  valueRecipients: ValueRecipient[]
-}
-
-type ValueRecipient = {
-  address: string
-  customKey?: string
-  customValue?: string
-  fee?: boolean
-  name?: string
-  split: string
-  type: string
-}
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
@@ -166,7 +138,7 @@ export class Episode {
   transcript: Transcript[]
 
   @Column('simple-json', { nullable: true })
-  value: Value[]
+  value: ValueTag[]
 
   @ManyToMany(type => Author)
   @JoinTable()
