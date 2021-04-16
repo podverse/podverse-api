@@ -2292,9 +2292,9 @@ camelize@1.0.0:
   integrity sha1-FkpUg+Yw+kMh5a8HAg5TGDGyYJs=
 
 caniuse-lite@^1.0.30001208:
-  version "1.0.30001208"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001208.tgz#a999014a35cebd4f98c405930a057a0d75352eb9"
-  integrity sha512-OE5UE4+nBOro8Dyvv0lfx+SRtfVIOM9uhKqFmJeUbGriqhhStgp1A0OyBpgy3OUF8AhYCT+PVwPC1gMl2ZcQMA==
+  version "1.0.30001209"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001209.tgz#1bb4be0bd118e98e21cfb7ef617b1ef2164622f4"
+  integrity sha512-2Ktt4OeRM7EM/JaOZjuLzPYAIqmbwQMNnYbgooT+icoRGrKOyAxA1xhlnotBD1KArRSPsuJp3TdYcZYrL7qNxA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -8731,9 +8731,9 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
     semver-compare "^1.0.0"
 
 podverse-shared@^1.0.10:
-  version "1.0.26"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-1.0.26.tgz#4da3a6b95fec3e84e37d7b3195d0425b7e653faf"
-  integrity sha512-5xK+tg56/F8i6Ckoea0F6npWV52HSQ6iJzTePdrkIuiCiMCBu52vlKvZbWcpQiVyF/fRsPi+CzVeTaknU7Fjfg==
+  version "1.0.29"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-1.0.29.tgz#c9455e548b1140eca314d2b98659c0390089ba30"
+  integrity sha512-LcP/dMhQjG7SBErMFdst4M+9t4TUnFiV6jghcmrvJQAno6WCF7QT3ptlI518MDuU5zU/nxcDX3ITYQUS59MvDQ==
   dependencies:
     typescript "3.7.2"
 
