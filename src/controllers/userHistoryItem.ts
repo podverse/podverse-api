@@ -13,11 +13,13 @@ export const cleanUserItemResult = (result) => {
       episodeChaptersUrl: result.clipEpisodeChaptersUrl,
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration,
+      episodeFunding: result.clipEpisodeFunding,
       episodeId: result.clipEpisodeId,
       episodeMediaUrl: result.clipEpisodeMediaUrl,
       episodePubDate: result.clipEpisodePubDate,
       episodeTitle: result.clipEpisodeTitle,
       id: result.id,
+      podcastFunding: result.clipPodcastFunding,
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastIndexPodcastId: result.clipPodcastIndexId,
@@ -31,11 +33,13 @@ export const cleanUserItemResult = (result) => {
       episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
       episodeDuration: result.mediaFileDuration || result.episodeDuration,
+      episodeFunding: result.episodeFunding,
       episodeId: result.episodeId,
       episodeMediaUrl: result.episodeMediaUrl,
       episodePubDate: result.episodePubDate,
       episodeTitle: result.episodeTitle,
       id: result.id,
+      podcastFunding: result.podcastFunding,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
       podcastIndexPodcastId: result.podcastPodcastIndexId,
@@ -82,11 +86,13 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.chaptersUrl', 'episodeChaptersUrl')
     .addSelect('episode.description', 'episodeDescription')
     .addSelect('episode.duration', 'episodeDuration')
+    .addSelect('episode.funding', 'episodeFunding')
     .addSelect('episode.mediaUrl', 'episodeMediaUrl')
     .addSelect('episode.pubDate', 'episodePubDate')
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('episode.transcript', 'episodeTranscript')
     .addSelect('episode.value', 'episodeValue')
+    .addSelect('podcast.funding', 'podcastFunding')
     .addSelect('podcast.id', 'podcastId')
     .addSelect('podcast.imageUrl', 'podcastImageUrl')
     .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
@@ -96,12 +102,14 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipEpisode.chaptersUrl', 'clipEpisodeChaptersUrl')
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
     .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
+    .addSelect('clipEpisode.funding', 'clipEpisodeFunding')
     .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
     .addSelect('clipEpisode.pubDate', 'clipEpisodePubDate')
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipEpisode.transcript', 'clipEpisodeTranscript')
     .addSelect('clipEpisode.value', 'clipEpisodeValue')
     .addSelect('clipPodcast.id', 'clipPodcastId')
+    .addSelect('clipPodcast.funding', 'clipPodcastFunding')
     .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
     .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
