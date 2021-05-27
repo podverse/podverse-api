@@ -189,3 +189,15 @@ export const logPerformance = (subject: string, stage: string, notes = '') => {
 
 export const _logStart = 'start'
 export const _logEnd = 'end'
+
+export const parseProp = (item: any, key: string, defaultValue: any) => {
+  let val = defaultValue
+  if (typeof item === 'object' && item[key]) {
+    try {
+      val = JSON.parse(item[key])
+    } catch (error) {
+      console.log(`parseProp ${key} error`, error)
+    }
+  }
+  return val
+}

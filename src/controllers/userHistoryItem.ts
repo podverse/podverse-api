@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm'
 import { UserHistoryItem } from '~/entities'
+import { parseProp } from '~/lib/utility'
 const createError = require('http-errors')
 
 export const cleanUserItemResult = (result) => {
@@ -13,18 +14,21 @@ export const cleanUserItemResult = (result) => {
       episodeChaptersUrl: result.clipEpisodeChaptersUrl,
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration,
-      episodeFunding: result.clipEpisodeFunding,
+      episodeFunding: parseProp(result, 'clipEpisodeFunding', []),
       episodeId: result.clipEpisodeId,
       episodeMediaUrl: result.clipEpisodeMediaUrl,
       episodePubDate: result.clipEpisodePubDate,
       episodeTitle: result.clipEpisodeTitle,
+      episodeTranscript: parseProp(result, 'clipEpisodeTranscript', []),
+      episodeValue: parseProp(result, 'clipEpisodeValue', []),
       id: result.id,
-      podcastFunding: result.clipPodcastFunding,
+      podcastFunding: parseProp(result, 'clipPodcastFunding', []),
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastIndexPodcastId: result.clipPodcastIndexId,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
+      podcastValue: parseProp(result, 'clipPodcastValue', []),
       ...(result.completed ? { completed: true } : {}),
       ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
     }
@@ -33,18 +37,21 @@ export const cleanUserItemResult = (result) => {
       episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
       episodeDuration: result.mediaFileDuration || result.episodeDuration,
-      episodeFunding: result.episodeFunding,
+      episodeFunding: parseProp(result, 'episodeFunding', []),
       episodeId: result.episodeId,
       episodeMediaUrl: result.episodeMediaUrl,
       episodePubDate: result.episodePubDate,
       episodeTitle: result.episodeTitle,
+      episodeTranscript: parseProp(result, 'episodeTranscript', []),
+      episodeValue: parseProp(result, 'episodeValue', []),
       id: result.id,
-      podcastFunding: result.podcastFunding,
+      podcastFunding: parseProp(result, 'podcastFunding', []),
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
       podcastIndexPodcastId: result.podcastPodcastIndexId,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
+      podcastValue: parseProp(result, 'podcastValue', []),
       ...(result.completed ? { completed: true } : {}),
       ...((result.userPlaybackPosition || result.userPlaybackPosition === 0)
         ? { userPlaybackPosition: result.userPlaybackPosition }
@@ -98,6 +105,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
+    .addSelect('podcast.value', 'podcastValue')
     .addSelect('clipEpisode.id', 'clipEpisodeId')
     .addSelect('clipEpisode.chaptersUrl', 'clipEpisodeChaptersUrl')
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
@@ -114,6 +122,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
+    .addSelect('clipPodcast.value', 'clipPodcastValue')
     .leftJoin(`${tableName}.episode`, 'episode')
     .leftJoin('episode.podcast', 'podcast')
     .leftJoin(`${tableName}.mediaRef`, 'mediaRef')
