@@ -292,7 +292,8 @@ const retrieveLatestChapters = async (id) => {
     try {
       await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
       const response = await request(chaptersUrl)
-      const parsedResponse = JSON.parse(response)
+      const trimmedResponse = response && response.trim() || {}
+      const parsedResponse = JSON.parse(trimmedResponse)
       const { chapters: newChapters } = parsedResponse
 
       if (newChapters) {
