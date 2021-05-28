@@ -117,6 +117,8 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey) => {
     qb.orderBy('RANDOM()')
   } else if (sort === 'chronological' && type === 'mediaRef') {
     qb.orderBy(`${type}.startTime`, ascKey)
+  } else if (sort === 'createdAt') {
+    qb.orderBy(`${type}.createdAt`, descKey)
   } else { // sort = top-past-week
     qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)
     qb.addOrderBy(`${type}.id`, descKey)

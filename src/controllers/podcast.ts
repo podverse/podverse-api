@@ -212,9 +212,11 @@ const getPodcasts = async (query, countOverride?) => {
     const podcasts = podcastResults[0]
     let podcastsCount = podcastResults[1]
     
-    podcasts.sort(function (p1, p2) {
-      return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id);
-    });
+    // NOTE: I have no idea why I added this at one point...
+    // commenting out since it breaks query sorting...
+    // podcasts.sort(function (p1, p2) {
+    //   return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id);
+    // });
 
     if (countOverride > 0) {
       podcastsCount = countOverride
