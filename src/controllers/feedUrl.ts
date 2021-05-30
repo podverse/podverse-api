@@ -106,6 +106,7 @@ const getFeedUrls = (query) => {
 
   if (query.podcastId) {
     query.podcast = In(query.podcastId)
+    delete query.podcastId
   }
 
   if (query.url) {
