@@ -108,7 +108,7 @@
     "koa2-swagger-ui": "2.15.4",
     "nodemon": "2.0.1",
     "ts-node": "8.5.4",
-    "typescript": "3.7.2",
+    "typescript": "3.9.7",
     "webpack-cli": "3.3.10"
   },
   "dependencies": {
