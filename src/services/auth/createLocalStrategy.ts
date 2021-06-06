@@ -21,12 +21,10 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
               'email',
               'emailVerified',
               'freeTrialExpiration',
-              'historyItems',
               'id',
               'membershipExpiration',
               'name',
               'password',
-              'queueItems',
               'subscribedPlaylistIds',
               'subscribedPodcastIds',
               'subscribedUserIds'

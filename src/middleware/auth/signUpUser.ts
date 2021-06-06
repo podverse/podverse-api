@@ -46,7 +46,6 @@ export const signUpUser = async (ctx, next) => {
     freeTrialExpiration,
     name: ctx.request.body.name,
     password: ctx.request.body.password,
-    queueItems: ctx.request.body.queueItems || [],
     subscribedPodcastIds: ctx.request.body.subscribedPodcastIds || []
   }
 

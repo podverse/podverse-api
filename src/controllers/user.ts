@@ -1,5 +1,4 @@
 import { hash } from 'bcryptjs'
-import { cleanNowPlayingItem } from 'podverse-shared'
 import { getRepository } from 'typeorm'
 import { getFeedUrlByUrlIgnoreProtocol } from '~/controllers/feedUrl'
 import { getPlaylists } from '~/controllers/playlist'
@@ -79,8 +78,6 @@ const createUser = async (obj) => {
 
   const saltedPassword = await hash(password, saltRounds)
 
-  obj.queueItems = Array.isArray(obj.queueItems) ? obj.queueItems : []
-  obj.historyItems = Array.isArray(obj.historyItems) ? obj.historyItems : []
   obj.addByRSSPodcastFeedUrls = Array.isArray(obj.addByRSSPodcastFeedUrls) ? obj.addByRSSPodcastFeedUrls : []
   obj.subscribedPlaylistIds = Array.isArray(obj.subscribedPlaylistIds) ? obj.subscribedPlaylistIds : []
   obj.subscribedPodcastIds = Array.isArray(obj.subscribedPodcastIds) ? obj.subscribedPodcastIds : []
@@ -121,11 +118,9 @@ const getLoggedInUser = async id => {
     .addSelect('user.email')
     .addSelect('user.emailVerified')
     .addSelect('user.freeTrialExpiration')
-    .addSelect('user.historyItems')
     .addSelect('user.isPublic')
     .addSelect('user.membershipExpiration')
     .addSelect('user.name')
-    .addSelect('user.queueItems')
     .addSelect('user.subscribedPlaylistIds')
     .addSelect('user.subscribedPodcastIds')
     .addSelect('user.subscribedUserIds')
@@ -554,250 +549,6 @@ const updateUserResetPasswordToken = async (obj) => {
   return newUser
 }
 
-const updateQueueItems = async (queueItems, loggedInUserId) => {
-  if (!Array.isArray(queueItems)) {
-    throw new createError.BadRequest('queueItems must be an array.')
-  }
-
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to update this user')
-  }
-
-  const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      id: loggedInUserId
-    },
-    {
-      select: [
-        'id',
-        'queueItems'
-      ]
-    })
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ queueItems })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-
-  return { queueItems }
-}
-
-const updateHistoryItemPlaybackPosition = async (nowPlayingItem, loggedInUserId) => {
-  
-  if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
-    throw new createError.BadRequest('An episodeId or clipId must be provided.')
-  }
-
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to update history item playback position')
-  }
-
-  const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      id: loggedInUserId
-    },
-    {
-      select: [
-        'id',
-        'historyItems'
-      ]
-    })
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  const historyItems = Array.isArray(user.historyItems) && user.historyItems || []
-
-  const index = historyItems.findIndex(
-    (x: any) => !x.clipId && x.episodeId === nowPlayingItem.episodeId)
-
-  if (index === -1) {
-    throw new createError.NotAcceptable('NowPlayingItem does not exist in historyItems yet. Send an addOrUpdatePlaybackItem request.')
-  }
-
-  if (index > -1) {
-    historyItems[index].userPlaybackPosition = nowPlayingItem.userPlaybackPosition
-    // Move item to beginning of historyItems
-    if (historyItems.length > 1) {
-      const itemToMoveArray = historyItems.splice(index, 1) as any
-      if (itemToMoveArray.length > 0) {
-        historyItems.unshift(itemToMoveArray[0])
-      }
-    }
-  }
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ historyItems })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-}
-
-const addOrUpdateHistoryItem = async (uncleanedNowPlayingItem, loggedInUserId) => {
-  const nowPlayingItem = cleanNowPlayingItem(uncleanedNowPlayingItem) as any
-
-  if (!nowPlayingItem.episodeId && !nowPlayingItem.clipId) {
-    throw new createError.BadRequest('An episodeId or clipId must be provided.')
-  }
-
-  if (nowPlayingItem.episodeDescription) {
-    nowPlayingItem.episodeDescription = nowPlayingItem.episodeDescription.substring(0, 20000)
-  }
-
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to add history items')
-  }
-
-  const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      id: loggedInUserId
-    },
-    {
-      select: [
-        'id',
-        'historyItems'
-      ]
-    })
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
-  
-  // NOTE: userPlaybackPosition should ONLY ever be updated in updateHistoryItemPlaybackPosition.
-  // Remove historyItem if it already exists in the array, but retain the stored userPlaybackPosition,
-  // then prepend it to the array.
-  historyItems = historyItems.filter(x => {
-    if (hasHistoryItemWithMatchingId(nowPlayingItem.episodeId, nowPlayingItem.clipId, x)) {
-      nowPlayingItem.userPlaybackPosition = x.userPlaybackPosition || 0
-      return
-    } else {
-      return x
-    }
-  })
-  historyItems.unshift(nowPlayingItem)
-
-  if (!Array.isArray(historyItems)) {
-    throw new createError.BadRequest('historyItems must be an array.')
-  }
-
-  // NOTE: limiting the historyItems array here because the @beforeUpdate in user entity
-  // will not be called on repository.update because historyItems uses select: false
-  if (historyItems.length > 200) {
-    const totalToRemove = (historyItems.length - 200)
-    historyItems.splice(200, 200 + totalToRemove)
-  }
-  console.log('historyItems[0]', Array.isArray(historyItems) && historyItems[0])
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ historyItems })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-}
-
-const removeHistoryItem = async (episodeId, mediaRefId, loggedInUserId) => {
-
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to remove history items')
-  }
-
-  const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      id: loggedInUserId
-    },
-    {
-      select: [
-        'id',
-        'historyItems'
-      ]
-    }
-  )
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  let historyItems = Array.isArray(user.historyItems) && user.historyItems || []
-
-  const hasMatchingHistoryItem = historyItems.some(x => hasHistoryItemWithMatchingId(episodeId, mediaRefId, x))
-
-  if (!hasMatchingHistoryItem) {
-    throw new createError.NotFound('History item not found.')
-  }
-
-  historyItems = historyItems.filter(x => {
-    if (hasHistoryItemWithMatchingId(episodeId, mediaRefId, x)) {
-      return
-    } else {
-      return x
-    }
-  })
-
-  if (!Array.isArray(historyItems)) {
-    throw new createError.BadRequest('historyItems must be an array.')
-  }
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ historyItems })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-}
-
-const hasHistoryItemWithMatchingId = (episodeId?: string, mediaRefId?: string, item?: any) => {
-  if (item && mediaRefId && item.clipId === mediaRefId) {
-    return true
-  } else if (item && episodeId && !mediaRefId && !item.clipId && item.episodeId === episodeId) {
-    return true
-  } else {
-    return false
-  }
-}
-
-const clearAllHistoryItems = async (loggedInUserId) => {
-
-  if (!loggedInUserId) {
-    throw new createError.Unauthorized('Log in to remove history items')
-  }
-
-  const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      id: loggedInUserId
-    },
-    {
-      select: ['id']
-    }
-  )
-
-  if (!user) {
-    throw new createError.NotFound('User not found.')
-  }
-
-  await repository
-    .createQueryBuilder()
-    .update(User)
-    .set({ historyItems: [] })
-    .where('id = :loggedInUserId', { loggedInUserId })
-    .execute()
-}
-
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 
   if (id !== loggedInUserId) {
@@ -814,7 +565,6 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
         'id',
         'addByRSSPodcastFeedUrls',
         'email',
-        'historyItems',
         'name',
         'subscribedPlaylistIds',
         'subscribedPodcastIds',
@@ -823,15 +573,6 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
       relations: ['mediaRefs', 'playlists']
     }
   )
-
-  if (user && user.historyItems && user.historyItems.length > 0) {
-    const cleanedHistoryItems = [] as any
-    for (const historyItem of user.historyItems) {
-      delete historyItem.episodeDescription
-      cleanedHistoryItems.push(historyItem)
-    }
-    user.historyItems = cleanedHistoryItems
-  }
 
   return JSON.stringify(user)
 }
@@ -936,9 +677,7 @@ export {
   addByRSSPodcastFeedUrlAdd,
   addByRSSPodcastFeedUrlAddMany,
   addByRSSPodcastFeedUrlRemove,
-  addOrUpdateHistoryItem,
   addYearsToUserMembershipExpiration,
-  clearAllHistoryItems,
   createUser,
   deleteLoggedInUser,
   getCompleteUserDataAsJSON,
@@ -954,10 +693,7 @@ export {
   getUserSubscribedPlaylistIds,
   getUserSubscribedPodcastIds,
   getSubscribedPublicUsers,
-  removeHistoryItem,
   toggleSubscribeToUser,
-  updateHistoryItemPlaybackPosition,
-  updateQueueItems,
   updateLoggedInUser,
   updateUserEmailVerificationToken,
   updateUserPassword,

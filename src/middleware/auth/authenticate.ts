@@ -21,13 +21,11 @@ export function authenticate (ctx, next) {
           email: user.email,
           emailVerified: user.emailVerified,
           freeTrialExpiration: user.freeTrialExpiration,
-          historyItems: user.historyItems,
           id: user.id,
           isPublic: user.isPublic,
           membershipExpiration: user.membershipExpiration,
           name: user.name,
           playlists: user.playlists,
-          queueItems: user.queueItems,
           subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds,
           subscribedUserIds: user.subscribedUserIds
