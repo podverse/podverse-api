@@ -78,6 +78,13 @@ const createUser = async (obj) => {
 
   const saltedPassword = await hash(password, saltRounds)
 
+  /*
+    queueItems and historyItems are legacy columns that no longer exist on user object.
+    Set these to an empty array to avoid "column violates not-null constraint" error.
+  */
+  obj.queueItems = []
+  obj.historyItems = []
+
   obj.addByRSSPodcastFeedUrls = Array.isArray(obj.addByRSSPodcastFeedUrls) ? obj.addByRSSPodcastFeedUrls : []
   obj.subscribedPlaylistIds = Array.isArray(obj.subscribedPlaylistIds) ? obj.subscribedPlaylistIds : []
   obj.subscribedPodcastIds = Array.isArray(obj.subscribedPodcastIds) ? obj.subscribedPodcastIds : []
