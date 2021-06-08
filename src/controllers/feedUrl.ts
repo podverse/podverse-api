@@ -106,7 +106,6 @@ const getFeedUrls = (query) => {
 
   if (query.podcastId) {
     query.podcast = In(query.podcastId)
-    delete query.podcastId
   }
 
   if (query.url) {
@@ -115,8 +114,11 @@ const getFeedUrls = (query) => {
 
   return repository.find({
     where: {
-      ...query
+      ...(query.podcast ? { podcast: query.podcast } : {}),
+      ...(query.podcast ? { podcast: query.podcast } : {}),
     },
+    skip: query.skip,
+    take: query.take,
     relations
   })
 }
