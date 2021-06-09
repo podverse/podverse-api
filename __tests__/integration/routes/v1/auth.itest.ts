@@ -70,7 +70,6 @@ describe('Auth endpoints', () => {
           chaiExpect(playlist1).to.have.property('createdAt')
           chaiExpect(playlist1).to.have.property('updatedAt')
 
-          // chaiExpect(res.body).to.have.property('queueItems')
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([
             "mN25xFjDG",
