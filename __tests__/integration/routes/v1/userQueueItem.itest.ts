@@ -286,7 +286,7 @@ describe('_userQueueItem endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
 
-          chaiExpect(res.body.message).to.equal("All UserQueueItems deleted.")
+          chaiExpect(res.body.message).to.equal("All UserQueueItems removed.")
 
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 
