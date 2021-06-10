@@ -281,12 +281,12 @@ describe('_userQueueItem endpoints', () => {
     })
     test('Delete', async (done) => {
       chai.request(global.app)
-        .delete(`${v1Path}/user-history-item/remove-all`)
+        .delete(`${v1Path}/user-queue-item/remove-all`)
         .set('Cookie', testUsers.premium.authCookie)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
 
-          chaiExpect(res.body.message).to.equal("All UserHistoryItems deleted.")
+          chaiExpect(res.body.message).to.equal("All UserQueueItems removed.")
 
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 
