@@ -340,7 +340,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.value).to.equal(null)
 
           chaiExpect(Object.keys(episode).length).to.equal(24)
-          chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
+          chaiExpect(res.body[0].length).to.equal(20)
 
           done()
         })
@@ -382,7 +382,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.value).to.equal(null)
 
           chaiExpect(Object.keys(episode).length).to.equal(24)
-          chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
+          chaiExpect(res.body[0].length).to.equal(20)
 
           done()
         })
