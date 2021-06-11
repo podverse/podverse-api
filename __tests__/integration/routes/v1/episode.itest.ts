@@ -315,6 +315,7 @@ describe('_episode endpoints', () => {
           const episode = res.body[0][0]
 
           chaiExpect(episode.id).to.equal('3TENCQO2Q')
+          chaiExpect(episode.chaptersUrl).to.equal(null)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -335,10 +336,11 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal(`A 'War Doctor' Shares Stories From The Front Line`)
+          chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(23)
-          chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
+          chaiExpect(Object.keys(episode).length).to.equal(24)
+          chaiExpect(res.body[0].length).to.equal(20)
 
           done()
         })
@@ -355,6 +357,7 @@ describe('_episode endpoints', () => {
           const episode = res.body[0][0]
 
           chaiExpect(episode.id).to.equal('8XfUC3W5-')
+          chaiExpect(episode.chaptersUrl).to.equal(null)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -375,10 +378,11 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(episode).to.have.property('pubDate')
           chaiExpect(episode.title).to.equal('378: David Nichtern')
+          chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(23)
-          chaiExpect(Object.keys(res.body[0]).length).to.equal(20)
+          chaiExpect(Object.keys(episode).length).to.equal(24)
+          chaiExpect(res.body[0].length).to.equal(20)
 
           done()
         })

@@ -1,6 +1,6 @@
 import * as chai from 'chai'
 import chaiHttp = require('chai-http')
-import { sampleQueueItems, testUsers, v1Path } from '../../utils'
+import { testUsers, v1Path } from '../../utils'
 const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
@@ -76,62 +76,6 @@ describe('User endpoints', () => {
             chaiExpect(res.body).to.eql(sendBody)
 
             chaiExpect(Object.keys(res.body).length).to.equal(4)
-
-            done()
-          })
-      })
-    })
-
-    describe('update queue', () => {
-
-      const sendBody = {
-        "queueItems": sampleQueueItems
-      }
-
-      test('when the user is not logged in', async (done) => {
-        chai.request(global.app)
-          .patch(`${v1Path}/user/update-queue`)
-          .send(sendBody)
-          .end((err, res) => {
-            chaiExpect(res).to.have.status(401)
-            
-            chaiExpect(Object.keys(res.body).length).to.equal(0)
-
-            done()
-          })
-      })
-      
-      test('when the user is logged in', async (done) => {
-        chai.request(global.app)
-          .patch(`${v1Path}/user/update-queue`)
-          .set('Cookie', testUsers.premium.authCookie)
-          .send(sendBody)
-          .end((err, res) => {
-            chaiExpect(res).to.have.status(200)
-  
-            const queueItem = res.body[0]
-            chaiExpect(queueItem.clipEndTime).to.equal(1199)
-            chaiExpect(queueItem.clipId).to.equal('jxv22OGr')
-            chaiExpect(queueItem.clipStartTime).to.equal(1114)
-            chaiExpect(queueItem.clipTitle).to.equal('Test clip title')
-            chaiExpect(queueItem.episodeDescription).to.equal('Test episode description')
-            chaiExpect(queueItem.episodeId).to.equal('gRgjd3YcKb')
-            chaiExpect(queueItem.episodeImageUrl).to.equal('http://example.com/imageUrl')
-            chaiExpect(queueItem.episodeMediaUrl).to.equal('http://example.com/mediaUrl')
-            chaiExpect(queueItem).to.have.property('episodePubDate')
-            chaiExpect(queueItem.episodeTitle).to.equal('Test episode title')
-            chaiExpect(queueItem.isPublic).to.equal(true)
-            chaiExpect(queueItem.ownerId).to.equal('EVHDBRZY')
-            chaiExpect(queueItem.ownerIsPublic).to.equal(true)
-            chaiExpect(queueItem.ownerName).to.equal('Free Trial Valid - Test User')
-            chaiExpect(queueItem.podcastAuthors).to.eql(['Rk1zs7vs'])
-            chaiExpect(queueItem.podcastCategories).to.eql(['5vNa3RnSZpC'])
-            chaiExpect(queueItem.podcastId).to.equal('0RMk6UYGq')
-            chaiExpect(queueItem.podcastImageUrl).to.equal('http://example.com/imageUrl')
-            chaiExpect(queueItem.podcastTitle).to.equal('Test podcast title')
-            // chaiExpect(queueItem.userPlaybackPosition).to.equal(123)
-
-            chaiExpect(Object.keys(res.body).length).to.equal(2)
 
             done()
           })
@@ -484,105 +428,6 @@ describe('User endpoints', () => {
       })
     })
 
-    describe('History Item - Add or Update', () => {
-
-      const queueItem1 = {
-        "historyItem": {
-        "clipEndTime": 1199,
-        "clipId": "jxv22OGr",
-        "clipStartTime": 1114,
-        "clipTitle": "Test clip title",
-        "episodeDescription": "Test episode description",
-        "episodeId": "gRgjd3YcKb",
-        "episodeImageUrl": "http://example.com/imageUrl",
-        "episodeMediaUrl": "http://example.com/mediaUrl",
-        "episodePubDate": "2019-01-01T23:54:08.000Z",
-        "episodeTitle": "Test episode title",
-        "isPublic": true,
-        "ownerId": "EVHDBRZY",
-        "ownerIsPublic": true,
-        "ownerName": "Free Trial Valid - Test User",
-        "podcastAuthors": ["Rk1zs7vs"],
-        "podcastCategories": ["5vNa3RnSZpC"],
-        "podcastId": "0RMk6UYGq",
-        "podcastImageUrl": "http://example.com/imageUrl",
-        "podcastTitle": "Test podcast title",
-        "userPlaybackPosition": 123
-        }
-      }
-
-      const queueItem2 = {
-        "historyItem": {
-          "episodeDescription": "Test episode description 2",
-          "episodeId": "4s2CiyLsJJ",
-          "episodeImageUrl": "http://example.com/imageUrl",
-          "episodeMediaUrl": "http://example.com/mediaUrl",
-          "episodePubDate": "2020-01-01T23:54:08.000Z",
-          "episodeTitle": "Test episode title 2",
-          "isPublic": true,
-          "ownerId": "",
-          "ownerIsPublic": null,
-          "ownerName": "",
-          "podcastAuthors": ["Rk1zs7vs"],
-          "podcastCategories": ["5vNa3RnSZpC"],
-          "podcastId": "0RMk6UYGq",
-          "podcastImageUrl": "http://example.com/imageUrl",
-          "podcastTitle": "Test podcast title 2",
-          "userPlaybackPosition": 345
-        }
-      }      
-      
-      test('update user history with sample 1', async (done) => {
-        chai.request(global.app)
-          .patch(`${v1Path}/user/add-or-update-history-item`)
-          .set('Cookie', testUsers.premium.authCookie)
-          .send(queueItem1)
-          .end((err, res) => {
-            chaiExpect(res).to.have.status(200)
-
-            chaiExpect(res.body.message).to.equal('Updated user history')
-  
-            chaiExpect(Object.keys(res.body).length).to.equal(1)
-
-            done()
-          })
-      })
-
-      test('update user history with sample 2', async (done) => {
-        chai.request(global.app)
-          .patch(`${v1Path}/user/add-or-update-history-item`)
-          .set('Cookie', testUsers.premium.authCookie)
-          .send(queueItem2)
-          .end((err, res) => {
-            chaiExpect(res).to.have.status(200)
-
-            chaiExpect(res.body.message).to.equal('Updated user history')
-
-            chaiExpect(Object.keys(res.body).length).to.equal(1)
-  
-            done()
-          })
-      })
-    })
-
-    describe('history - clear all', () => {
-
-      test('clear', async (done) => {
-        chai.request(global.app)
-          .delete(`${v1Path}/user/history-item/clear-all`)
-          .set('Cookie', testUsers.premium.authCookie)
-          .end((err, res) => {
-            chaiExpect(res).to.have.status(200)
-
-            chaiExpect(res.body.message).to.equal('Cleared all history items.')
-  
-            chaiExpect(Object.keys(res.body).length).to.equal(1)
-
-            done()
-          })
-      })
-    })
-
     describe('find by query subscribed', () => {
 
       test('Top past week - Invalid user', async (done) => {
@@ -645,7 +490,7 @@ describe('User endpoints', () => {
       test('when the user is logged in', async (done) => {
         chai.request(global.app)
           .delete(`${v1Path}/user`)
-          .set('Cookie', testUsers.premium.authCookie)
+          .set('Cookie', testUsers.premiumExpired.authCookie)
           .end((err, res) => {
             chaiExpect(res).to.have.status(200)
   

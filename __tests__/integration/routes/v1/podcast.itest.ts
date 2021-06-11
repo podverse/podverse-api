@@ -14,6 +14,7 @@ describe('Podcast endpoints', () => {
         .end((err, res) => {
           chaiExpect(res).to.have.status(200);
           chaiExpect(res.body.id).to.equal('mN25xFjDG')
+          chaiExpect(res.body.int_id).to.equal(16)
           chaiExpect(res.body.podcastIndexId).to.equal(null)
           chaiExpect(res.body.authorityId).to.equal(null)
           chaiExpect(res.body.alwaysFullyParse).to.equal(false)
@@ -91,7 +92,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl).to.have.property('createdAt')
           chaiExpect(feedUrl).to.have.property('updatedAt')      
           
-          chaiExpect(Object.keys(res.body).length).to.equal(35)
+          chaiExpect(Object.keys(res.body).length).to.equal(36)
 
           done()
         })
@@ -121,32 +122,33 @@ describe('Podcast endpoints', () => {
           const podcasts = res.body[0]
           const podcast = podcasts[0]
           
-          chaiExpect(podcast.id).to.equal('soTvfZpA')
+          chaiExpect(podcast.id).to.equal('Yqft_RG8j')
           chaiExpect(podcast.podcastIndexId).to.equal(null)
           chaiExpect(podcast).to.have.property('feedLastUpdated')
           chaiExpect(podcast.funding).to.equal(null)
           chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
-          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/u8DqWmAtXo/2dopequeens.png')
+          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
           chaiExpect(podcast.isExplicit).to.equal(true)
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
-          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Introducing Scattered with Chris Garcia`)
-          chaiExpect(podcast.linkUrl).to.equal('https://www.wnycstudios.org/podcasts/dopequeens')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/u8DqWmAtXo/2dopequeens.png')
-          chaiExpect(podcast.sortableTitle).to.equal(`2 dope queens`)
-          chaiExpect(podcast.title).to.equal(`2 Dope Queens`)
+          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Episode 185: The Devil's Playground`)
+          chaiExpect(podcast.lastFoundInPodcastIndex).to.equal(null)
+          chaiExpect(podcast.linkUrl).to.equal('https://verybadwizards.fireside.fm')
+          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
+          chaiExpect(podcast.sortableTitle).to.equal(`very bad wizards`)
+          chaiExpect(podcast.title).to.equal(`Very Bad Wizards`)
           chaiExpect(podcast.value).to.equal(null)
           chaiExpect(podcast).to.have.property('createdAt')
-          chaiExpect(podcast.feedUrls[0].url).to.equal('http://feeds.wnyc.org/2DopeQueens')
+          chaiExpect(podcast.feedUrls[0].url).to.equal('https://verybadwizards.fireside.fm/rss')
 
 
           const podcast1 = podcasts[1]
-          chaiExpect(podcast1.id).to.equal('Yqft_RG8j')
+          chaiExpect(podcast1.id).to.equal('yKyjZDxsB')
 
           const podcast2 = podcasts[2]
           chaiExpect(podcast2.id).to.equal('xSTqnMUb57K')

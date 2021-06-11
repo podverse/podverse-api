@@ -44,7 +44,7 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.email).to.equal('premiumexpired@stage.podverse.fm')
           chaiExpect(res.body.emailVerified).to.equal(true)
           chaiExpect(res.body).to.have.property('freeTrialExpiration')
-          chaiExpect(res.body).to.have.property('historyItems')
+          // chaiExpect(res.body).to.have.property('historyItems')
           chaiExpect(res.body.id).to.equal('oAbPPRF9')
           chaiExpect(res.body).to.have.property('membershipExpiration')
           chaiExpect(res.body.name).to.equal('Premium Expired - Test User')
@@ -70,7 +70,6 @@ describe('Auth endpoints', () => {
           chaiExpect(playlist1).to.have.property('createdAt')
           chaiExpect(playlist1).to.have.property('updatedAt')
 
-          chaiExpect(res.body).to.have.property('queueItems')
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([
             "mN25xFjDG",
@@ -84,7 +83,7 @@ describe('Auth endpoints', () => {
             "QMReJmbE",
             "EVHDBRZY"
         ])
-        chaiExpect(Object.keys(res.body).length).to.equal(13)
+        chaiExpect(Object.keys(res.body).length).to.equal(11)
         
           done()
       })
@@ -117,7 +116,6 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.email).to.equal('premiumexpired@stage.podverse.fm')
           chaiExpect(res.body.emailVerified).to.equal(true)
           chaiExpect(res.body).to.have.property('freeTrialExpiration')
-          chaiExpect(res.body).to.have.property('historyItems')
           chaiExpect(res.body.id).to.equal('oAbPPRF9')
           chaiExpect(res.body).to.have.property('membershipExpiration')
           chaiExpect(res.body.name).to.equal('Premium Expired - Test User')
@@ -143,7 +141,6 @@ describe('Auth endpoints', () => {
           chaiExpect(playlist1).to.have.property('createdAt')
           chaiExpect(playlist1).to.have.property('updatedAt')
 
-          chaiExpect(res.body).to.have.property('queueItems')
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([
             "mN25xFjDG",
@@ -157,7 +154,7 @@ describe('Auth endpoints', () => {
             "QMReJmbE",
             "EVHDBRZY"
         ])
-        chaiExpect(Object.keys(res.body).length).to.equal(14)
+        chaiExpect(Object.keys(res.body).length).to.equal(12)
           done()
         })
     })
@@ -336,16 +333,14 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.email).to.equal('verifyEmailTest@stage.podverse.fm')
           chaiExpect(res.body.emailVerified).to.equal(true)
           chaiExpect(res.body).to.have.property('freeTrialExpiration')
-          chaiExpect(res.body.historyItems).to.eql([])
           chaiExpect(res.body.id).to.equal('BoYBlZiFw')
           chaiExpect(res.body.membershipExpiration).to.equal(null)
           chaiExpect(res.body.name).to.equal('test - verifyEmail')
           chaiExpect(res.body.playlists).to.eql([])
-          chaiExpect(res.body.queueItems).to.eql([])
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([])
           chaiExpect(res.body.subscribedUserIds).to.eql([])
-          chaiExpect(Object.keys(res.body).length).to.equal(13)
+          chaiExpect(Object.keys(res.body).length).to.equal(11)
 
 
 
