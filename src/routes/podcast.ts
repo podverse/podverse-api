@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { findPodcastsByFeedUrls, getMetadata, getPodcast, getPodcasts, getPodcastsFromSearchEngine,
+import { findPodcastsByFeedUrls, getMetadata, getPodcast, getPodcastByPodcastIndexId, getPodcasts, getPodcastsFromSearchEngine,
   getSubscribedPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -70,6 +70,18 @@ router.get('/subscribed',
       } else {
         throw new Error('You must be logged in to get your subscribed podcasts.')
       }
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get by Podcast Index ID
+router.get('/podcastindex/:id',
+  parseNSFWHeader,
+  async ctx => {
+    try {
+      const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
+      ctx.body = podcast
     } catch (error) {
       emitRouterError(error, ctx)
     }

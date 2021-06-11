@@ -26,6 +26,25 @@ const getPodcast = async (id, includeRelations = true) => {
   return podcast
 }
 
+const getPodcastByPodcastIndexId = async (podcastIndexId, includeRelations = true) => {
+  const repository = getRepository(Podcast)
+  const podcast = await repository.findOne(
+    {
+      podcastIndexId,
+      isPublic: true
+    },
+    {
+      relations: includeRelations ? ['authors', 'categories', 'feedUrls'] : []
+    }
+  )
+
+  if (!podcast) {
+    throw new createError.NotFound('Podcast not found')
+  }
+
+  return podcast
+}
+
 const findPodcastsByFeedUrls = async (urls: string[]) => {
   const foundPodcastIds = [] as any
   const notFoundFeedUrls = [] as any
@@ -354,6 +373,7 @@ export {
   findPodcastsByFeedUrls,
   getPodcast,
   getPodcasts,
+  getPodcastByPodcastIndexId,
   getPodcastsFromSearchEngine,
   getMetadata,
   getSubscribedPodcasts,
