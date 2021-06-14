@@ -76,12 +76,29 @@ router.get('/subscribed',
   })
 
 // Get by Podcast Index ID
-router.get('/podcastindex/:id',
+router.get('/podcastindex/data/:id',
   parseNSFWHeader,
   async ctx => {
     try {
       const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
       ctx.body = podcast
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Redirect to Podcast web page by Podcast Index ID
+router.get('/podcastindex/:id',
+  parseNSFWHeader,
+  async ctx => {
+    try {
+      const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
+
+      if (podcast.id) {
+        ctx.redirect(`${config.websiteProtocol}${config.websiteDomain}/podcast/${podcast.id}`)
+      } else {
+        ctx.status = 404
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }
