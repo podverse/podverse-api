@@ -95,7 +95,7 @@ router.get('/podcastindex/:id',
       const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
 
       if (podcast.id) {
-        ctx.redirect(`${config.websiteProtocol}${config.websiteDomain}/podcast/${podcast.id}`)
+        ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
       } else {
         ctx.status = 404
       }
