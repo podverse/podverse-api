@@ -167,6 +167,8 @@ export const cleanFileExtension = (fileExtension: string) => {
     return 'jpg'
   } else if (fileExtension.indexOf('jpeg') >= 0) {
     return 'jpeg'
+  } else if (fileExtension.indexOf('svg') >= 0) {
+    return 'svg'
   } else {
     return 'png'
   }
