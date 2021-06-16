@@ -25,7 +25,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     })
     logPerformance('podcastFeedParser.getPodcastFromURL', _logEnd)
     const { episodes, meta } = result
-    
+
     let podcast = new Podcast()
     if (feedUrl.podcast) {
       logPerformance('feedUrl.podcast getPodcast', _logStart)
@@ -47,10 +47,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       return
     }
 
-    let authors = meta.author
-    if (authors.length > 0) {
+    let authors: Author[] = []
+    if (Array.isArray(meta.author) && meta.author.length > 0) {
       logPerformance('findOrGenerateAuthors', _logStart)
-      authors = await findOrGenerateAuthors(authors) as never
+      authors = await findOrGenerateAuthors(meta.author) as never
       logPerformance('findOrGenerateAuthors', _logEnd)
     }
     const authorRepo = getRepository(Author)
@@ -60,7 +60,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.authors = authors
 
     let categories: Category[] = []
-    if (meta.categories && meta.categories.length > 0) {
+    if (Array.isArray(meta.categories) && meta.categories.length > 0) {
       logPerformance('findCategoreis', _logStart)
       categories = await findCategories(meta.categories)
       logPerformance('findCategories', _logEnd)
@@ -79,7 +79,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     podcast.funding = meta.funding
     podcast.guid = meta.guid
-    
+
     podcast.imageUrl = meta.imageURL
     if (podcast.imageUrl) {
       let cleanedImageUrl = ''
