@@ -778,47 +778,6 @@
         }
       }
     },
-    "/feedUrl": {
-      "get": {
-        "tags": [
-          "feedUrl"
-        ],
-        "summary": "Find feedUrls by query",
-        "description": "Returns an array of feedUrls",
-        "operationId": "getFeedUrls",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "podcastId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "integer"
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/FeedUrl"
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          }
-        }
-      }
-    },
     "/feedUrl/:id": {
       "get": {
         "tags": [
