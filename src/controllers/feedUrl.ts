@@ -115,7 +115,7 @@ const getFeedUrls = (query) => {
   return repository.find({
     where: {
       ...(query.podcast ? { podcast: query.podcast } : {}),
-      ...(query.podcast ? { podcast: query.podcast } : {}),
+      ...(query.url ? { url: query.url } : {}),
     },
     skip: query.skip,
     take: query.take,
