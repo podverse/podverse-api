@@ -50,7 +50,7 @@ const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = []
 const getRecentlyUpdatedData = async (since?: number) => {
   let url = `${podcastIndexConfig.baseUrl}/recent/data?max=5000`
 
-  url += `&since=${since ? since : -600}`
+  url += `&since=${since ? since : -1800}`
 
   const response = await axiosRequest(url)
   return response && response.data
