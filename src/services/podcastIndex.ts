@@ -29,11 +29,38 @@ const axiosRequest = async (url) => {
   })
 }
 
-const getRecentlyUpdatedPodcastFeeds = async () => {
-  const url = `${podcastIndexConfig.baseUrl}/recent/feeds?sort=discovery&max=1000`
+const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = [], since?: number) => {
+  const currentTime = Math.floor(Date.now() / 1000)
+  const axiosResponseData = await getRecentlyUpdatedData(since)
+  const { data, itemCount, nextSince } = axiosResponseData
+  const { feeds } = data
+  accumulatedFeedData = [...accumulatedFeedData, ...feeds]
+
+  if (itemCount >= 5000) {
+    const timeRemainingSince = nextSince - currentTime
+    return getRecentlyUpdatedDataRecursively(accumulatedFeedData, timeRemainingSince)
+  } else {
+    return accumulatedFeedData
+  }
+}
+
+/*
+  since = in seconds
+*/
+const getRecentlyUpdatedData = async (since?: number) => {
+  let url = `${podcastIndexConfig.baseUrl}/recent/data?max=5000`
+
+  url += `&since=${since ? since : -600}`
+
   const response = await axiosRequest(url)
   return response && response.data
 }
+
+// const getRecentlyUpdatedPodcastFeeds = async () => {
+//   const url = `${podcastIndexConfig.baseUrl}/recent/feeds?sort=discovery&max=1000`
+//   const response = await axiosRequest(url)
+//   return response && response.data
+// }
 
 /**
  * addRecentlyUpdatedFeedUrlsToPriorityQueue
@@ -45,16 +72,15 @@ const getRecentlyUpdatedPodcastFeeds = async () => {
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
   try {
-    const response = await getRecentlyUpdatedPodcastFeeds()
-    const recentlyUpdatedFeeds = response.feeds
+    const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively()
 
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
 
     const recentlyUpdatedPodcastIndexIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
-      const { id } = item
-      if (id) {
-        recentlyUpdatedPodcastIndexIds.push(id)
+      const { feedId } = item
+      if (feedId) {
+        recentlyUpdatedPodcastIndexIds.push(feedId)
       }
     }
     
