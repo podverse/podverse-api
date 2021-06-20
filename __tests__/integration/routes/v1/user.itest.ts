@@ -184,7 +184,7 @@ describe('User endpoints', () => {
 
             chaiExpect(queueItem.episode.podcast.id).to.equal('yKyjZDxsB')
             chaiExpect(queueItem.episode.podcast.int_id).to.equal(1)
-            chaiExpect(queueItem.episode.podcast.podcastIndexId).to.equal(null)
+            chaiExpect(queueItem.episode.podcast.podcastIndexId).to.equal('550168')
             chaiExpect(queueItem.episode.podcast.authorityId).to.equal(null)
             chaiExpect(queueItem.episode.podcast.alwaysFullyParse).to.equal(false)
             chaiExpect(queueItem.episode.podcast.description).to.equal('The podcast of Comedian Joe Rogan..')
