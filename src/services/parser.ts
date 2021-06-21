@@ -476,7 +476,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.episodeType = parsedEpisode.type
   episode.funding = parsedEpisode.funding
   episode.guid = parsedEpisode.guid
-  episode.imageUrl = parsedEpisode.image
+  episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
   episode.mediaType = parsedEpisode.enclosure.type
