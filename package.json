@@ -42,7 +42,7 @@
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
-    "scripts:hideDeadPodcasts": "ts-node -r tsconfig-paths/register ./src/scripts/podcastindex/hideDeadPodcasts.ts",
+    "scripts:hideDeadPodcasts": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "scripts:parseOrphanFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
