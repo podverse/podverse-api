@@ -1,10 +1,12 @@
 import axios from 'axios'
 import { config } from '~/config'
-import { getConnection } from "typeorm"
+import { getConnection, getRepository } from "typeorm"
 import { getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
+import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
+import { Podcast } from '~/entities'
 const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
@@ -287,4 +289,39 @@ const getExistingPodcast = async (client, podcastIndexId, authorityId) => {
   }
 
   return podcasts[0]
+}
+
+const getDeadPodcasts = async () => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/dead`
+  console.log('url------------', url)
+  const response = await axiosRequest(url)
+
+  return response && response.data
+}
+
+export const hideDeadPodcasts = async () => {
+  const { feeds } = await getDeadPodcasts()
+  console.log('hideDeadPodcasts feeds', feeds.length)
+  
+  for (const feed of feeds) {
+    try {
+      if (feed && feed.id) {
+        const podcast = await getPodcastByPodcastIndexId(feed.id)
+        if (podcast.isPublic) {
+          const repository = getRepository(Podcast)
+          if (!repository) {
+            return
+          }
+          podcast.isPublic = false
+          await repository.save(podcast)
+        }
+      }
+    } catch (error) {
+      console.log('error podcast title: ', feed.title)
+      console.log('error podcast index id: ', feed.id)
+      console.log('error message: ', error.message)
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
 }
