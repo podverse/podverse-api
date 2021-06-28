@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "3.1.19",
+  "version": "3.1.20",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -19,6 +19,7 @@
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "dev:scripts:hideDeadPodcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "dev:scripts:parseOrphanFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
@@ -41,6 +42,7 @@
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "scripts:hideDeadPodcasts": "ts-node -r tsconfig-paths/register ./src/scripts/podcastindex/hideDeadPodcasts.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "scripts:parseOrphanFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
