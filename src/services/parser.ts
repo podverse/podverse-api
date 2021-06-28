@@ -35,12 +35,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast = savedPodcast
     }
 
+    const mostRecentDateFromFeed = getMostRecentPubDateFromFeed(meta, episodes)
+
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
       !forceReparsing
       && podcast.feedLastUpdated
-      && meta.lastBuildDate
-      && new Date(podcast.feedLastUpdated) >= new Date(meta.lastBuildDate)
+      && mostRecentDateFromFeed
+      && new Date(podcast.feedLastUpdated) >= new Date(mostRecentDateFromFeed)
       && !podcast.alwaysFullyParse
     ) {
       console.log('Stop parsing if the feed has not been updated since it was last parsed')
@@ -74,7 +76,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.description = meta.description
     podcast.feedLastParseFailed = false
 
-    const feedLastUpdated = new Date(meta.lastBuildDate || meta.pubDate)
+    const feedLastUpdated = new Date(mostRecentDateFromFeed || meta.lastBuildDate || meta.pubDate)
     podcast.feedLastUpdated = isValidDate(feedLastUpdated) ? feedLastUpdated : new Date()
 
     podcast.funding = meta.funding
@@ -462,6 +464,27 @@ const findCategories = async (categories: string[]) => {
   }
 
   return matchedCategories
+}
+
+const getMostRecentPubDateFromFeed = (meta, episodes) => {
+  let mostRecentDateFromFeed = null
+
+  const mostRecentEpisode = episodes.reduce((r: any, a: any) => {
+    return new Date(r.pubDate) > new Date(a.pubDate) ? r : a
+  }, [])
+  const mostRecentEpisodePubDate = mostRecentEpisode && mostRecentEpisode.pubDate
+
+  if (!meta.lastBuildDate && mostRecentEpisodePubDate) {
+    mostRecentDateFromFeed = mostRecentEpisodePubDate
+  } else if (!mostRecentEpisodePubDate && meta.lastBuildDate) {
+    mostRecentDateFromFeed = meta.lastBuildDate
+  } else if (meta.lastBuildDate && mostRecentEpisodePubDate) {
+    mostRecentDateFromFeed = new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate)
+      ? mostRecentEpisodePubDate
+      : meta.lastBuildDate
+  }
+
+  return mostRecentDateFromFeed
 }
 
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
