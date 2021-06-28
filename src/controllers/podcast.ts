@@ -80,25 +80,25 @@ const getPodcastIdByFeedUrl = async (url: string) => {
 }
 
 // Use where clause to reduce the size of very large data sets and speed up queries
-const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
-  if (!podcastIds || podcastIds.length === 0) {
-    if (sort === 'top-past-hour') {
-      qb.andWhere('podcast."pastHourTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-day') {
-      qb.andWhere('podcast."pastDayTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-week') {
-      qb.andWhere('podcast."pastWeekTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-month') {
-      qb.andWhere('podcast."pastMonthTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-year') {
-      qb.andWhere('podcast."pastYearTotalUniquePageviews" > 0')
-    } else if (sort === 'top-all-time') {
-      qb.andWhere('podcast."pastAllTimeTotalUniquePageviews" > 0')
-    }
-  }
+// const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
+//   if (!podcastIds || podcastIds.length === 0) {
+//     if (sort === 'top-past-hour') {
+//       qb.andWhere('podcast."pastHourTotalUniquePageviews" > 0')
+//     } else if (sort === 'top-past-day') {
+//       qb.andWhere('podcast."pastDayTotalUniquePageviews" > 0')
+//     } else if (sort === 'top-past-week') {
+//       qb.andWhere('podcast."pastWeekTotalUniquePageviews" > 0')
+//     } else if (sort === 'top-past-month') {
+//       qb.andWhere('podcast."pastMonthTotalUniquePageviews" > 0')
+//     } else if (sort === 'top-past-year') {
+//       qb.andWhere('podcast."pastYearTotalUniquePageviews" > 0')
+//     } else if (sort === 'top-all-time') {
+//       qb.andWhere('podcast."pastAllTimeTotalUniquePageviews" > 0')
+//     }
+//   }
 
-  return qb
-}
+//   return qb
+// }
 
 const getSubscribedPodcasts = async (query, loggedInUserId) => {
   const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
@@ -217,7 +217,7 @@ const getPodcasts = async (query, countOverride?) => {
   }
 
   qb.andWhere('"isPublic" = true')
-  qb = limitPodcastsQuerySize(qb, podcastIds, sort)
+  // qb = limitPodcastsQuerySize(qb, podcastIds, sort)
 
   qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate')
 
