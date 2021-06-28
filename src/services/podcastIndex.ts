@@ -308,11 +308,10 @@ export const hideDeadPodcasts = async () => {
       if (feed && feed.id) {
         const podcast = await getPodcastByPodcastIndexId(feed.id)
         if (podcast.isPublic) {
+          console.log('isPublic podcast title', podcast.title)
           const repository = getRepository(Podcast)
-          if (!repository) {
-            return
-          }
           podcast.isPublic = false
+          await new Promise(resolve => setTimeout(resolve, 250));
           await repository.save(podcast)
         }
       }
@@ -321,7 +320,6 @@ export const hideDeadPodcasts = async () => {
       console.log('error podcast index id: ', feed.id)
       console.log('error message: ', error.message)
     }
-
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 50));
   }
 }
