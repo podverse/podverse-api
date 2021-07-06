@@ -82,7 +82,7 @@ export class Episode {
 
   @Index()
   @IsUrl()
-  @Column()
+  @Column({ unique: true })
   mediaUrl: string
 
   @Index()
