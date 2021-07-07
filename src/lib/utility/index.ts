@@ -159,20 +159,20 @@ export const convertToSortableTitle = (title: string) => {
 
 export const isValidDate = (date: any) => date instanceof Date && !isNaN(date as any)
 
-export const cleanFileExtension = (fileExtension: string) => {
-  // If an invalid extension is provided, try to correct it.
-  if (fileExtension.indexOf('png') >= 0) {
-    return 'png'
-  } else if (fileExtension.indexOf('jpg') >= 0) {
-    return 'jpg'
-  } else if (fileExtension.indexOf('jpeg') >= 0) {
-    return 'jpeg'
-  } else if (fileExtension.indexOf('svg') >= 0) {
-    return 'svg'
-  } else {
-    return 'png'
-  }
-}
+// export const cleanFileExtension = (fileExtension: string) => {
+//   // If an invalid extension is provided, try to correct it.
+//   if (fileExtension.indexOf('png') >= 0) {
+//     return 'png'
+//   } else if (fileExtension.indexOf('jpg') >= 0) {
+//     return 'jpg'
+//   } else if (fileExtension.indexOf('jpeg') >= 0) {
+//     return 'jpeg'
+//   } else if (fileExtension.indexOf('svg') >= 0) {
+//     return 'svg'
+//   } else {
+//     return 'png'
+//   }
+// }
 
 export const hasSupportedLanguageMatch = (lang1, lang2) => {
   if (lang1 && lang2) {
