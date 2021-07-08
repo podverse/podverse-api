@@ -3,7 +3,7 @@ import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
-import { _logEnd, _logStart, cleanFileExtension, convertToSlug, convertToSortableTitle,
+import { _logEnd, _logStart, convertToSlug, convertToSortableTitle,
   isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls } from '~/controllers/feedUrl'
@@ -83,16 +83,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.guid = meta.guid
 
     podcast.imageUrl = meta.imageURL
-    if (podcast.imageUrl) {
-      let cleanedImageUrl = ''
-      if (cleanFileExtension(podcast.imageUrl)) {
-        cleanedImageUrl = podcast.imageUrl.substring(0, podcast.imageUrl.lastIndexOf('.'))
-        cleanedImageUrl = cleanedImageUrl + '.' + cleanFileExtension(podcast.imageUrl)
-      } else {
-        cleanedImageUrl = podcast.imageUrl
-      }
-      podcast.imageUrl = cleanedImageUrl
-    }
 
     podcast.isExplicit = meta.explicit
     podcast.isPublic = true
@@ -148,7 +138,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
       ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
       : false
-    if (!wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
+    if (forceReparsing || !wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
     }
 
