@@ -137,9 +137,14 @@ export const addNewFeedsFromPodcastIndex = async () => {
     const newFeeds = response.feeds
     console.log('total newFeeds count', newFeeds.length)
     for (const item of newFeeds) {
-      await createOrUpdatePodcastFromPodcastIndex(client, item)
-      const feedUrl = await getFeedUrlByUrl(item.url)
-      await parseFeedUrl(feedUrl)
+      try {
+        await createOrUpdatePodcastFromPodcastIndex(client, item)
+        const feedUrl = await getFeedUrlByUrl(item.url)
+        await parseFeedUrl(feedUrl)
+      } catch (error) {
+        console.log('addNewFeedsFromPodcastIndex item', item)
+        console.log('addNewFeedsFromPodcastIndex error', error)
+      }
     }
   } catch (error) {
     console.log('addNewFeedsFromPodcastIndex', error)
