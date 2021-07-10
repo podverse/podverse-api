@@ -16,10 +16,16 @@ export class UserQueueItem {
   @Column({ default: 0 })
   queuePosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userQueueItems, { nullable: true })
+  @ManyToOne(type => Episode, episode => episode.userQueueItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userQueueItems, { nullable: true })
+  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userQueueItems, {
+    nullable: true,
+    onDelete: 'CASCADE'
+  })
   mediaRef: MediaRef
 
   @Index()
