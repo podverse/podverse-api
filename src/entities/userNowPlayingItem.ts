@@ -23,8 +23,8 @@ export class UserNowPlayingItem {
   episode: Episode
 
   @ManyToOne(type => MediaRef, mediaRef => mediaRef.userNowPlayingItems, {
-    nullable: true,
-    onDelete: 'CASCADE'
+    nullable: true/*,
+    onDelete: 'CASCADE'*/
   })
   mediaRef: MediaRef
 

@@ -23,8 +23,8 @@ export class UserQueueItem {
   episode: Episode
 
   @ManyToOne(type => MediaRef, mediaRef => mediaRef.userQueueItems, {
-    nullable: true,
-    onDelete: 'CASCADE'
+    nullable: true/*,
+    onDelete: 'CASCADE'*/
   })
   mediaRef: MediaRef
 
