@@ -17,10 +17,15 @@ export class UserNowPlayingItem {
   @Column({ default: 0 })
   userPlaybackPosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userNowPlayingItems)
+  @ManyToOne(type => Episode, episode => episode.userNowPlayingItems/*, {
+    onDelete: 'CASCADE'
+  }*/)
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userNowPlayingItems, { nullable: true })
+  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userNowPlayingItems, {
+    nullable: true/*,
+    onDelete: 'CASCADE'*/
+  })
   mediaRef: MediaRef
 
   @OneToOne(
