@@ -27,16 +27,27 @@ declare module 'koa' {
 
 const rootRouter = new Router()
 
+const timeAppStarted = Date.now()
+
 export const createApp = async (conn: Connection) => {
 
   const app = new Koa()
 
   /* If in maintenance mode, always return 503 ServiceUnavailable error */
-  if (config.maintenanceMode.isEnabled) {
+  if (config.maintenanceMode.isEnabled) {    
     app.use(ctx => {
+      const { durationExpected } = config.maintenanceMode
+
+      let durationExpectedRemaining = Math.floor(
+        (((timeAppStarted + (durationExpected * 60 * 1000)) - Date.now()) / 60 / 1000)
+      )
+
+      durationExpectedRemaining = durationExpectedRemaining > 0
+        ? durationExpectedRemaining : 0
+
       ctx.status = 503
       ctx.body = {
-        durationExpected: config.maintenanceMode.durationExpected
+        durationExpectedRemaining
       }
     })
   }
