@@ -67,6 +67,10 @@ export interface Config {
   rateLimiterMaxOverride: any
   manticore: any
   minimumMobileVersion: string
+  maintenanceMode: {
+    isEnabled: boolean
+    durationExpected: number
+  }
 }
 
 const port = process.env.PORT || '1234'
@@ -215,7 +219,12 @@ const config: Config = {
     port: process.env.MANTICORE_PORT ? parseInt(process.env.MANTICORE_PORT, 10) : 9308,
     protocol: process.env.MANTICORE_PROTOCOL || 'http'
   },
-  minimumMobileVersion
+  minimumMobileVersion,
+  maintenanceMode: {
+    isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
+    durationExpected: process.env.MAINTENANCE_MODE_DURATION_EXPECTED ? 
+      parseInt(process.env.MAINTENANCE_MODE_DURATION_EXPECTED) : 0
+  }
 }
 
 export { config }
