@@ -17,14 +17,14 @@ export class UserQueueItem {
   queuePosition: number
 
   @ManyToOne(type => Episode, episode => episode.userQueueItems, {
-    nullable: true,
-    onDelete: 'CASCADE'
+    nullable: true/*,
+    onDelete: 'CASCADE'*/
   })
   episode: Episode
 
   @ManyToOne(type => MediaRef, mediaRef => mediaRef.userQueueItems, {
-    nullable: true,
-    onDelete: 'CASCADE'
+    nullable: true/*,
+    onDelete: 'CASCADE'*/
   })
   mediaRef: MediaRef
 
