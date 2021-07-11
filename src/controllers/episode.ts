@@ -251,7 +251,6 @@ const getDeadEpisodes = async () => {
     )
     .where("episode.id IN (" + subQueryEpisodesIsPublicFalse.getQuery() + ")")
     .andWhere('mediaRef.id IS NULL')
-    .limit(100)
 
   const episodes = await qb.getRawMany()
   console.log('dead episode count:', episodes.length)
@@ -263,13 +262,14 @@ const removeDeadEpisodes = async () => {
   const deadEpisodes = await getDeadEpisodes()
   await removeEpisodes(deadEpisodes)
   await new Promise(r => setTimeout(r, 1000));
-  const shouldContinue = deadEpisodes.length === 100
-  return shouldContinue
+  // const shouldContinue = deadEpisodes.length === 100
+  return false
 }
 
 const removeEpisodes = async (episodes: any[]) => {
   const repository = getRepository(Episode)
   for (const episode of episodes) {
+    await new Promise(r => setTimeout(r, 25));
     await repository.remove(episode)
   }
 }
