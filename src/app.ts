@@ -27,125 +27,150 @@ declare module 'koa' {
 
 const rootRouter = new Router()
 
+const timeAppStarted = Date.now()
+
 export const createApp = async (conn: Connection) => {
 
   const app = new Koa()
-  app.context.db = conn
 
-  app.use(cors({
-    credentials: true
-  }))
+  /* If in maintenance mode, always return 503 ServiceUnavailable error */
+  if (config.maintenanceMode.isEnabled) {    
+    app.use(ctx => {
+      const { downtimeExpected } = config.maintenanceMode
 
-  passport.use(createLocalStrategy(conn.getRepository(User)))
-  passport.use(createJwtStrategy())
+      let expectedDowntimeRemaining = Math.floor(
+        (((timeAppStarted + (downtimeExpected * 60 * 1000)) - Date.now()) / 60 / 1000)
+      )
 
-  app.use(helmet())
-  app.use(bodyParser())
+      expectedDowntimeRemaining = expectedDowntimeRemaining > 0
+        ? expectedDowntimeRemaining : 0
 
-  app.use(passport.initialize())
-
-  app.use(async (ctx, next) => {
-    if (ctx.request.headers.cookie) {
-      const parsedCookie = cookie.parse(ctx.request.headers.cookie)
-      if (parsedCookie.Authorization) {
-        ctx.headers.authorization = parsedCookie.Authorization
+      ctx.status = 503
+      ctx.body = {
+        expectedDowntimeRemaining
       }
-    }
-
-    await next()
-  })
-
-  app.use(mount(
-    `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
-  ))
-
-  app.use(mount(
-    `/public`, koaStatic(__dirname + '/public/samples')
-  ))
-
-  app.use(swagger({
-    routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
-    swaggerOptions: {
-      url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
-    }
-  }))
-
-  rootRouter.get('/',
-    async ctx => {
-      ctx.body = 'Please visit /api/v1/swagger for current documentation.'
     })
+  }
 
-  app.use(rootRouter.routes())
-  app.use(rootRouter.allowedMethods())
+  if (!config.maintenanceMode.isEnabled) {
+    app.context.db = conn
+  
+    app.use(cors({
+      credentials: true
+    }))
+  
+    passport.use(createLocalStrategy(conn.getRepository(User)))
+    passport.use(createJwtStrategy())
+  
+    app.use(helmet())
+    app.use(bodyParser())
+  
+    app.use(passport.initialize())
+  
+    app.use(async (ctx, next) => {
+      if (ctx.request.headers.cookie) {
+        const parsedCookie = cookie.parse(ctx.request.headers.cookie)
+        if (parsedCookie.Authorization) {
+          ctx.headers.authorization = parsedCookie.Authorization
+        }
+      }
+  
+      await next()
+    })
+  
+    app.use(mount(
+      `${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')
+    ))
+  
+    app.use(mount(
+      `/public`, koaStatic(__dirname + '/public/samples')
+    ))
+  
+    app.use(swagger({
+      routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
+      swaggerOptions: {
+        url: `${config.apiPrefix}${config.apiVersion}/public/swagger.json`
+      }
+    }))
+  
+    rootRouter.get('/',
+      async ctx => {
+        ctx.body = 'Please visit /api/v1/swagger for current documentation.'
+      })
+  
+    app.use(rootRouter.routes())
+    app.use(rootRouter.allowedMethods())
+  
+    app.use(accountClaimTokenRouter.routes())
+    app.use(accountClaimTokenRouter.allowedMethods())
+  
+    app.use(addByRSSPodcastFeedUrlRouter.routes())
+    app.use(addByRSSPodcastFeedUrlRouter.allowedMethods())
+  
+    app.use(appStoreRouter.routes())
+    app.use(appStoreRouter.allowedMethods())
+  
+    app.use(authRouter.routes())
+    app.use(authRouter.allowedMethods())
+  
+    app.use(authorRouter.routes())
+    app.use(authorRouter.allowedMethods())
+  
+    // app.use(bitpayRouter.routes())
+    // app.use(bitpayRouter.allowedMethods())
+  
+    app.use(categoryRouter.routes())
+    app.use(categoryRouter.allowedMethods())
+  
+    app.use(clipsRouter.routes())
+    app.use(clipsRouter.allowedMethods())
+  
+    app.use(episodeRouter.routes())
+    app.use(episodeRouter.allowedMethods())
+  
+    app.use(feedUrlRouter.routes())
+    app.use(feedUrlRouter.allowedMethods())
+  
+    app.use(googlePlayRouter.routes())
+    app.use(googlePlayRouter.allowedMethods())
+  
+    app.use(mediaRefRouter.routes())
+    app.use(mediaRefRouter.allowedMethods())
+  
+    app.use(metaRouter.routes())
+    app.use(metaRouter.allowedMethods())
+  
+    app.use(paypalRouter.routes())
+    app.use(paypalRouter.allowedMethods())
+  
+    app.use(playlistRouter.routes())
+    app.use(playlistRouter.allowedMethods())
+  
+    app.use(podcastRouter.routes())
+    app.use(podcastRouter.allowedMethods())
+  
+    app.use(podcastIndexRouter.routes())
+    app.use(podcastIndexRouter.allowedMethods())
+  
+    app.use(userHistoryItemRouter.routes())
+    app.use(userHistoryItemRouter.allowedMethods())
+  
+    app.use(userNowPlayingItemRouter.routes())
+    app.use(userNowPlayingItemRouter.allowedMethods())
+  
+    app.use(userQueueItemRouter.routes())
+    app.use(userQueueItemRouter.allowedMethods())
+  
+    app.use(userRouter.routes())
+    app.use(userRouter.allowedMethods())
+  
+    app.use(logger())
+  
+    app.on('error', async (error) => {
+      loggerInstance.log('error', error.message)
+    })
+  }
 
-  app.use(accountClaimTokenRouter.routes())
-  app.use(accountClaimTokenRouter.allowedMethods())
-
-  app.use(addByRSSPodcastFeedUrlRouter.routes())
-  app.use(addByRSSPodcastFeedUrlRouter.allowedMethods())
-
-  app.use(appStoreRouter.routes())
-  app.use(appStoreRouter.allowedMethods())
-
-  app.use(authRouter.routes())
-  app.use(authRouter.allowedMethods())
-
-  app.use(authorRouter.routes())
-  app.use(authorRouter.allowedMethods())
-
-  // app.use(bitpayRouter.routes())
-  // app.use(bitpayRouter.allowedMethods())
-
-  app.use(categoryRouter.routes())
-  app.use(categoryRouter.allowedMethods())
-
-  app.use(clipsRouter.routes())
-  app.use(clipsRouter.allowedMethods())
-
-  app.use(episodeRouter.routes())
-  app.use(episodeRouter.allowedMethods())
-
-  app.use(feedUrlRouter.routes())
-  app.use(feedUrlRouter.allowedMethods())
-
-  app.use(googlePlayRouter.routes())
-  app.use(googlePlayRouter.allowedMethods())
-
-  app.use(mediaRefRouter.routes())
-  app.use(mediaRefRouter.allowedMethods())
-
-  app.use(metaRouter.routes())
-  app.use(metaRouter.allowedMethods())
-
-  app.use(paypalRouter.routes())
-  app.use(paypalRouter.allowedMethods())
-
-  app.use(playlistRouter.routes())
-  app.use(playlistRouter.allowedMethods())
-
-  app.use(podcastRouter.routes())
-  app.use(podcastRouter.allowedMethods())
-
-  app.use(podcastIndexRouter.routes())
-  app.use(podcastIndexRouter.allowedMethods())
-
-  app.use(userHistoryItemRouter.routes())
-  app.use(userHistoryItemRouter.allowedMethods())
-
-  app.use(userNowPlayingItemRouter.routes())
-  app.use(userNowPlayingItemRouter.allowedMethods())
-
-  app.use(userQueueItemRouter.routes())
-  app.use(userQueueItemRouter.allowedMethods())
-
-  app.use(userRouter.routes())
-  app.use(userRouter.allowedMethods())
-
-  app.use(logger())
-
-  app.on('error', async (error) => {
-    loggerInstance.log('error', error.message)
-  })
 
   return app
 
