@@ -237,15 +237,21 @@ const handleGetEpisodesWithOrdering = async (obj) => {
 const getDeadEpisodes = async () => {
   const repository = getRepository(Episode)
 
+  const subQueryEpisodesIsPublicFalse = repository
+    .createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .where('episode."isPublic" = FALSE')
+    .limit(100)
+
   const qb = repository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
-    .where('episode."isPublic" = FALSE AND mediaRef.id IS NULL')
     .leftJoin(
       'episode.mediaRefs',
       'mediaRef'
     )
-    .limit(100)
+    .where("episode.id IN (" + subQueryEpisodesIsPublicFalse.getQuery() + ")")
+    .andWhere('mediaRef.id IS NULL')
 
   const episodes = await qb.getRawMany()
   console.log('dead episode count:', episodes.length)
