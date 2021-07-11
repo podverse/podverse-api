@@ -36,18 +36,18 @@ export const createApp = async (conn: Connection) => {
   /* If in maintenance mode, always return 503 ServiceUnavailable error */
   if (config.maintenanceMode.isEnabled) {    
     app.use(ctx => {
-      const { durationExpected } = config.maintenanceMode
+      const { downtimeExpected } = config.maintenanceMode
 
-      let durationExpectedRemaining = Math.floor(
-        (((timeAppStarted + (durationExpected * 60 * 1000)) - Date.now()) / 60 / 1000)
+      let expectedDowntimeRemaining = Math.floor(
+        (((timeAppStarted + (downtimeExpected * 60 * 1000)) - Date.now()) / 60 / 1000)
       )
 
-      durationExpectedRemaining = durationExpectedRemaining > 0
-        ? durationExpectedRemaining : 0
+      expectedDowntimeRemaining = expectedDowntimeRemaining > 0
+        ? expectedDowntimeRemaining : 0
 
       ctx.status = 503
       ctx.body = {
-        durationExpectedRemaining
+        expectedDowntimeRemaining
       }
     })
   }

@@ -69,7 +69,7 @@ export interface Config {
   minimumMobileVersion: string
   maintenanceMode: {
     isEnabled: boolean
-    durationExpected: number
+    downtimeExpected: number
   }
 }
 
@@ -222,8 +222,8 @@ const config: Config = {
   minimumMobileVersion,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
-    durationExpected: process.env.MAINTENANCE_MODE_DURATION_EXPECTED ? 
-      parseInt(process.env.MAINTENANCE_MODE_DURATION_EXPECTED) : 0
+    downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED ?
+      parseInt(process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED) : 0
   }
 }
 
