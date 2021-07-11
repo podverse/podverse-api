@@ -241,7 +241,6 @@ const getDeadEpisodes = async () => {
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
     .where('episode."isPublic" = FALSE')
-    .limit(100)
 
   const qb = repository
     .createQueryBuilder('episode')
@@ -252,6 +251,7 @@ const getDeadEpisodes = async () => {
     )
     .where("episode.id IN (" + subQueryEpisodesIsPublicFalse.getQuery() + ")")
     .andWhere('mediaRef.id IS NULL')
+    .limit(100)
 
   const episodes = await qb.getRawMany()
   console.log('dead episode count:', episodes.length)
