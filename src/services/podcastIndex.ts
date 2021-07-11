@@ -166,7 +166,7 @@ export const addNewFeedsFromPodcastIndex = async () => {
  * When no feedUrl for that podcastIndexId exists, then creates a new feedUrl
  * using the podcastIndexItem's information.
  * 
- * When a feedUrl for that podcastIndexId exists, then promote the item's url
+ * When a feedUrl for that podcastIndexId exists, then promote the item's new url
  * to be the authority feedUrl for that podcast, and demote any other feedUrls for that podcast.
  */
 export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
@@ -174,12 +174,13 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
 
   try {
     const csvFilePath = `${rootFilePath}/temp/podcastIndexFeedUrlsDump.csv`;
+    console.log('syncWithFeedUrlsCSVDump csvFilePath', csvFilePath)
     const client = await getConnection().createEntityManager()
     await csv()
       .fromFile(csvFilePath)
       .subscribe((json) => {
         return new Promise(async (resolve) => {
-          await new Promise(r => setTimeout(r, 200));
+          await new Promise(r => setTimeout(r, 25));
           try {
             await createOrUpdatePodcastFromPodcastIndex(client, json)
           } catch (error) {
