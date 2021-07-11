@@ -63,6 +63,7 @@ export class Episode {
   @Column({ default: false })
   isExplicit: boolean
 
+  @Index()
   @Column({ default: false })
   isPublic: boolean
 
@@ -82,7 +83,7 @@ export class Episode {
 
   @Index()
   @IsUrl()
-  @Column({ unique: true })
+  @Column()
   mediaUrl: string
 
   @Index()

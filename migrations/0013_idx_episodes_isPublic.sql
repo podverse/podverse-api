@@ -1,0 +1,1 @@
+CREATE INDEX idx_episodes_isPublic ON episodes ("isPublic");
