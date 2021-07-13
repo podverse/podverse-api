@@ -259,6 +259,7 @@ const getDeadEpisodes = async () => {
 }
 
 const removeDeadEpisodes = async () => {
+  console.log('removeDeadEpisodes')
   const deadEpisodes = await getDeadEpisodes()
   await removeEpisodes(deadEpisodes)
   await new Promise(r => setTimeout(r, 1000));
@@ -269,6 +270,7 @@ const removeDeadEpisodes = async () => {
 const removeEpisodes = async (episodes: any[]) => {
   const repository = getRepository(Episode)
   for (const episode of episodes) {
+    console.log('removeEpisode', episode)
     await new Promise(r => setTimeout(r, 25));
     await repository.remove(episode)
   }
