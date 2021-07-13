@@ -141,10 +141,11 @@ const getPodcastsFromSearchEngine = async (query) => {
   delete query.skip
   query.podcastId = podcastIdsString
 
-  return getPodcasts(query, total)
+  const isFromManticoreSearch = true
+  return getPodcasts(query, total, isFromManticoreSearch)
 }
 
-const getPodcasts = async (query, countOverride?) => {
+const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   const repository = getRepository(Podcast)
   const { categories, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
     skip, sort, take } = query
@@ -233,9 +234,11 @@ const getPodcasts = async (query, countOverride?) => {
     
     // NOTE: I have no idea why I added this at one point...
     // commenting out since it breaks query sorting...
-    // podcasts.sort(function (p1, p2) {
-    //   return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id);
-    // });
+    if (podcastIds && podcastIds.length && isFromManticoreSearch) {
+      podcasts.sort(function (p1, p2) {
+        return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id)
+      })
+    }
 
     if (countOverride > 0) {
       podcastsCount = countOverride
