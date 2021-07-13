@@ -204,11 +204,11 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   } else {
     const url = item.url
     const podcastIndexId = item.id
-    const itunesId = item.itunes_id ? item.itunes_id : null
+    const itunesId = parseInt(item.itunes_id) ? item.itunes_id : null
 
     console.log('feed url', url, podcastIndexId, itunesId)
     
-    let existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
+    let existingPodcast = await getExistingPodcast(client, podcastIndexId)
 
     if (!existingPodcast) {
       console.log('podcast does not already exist')
@@ -219,7 +219,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
         VALUES ($1, $2, $3, $4);
       `, [shortid(), itunesId, podcastIndexId, isPublic])
 
-      existingPodcast = await getExistingPodcast(client, podcastIndexId, itunesId)
+      existingPodcast = await getExistingPodcast(client, podcastIndexId)
     } else {
       const setSQLCommand = itunesId
         ? `SET ("podcastIndexId", "authorityId") = (${podcastIndexId}, ${itunesId})`
@@ -275,7 +275,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   console.log('*** finished entry')
 }
 
-const getExistingPodcast = async (client, podcastIndexId, authorityId) => {
+const getExistingPodcast = async (client, podcastIndexId) => {
   let podcasts = [] as any
 
   if (podcastIndexId) {
@@ -284,14 +284,6 @@ const getExistingPodcast = async (client, podcastIndexId, authorityId) => {
       FROM podcasts
       WHERE "podcastIndexId"=$1;
     `, [podcastIndexId])
-  }
-
-  if ((!podcasts || podcasts.length === 0) && authorityId) {
-    podcasts = await client.query(`
-      SELECT "authorityId", "podcastIndexId", id, title
-      FROM podcasts
-      WHERE "authorityId"=$1;
-    `, [authorityId])
   }
 
   return podcasts[0]
