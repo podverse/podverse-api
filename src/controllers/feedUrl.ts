@@ -123,6 +123,29 @@ const getFeedUrls = (query) => {
   })
 }
 
+const getFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
+  const repository = getRepository(FeedUrl)
+
+  const feedUrl = await repository
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.id')
+    .addSelect('feedUrl.url')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
+    .where('podcast."podcastIndexId')
+    .where(
+      'podcast.podcastIndexId IN (:...podcastIndexIds)',
+      { podcastIndexIds }
+    )
+    .andWhere('feedUrl.isAuthority = TRUE')
+    .getMany()
+
+  if (!feedUrl) {
+    throw new createError.NotFound('FeedUrls not found')
+  }
+
+  return feedUrl
+}
+
 const updateFeedUrl = async obj => {
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository.findOne({
@@ -149,6 +172,7 @@ export {
   addFeedUrls,
   deleteFeedUrl,
   getFeedUrl,
+  getFeedUrlsByPodcastIndexIds,
   getFeedUrlByUrl,
   getFeedUrlByUrlIgnoreProtocol,
   getFeedUrls,
