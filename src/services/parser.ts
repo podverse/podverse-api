@@ -6,7 +6,7 @@ import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import { _logEnd, _logStart, convertToSlug, convertToSortableTitle,
   isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
-import { getFeedUrls } from '~/controllers/feedUrl'
+import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 const podcastFeedParser = require('@podverse/podcast-feed-parser')
 const { awsConfig, userAgent } = config
@@ -34,6 +34,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       if (!savedPodcast) throw Error('Invalid podcast id provided.')
       podcast = savedPodcast
     }
+
+    logPerformance('podcast id', podcast.id)
 
     const mostRecentDateFromFeed = getMostRecentPubDateFromFeed(meta, episodes)
 
@@ -214,6 +216,22 @@ export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
   }
 
   console.log('parseFeedUrlsByPodcastIds finished')
+  return
+}
+
+export const parseFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
+  const feedUrls = await getFeedUrlsByPodcastIndexIds(podcastIndexIds)
+  const forceReparsing = true
+
+  for (const feedUrl of feedUrls) {
+    try {
+      await parseFeedUrl(feedUrl, forceReparsing)
+    } catch (error) {
+      await handlePodcastFeedLastParseFailed(feedUrl, error)
+    }
+  }
+
+  console.log('getFeedUrlsByPodcastIndexIds finished')
   return
 }
 
