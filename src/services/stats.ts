@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { getConnection } from 'typeorm'
 import { connectToDb } from '~/lib/db'
-import { lastHour, offsetDate } from '~/lib/utility'
-import { queryGoogleAnalyticsData } from './google'
+import { /* lastHour,*/ offsetDate } from '~/lib/utility'
+import { queryMatomoData } from './matomo'
 
 enum PagePaths {
-  clips = '~/clip',
-  episodes = '~/episode',
-  podcasts = '~/podcast'
+  clips = 'clip',
+  episodes = 'episode',
+  podcasts = 'podcast'
 }
 
 enum StartDateOffset {
-  hour = -60,
+  // hour = -60,
   day = -1440,
   week = -10080,
   month = -43800,
@@ -24,7 +25,7 @@ const TableNames = {
 }
 
 enum TimeRanges {
-  hour = 'pastHourTotalUniquePageviews',
+  // hour = 'pastHourTotalUniquePageviews',
   day = 'pastDayTotalUniquePageviews',
   week = 'pastWeekTotalUniquePageviews',
   month = 'pastMonthTotalUniquePageviews',
@@ -43,73 +44,43 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 
   if (!Object.keys(TimeRanges).includes(timeRange)) {
     console.log('A valid timeRange must be provided in the second parameter.')
-    console.log('Valid options are: hour, day, week, month, year, allTime')
+    console.log('Valid options are: day, week, month, year, allTime')
     return
   }
 
   const startDate = timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset)
-  const hourFilter = TimeRanges[timeRange] === TimeRanges.hour ? `ga:hour==${lastHour()};` : ''
-  const filtersExpression = `ga:pagePath=${PagePaths[pagePath]};${hourFilter}ga:uniquePageviews>0`
+  const endDate = offsetDate()
 
-  const queryObj = {
-    dimensions: [
-      {
-        name: 'ga:pagePath'
-      }
-    ],
-    endDate: offsetDate(),
-    filtersExpression,
-    metrics: [
-      {
-        expression: 'ga:uniquePageviews'
-      }
-    ],
-    orderBys: [
-      {
-        'sortOrder': 'DESCENDING',
-        'fieldName': 'ga:uniquePageviews'
-      }
-    ],
-    startDate: startDate
-  }
-
-  const response = await queryGoogleAnalyticsData(queryObj)
+  const response = await queryMatomoData(startDate, endDate, PagePaths[pagePath])
   await savePageviewsToDatabase(pagePath, timeRange, response)
 }
 
 const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   await connectToDb()
-  const reports = response.data.reports
-  for (const report of reports) {
-    const data = report.data
-    
-    if (data) {
-      const rows = data.rows || []
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i]
-        const pathName = row.dimensions[0]
 
-        // remove all characters in the url path before the id, then put in an array
-        const idStartIndex = pathName.indexOf(`${pagePath}/`) + (pagePath.length + 2)
-        const id = pathName.substr(idStartIndex)
+  const rows = response.data
+  for (const row of rows) {
+    const label = row.label
 
-        // max length of ids = 14
-        if (id.length > 14) {
-          continue
-        }
+    // remove all characters in the url path before the id, then put in an array
+    const idStartIndex = label.indexOf(`${pagePath}/`) + (pagePath.length + 2)
+    const id = label.substr(idStartIndex)
 
-        const values = row.metrics[0].values[0]
-        const tableName = TableNames[pagePath]
+    // max length of ids = 14
+    if (id.length > 14) {
+      continue
+    }
 
-        // Updating the database one at a time to avoid deadlocks
-        // TODO: optimize with bulk updates, and avoid deadlocks! 
-        if (id) {
-          const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${values} WHERE id='${id}';`
-          await getConnection()
-            .createEntityManager()
-            .query(rawSQLUpdate)
-        }
-      }
+    const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
+    const tableName = TableNames[pagePath]
+
+    // Updating the database one at a time to avoid deadlocks
+    // TODO: optimize with bulk updates, and avoid deadlocks! 
+    if (id) {
+      const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors} WHERE id='${id}';`
+      await getConnection()
+        .createEntityManager()
+        .query(rawSQLUpdate)
     }
   }
 }

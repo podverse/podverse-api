@@ -88,6 +88,14 @@ export const convertSecToHHMMSS = (sec: number) => {
   return result
 }
 
+export const generateQueryParams = (query: any) => {
+  return Object.keys(query)
+    .map((key) => {
+      return `${key}=${query[key]}`
+    })
+    .join('&')
+}
+
 export const addOrderByToQuery = (qb, type, sort, sortDateKey) => {
   const ascKey = 'ASC'
   const descKey = 'DESC'

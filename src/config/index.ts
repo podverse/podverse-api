@@ -58,6 +58,7 @@ export interface Config {
   socialTwitterPageUrl: string
   parserSupportedLanguages: any[]
   podcastIndexConfig: any
+  matomoConfig: any
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -147,6 +148,12 @@ const podcastIndexConfig = {
   podcastIndexNewFeedsSinceTime: parseInt(podcastIndexNewFeedsSinceTime, 10)
 }
 
+const matomoConfig = {
+  baseUrl: process.env.MATOMO_BASE_URL || '',
+  siteId: process.env.MATOMO_SITE_ID || '',
+  authToken: process.env.MATOMO_AUTH_TOKEN || ''
+}
+
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
 const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
@@ -197,6 +204,7 @@ const config: Config = {
   awsConfig,
   bitpayConfig,
   paypalConfig,
+  matomoConfig,
   socialFacebookImageUrl,
   socialFacebookPageUrl,
   socialGithubImageUrl,
