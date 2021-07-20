@@ -4,7 +4,7 @@ import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
 import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, Index, ManyToOne,
   PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm'
-const shortid = require('shortid')
+import { generateShortId } from '~/lib/utility'
 
 @Entity('feedUrls')
 @Unique('index_feedUrlId_isAuthority', ['id', 'isAuthority'])
@@ -12,7 +12,7 @@ const shortid = require('shortid')
 export class FeedUrl {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -42,7 +42,7 @@ export class FeedUrl {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
   }
 
 }

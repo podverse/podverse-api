@@ -3,14 +3,13 @@
 import { Episode, MediaRef, User } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   JoinTable, ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-
-const shortid = require('shortid')
+import { generateShortId } from '~/lib/utility'
 
 @Entity('playlists')
 export class Playlist {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -58,7 +57,7 @@ export class Playlist {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
     this.itemsOrder = this.itemsOrder || []
   }
 

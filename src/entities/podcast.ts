@@ -4,8 +4,7 @@ import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   JoinTable, ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
-
-const shortid = require('shortid')
+import { generateShortId } from '~/lib/utility'
 
 type Funding = {
   url: string
@@ -33,7 +32,7 @@ type ValueRecipient = {
 export class Podcast {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -189,7 +188,7 @@ export class Podcast {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
   }
 
   @BeforeInsert()

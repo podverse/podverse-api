@@ -1,5 +1,6 @@
 export { validatePassword } from '~/lib/utility/validation'
 import { performance } from 'perf_hooks'
+const shortid = require('shortid')
 
 export const delimitQueryValues = (ctx, keys) => {
   const query = ctx.state.query
@@ -212,4 +213,8 @@ export const parseProp = (item: any, key: string, defaultValue: any) => {
     }
   }
   return val
+}
+
+export const generateShortId = () => {
+  return shortid.generate().slice(-14)
 }
