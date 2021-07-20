@@ -9,14 +9,13 @@ import { ValidatePassword } from '~/entities/validation/password'
 import { AppStorePurchase } from './appStorePurchase'
 import { GooglePlayPurchase } from './googlePlayPurchase'
 import { UserNowPlayingItem } from './userNowPlayingItem'
-
-const shortid = require('shortid')
+import { generateShortId } from '~/lib/utility'
 
 @Entity('users')
 export class User {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -173,7 +172,7 @@ export class User {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
 
     this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []

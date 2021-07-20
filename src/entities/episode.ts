@@ -7,15 +7,14 @@ import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingIte
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
   Index, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
   UpdateDateColumn } from 'typeorm'
-
-const shortid = require('shortid')
+  import { generateShortId } from '~/lib/utility'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
 export class Episode {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -184,7 +183,7 @@ export class Episode {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
     this.podcastId = this.podcast.id
   }
 

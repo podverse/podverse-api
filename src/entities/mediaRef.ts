@@ -6,15 +6,14 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated
   UpdateDateColumn } from 'typeorm'
 import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem,
   UserQueueItem } from '~/entities'
-
-const shortid = require('shortid')
+import { generateShortId } from '~/lib/utility'
 
 @Entity('mediaRefs')
 @Unique('mediaRef_index_episode_isOfficialChapter_startTime', ['episode', 'isOfficialChapter', 'startTime'])
 export class MediaRef {
 
   @PrimaryColumn('varchar', {
-    default: shortid.generate(),
+    default: generateShortId(),
     length: 14
   })
   id: string
@@ -138,7 +137,7 @@ export class MediaRef {
 
   @BeforeInsert()
   beforeInsert () {
-    this.id = shortid.generate()
+    this.id = generateShortId()
   }
 
   @BeforeInsert()
