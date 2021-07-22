@@ -59,6 +59,14 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   await connectToDb()
 
   const rows = response.data
+  const tableName = TableNames[pagePath]
+  console.log('savePageviewsToDatabase')
+  console.log('pagePath', pagePath)
+  console.log('timeRange', timeRange)
+  console.log('rows.length', rows.length)
+  console.log('tableName', tableName)
+  console.log('TimeRange', TimeRanges[timeRange])
+
   for (const row of rows) {
     const label = row.label
 
@@ -68,11 +76,11 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
 
     // max length of ids = 14
     if (id.length > 14) {
+      console.log('id too long!', id)
       continue
     }
 
     const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
-    const tableName = TableNames[pagePath]
 
     // Updating the database one at a time to avoid deadlocks
     // TODO: optimize with bulk updates, and avoid deadlocks! 
