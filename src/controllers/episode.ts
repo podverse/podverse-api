@@ -92,7 +92,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .addSelect('episode.transcript')
     .addSelect('episode.value')
 
-  qb[`${includePodcast ? 'innerJoinAndSelect' : 'innerJoin'}`](
+  qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`](
     'episode.podcast',
     'podcast'
   )
