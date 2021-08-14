@@ -2,7 +2,9 @@ import { addRecentlyUpdatedFeedUrlsToPriorityQueue } from '~/services/podcastInd
 
 (async function () {
   try {
-    await addRecentlyUpdatedFeedUrlsToPriorityQueue()
+    const sinceTime = (process.argv.length > 2 ? process.argv[2] : '') as any
+
+    await addRecentlyUpdatedFeedUrlsToPriorityQueue(sinceTime)
   } catch (error) {
     console.log(error)
   }

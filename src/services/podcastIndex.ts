@@ -32,16 +32,24 @@ const axiosRequest = async (url) => {
 }
 
 const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = [], since?: number) => {
+  console.log('getRecentlyUpdatedDataRecursively')
+  console.log('accumulatedFeedData.length', accumulatedFeedData.length)
   const currentTime = Math.floor(Date.now() / 1000)
   const axiosResponseData = await getRecentlyUpdatedData(since)
   const { data, itemCount, nextSince } = axiosResponseData
+  console.log('itemCount', itemCount)
+  console.log('since', since)
+  console.log('nextSince', nextSince)
   const { feeds } = data
+  console.log('feeds', feeds.length)
   accumulatedFeedData = [...accumulatedFeedData, ...feeds]
-
+  console.log('accumulatedFeedData', accumulatedFeedData.length)
   if (itemCount >= 5000) {
     const timeRemainingSince = nextSince - currentTime
+    console.log('timeRemainingSince', timeRemainingSince)
     return getRecentlyUpdatedDataRecursively(accumulatedFeedData, timeRemainingSince)
   } else {
+    console.log('return final data', accumulatedFeedData.length)
     return accumulatedFeedData
   }
 }
@@ -72,9 +80,9 @@ const getRecentlyUpdatedData = async (since?: number) => {
  * the feeds that have a matching podcastIndexId in our database
  * to the queue for parsing.
  */
-export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async () => {
+export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
-    const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively()
+    const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively([], sinceTime)
 
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
 
