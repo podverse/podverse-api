@@ -35,6 +35,9 @@ export class Episode {
   @Column({ nullable: true })
   chaptersUrlLastParsed: Date
 
+  @Column({ default: false })
+  credentialsRequired?: boolean
+
   @Column({ nullable: true })
   description?: string
 

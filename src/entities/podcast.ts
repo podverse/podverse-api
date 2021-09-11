@@ -52,6 +52,9 @@ export class Podcast {
   @Column({ default: false })
   alwaysFullyParse?: boolean
 
+  @Column({ default: false })
+  credentialsRequired?: boolean
+
   @Column({ nullable: true })
   description?: string
 

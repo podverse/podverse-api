@@ -69,6 +69,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .createQueryBuilder('episode')
     .select('episode.id')
     .addSelect('episode.chaptersUrl')
+    .addSelect('episode.credentialsRequired')
     .addSelect('episode.description')
     .addSelect('episode.duration')
     .addSelect('episode.episodeType')

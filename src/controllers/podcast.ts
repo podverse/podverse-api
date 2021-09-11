@@ -155,6 +155,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .createQueryBuilder('podcast')
     .select('podcast.id')
     .addSelect('podcast.podcastIndexId')
+    .addSelect('podcast.credentialsRequired')
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.funding')
     .addSelect('podcast.hideDynamicAdsWarning')
@@ -267,6 +268,7 @@ const getMetadata = async query => {
   const qb = repository
     .createQueryBuilder('podcast')
     .select('podcast.id')
+    .addSelect('podcast.credentialsRequired')
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.funding')
     .addSelect('podcast.hideDynamicAdsWarning')
