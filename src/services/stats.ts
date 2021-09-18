@@ -58,37 +58,68 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
 const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   await connectToDb()
 
-  const rows = response.data
+  const matomoDataRows = response.data
   const tableName = TableNames[pagePath]
   console.log('savePageviewsToDatabase')
   console.log('pagePath', pagePath)
   console.log('timeRange', timeRange)
-  console.log('rows.length', rows.length)
+  console.log('matomoDataRows.length', matomoDataRows.length)
   console.log('tableName', tableName)
   console.log('TimeRange', TimeRanges[timeRange])
 
-  for (const row of rows) {
-    const label = row.label
+  /*
+    The Matomo stats endpoint will only return data for pages that have a view in the past X days,
+    so we need to first set all of the table rows with values > 0 back to 0,
+    before writing the Matomo data to the table.
+  */
 
-    // remove all characters in the url path before the id, then put in an array
-    const idStartIndex = label.indexOf(`${pagePath}/`) + (pagePath.length + 2)
-    const id = label.substr(idStartIndex)
+  const getTableRowsWithStatsData = `SELECT id, "${TimeRanges[timeRange]}" FROM "${tableName}s" WHERE "${TimeRanges[timeRange]}">0;`
+  const tableRowsWithStatsData = await getConnection()
+    .createEntityManager()
+    .query(getTableRowsWithStatsData)
+  console.log('tableRowsWithStatsData length', tableRowsWithStatsData.length)
 
-    // max length of ids = 14
-    if (id.length > 14) {
-      console.log('id too long!', id)
-      continue
-    }
-
-    const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
-
-    // Updating the database one at a time to avoid deadlocks
-    // TODO: optimize with bulk updates, and avoid deadlocks! 
-    if (id) {
-      const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors} WHERE id='${id}';`
+  for (const row of tableRowsWithStatsData) {
+    try {
+      // Updating the database one at a time to avoid deadlocks
+      // TODO: optimize with bulk updates, and avoid deadlocks! 
+      const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=0 WHERE id='${row.id}';`
       await getConnection()
         .createEntityManager()
         .query(rawSQLUpdate)
+    } catch (err) {
+      console.log('tableRowsWithStatsData err', err)
+      console.log('tableRowsWithStatsData err row', row)
+    }
+  }
+
+  for (const row of matomoDataRows) {
+    try {
+      const label = row.label
+
+      // remove all characters in the url path before the id, then put in an array
+      const idStartIndex = label.indexOf(`${pagePath}/`) + (pagePath.length + 2)
+      const id = label.substr(idStartIndex)
+
+      // max length of ids = 14
+      if (id.length > 14) {
+        console.log('id too long!', id)
+        continue
+      }
+  
+      const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
+  
+      // Updating the database one at a time to avoid deadlocks
+      // TODO: optimize with bulk updates, and avoid deadlocks! 
+      if (id) {
+        const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors} WHERE id='${id}';`
+        await getConnection()
+          .createEntityManager()
+          .query(rawSQLUpdate)
+      }
+    } catch (err) {
+      console.log('row err', err)
+      console.log('row', row)
     }
   }
 }
