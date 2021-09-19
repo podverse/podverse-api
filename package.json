@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -117,7 +117,7 @@
   },
   "dependencies": {
     "@koa/cors": "3.0.0",
-    "@podverse/podcast-feed-parser": "^1.0.17",
+    "@podverse/podcast-feed-parser": "^1.1.0",
     "@types/crypto-js": "^3.1.47",
     "@types/jest": "26.0.3",
     "@typescript-eslint/eslint-plugin": "2.x",
