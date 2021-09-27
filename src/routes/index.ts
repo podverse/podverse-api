@@ -15,6 +15,7 @@ export { paypalRouter } from '~/routes/paypal'
 export { playlistRouter } from '~/routes/playlist'
 export { podcastRouter } from '~/routes/podcast'
 export { podcastIndexRouter } from '~/routes/podcastIndex'
+export { toolsRouter } from "~/routes/tools"
 export { userRouter } from '~/routes/user'
 export { userHistoryItemRouter } from '~/routes/userHistoryItem'
 export { userNowPlayingItemRouter } from '~/routes/userNowPlayingItem'
