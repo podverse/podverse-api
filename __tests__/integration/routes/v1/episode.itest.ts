@@ -16,6 +16,7 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.chaptersType).to.equal(null)
           chaiExpect(res.body.chaptersUrl).to.equal(null)
           chaiExpect(res.body.chaptersUrlLastParsed).to.equal(null)
+          chaiExpect(res.body.credentialsRequired).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.duration).to.equal(0)
           chaiExpect(res.body.episodeType).to.equal('full')
@@ -106,7 +107,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories[1]).to.have.property('createdAt')
           chaiExpect(categories[1]).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(32)
+          chaiExpect(Object.keys(res.body).length).to.equal(33)
           
           done()
         })
@@ -199,6 +200,7 @@ describe('_episode endpoints', () => {
           chaiExpect(res.body.chaptersType).to.equal(null)
           chaiExpect(res.body.chaptersUrl).to.equal(null)
           chaiExpect(res.body.chaptersUrlLastParsed).to.equal(null)
+          chaiExpect(res.body.credentialsRequired).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.duration).to.equal(0)
           chaiExpect(res.body.episodeType).to.equal('full')
@@ -285,7 +287,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories).to.have.property('createdAt')
           chaiExpect(categories).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(32)
+          chaiExpect(Object.keys(res.body).length).to.equal(33)
 
           done()
         })
@@ -316,6 +318,7 @@ describe('_episode endpoints', () => {
 
           chaiExpect(episode.id).to.equal('3TENCQO2Q')
           chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.credentialsRequired).to.equal(false)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -339,7 +342,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(24)
+          chaiExpect(Object.keys(episode).length).to.equal(25)
           chaiExpect(res.body[0].length).to.equal(20)
 
           done()
@@ -358,6 +361,7 @@ describe('_episode endpoints', () => {
 
           chaiExpect(episode.id).to.equal('8XfUC3W5-')
           chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.credentialsRequired).to.equal(false)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -381,7 +385,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(24)
+          chaiExpect(Object.keys(episode).length).to.equal(25)
           chaiExpect(res.body[0].length).to.equal(20)
 
           done()
