@@ -18,6 +18,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(res.body.podcastIndexId).to.equal('199138')
           chaiExpect(res.body.authorityId).to.equal(null)
           chaiExpect(res.body.alwaysFullyParse).to.equal(false)
+          chaiExpect(res.body.credentialsRequired).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)
           chaiExpect(res.body).to.have.property('feedLastUpdated')
@@ -92,7 +93,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl).to.have.property('createdAt')
           chaiExpect(feedUrl).to.have.property('updatedAt')      
           
-          chaiExpect(Object.keys(res.body).length).to.equal(36)
+          chaiExpect(Object.keys(res.body).length).to.equal(37)
 
           done()
         })
@@ -124,6 +125,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(res.body.podcastIndexId).to.equal('199138')
           chaiExpect(res.body.authorityId).to.equal(null)
           chaiExpect(res.body.alwaysFullyParse).to.equal(false)
+          chaiExpect(res.body.credentialsRequired).to.equal(false)
           chaiExpect(res.body).to.have.property('description')
           chaiExpect(res.body.feedLastParseFailed).to.equal(false)
           chaiExpect(res.body).to.have.property('feedLastUpdated')
@@ -198,7 +200,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl).to.have.property('createdAt')
           chaiExpect(feedUrl).to.have.property('updatedAt')      
           
-          chaiExpect(Object.keys(res.body).length).to.equal(36)
+          chaiExpect(Object.keys(res.body).length).to.equal(37)
 
           done()
         })
