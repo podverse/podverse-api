@@ -292,9 +292,9 @@ const retrieveLatestChapters = async (id) => {
   if (!episode) throw new Error('Episode not found') 
   const { chaptersUrl, chaptersUrlLastParsed } = episode
 
-  // Update the latest chapters only once every 6 hours for an episode.
-  // If less than 6 hours, then just return the latest chapters from the database.
-  const halfDay = new Date().getTime() - (1 * 6 * 60 * 60 * 1000)
+  // Update the latest chapters only once every 1 hour for an episode.
+  // If less than 1 hours, then just return the latest chapters from the database.
+  const halfDay = new Date().getTime() - (1 * 1 * 60 * 60 * 1000) // days hours minutes seconds milliseconds
   const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
 
   if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
