@@ -39,6 +39,7 @@ export const signUpUser = async (ctx, next) => {
   const emailVerificationToken = uuidv4()
 
   const user = {
+    addByRSSPodcastFeedUrls: ctx.request.body.addByRSSPodcastFeedUrls || [],
     email: ctx.request.body.email,
     emailVerified: false,
     emailVerificationToken,
