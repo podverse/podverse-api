@@ -8,12 +8,12 @@ import { generateShortId } from '~/lib/utility'
 
 type Funding = {
   url: string
-  value: string
+  value?: string
 }
 
-type Value = {
+export type Value = {
   method: string
-  suggested: string
+  suggested?: string
   type: string
   valueRecipients: ValueRecipient[]
 }
