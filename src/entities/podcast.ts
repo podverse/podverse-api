@@ -15,7 +15,7 @@ export type Value = {
   method: string
   suggested?: string
   type: string
-  valueRecipients: ValueRecipient[]
+  recipients: ValueRecipient[]
 }
 
 type ValueRecipient = {

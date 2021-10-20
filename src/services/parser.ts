@@ -46,7 +46,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         type: val.type,
         method: val.method,
         suggested: val.suggested,
-        valueRecipients: val.recipients.map((r) => {
+        recipients: val.recipients.map((r) => {
           return {
             name: r.name,
             type: r.type,
