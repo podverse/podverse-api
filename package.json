@@ -117,7 +117,6 @@
   },
   "dependencies": {
     "@koa/cors": "3.0.0",
-    "@podverse/podcast-feed-parser": "^1.1.0",
     "@types/crypto-js": "^3.1.47",
     "@types/jest": "26.0.3",
     "@typescript-eslint/eslint-plugin": "2.x",
@@ -168,7 +167,7 @@
     "password-validator": "5.0.3",
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "7.14.0",
-    "podcast-partytime": "4.0.0-beta.4",
+    "podcast-partytime": "4.0.0-beta.5",
     "podverse-shared": "^3.0.0",
     "reflect-metadata": "0.1.13",
     "request-promise-native": "1.0.8",
