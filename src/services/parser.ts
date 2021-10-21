@@ -246,7 +246,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     for (const updatedSavedEpisode of updatedSavedEpisodes) {
       const soundBiteArray = updatedSavedEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite)
+        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite,
+          updatedSavedEpisode.title, podcast.title)
       }
     }
     logPerformance('updatedSavedEpisodes updateSoundBites', _logEnd)
@@ -255,7 +256,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     for (const newEpisode of newEpisodes) {
       const soundBiteArray = newEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-        await updateSoundBites(newEpisode.id, newEpisode.soundbite)
+        await updateSoundBites(newEpisode.id, newEpisode.soundbite, newEpisode.title, podcast.title)
       }
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
@@ -530,16 +531,14 @@ const generateAuthor = name => {
 
 const findCategories = async (categories: string[]) => {
   const c: string[] = []
-
   for (const category of categories) {
     if (category.indexOf('>') > 0) {
-      c.push(category.substr(0, category.indexOf('>')))
+      c.push(category.substr(0, category.indexOf('>')).replace(/\s/g, ''))
     }
-    c.push(category)
+    c.push(category.replace(/\s/g, ''))
   }
 
   const categoryRepo = getRepository(Category)
-
   let matchedCategories = [] as any
   if (c && c.length > 0) {
     matchedCategories = await categoryRepo.find({
