@@ -530,16 +530,14 @@ const generateAuthor = name => {
 
 const findCategories = async (categories: string[]) => {
   const c: string[] = []
-
   for (const category of categories) {
     if (category.indexOf('>') > 0) {
-      c.push(category.substr(0, category.indexOf('>')))
+      c.push(category.substr(0, category.indexOf('>')).replace(/\s/g, ''))
     }
-    c.push(category)
+    c.push(category.replace(/\s/g, ''))
   }
 
   const categoryRepo = getRepository(Category)
-
   let matchedCategories = [] as any
   if (c && c.length > 0) {
     matchedCategories = await categoryRepo.find({
