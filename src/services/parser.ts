@@ -1,14 +1,18 @@
+import * as _fetch from 'isomorphic-fetch'
+import { parseFeed } from 'podcast-partytime'
+import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
+import { Funding } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
+import type { Value } from '~/entities/podcast'
 import { _logEnd, _logStart, convertToSlug, convertToSortableTitle,
   isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
-const podcastFeedParser = require('@podverse/podcast-feed-parser')
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -17,14 +21,88 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   try {
-    logPerformance('podcastFeedParser.getPodcastFromURL', _logStart)
-    const result = await podcastFeedParser.getPodcastFromURL({
-      url: feedUrl.url,
-      headers: { 'User-Agent': userAgent },
-      timeout: 20000
-    })
-    logPerformance('podcastFeedParser.getPodcastFromURL', _logEnd)
-    const { episodes, meta } = result
+    logPerformance("podcastFetchAndParse", _logStart)
+    const xml = await _fetch(feedUrl.url, {
+      headers: { "User-Agent": userAgent },
+    }).then((resp) => resp.text())
+    const parsedFeed = parseFeed(xml)
+    logPerformance("podcastFetchAndParse", _logEnd)
+
+    if (!parsedFeed) {
+      throw new Error('parseFeedUrl invalid partytime parser response')
+    }
+
+    const fundingCompat = (funding: Phase1Funding): Funding => {
+      return {
+        value: funding.message,
+        url: funding.url
+      }
+    }
+
+    const valueCompat = (val: Phase4Value): Value => {
+      return {
+        type: val.type,
+        method: val.method,
+        suggested: val.suggested,
+        recipients: val.recipients.map((r) => {
+          return {
+            name: r.name,
+            type: r.type,
+            address: r.address,
+            split: r.split.toString(),
+            fee: r.fee
+          }
+        })
+      }
+    }
+
+    // Convert the podcast-partytime schema to a podverse compatible schema.
+    const feedCompat = (feed: FeedObject) => {
+      return {
+        author: [feed.author],
+        blocked: feed.itunesBlock,
+        categories: feed.itunesCategory,
+        description: feed.description,
+        explicit: feed.explicit,
+        funding: Array.isArray(feed.podcastFunding) ? feed.podcastFunding?.map((f) => fundingCompat(f)) : [],
+        generator: feed.generator,
+        guid: feed.guid,
+        imageURL: feed.itunesImage,
+        language: feed.language,
+        lastBuildDate: feed.lastBuildDate,
+        link: feed.link,
+        owner: feed.owner,
+        pubDate: feed.pubDate,
+        subtitle: feed.subtitle,
+        summary: feed.summary,
+        title: feed.title,
+        type: feed.itunesType,
+        value: feed.value ? [valueCompat(feed.value)] : []
+      }
+    }
+
+    // Convert the podcast-partytime schema to a podverse compatible schema.
+    const itemCompat = (episode: EpisodeObject) => {
+      return {
+        author: [episode.author],
+        description: episode.description,
+        duration: episode.duration,
+        enclosure: episode.enclosure,
+        explicit: episode.explicit,
+        guid: episode.guid,
+        imageURL: episode.image,
+        link: episode.link,
+        pubDate: episode.pubDate,
+        soundbite: episode.podcastSoundbites ?? [],
+        summary: episode.summary,
+        title: episode.title,
+        transcript: episode.podcastTranscripts ?? [],
+        value: episode.value ? [valueCompat(episode.value)] : []
+      }
+    }
+
+    const meta = feedCompat(parsedFeed)
+    const episodes = parsedFeed.items.map(itemCompat)
 
     let podcast = new Podcast()
     if (feedUrl.podcast) {
@@ -65,7 +143,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     let categories: Category[] = []
     if (Array.isArray(meta.categories) && meta.categories.length > 0) {
-      logPerformance('findCategoreis', _logStart)
+      logPerformance('findCategories', _logStart)
       categories = await findCategories(meta.categories)
       logPerformance('findCategories', _logEnd)
     }
@@ -78,7 +156,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.description = meta.description
     podcast.feedLastParseFailed = false
 
-    const feedLastUpdated = new Date(mostRecentDateFromFeed || meta.lastBuildDate || meta.pubDate)
+    const feedLastUpdated = new Date(mostRecentDateFromFeed || meta.lastBuildDate || meta.pubDate || '')
     podcast.feedLastUpdated = isValidDate(feedLastUpdated) ? feedLastUpdated : new Date()
 
     podcast.funding = meta.funding
