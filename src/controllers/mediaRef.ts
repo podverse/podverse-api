@@ -161,8 +161,9 @@ const getMediaRefs = async (query, includeNSFW) => {
 
   if (!allowUntitled) {
     qb.andWhere(`
-      mediaRef.title IS NOT NULL AND
-      mediaRef.title <> ''
+      mediaRef.isOfficialSoundBite = TRUE OR
+      (mediaRef.title IS NOT NULL AND
+      mediaRef.title <> '')
     `)
   }
   
@@ -215,7 +216,7 @@ const updateMediaRef = async (obj, loggedInUserId) => {
   return newMediaRef
 }
 
-const updateSoundBites = async (episodeId, newSoundBites) => {
+const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastTitle) => {
   const repository = getRepository(MediaRef)
   const existingSoundBitesResult = await repository
     .createQueryBuilder('mediaRef')
@@ -254,7 +255,10 @@ const updateSoundBites = async (episodeId, newSoundBites) => {
     if (existingSoundBite) {
       existingSoundBite.startTime = startTime
       existingSoundBite.endTime = endTime
-      existingSoundBite.title = title
+      existingSoundBite.title = title !== episodeTitle && title !== podcastTitle
+        ? title
+        : episodeTitle
+
       await updateMediaRef(existingSoundBite, superUserId)
 
       // remove existing soundbite from existingSoundBites
