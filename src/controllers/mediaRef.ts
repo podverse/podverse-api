@@ -161,7 +161,6 @@ const getMediaRefs = async (query, includeNSFW) => {
 
   if (!allowUntitled) {
     qb.andWhere(`
-      mediaRef.isOfficialSoundBite = TRUE OR
       (mediaRef.title IS NOT NULL AND
       mediaRef.title <> '')
     `)
@@ -257,7 +256,7 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
       existingSoundBite.endTime = endTime
       existingSoundBite.title = title !== episodeTitle && title !== podcastTitle
         ? title
-        : episodeTitle
+        : ''
 
       await updateMediaRef(existingSoundBite, superUserId)
 
