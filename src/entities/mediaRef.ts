@@ -33,9 +33,11 @@ export class MediaRef {
   @Column({ nullable: true })
   imageUrl?: string
 
+  @Index()
   @Column({ default: null, nullable: true })
   isOfficialChapter: boolean
 
+  @Index()
   @Column({ default: false })
   isOfficialSoundBite: boolean
 
