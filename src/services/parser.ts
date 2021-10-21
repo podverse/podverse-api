@@ -246,7 +246,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     for (const updatedSavedEpisode of updatedSavedEpisodes) {
       const soundBiteArray = updatedSavedEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite)
+        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite,
+          updatedSavedEpisode.title, podcast.title)
       }
     }
     logPerformance('updatedSavedEpisodes updateSoundBites', _logEnd)
@@ -255,7 +256,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     for (const newEpisode of newEpisodes) {
       const soundBiteArray = newEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-        await updateSoundBites(newEpisode.id, newEpisode.soundbite)
+        await updateSoundBites(newEpisode.id, newEpisode.soundbite, newEpisode.title, podcast.title)
       }
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
