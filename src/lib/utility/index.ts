@@ -97,7 +97,7 @@ export const generateQueryParams = (query: any) => {
     .join('&')
 }
 
-export const addOrderByToQuery = (qb, type, sort, sortDateKey) => {
+export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
   const ascKey = 'ASC'
   const descKey = 'DESC'
 
@@ -122,7 +122,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey) => {
     qb.orderBy(`${type}.${sortDateKey}`, ascKey)
   } else if (sort === 'alphabetical') {
     qb.orderBy(`${type}.sortableTitle`, ascKey)
-  } else if (sort === 'random') {
+  } else if (sort === 'random' && allowRandom) {
     qb.orderBy('RANDOM()')
   } else if (sort === 'chronological' && type === 'mediaRef') {
     qb.orderBy(`${type}.startTime`, ascKey)

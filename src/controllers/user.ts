@@ -261,7 +261,8 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
     .skip(skip)
     .take(take)
 
-  qb = addOrderByToQuery(qb, 'mediaRef', sort, 'createdAt')
+  const allowRandom = true
+  qb = addOrderByToQuery(qb, 'mediaRef', sort, 'createdAt', allowRandom)
     
   const results = await qb.getManyAndCount()
 

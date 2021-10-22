@@ -220,8 +220,9 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
 
   qb.andWhere('"isPublic" = true')
   qb = limitPodcastsQuerySize(qb, podcastIds, sort)
-
-  qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate')
+  
+  const allowRandom = !!podcastIds
+  qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate', allowRandom)
 
   try {
     const podcastResults = await qb

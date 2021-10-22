@@ -166,7 +166,8 @@ const getMediaRefs = async (query, includeNSFW) => {
     `)
   }
   
-  qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt')
+  const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
+  qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
 
   const mediaRefs = await qb
     .offset(skip)
