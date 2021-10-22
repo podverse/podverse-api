@@ -131,7 +131,8 @@ const getEpisodes = async (query) => {
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
 
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+  const allowRandom = false
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
 }
 
 const getEpisodesByCategoryIds = async (query) => {
@@ -154,7 +155,8 @@ const getEpisodesByCategoryIds = async (query) => {
     qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
     qb.andWhere('episode."isPublic" IS true')
 
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+    const allowRandom = true
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
   }
 }
 
@@ -163,7 +165,8 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
   qb.andWhere('episode."isPublic" IS true')
 
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+  const allowRandom = true
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
 }
 
 const getEpisodesByPodcastIds = async (query) => {
@@ -184,7 +187,8 @@ const getEpisodesByPodcastIds = async (query) => {
     qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
     qb.andWhere('episode."isPublic" IS true')
 
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take })
+    const allowRandom = true
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
   }
 }
 
@@ -211,20 +215,21 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   if (recentEpisodeIds.length <= 0) return [[], totalCount]
 
   qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
-  qb = addOrderByToQuery(qb, 'episode', 'most-recent', 'pubDate')
+  const allowRandom = false
+  qb = addOrderByToQuery(qb, 'episode', 'most-recent', 'pubDate', allowRandom)
   
   const episodes = await qb.getMany()
   const cleanedEpisodes = cleanEpisodes(episodes)
   return [cleanedEpisodes, totalCount]
 }
 
-const handleGetEpisodesWithOrdering = async (obj) => {
+const handleGetEpisodesWithOrdering = async (obj, allowRandom) => {
   const { skip, sort, take } = obj
   let { qb } = obj
   qb.offset(skip)
   qb.limit(take)
 
-  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate')
+  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom)
 
   const episodesResults = await qb.getManyAndCount()
   const episodes = episodesResults[0]
