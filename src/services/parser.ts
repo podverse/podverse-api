@@ -85,6 +85,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const itemCompat = (episode: EpisodeObject) => {
       return {
         author: [episode.author],
+        chapters: episode.podcastChapters,
         description: episode.description,
         duration: episode.duration,
         enclosure: episode.enclosure,
