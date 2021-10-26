@@ -116,11 +116,28 @@ const getFeedUrls = (query) => {
     where: {
       ...(query.podcast ? { podcast: query.podcast } : {}),
       ...(query.url ? { url: query.url } : {}),
+      ...(query.isAuthority ? { isAuthority: true } : {})
     },
     skip: query.skip,
     take: query.take,
     relations
   })
+}
+
+export const getAuthorityFeedUrlByPodcastIndexId = async (podcastIndexId: string) => {
+  const repository = getRepository(FeedUrl)
+
+  const feedUrl = await repository
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.id')
+    .addSelect('feedUrl.url')
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast')
+    .where('podcast."podcastIndexId')
+    .where('podcast.podcastIndexId = :podcastIndexId', { podcastIndexId })
+    .andWhere('feedUrl.isAuthority = TRUE')
+    .getOne()
+
+  return feedUrl
 }
 
 const getFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
