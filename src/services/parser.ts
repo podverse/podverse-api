@@ -284,7 +284,10 @@ const uploadImageToS3AndSaveToDatabase = async (podcast: any, podcastRepo: any) 
 }
 
 export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
-  const feedUrls = await getFeedUrls({ podcastId: podcastIds })
+  const feedUrls = await getFeedUrls({
+    podcastId: podcastIds,
+    isAuthority: true
+  })
   const forceReparsing = true
 
   for (const feedUrl of feedUrls) {

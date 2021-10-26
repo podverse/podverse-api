@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { config } from '~/config'
 import { getConnection, getRepository } from "typeorm"
-import { getFeedUrlByUrl } from '~/controllers/feedUrl'
+import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
@@ -72,6 +72,35 @@ const getRecentlyUpdatedData = async (since?: number) => {
 //   return response && response.data
 // }
 
+type PodcastIndexDataFeed = {
+  feedId: number
+  feedUrl: string
+}
+
+/*
+  This function determines if the feed.url returned by Podcast Index is not currently
+  the authority feedUrl in our database. If it is not, then update our database to use
+  the newer feed.url provided by Podcast Index.
+*/
+export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDataFeeds: PodcastIndexDataFeed[]) => {
+  await connectToDb()
+  const client = await getConnection().createEntityManager()
+  if (Array.isArray(podcastIndexDataFeeds)) {
+    for (const podcastIndexDataFeed of podcastIndexDataFeeds) {
+      if (podcastIndexDataFeed.feedId) {
+        const currentFeedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexDataFeed.feedId.toString())
+        if (currentFeedUrl && currentFeedUrl.url !== podcastIndexDataFeed.feedUrl) {
+          const podcastIndexFeed = {
+            id: podcastIndexDataFeed.feedId,
+            url: podcastIndexDataFeed.feedUrl
+          }
+          await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexFeed)
+        }
+      }
+    }
+  }
+}
+
 /**
  * addRecentlyUpdatedFeedUrlsToPriorityQueue
  * 
@@ -83,8 +112,9 @@ const getRecentlyUpdatedData = async (since?: number) => {
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
     const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively([], sinceTime)
-
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
+
+    await updateFeedUrlsIfNewAuthorityFeedUrlDetected(recentlyUpdatedFeeds)
 
     const recentlyUpdatedPodcastIndexIds = [] as any[]
     for (const item of recentlyUpdatedFeeds) {
@@ -207,7 +237,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
   console.log('-----------------------------------')
   console.log('createOrUpdatePodcastFromPodcastIndex')
 
-  if (!item) {
+  if (!item || !item.url || !item.id) {
     console.log('no item found')
   } else {
     const url = item.url
