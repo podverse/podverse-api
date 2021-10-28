@@ -83,21 +83,29 @@ type PodcastIndexDataFeed = {
   the newer feed.url provided by Podcast Index.
 */
 export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDataFeeds: PodcastIndexDataFeed[]) => {
-  await connectToDb()
-  const client = await getConnection().createEntityManager()
-  if (Array.isArray(podcastIndexDataFeeds)) {
-    for (const podcastIndexDataFeed of podcastIndexDataFeeds) {
-      if (podcastIndexDataFeed.feedId) {
-        const currentFeedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexDataFeed.feedId.toString())
-        if (currentFeedUrl && currentFeedUrl.url !== podcastIndexDataFeed.feedUrl) {
-          const podcastIndexFeed = {
-            id: podcastIndexDataFeed.feedId,
-            url: podcastIndexDataFeed.feedUrl
+  try {
+    await connectToDb()
+    const client = await getConnection().createEntityManager()
+    if (Array.isArray(podcastIndexDataFeeds)) {
+      for (const podcastIndexDataFeed of podcastIndexDataFeeds) {
+        try {
+          if (podcastIndexDataFeed.feedId) {
+            const currentFeedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexDataFeed.feedId.toString())
+            if (currentFeedUrl && currentFeedUrl.url !== podcastIndexDataFeed.feedUrl) {
+              const podcastIndexFeed = {
+                id: podcastIndexDataFeed.feedId,
+                url: podcastIndexDataFeed.feedUrl
+              }
+              await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexFeed)
+            }
           }
-          await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexFeed)
+        } catch (err) {
+          console.log('updateFeedUrlsIfNewAuthorityFeedUrlDetected podcastIndexDataFeed', err)
         }
       }
     }
+  } catch (err) {
+    console.log('updateFeedUrlsIfNewAuthorityFeedUrlDetected err', err)
   }
 }
 
@@ -111,6 +119,10 @@ export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDa
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
+    /* If no sinceTime provided, get all updated feeds from the past hour */
+    if (!sinceTime) {
+      sinceTime = Math.round(Date.now() / 1000) - 3600
+    }
     const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively([], sinceTime)
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
 
