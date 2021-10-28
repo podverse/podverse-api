@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
-import { addOrderByToQuery, removeProtocol } from '~/lib/utility'
+import { addOrderByToQuery } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 
