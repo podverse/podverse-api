@@ -49,7 +49,9 @@ const findPodcastsByFeedUrls = async (urls: string[]) => {
   const foundPodcastIds = [] as any
   const notFoundFeedUrls = [] as any
 
-  for (const url of urls) {
+  // Limit to 2000 to prevent DOS'ing
+  const limitedArray = urls.slice(0, 2000)
+  for (const url of limitedArray) {
     const podcastId = await getPodcastIdByFeedUrl(url)
     if (podcastId) {
       foundPodcastIds.push(podcastId)
@@ -65,13 +67,12 @@ const findPodcastsByFeedUrls = async (urls: string[]) => {
 }
 
 const getPodcastIdByFeedUrl = async (url: string) => {
-  const urlWithoutProtocol = removeProtocol(url)
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository
     .createQueryBuilder('feedUrl')
     .select('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
-    .where('feedUrl.url LIKE :url', { url: `%${urlWithoutProtocol}` })
+    .where('feedUrl.url = :url', { url })
     .getOne()
 
   if (!feedUrl || !feedUrl.podcast) return
