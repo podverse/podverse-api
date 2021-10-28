@@ -137,7 +137,7 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
       }
     }
     
-    const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 5000);
+    const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 10000);
 
     console.log('unique recentlyUpdatedPodcastIndexIds count', uniquePodcastIndexIds.length)
 
