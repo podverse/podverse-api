@@ -49,7 +49,9 @@ const findPodcastsByFeedUrls = async (urls: string[]) => {
   const foundPodcastIds = [] as any
   const notFoundFeedUrls = [] as any
 
-  for (const url of urls) {
+  // Limit to 2000 to prevent DOS'ing
+  const limitedArray = urls.slice(0, 2000)
+  for (const url of limitedArray) {
     const podcastId = await getPodcastIdByFeedUrl(url)
     if (podcastId) {
       foundPodcastIds.push(podcastId)
