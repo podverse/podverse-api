@@ -119,6 +119,10 @@ export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDa
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
+    /* If no sinceTime provided, get all updated feeds from the past hour */
+    if (!sinceTime) {
+      sinceTime = Math.round(Date.now() / 1000) - 3600
+    }
     const recentlyUpdatedFeeds = await getRecentlyUpdatedDataRecursively([], sinceTime)
     console.log('total recentlyUpdatedFeeds count', recentlyUpdatedFeeds.length)
 
