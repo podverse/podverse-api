@@ -65,13 +65,12 @@ const findPodcastsByFeedUrls = async (urls: string[]) => {
 }
 
 const getPodcastIdByFeedUrl = async (url: string) => {
-  const urlWithoutProtocol = removeProtocol(url)
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository
     .createQueryBuilder('feedUrl')
     .select('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
-    .where('feedUrl.url LIKE :url', { url: `%${urlWithoutProtocol}` })
+    .where('feedUrl.url = :url', { url })
     .getOne()
 
   if (!feedUrl || !feedUrl.podcast) return
