@@ -144,10 +144,8 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 }
 
 export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds: string[]) => {
-
-  await connectToDb()
-
   try {
+    // Call connectToDb prior to calling addFeedUrlsByPodcastIndexIdToPriorityQueue
     const feedUrlRepo = getRepository(FeedUrl)
 
     const feedUrls = await feedUrlRepo

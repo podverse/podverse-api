@@ -84,7 +84,6 @@ type PodcastIndexDataFeed = {
 */
 export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDataFeeds: PodcastIndexDataFeed[]) => {
   try {
-    await connectToDb()
     const client = await getConnection().createEntityManager()
     if (Array.isArray(podcastIndexDataFeeds)) {
       for (const podcastIndexDataFeed of podcastIndexDataFeeds) {
@@ -119,6 +118,8 @@ export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDa
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
+    await connectToDb()
+
     /* If no sinceTime provided, get all updated feeds from the past hour */
     if (!sinceTime) {
       sinceTime = Math.round(Date.now() / 1000) - 3600
