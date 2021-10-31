@@ -103,19 +103,14 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
 
   if (sort === 'top-past-hour') {
     qb.orderBy(`${type}.pastHourTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-day') {
     qb.orderBy(`${type}.pastDayTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-month') {
     qb.orderBy(`${type}.pastMonthTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-past-year') {
     qb.orderBy(`${type}.pastYearTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'top-all-time') {
     qb.orderBy(`${type}.pastAllTimeTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   } else if (sort === 'most-recent') {
     qb.orderBy(`${type}.${sortDateKey}`, descKey)
   } else if (sort === 'oldest') {
@@ -130,7 +125,6 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
     qb.orderBy(`${type}.createdAt`, descKey)
   } else { // sort = top-past-week
     qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)
-    qb.addOrderBy(`${type}.id`, descKey)
   }
 
   return qb
