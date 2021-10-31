@@ -85,7 +85,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const podcastIds = query.podcastId && query.podcastId.split(',') || []
   const episodeIds = query.episodeId && query.episodeId.split(',') || []
   const categoriesIds = query.categories && query.categories.split(',') || []
-  const { allowUntitled, includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
+  const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
     episode.isPublic = true
@@ -158,23 +158,32 @@ const getMediaRefs = async (query, includeNSFW) => {
     qb.where({ isPublic: true })
   }
   qb.andWhere('"mediaRef"."isOfficialChapter" IS null')
-
-  if (!allowUntitled) {
-    qb.andWhere(`
-      (mediaRef.title IS NOT NULL AND
-      mediaRef.title <> '')
-    `)
-  }
   
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
   qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
 
-  const mediaRefs = await qb
-    .offset(skip)
-    .limit(take)
-    .getManyAndCount()
 
-  const PIIScrubbedMediaRefs = mediaRefs[0].map((x: any) => {
+  const shouldLimitResultTotal = !podcastIds.length && !episodeIds.length && !categoriesIds.length
+
+  let mediaRefs = [] as any
+  let mediaRefsCount = 0
+  if (shouldLimitResultTotal) {
+    const results = await qb
+      .offset(skip)
+      .limit(take)
+      .getMany()
+    mediaRefs = results
+    mediaRefsCount = 10000
+  } else {
+    const results = await qb
+      .offset(skip)
+      .limit(take)
+      .getManyAndCount()
+    mediaRefs = results[0] || []
+    mediaRefsCount = results[1] || 0
+  }
+
+  const PIIScrubbedMediaRefs = mediaRefs.map((x: any) => {
     if (x.owner && !x.owner.isPublic) {
       delete x.owner.name
       delete x.owner.isPublic
@@ -182,7 +191,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     return x
   })
 
-  return [PIIScrubbedMediaRefs, mediaRefs[1]]
+  return [PIIScrubbedMediaRefs, mediaRefsCount]
 }
 
 const updateMediaRef = async (obj, loggedInUserId) => {
