@@ -162,9 +162,8 @@ const getMediaRefs = async (query, includeNSFW) => {
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
   qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
 
-
   const shouldLimitResultTotal =
-    (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds === 0)
+    (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0)
     || podcastIds.length > 1
     || episodeIds.length > 1
     || categoriesIds.length > 1
