@@ -59,7 +59,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     // Convert the podcast-partytime schema to a podverse compatible schema.
     const feedCompat = (feed: FeedObject) => {
       return {
-        author: [feed.author],
+        author: Array.isArray(feed.author)
+          ? feed.author
+          : feed.author 
+            ? [feed.author]
+            : [],
         blocked: feed.itunesBlock,
         categories: feed.itunesCategory,
         description: feed.description,
