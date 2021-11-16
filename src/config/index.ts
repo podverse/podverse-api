@@ -112,9 +112,9 @@ const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime =
-  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000'
+  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
 const podcastIndexNewFeedsSinceTime =
-  process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '3600000'
+  process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
