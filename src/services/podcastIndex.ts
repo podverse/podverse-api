@@ -157,6 +157,13 @@ export const getPodcastFromPodcastIndexById = async (id: string) => {
   return response && response.data
 }
 
+export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
+  const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
+  await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
+  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id)
+  await parseFeedUrl(feedUrl)
+}
+
 const getNewFeeds = async () => {
   const currentTime = new Date().getTime()
   const { podcastIndexNewFeedsSinceTime } = podcastIndexConfig
