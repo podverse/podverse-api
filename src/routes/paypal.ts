@@ -6,7 +6,7 @@ import { createPayPalOrder, getPayPalOrder, completePayPalOrder
   } from '~/controllers/paypalOrder'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validatePayPalOrderCreate } from '~/middleware/queryValidation/create'
-import { getPayPalPaymentInfo } from '~/services/paypal'
+import { getPayPalCaptureInfo, getPayPalPaymentInfo } from '~/services/paypal'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -55,13 +55,21 @@ router.post('/webhooks/payment-completed',
   async ctx => {
     try {
       const body = ctx.request.body as any
-      const paymentID = body.resource.parent_payment
-      const order = await getPayPalPaymentInfo(paymentID)
+      console.log('/webhooks/payment-completed body', body)
 
-      const { state } = order
-
-      await completePayPalOrder(paymentID, state)
-
+      if (body.resource_version === '2.0') {
+        const paymentID = body.resource.id
+        const capture = await getPayPalCaptureInfo(paymentID)
+        console.log('paypal capture', capture)
+        // complete pay pal order
+      } else if (body.event_version === '1.0') {
+        const paymentID = body.resource.parent_payment
+        const order = await getPayPalPaymentInfo(paymentID)
+        console.log('paypal order', order)
+        const { state } = order
+        await completePayPalOrder(paymentID, state)
+      }
+      
       ctx.status = 200
     } catch (error) {
       console.log(error)
