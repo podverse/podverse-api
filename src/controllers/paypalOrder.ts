@@ -46,7 +46,7 @@ const getPayPalOrder = async (id, loggedInUserId) => {
   }
 }
 
-const completePayPalOrder = async (paymentID, state) => {
+const completePayPalOrder = async (paymentID, state, isV2) => {
   const paypalOrderRepository = getRepository(PayPalOrder)
   const paypalOrder = await paypalOrderRepository.findOne({
     where: { paymentID },
@@ -83,7 +83,9 @@ const completePayPalOrder = async (paymentID, state) => {
     throw new createError.NotFound('User not found')
   }
 
-  if (user && cleanedPayPalOrderObj.state === 'approved') {
+  const successState = isV2 ? 'completed' : 'approved'
+
+  if (user && cleanedPayPalOrderObj.state === successState) {
     await addYearsToUserMembershipExpiration(user.id, 1)
   } else {
     console.log('completePayPalOrder: something went wrong', cleanedPayPalOrderObj)
