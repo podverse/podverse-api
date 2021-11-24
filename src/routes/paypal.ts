@@ -55,17 +55,15 @@ router.post('/webhooks/payment-completed',
   async ctx => {
     try {
       const body = ctx.request.body as any
-      console.log('/webhooks/payment-completed body', body)
 
       if (body.resource_version === '2.0') {
         const paymentID = body.resource.id
         const capture = await getPayPalCaptureInfo(paymentID)
-        console.log('paypal capture', capture)
-        // complete pay pal order
+        const { state } = capture
+        await completePayPalOrder(paymentID, state)
       } else if (body.event_version === '1.0') {
         const paymentID = body.resource.parent_payment
         const order = await getPayPalPaymentInfo(paymentID)
-        console.log('paypal order', order)
         const { state } = order
         await completePayPalOrder(paymentID, state)
       }
