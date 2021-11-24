@@ -60,12 +60,14 @@ router.post('/webhooks/payment-completed',
         const paymentID = body.resource.id
         const capture = await getPayPalCaptureInfo(paymentID)
         const { state } = capture
-        await completePayPalOrder(paymentID, state)
+        const isV2 = true
+        await completePayPalOrder(paymentID, state, isV2)
       } else if (body.event_version === '1.0') {
         const paymentID = body.resource.parent_payment
         const order = await getPayPalPaymentInfo(paymentID)
         const { state } = order
-        await completePayPalOrder(paymentID, state)
+        const isV2 = false
+        await completePayPalOrder(paymentID, state, isV2)
       }
       
       ctx.status = 200
