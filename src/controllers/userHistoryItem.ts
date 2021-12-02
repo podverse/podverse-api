@@ -13,7 +13,7 @@ export const cleanUserItemResult = (result) => {
       completed: result.completed,
       episodeChaptersUrl: result.clipEpisodeChaptersUrl,
       episodeDescription: result.clipEpisodeDescription,
-      episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration,
+      episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration || 0,
       episodeFunding: parseProp(result, 'clipEpisodeFunding', []),
       episodeId: result.clipEpisodeId,
       episodeImageUrl: result.clipEpisodeImageUrl,
@@ -38,7 +38,7 @@ export const cleanUserItemResult = (result) => {
     return {
       episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
-      episodeDuration: result.mediaFileDuration || result.episodeDuration,
+      episodeDuration: result.mediaFileDuration || result.episodeDuration || 0,
       episodeFunding: parseProp(result, 'episodeFunding', []),
       episodeId: result.episodeId,
       episodeImageUrl: result.episodeImageUrl,
