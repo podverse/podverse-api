@@ -199,6 +199,43 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
   return cleanMetaResults(results)
 }
 
+export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
+  const repository = getRepository(UserHistoryItem)
+
+  const results = await repository
+    .createQueryBuilder('userHistoryItem')
+    .select('userHistoryItem.mediaFileDuration', 'd')
+    .addSelect('userHistoryItem.userPlaybackPosition', 'p')
+    .addSelect('userHistoryItem.completed', 'c')
+    .addSelect('mediaRef.id', 'm')
+    .addSelect('episode.id', 'e')
+    .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
+    .leftJoin('userHistoryItem.episode', 'episode')
+    .leftJoin('userHistoryItem.owner', 'owner')
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
+    .getRawMany()
+
+  const cleanMetaMiniResults = (results) => {
+    const cleanedResults = [] as any[]
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]
+      const { c, e, m } = result
+      const cleanedResult = {
+        d: result.d,
+        p: result.p,
+        ...(c ? { c } : {}),
+        ...(m ? { m } : {}),
+        ...(!m ? { e } : {}),
+      }
+      cleanedResults.push(cleanedResult)
+    }
+    return cleanedResults
+  }
+
+  return cleanMetaMiniResults(results)
+}
+
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   const { completed, episodeId, forceUpdateOrderDate, mediaFileDuration, mediaRefId,
     userPlaybackPosition } = query
