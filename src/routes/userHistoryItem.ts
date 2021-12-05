@@ -2,6 +2,7 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { addOrUpdateHistoryItem, getUserHistoryItems, getUserHistoryItemsMetadata,
+  getUserHistoryItemsMetadataMini,
   removeAllUserHistoryItems, removeUserHistoryItemByEpisodeId, removeUserHistoryItemByMediaRefId
   } from '~/controllers/userHistoryItem'
 import { emitRouterError } from '~/lib/errors'
@@ -39,6 +40,21 @@ router.get('/metadata',
   async ctx => {
     try {
       const userHistoryItems = await getUserHistoryItemsMetadata(ctx.state.user.id)
+      ctx.body = { userHistoryItems }
+      ctx.status = 200
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+// Get minified userHistoryItems metadata only
+router.get('/metadata-mini',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'userHistoryItems'),
+  jwtAuth,
+  hasValidMembership,
+  async ctx => {
+    try {
+      const userHistoryItems = await getUserHistoryItemsMetadataMini(ctx.state.user.id)
       ctx.body = { userHistoryItems }
       ctx.status = 200
     } catch (error) {
