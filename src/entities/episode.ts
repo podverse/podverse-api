@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Funding, Transcript, ValueTag } from 'podverse-shared'
+import { Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
 import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem,
   UserQueueItem } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
@@ -131,7 +131,10 @@ export class Episode {
   pastAllTimeTotalUniquePageviews: number
 
   @Column({ nullable: true })
-  pubDate?: Date
+  pubDate?: Date 
+
+  @Column('simple-json', { nullable: true })
+  socialInteraction: SocialInteraction[]
 
   @Index()
   @Column({ nullable: true })

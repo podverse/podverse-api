@@ -98,6 +98,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         imageURL: episode.image,
         link: episode.link,
         pubDate: episode.pubDate,
+        socialInteraction: episode.podcastSocialInteraction ?? [],
         soundbite: episode.podcastSoundbites ?? [],
         summary: episode.summary,
         title: episode.title,
@@ -106,6 +107,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
 
+    
     const meta = feedCompat(parsedFeed)
     const episodes = parsedFeed.items.map(itemCompat)
 
@@ -601,6 +603,7 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   const pubDate = new Date(parsedEpisode.pubDate)
   episode.pubDate = isValidDate(pubDate) ? pubDate : new Date()
 
+  episode.socialInteraction = parsedEpisode.socialInteraction
   episode.soundbite = parsedEpisode.soundbite
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
