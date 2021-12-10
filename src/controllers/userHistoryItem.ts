@@ -20,6 +20,7 @@ export const cleanUserItemResult = (result) => {
       episodeMediaType: result.clipEpisodeMediaType,
       episodeMediaUrl: result.clipEpisodeMediaUrl,
       episodePubDate: result.clipEpisodePubDate,
+      episodeSocialInteraction: parseProp(result, 'clipEpisodeSocialInteraction', []),
       episodeTitle: result.clipEpisodeTitle,
       episodeTranscript: parseProp(result, 'clipEpisodeTranscript', []),
       episodeValue: parseProp(result, 'clipEpisodeValue', []),
@@ -45,6 +46,7 @@ export const cleanUserItemResult = (result) => {
       episodeMediaType: result.episodeMediaType,
       episodeMediaUrl: result.episodeMediaUrl,
       episodePubDate: result.episodePubDate,
+      episodeSocialInteraction: parseProp(result, 'episodeSocialInteraction', []),
       episodeTitle: result.episodeTitle,
       episodeTranscript: parseProp(result, 'episodeTranscript', []),
       episodeValue: parseProp(result, 'episodeValue', []),
@@ -102,6 +104,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.mediaType', 'episodeMediaType')
     .addSelect('episode.mediaUrl', 'episodeMediaUrl')
     .addSelect('episode.pubDate', 'episodePubDate')
+    .addSelect('episode.socialInteraction', 'episodeSocialInteraction')
     .addSelect('episode.title', 'episodeTitle')
     .addSelect('episode.transcript', 'episodeTranscript')
     .addSelect('episode.value', 'episodeValue')
@@ -121,6 +124,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipEpisode.mediaType', 'clipEpisodeMediaType')
     .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
     .addSelect('clipEpisode.pubDate', 'clipEpisodePubDate')
+    .addSelect('clipEpisode.socialInteraction', 'clipEpisodeSocialInteraction')
     .addSelect('clipEpisode.title', 'clipEpisodeTitle')
     .addSelect('clipEpisode.transcript', 'clipEpisodeTranscript')
     .addSelect('clipEpisode.value', 'clipEpisodeValue')

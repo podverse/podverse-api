@@ -89,6 +89,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .addSelect('episode.pastYearTotalUniquePageviews')
     .addSelect('episode.pastAllTimeTotalUniquePageviews')
     .addSelect('episode.pubDate')
+    .addSelect('episode.socialInteraction')
     .addSelect('episode.title')
     .addSelect('episode.transcript')
     .addSelect('episode.value')
