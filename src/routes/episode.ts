@@ -1,4 +1,5 @@
 import * as Router from 'koa-router'
+import type { SocialInteraction } from 'podverse-shared'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -7,6 +8,7 @@ import { getEpisode, getEpisodes, getEpisodesByCategoryIds, getEpisodesByPodcast
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
+import { request } from '~/lib/request'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
@@ -57,6 +59,49 @@ router.get('/:id/retrieve-latest-chapters',
       if (!ctx.params.id) throw new Error('An episodeId is required.')
       const latestChapters = await retrieveLatestChapters(ctx.params.id)
       ctx.body = latestChapters
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
+  })
+
+router.get('/:id/proxy/activity-pub',
+  async ctx => {
+    try {
+      if (!ctx.params.id) throw new Error('An episodeId is required.')
+      const episode = await getEpisode(ctx.params.id)
+      if (!episode) {
+        throw new Error('No episode found with that id.')
+      }
+      if (!episode.socialInteraction || episode.socialInteraction.length === 0) {
+        throw new Error('No socialInteraction value found for episode.')
+      }
+      const activityPub = episode.socialInteraction.find(
+        (item: SocialInteraction) => item.platform === 'activitypub'
+      )
+      if (!activityPub || !activityPub.url) {
+        throw new Error('No activityPub url found for episode.')
+      }
+      const rootCommentText = await request(activityPub.url, {
+        headers: {
+          Accept: 'application/activity+json'
+        }
+      })
+      const rootComment = JSON.parse(rootCommentText)
+      if (!rootComment?.replies?.first?.next) {
+        throw new Error('Next URL missing from the activityPub note')
+      }
+      const nextUrl = rootComment.replies.first.next
+      const repliesText = await request(nextUrl, {
+        headers: {
+          Accept: 'application/activity+json'
+        }
+      })
+      const replies = JSON.parse(repliesText)
+
+      ctx.body = {
+        rootComment,
+        replies
+      }
     } catch (error) {
       emitRouterError(error, ctx)
     }
