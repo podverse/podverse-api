@@ -104,11 +104,13 @@ router.get('/:id/proxy/activity-pub',
         then make a request for each URL in the array to retrieve the Note,
         then insert it into the replies.items array.
       */
-     const hasStringUrlItems = replies?.items.some((item) => typeof item === 'string')
+      const hasStringUrlItems = replies?.items.some((item) => typeof item === 'string')
       
       if (hasStringUrlItems) {
         const repliesItemsNotes: ActivityPubNote[] = []
+        let limitRequests = 0
         for (const url of replies.items) {
+          if (limitRequests >= 50) break
           const itemNoteText = await request(url, {
             headers: {
               Accept: 'application/activity+json'
@@ -116,6 +118,7 @@ router.get('/:id/proxy/activity-pub',
           })
           const itemNote = JSON.parse(itemNoteText)
           repliesItemsNotes.push(itemNote)
+          limitRequests++
         }
         replies.items = repliesItemsNotes
       }
