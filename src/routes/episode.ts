@@ -110,6 +110,7 @@ router.get('/:id/proxy/activity-pub',
         const repliesItemsNotes: ActivityPubNote[] = []
         let limitRequests = 0
         for (const url of replies.items) {
+          limitRequests++
           if (limitRequests >= 50) break
           const itemNoteText = await request(url, {
             headers: {
@@ -118,7 +119,6 @@ router.get('/:id/proxy/activity-pub',
           })
           const itemNote = JSON.parse(itemNoteText)
           repliesItemsNotes.push(itemNote)
-          limitRequests++
         }
         replies.items = repliesItemsNotes
       }
