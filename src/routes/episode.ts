@@ -1,5 +1,5 @@
 import * as Router from 'koa-router'
-import type { SocialInteraction } from 'podverse-shared'
+import type { ActivityPubNote, SocialInteraction } from 'podverse-shared'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -91,12 +91,34 @@ router.get('/:id/proxy/activity-pub',
         throw new Error('Next URL missing from the activityPub note')
       }
       const nextUrl = rootComment.replies.first.next
+
       const repliesText = await request(nextUrl, {
         headers: {
           Accept: 'application/activity+json'
         }
       })
       const replies = JSON.parse(repliesText)
+
+      /*
+        If the replies.items array returns strings (URLs that point to ActivityPub Notes),
+        then make a request for each URL in the array to retrieve the Note,
+        then insert it into the replies.items array.
+      */
+     const hasStringUrlItems = replies?.items.some((item) => typeof item === 'string')
+      
+      if (hasStringUrlItems) {
+        const repliesItemsNotes: ActivityPubNote[] = []
+        for (const url of replies.items) {
+          const itemNoteText = await request(url, {
+            headers: {
+              Accept: 'application/activity+json'
+            }
+          })
+          const itemNote = JSON.parse(itemNoteText)
+          repliesItemsNotes.push(itemNote)
+        }
+        replies.items = repliesItemsNotes
+      }
 
       ctx.body = {
         rootComment,
