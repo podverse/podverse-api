@@ -86,17 +86,18 @@ router.get('/:id/proxy/activity-pub',
           Accept: 'application/activity+json'
         }
       })
+
       const rootComment = JSON.parse(rootCommentText)
       if (!rootComment?.replies?.first?.next) {
         throw new Error('Next URL missing from the activityPub note')
       }
       const nextUrl = rootComment.replies.first.next
-
       const repliesText = await request(nextUrl, {
         headers: {
           Accept: 'application/activity+json'
         }
       })
+
       const replies = JSON.parse(repliesText)
 
       /*
@@ -104,9 +105,9 @@ router.get('/:id/proxy/activity-pub',
         then make a request for each URL in the array to retrieve the Note,
         then insert it into the replies.items array.
       */
-      const hasStringUrlItems = replies?.items.some((item) => typeof item === 'string')
-      
-      if (hasStringUrlItems) {
+      const hasOnlyStringUrlItems = replies?.items.every((item) => typeof item === 'string')
+
+      if (hasOnlyStringUrlItems) {
         const repliesItemsNotes: ActivityPubNote[] = []
         let limitRequests = 0
         for (const url of replies.items) {
@@ -121,6 +122,9 @@ router.get('/:id/proxy/activity-pub',
           repliesItemsNotes.push(itemNote)
         }
         replies.items = repliesItemsNotes
+      } else if (replies) {
+        /* Else filter out the strings from the replies.items array */
+        replies.items = replies.items.filter((item) => typeof item === 'object')
       }
 
       ctx.body = {
