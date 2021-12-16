@@ -166,7 +166,7 @@ const getMediaRefs = async (query, includeNSFW) => {
     (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0)
     || podcastIds.length > 1
     || episodeIds.length > 1
-    || categoriesIds.length > 1
+    || categoriesIds.length >= 1
 
   let mediaRefs = [] as any
   let mediaRefsCount = 0
