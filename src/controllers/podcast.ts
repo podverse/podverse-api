@@ -81,8 +81,8 @@ const getPodcastIdByFeedUrl = async (url: string) => {
 }
 
 // Use where clause to reduce the size of very large data sets and speed up queries
-const limitPodcastsQuerySize = (qb: any, podcastIds: any[], sort: string) => {
-  if (!podcastIds || podcastIds.length === 0) {
+const limitPodcastsQuerySize = (qb: any, podcastIds: any[], categories: any[], sort: string) => {
+  if ((!podcastIds || podcastIds.length === 0) && (!categories || categories.length === 0)) {
     if (sort === 'top-past-hour') {
       qb.andWhere('podcast."pastHourTotalUniquePageviews" > 0')
     } else if (sort === 'top-past-day') {
@@ -220,20 +220,33 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   }
 
   qb.andWhere('"isPublic" = true')
-  qb = limitPodcastsQuerySize(qb, podcastIds, sort)
+  qb = limitPodcastsQuerySize(qb, podcastIds, categories, sort)
   
   const allowRandom = !!podcastIds
   qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate', allowRandom)
 
   try {
-    const podcastResults = await qb
-      .offset(skip)
-      .limit((maxResults && 1000) || take)
-      .getManyAndCount()
+    let podcastResults
+    let podcasts
+    let podcastsCount
+    if (categories?.length > 0) {
+      podcastResults = await qb
+        .offset(skip)
+        .limit(20)
+        .getMany()
+      podcasts = podcastResults
+      podcastsCount = 10000
+    } else {
+      podcastResults = await qb
+        .offset(skip)
+        .limit((maxResults && 1000) || take)
+        .getManyAndCount()
+      podcasts = podcastResults[0]
+      podcastsCount = podcastResults[1]
+    }
 
     const finalPodcastResults = [] as any
-    const podcasts = podcastResults[0]
-    let podcastsCount = podcastResults[1]
+
     
     // NOTE: I have no idea why I added this at one point...
     // commenting out since it breaks query sorting...
