@@ -7780,10 +7780,10 @@ podcast-partytime@4.1.0:
     pino "^7.0.5"
     ramda "^0.27.1"
 
-podverse-shared@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.1.0.tgz#3d4104b1f3fbffb2154970ae2427e0244eec2ea7"
-  integrity sha512-GbZ+t22i6JNQ9u9nKLGEts5KpxGJvIilTP7uYrtRB1E/WiiG0jZimRff5/aYvKPbqoAw+HFzsD/yylaSDrIYQg==
+podverse-shared@^4.1.3:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.1.3.tgz#52911f3e803aea775d54f328b09368991a572161"
+  integrity sha512-KME06yJVz6xSYC5Y+4XTkL6uRoasafovE65JQKw9SpGbaqNP3j7Wt8mQOdLNjb8Eyb8REvwtEOgjazDsjq1eig==
   dependencies:
     typescript "3.9.7"
 

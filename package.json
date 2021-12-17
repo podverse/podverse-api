@@ -168,7 +168,7 @@
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "7.14.0",
     "podcast-partytime": "4.1.0",
-    "podverse-shared": "^4.1.0",
+    "podverse-shared": "^4.1.3",
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
     "request-promise-native": "1.0.8",
