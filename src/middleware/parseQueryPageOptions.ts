@@ -2,7 +2,7 @@ import { config } from '~/config'
 
 export const parseQueryPageOptions = async (ctx, next, type = '') => {
   const query = ctx.request.query
-  const { categories, episodeId, id, includeAuthors, includeCategories, includeEpisode,
+  const { categories, episodeId, hasVideo, id, includeAuthors, includeCategories, includeEpisode,
     includePodcast, maxResults, mediaRefId, name, page, playlistId, podcastId, searchAllFieldsText,
     searchAuthor, searchTitle, sincePubDate, slug, sort, title, topLevelCategories, userIds } = query
 
@@ -12,6 +12,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     take: 50,
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
+    ...(hasVideo ? { hasVideo } : {}),
     ...(includeAuthors ? { includeAuthors: includeAuthors === 'true' } : {}),
     ...(includeCategories ? { includeCategories: includeCategories === 'true' } : {}),
     ...(includeEpisode ? { includeEpisode: includeEpisode === 'true' } : {}),

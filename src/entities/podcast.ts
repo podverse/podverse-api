@@ -29,6 +29,12 @@ type ValueRecipient = {
   type: string
 }
 
+@Index(['hasVideo', 'pastAllTimeTotalUniquePageviews'])
+@Index(['hasVideo', 'pastHourTotalUniquePageviews'])
+@Index(['hasVideo', 'pastDayTotalUniquePageviews'])
+@Index(['hasVideo', 'pastWeekTotalUniquePageviews'])
+@Index(['hasVideo', 'pastMonthTotalUniquePageviews'])
+@Index(['hasVideo', 'pastYearTotalUniquePageviews'])
 @Entity('podcasts')
 export class Podcast {
 
