@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
+import type { PodcastMedium } from 'podverse-shared'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
   JoinTable, ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
@@ -72,6 +73,9 @@ export class Podcast {
   guid?: string
 
   @Column({ default: false })
+  hasVideo: boolean
+
+  @Column({ default: false })
   hideDynamicAdsWarning?: boolean
 
   @ValidateIf(a => a.imageUrl != null)
@@ -103,6 +107,14 @@ export class Podcast {
   @IsUrl()
   @Column({ nullable: true })
   linkUrl?: string
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: ['podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'music-video'],
+    default: 'podcast'
+  })
+  medium: PodcastMedium
 
   @Index()
   @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
