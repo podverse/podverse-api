@@ -96,6 +96,7 @@ const validatePlaylistSearch = async (ctx, next) => {
 const validatePodcastSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     categories: Joi.string(),
+    hasVideo: Joi.boolean(),
     includeAuthors: Joi.boolean(),
     includeCategories: Joi.boolean(),
     maxResults: Joi.boolean(),
