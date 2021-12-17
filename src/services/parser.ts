@@ -691,7 +691,11 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   const updatedSavedEpisodes = [] as any
   const newEpisodes = [] as any
-  let hasVideo = false
+
+  /* If a feed has more video episodes than audio episodes, mark it as a hasVideo podcast. */
+  let videoCount = 0
+  let audioCount = 0
+
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
@@ -701,8 +705,10 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
     if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
-      hasVideo = true
-    } 
+      videoCount++
+    } else {
+      audioCount++
+    }
     
     if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
       updatedSavedEpisodes.push(existingEpisode)
@@ -716,7 +722,9 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
 
     if (newParsedEpisode.mediaType && newParsedEpisode.mediaType.indexOf('video') >= 0) {
-      hasVideo = true
+      videoCount++
+    } else {
+      audioCount++
     }
     
     if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
@@ -727,7 +735,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   return {
     newEpisodes,
     updatedSavedEpisodes,
-    hasVideo
+    hasVideo: videoCount > audioCount
   }
 }
 
