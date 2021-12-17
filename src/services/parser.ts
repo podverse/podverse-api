@@ -1,7 +1,7 @@
 import * as _fetch from 'isomorphic-fetch'
 import { parseFeed } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
-import { Funding } from 'podverse-shared'
+import type { Funding } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
@@ -75,6 +75,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
+        medium: (feed.medium || "podcast") as any, // TODO: how do we handle type/enum here?
         owner: feed.owner,
         pubDate: feed.pubDate,
         subtitle: feed.subtitle,
@@ -185,11 +186,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const results = await findOrGenerateParsedEpisodes(episodes, podcast) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
+
+      podcast.hasVideo = results.hasVideo
+
       newEpisodes = results.newEpisodes
       updatedSavedEpisodes = results.updatedSavedEpisodes
       newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
       updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
-
+      
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
       }, [])
@@ -201,6 +205,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
         || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
       const lastEpisodePubDate = new Date(latestEpisode.pubDate)
+
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
       podcast.lastEpisodeTitle = latestEpisode.title
     } else {
@@ -209,6 +214,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     }
 
     podcast.linkUrl = meta.link
+    podcast.medium = meta.medium
     podcast.sortableTitle = meta.title ? convertToSortableTitle(meta.title) : ''
     podcast.title = meta.title
     podcast.type = meta.type
@@ -685,6 +691,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   const updatedSavedEpisodes = [] as any
   const newEpisodes = [] as any
+  let hasVideo = false
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
@@ -693,6 +700,9 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     )
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
+    if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
+      hasVideo = true
+    } 
     
     if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
       updatedSavedEpisodes.push(existingEpisode)
@@ -705,6 +715,9 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     let episode = new Episode()
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
 
+    if (newParsedEpisode.mediaType && newParsedEpisode.mediaType.indexOf('video') >= 0) {
+      hasVideo = true
+    }
     
     if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
       newEpisodes.push(episode)
@@ -713,7 +726,8 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
   return {
     newEpisodes,
-    updatedSavedEpisodes
+    updatedSavedEpisodes,
+    hasVideo
   }
 }
 
