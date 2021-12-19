@@ -11,6 +11,12 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
+@Index(['mediaType', 'pastAllTimeTotalUniquePageviews'])
+@Index(['mediaType', 'pastHourTotalUniquePageviews'])
+@Index(['mediaType', 'pastDayTotalUniquePageviews'])
+@Index(['mediaType', 'pastWeekTotalUniquePageviews'])
+@Index(['mediaType', 'pastMonthTotalUniquePageviews'])
+@Index(['mediaType', 'pastYearTotalUniquePageviews'])
 export class Episode {
 
   @PrimaryColumn('varchar', {
@@ -80,6 +86,7 @@ export class Episode {
   @Column({ default: 0 })
   mediaFilesize: number
 
+  @Index()
   @Column({ nullable: true })
   mediaType?: string
 

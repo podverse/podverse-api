@@ -125,12 +125,16 @@ const cleanEpisodes = (episodes) => {
 }
 
 const getEpisodes = async (query) => {
-  const { includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+  const { hasVideo, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
 
   let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
   const shouldLimit = true
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
+
+  if (hasVideo) {
+    qb.andWhere(`episode."mediaType" LIKE 'video*'`)
+  }
 
   const allowRandom = false
   return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
