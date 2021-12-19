@@ -34,6 +34,7 @@ const validateCategorySearch = async (ctx, next) => {
 
 const validateEpisodeSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
+    hasVideo: Joi.boolean(),
     includePodcast: Joi.boolean(),
     podcastId: Joi.string(),
     searchAllFieldsText: Joi.string().min(2),
@@ -68,6 +69,7 @@ const validateMediaRefSearch = async (ctx, next) => {
     allowUntitled: Joi.boolean(),
     categories: Joi.string(),
     episodeId: Joi.string(),
+    hasVideo: Joi.boolean(),
     includeEpisode: Joi.boolean(),
     includePodcast: Joi.boolean(),
     podcastId: Joi.string(),

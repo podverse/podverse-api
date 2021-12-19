@@ -85,10 +85,11 @@ const getMediaRefs = async (query, includeNSFW) => {
   const podcastIds = query.podcastId && query.podcastId.split(',') || []
   const episodeIds = query.episodeId && query.episodeId.split(',') || []
   const categoriesIds = query.categories && query.categories.split(',') || []
-  const { includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
+  const { hasVideo, includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   const queryConditions = `
     episode.isPublic = true
+    ${hasVideo ? '' : `AND episode.mediaType LIKE 'video*'`}
     ${includeNSFW ? '' : 'AND episode.isExplicit = :isExplicit'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
