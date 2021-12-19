@@ -10,6 +10,7 @@ const updateRecentEpisodesTables = async () => {
   await dropTempTables(em)
 
   for (let i = 0; i < days; i++) {
+    // Why are these generated one day at a time? Revisit later.
     const byCategoryPromise = generateByCategoryQueryPromise(em, i)
     const byPodcastPromise = generateByPodcastQueryPromise(em, i)
     promises.push(byCategoryPromise)
@@ -23,7 +24,14 @@ const updateRecentEpisodesTables = async () => {
     byCategorySelects += `SELECT * FROM "recentEpisodesByCategoryTemp${i}" ${i === days - 1 ? '' : 'UNION '}`
   }
 
-  await em.query(`CREATE TABLE "recentEpisodesByCategoryTempCombined" AS (${byCategorySelects});`)
+  // These would be faster if the indexes were added at the end but its difficult to deal with the ever-changing index names
+  // created by the CREATE TABLE LIKE process.
+  await em.query(`
+    CREATE TABLE "recentEpisodesByCategoryTempCombined" (
+      LIKE "recentEpisodesByCategory" INCLUDING ALL
+    );
+  `)
+  await em.query(`INSERT INTO "recentEpisodesByCategoryTempCombined" ${byCategorySelects};`)
 
   await em.query(`
     ALTER TABLE "recentEpisodesByCategory"
@@ -42,7 +50,12 @@ const updateRecentEpisodesTables = async () => {
     byPodcastSelects += `SELECT * FROM "recentEpisodesByPodcastTemp${i}" ${i === days - 1 ? '' : 'UNION '}`
   }
 
-  await em.query(`CREATE TABLE "recentEpisodesByPodcastTempCombined" AS (${byPodcastSelects});`)
+  await em.query(`
+    CREATE TABLE "recentEpisodesByPodcastTempCombined" (
+      LIKE "recentEpisodesByPodcast" INCLUDING ALL
+    );
+  `)
+  await em.query(`INSERT INTO "recentEpisodesByPodcastTempCombined" ${byPodcastSelects};`)
 
   await em.query(`
     ALTER TABLE "recentEpisodesByPodcast"
@@ -63,7 +76,7 @@ const generateByCategoryQueryPromise = (em, i) => {
   return new Promise(async resolve => {
     await em.query(`
       CREATE TABLE "recentEpisodesByCategoryTemp${i}" (
-        LIKE "recentEpisodesByCategory" INCLUDING ALL
+        LIKE "recentEpisodesByCategory" EXCLUDING ALL
       );
     `)
     
@@ -87,7 +100,7 @@ const generateByPodcastQueryPromise = (em, i) => {
   return new Promise(async resolve => {
     await em.query(`
       CREATE TABLE "recentEpisodesByPodcastTemp${i}" (
-        LIKE "recentEpisodesByPodcast" INCLUDING ALL
+        LIKE "recentEpisodesByPodcast" EXCLUDING ALL
       );
     `)
 

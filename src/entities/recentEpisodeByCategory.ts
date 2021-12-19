@@ -1,15 +1,14 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm'
 
 @Entity('recentEpisodesByCategory')
-@Index(['categoryId', 'episodeId'], { unique: true })
+@Index(['categoryId', 'pubDate'])
 export class RecentEpisodeByCategory {
-  @PrimaryColumn()
-  categoryId: string
-
   @PrimaryColumn()
   episodeId: string
 
-  @Index()
+  @Column()
+  categoryId: string
+
   @Column({ nullable: true })
   pubDate?: Date
 }
