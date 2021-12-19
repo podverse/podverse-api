@@ -41,17 +41,8 @@ const getEpisode = async id => {
 // Use where clause to reduce the size of very large data sets and speed up queries
 const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => {
   if (shouldLimit) {
-    if (sort === 'top-past-hour') {
-      qb.andWhere('episode."pastHourTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-day') {
-      qb.andWhere('episode."pastDayTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-week') {
-      qb.andWhere('episode."pastWeekTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-month') {
-      qb.andWhere('episode."pastMonthTotalUniquePageviews" > 0')
-    } else if (sort === 'top-past-year') {
-      qb.andWhere('episode."pastYearTotalUniquePageviews" > 0')
-    } else if (sort === 'top-all-time') {
+    const topSorts = ['top-past-hour', 'top-past-day', 'top-past-week', 'top-past-month', 'top-past-year', 'top-all-time']
+    if (topSorts.includes(sort)) {
       qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
     } else if (sort === 'most-recent') {
       const date = new Date()
@@ -64,7 +55,7 @@ const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => 
   return qb
 }
 
-const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sincePubDate = '') => {
+const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sincePubDate = '', hasVideo) => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
@@ -113,6 +104,10 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     qb.andWhere(`episode.pubDate >= :sincePubDate`, { sincePubDate })
   }
 
+  if (hasVideo) {
+    qb.andWhere(`episode."mediaType" LIKE 'video%'`)
+  }
+
   return qb    
 }
 
@@ -127,24 +122,21 @@ const cleanEpisodes = (episodes) => {
 const getEpisodes = async (query) => {
   const { hasVideo, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
   const shouldLimit = true
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
 
-  if (hasVideo) {
-    qb.andWhere(`episode."mediaType" LIKE 'video*'`)
-  }
-
+  const shouldLimitCount = true
   const allowRandom = false
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
 const getEpisodesByCategoryIds = async (query) => {
-  const { categories, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+  const { categories, hasVideo, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
   const categoriesIds = categories && categories.split(',') || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
 
   if (sort === 'most-recent') {
     return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
@@ -161,7 +153,8 @@ const getEpisodesByCategoryIds = async (query) => {
     qb.andWhere('episode."isPublic" IS true')
 
     const allowRandom = true
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
+    const shouldLimitCount = true
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
   }
 }
 
@@ -170,21 +163,22 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
   qb.andWhere('episode."isPublic" IS true')
 
+  const shouldLimitCount = false
   const allowRandom = true
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
 const getEpisodesByPodcastIds = async (query) => {
-  const { includePodcast, podcastId, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+  const { hasVideo, includePodcast, podcastId, searchAllFieldsText, sincePubDate, skip, sort, take } = query
   const podcastIds = podcastId && podcastId.split(',') || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate)
+  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
 
   if (podcastIds.length === 1) {
     return getEpisodesByPodcastId(query, qb, podcastIds)
   }
 
-  if (sort === 'most-recent') {
+  if (sort === 'most-recent' && !hasVideo) {
     return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
   } else {
     qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
@@ -193,7 +187,7 @@ const getEpisodesByPodcastIds = async (query) => {
     qb.andWhere('episode."isPublic" IS true')
 
     const allowRandom = true
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom)
+    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimit)
   }
 }
 
@@ -228,7 +222,7 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   return [cleanedEpisodes, totalCount]
 }
 
-const handleGetEpisodesWithOrdering = async (obj, allowRandom) => {
+const handleGetEpisodesWithOrdering = async (obj, allowRandom, shouldLimitCount) => {
   const { skip, sort, take } = obj
   let { qb } = obj
   qb.offset(skip)
@@ -236,9 +230,24 @@ const handleGetEpisodesWithOrdering = async (obj, allowRandom) => {
 
   qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom)
 
-  const episodesResults = await qb.getManyAndCount()
-  const episodes = episodesResults[0]
-  const episodesCount = episodesResults[1]
+  let episodes = [] as any
+  let episodesCount = 0
+
+  if (shouldLimitCount) {
+    const results = await qb
+      .offset(skip)
+      .limit(take)
+      .getMany()
+    episodes = results
+    episodesCount = 10000
+  } else {
+    const results = await qb
+      .offset(skip)
+      .limit(take)
+      .getManyAndCount()
+    episodes = results[0] || []
+    episodesCount = results[1] || 0
+  }
 
   const cleanedEpisodes = cleanEpisodes(episodes)
 
