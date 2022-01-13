@@ -107,7 +107,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories[1]).to.have.property('createdAt')
           chaiExpect(categories[1]).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(33)
+          chaiExpect(Object.keys(res.body).length).to.equal(34)
           
           done()
         })
