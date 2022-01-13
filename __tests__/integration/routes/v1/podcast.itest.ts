@@ -93,7 +93,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl).to.have.property('createdAt')
           chaiExpect(feedUrl).to.have.property('updatedAt')      
           
-          chaiExpect(Object.keys(res.body).length).to.equal(37)
+          chaiExpect(Object.keys(res.body).length).to.equal(39)
 
           done()
         })
@@ -200,7 +200,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(feedUrl).to.have.property('createdAt')
           chaiExpect(feedUrl).to.have.property('updatedAt')      
           
-          chaiExpect(Object.keys(res.body).length).to.equal(37)
+          chaiExpect(Object.keys(res.body).length).to.equal(39)
 
           done()
         })

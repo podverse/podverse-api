@@ -306,7 +306,7 @@ describe('_userHistoryItem endpoints', () => {
 
           const userHistoryItemsEpisode = res.body.userHistoryItems[0]
           chaiExpect(userHistoryItemsEpisode).to.have.property('episodeDescription')
-          chaiExpect(userHistoryItemsEpisode.episodeDuration).to.equal(0)
+          chaiExpect(userHistoryItemsEpisode.episodeDuration).to.equal(null)
           chaiExpect(userHistoryItemsEpisode.episodeId).to.equal('3TENCQO2Q')
           chaiExpect(userHistoryItemsEpisode.episodeMediaUrl).to.equal('https://play.podtrac.com/npr-381444908/edge1.pod.npr.org/anon.npr-podcasts/podcast/npr/fa/2020/04/20200402_fa_fapodthurs-7f668f53-d5d7-4ed7-8656-90d0d2623074.mp3?awCollectionId=381444908&awEpisodeId=825948868&orgId=1&d=2925&p=381444908&story=825948868&t=podcast&e=825948868&size=46698453&ft=pod&f=381444908')
           chaiExpect(userHistoryItemsEpisode).to.have.property('episodePubDate')
@@ -324,7 +324,7 @@ describe('_userHistoryItem endpoints', () => {
           chaiExpect(userHistoryItemsClip.clipStartTime).to.equal(1500)
           chaiExpect(userHistoryItemsClip.clipTitle).to.equal('Amet aliquam id diam maecenas ultricies mi eget.')
           chaiExpect(userHistoryItemsClip).to.have.property('episodeDescription')
-          chaiExpect(userHistoryItemsClip.episodeDuration).to.equal(0)
+          chaiExpect(userHistoryItemsClip.episodeDuration).to.equal(null)
           chaiExpect(userHistoryItemsClip.episodeId).to.equal('fFmGXkgIM')
           chaiExpect(userHistoryItemsClip.episodeMediaUrl).to.equal('https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP3689667624.mp3')
           chaiExpect(userHistoryItemsClip).to.have.property('episodePubDate')

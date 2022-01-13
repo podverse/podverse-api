@@ -133,7 +133,7 @@ describe('_userQueueItem endpoints', () => {
 
           const userQueueItemsEpisode = res.body.userQueueItems[0]
           chaiExpect(userQueueItemsEpisode).to.have.property('episodeDescription')
-          chaiExpect(userQueueItemsEpisode.episodeDuration).to.equal(0)
+          chaiExpect(userQueueItemsEpisode.episodeDuration).to.equal(null)
           chaiExpect(userQueueItemsEpisode.episodeId).to.equal('n43uIo6zR8')
           chaiExpect(userQueueItemsEpisode.episodeMediaUrl).to.equal('https://dts.podtrac.com/redirect.mp3/www.buzzsprout.com/1/814110-7-launch-your-new-podcast.mp3?blob_id=1707517')
           chaiExpect(userQueueItemsEpisode).to.have.property('episodePubDate')
@@ -151,7 +151,7 @@ describe('_userQueueItem endpoints', () => {
           chaiExpect(userQueueItemsClip.clipStartTime).to.equal(482)
           chaiExpect(userQueueItemsClip.clipTitle).to.equal('One more soundbite title')
           chaiExpect(userQueueItemsClip).to.have.property('episodeDescription')
-          chaiExpect(userQueueItemsClip.episodeDuration).to.equal(0)
+          chaiExpect(userQueueItemsClip.episodeDuration).to.equal(null)
           chaiExpect(userQueueItemsClip.episodeId).to.equal('n43uIo6zR8')
           chaiExpect(userQueueItemsClip.episodeMediaUrl).to.equal('https://dts.podtrac.com/redirect.mp3/www.buzzsprout.com/1/814110-7-launch-your-new-podcast.mp3?blob_id=1707517')
           chaiExpect(userQueueItemsClip).to.have.property('episodePubDate')
