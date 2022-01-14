@@ -165,11 +165,11 @@ describe('_episode endpoints', () => {
           const episode1 = episodes[2]
           const episode2 = episodes[3]
 
-          chaiExpect(episode0.id).to.equal('rggkv66fR')
+          chaiExpect(episode0.id).to.equal('18z7yrPvI')
 
-          chaiExpect(episode1.id).to.equal('18z7yrPvI')
+          chaiExpect(episode1.id).to.equal('rggkv66fR')
 
-          chaiExpect(episode2.id).to.equal('zElB-mF59Y')
+          chaiExpect(episode2.id).to.equal('tfAg_PJjx9')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 

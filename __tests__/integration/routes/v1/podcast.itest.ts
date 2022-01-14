@@ -228,44 +228,44 @@ describe('Podcast endpoints', () => {
           chaiExpect(res).to.have.status(200);
 
           const podcasts = res.body[0]
+
           const podcast = podcasts[0]
+          chaiExpect(podcast.id).to.equal('xSTqnMUb57K')
           
-          chaiExpect(podcast.id).to.equal('Yqft_RG8j')
-          chaiExpect(podcast.podcastIndexId).to.equal('200269')
-          chaiExpect(podcast).to.have.property('feedLastUpdated')
-          chaiExpect(podcast.funding).to.equal(null)
-          chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
-          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
-          chaiExpect(podcast.isExplicit).to.equal(true)
-          chaiExpect(podcast).to.have.property('lastEpisodePubDate')
-          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Episode 185: The Devil's Playground`)
-          chaiExpect(podcast.lastFoundInPodcastIndex).to.equal(null)
-          chaiExpect(podcast.linkUrl).to.equal('https://verybadwizards.fireside.fm')
-          chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastDayTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
-          chaiExpect(podcast.sortableTitle).to.equal(`very bad wizards`)
-          chaiExpect(podcast.title).to.equal(`Very Bad Wizards`)
-          chaiExpect(podcast.value).to.equal(null)
-          chaiExpect(podcast).to.have.property('createdAt')
-          chaiExpect(podcast.feedUrls[0].url).to.equal('https://verybadwizards.fireside.fm/rss')
-
-
           const podcast1 = podcasts[1]
-          chaiExpect(podcast1.id).to.equal('yKyjZDxsB')
+          
+          chaiExpect(podcast1.id).to.equal('Yqft_RG8j')
+          chaiExpect(podcast1.podcastIndexId).to.equal('200269')
+          chaiExpect(podcast1).to.have.property('feedLastUpdated')
+          chaiExpect(podcast1.funding).to.equal(null)
+          chaiExpect(podcast1.hideDynamicAdsWarning).to.equal(false)
+          chaiExpect(podcast1.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
+          chaiExpect(podcast1.isExplicit).to.equal(true)
+          chaiExpect(podcast1).to.have.property('lastEpisodePubDate')
+          chaiExpect(podcast1.lastEpisodeTitle).to.equal(`Episode 185: The Devil's Playground`)
+          chaiExpect(podcast1.lastFoundInPodcastIndex).to.equal(null)
+          chaiExpect(podcast1.linkUrl).to.equal('https://verybadwizards.fireside.fm')
+          chaiExpect(podcast1.pastAllTimeTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.pastHourTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.pastDayTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.pastWeekTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.pastMonthTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.pastYearTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(podcast1.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
+          chaiExpect(podcast1.sortableTitle).to.equal(`very bad wizards`)
+          chaiExpect(podcast1.title).to.equal(`Very Bad Wizards`)
+          chaiExpect(podcast1.value).to.equal(null)
+          chaiExpect(podcast1).to.have.property('createdAt')
+          chaiExpect(podcast1.feedUrls[0].url).to.equal('https://verybadwizards.fireside.fm/rss')
 
           const podcast2 = podcasts[2]
-          chaiExpect(podcast2.id).to.equal('xSTqnMUb57K')
+          chaiExpect(podcast2.id).to.equal('yKyjZDxsB')
 
           const podcast3 = podcasts[3]
           chaiExpect(podcast3.id).to.equal('kS9ZnQNWlQc')
 
           const podcast4 = podcasts[4]
-          chaiExpect(podcast4.id).to.equal('zRo1jwx67')
+          chaiExpect(podcast4.id).to.equal('gyEGNwJud')
 
           
 
