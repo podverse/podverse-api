@@ -138,6 +138,7 @@ describe('_episode endpoints', () => {
           
           chaiExpect(episode.id).to.equal('z3kazYivU')
           chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.credentialsRequired).to.equal(false)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -157,7 +158,9 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode).to.have.property('pubDate')
+          chaiExpect(episode.socialInteraction).to.equal(null)
           chaiExpect(episode.title).to.equal('#1428 - Brian Greene')
+          chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
 

@@ -236,8 +236,10 @@ describe('Podcast endpoints', () => {
           
           chaiExpect(podcast1.id).to.equal('Yqft_RG8j')
           chaiExpect(podcast1.podcastIndexId).to.equal('200269')
+          chaiExpect(podcast1.credentialsRequired).to.equal(false)
           chaiExpect(podcast1).to.have.property('feedLastUpdated')
           chaiExpect(podcast1.funding).to.equal(null)
+          chaiExpect(podcast1.hasVideo).to.equal(false)
           chaiExpect(podcast1.hideDynamicAdsWarning).to.equal(false)
           chaiExpect(podcast1.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/VncRLwaI7A/verybadwizards.jpg')
           chaiExpect(podcast1.isExplicit).to.equal(true)
@@ -245,6 +247,7 @@ describe('Podcast endpoints', () => {
           chaiExpect(podcast1.lastEpisodeTitle).to.equal(`Episode 185: The Devil's Playground`)
           chaiExpect(podcast1.lastFoundInPodcastIndex).to.equal(null)
           chaiExpect(podcast1.linkUrl).to.equal('https://verybadwizards.fireside.fm')
+          chaiExpect(podcast1.medium).to.equal('podcast')
           chaiExpect(podcast1.pastAllTimeTotalUniquePageviews).to.equal(123456789)
           chaiExpect(podcast1.pastHourTotalUniquePageviews).to.equal(123456789)
           chaiExpect(podcast1.pastDayTotalUniquePageviews).to.equal(123456789)
