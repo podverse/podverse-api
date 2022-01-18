@@ -259,10 +259,10 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef0.owner).to.have.property('name')
 
           const mediaRef1 = mediaRefs[1]
-          chaiExpect(mediaRef1.id).to.equal('U1CrtU3M')
+          chaiExpect(mediaRef1.id).to.equal('fgmGHz0o')
 
           const mediaRef2 = mediaRefs[2]
-          chaiExpect(mediaRef2.id).to.equal('fgmGHz0o')
+          chaiExpect(mediaRef2.id).to.equal('U1CrtU3M')
 
           const mediaRef3 = mediaRefs[3]
           chaiExpect(mediaRef3.id).to.equal('9rA5BhWp')

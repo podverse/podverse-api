@@ -124,7 +124,7 @@
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
     "awesome-typescript-loader": "5.2.1",
-    "aws-sdk": "2.580.0",
+    "aws-sdk": "2.814.0",
     "axios": "0.21.2",
     "bcryptjs": "2.4.3",
     "chai": "4.2.0",
@@ -161,7 +161,7 @@
     "koa2-ratelimit": "0.9.1",
     "lint-staged": "9.5.0",
     "manticoresearch": "^2.0.2",
-    "nodemailer": "6.4.16",
+    "nodemailer": "6.6.1",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "password-validator": "5.0.3",
@@ -181,7 +181,7 @@
     "typeorm": "0.2.25",
     "uuid": "3.3.3",
     "valid-url": "1.0.9",
-    "validator": "12.1.0",
+    "validator": "13.7.0",
     "webpack": "4.41.2",
     "winston": "3.2.1"
   }
