@@ -181,7 +181,7 @@
     "typeorm": "0.2.25",
     "uuid": "3.3.3",
     "valid-url": "1.0.9",
-    "validator": "12.1.0",
+    "validator": "13.7.0",
     "webpack": "4.41.2",
     "winston": "3.2.1"
   }
