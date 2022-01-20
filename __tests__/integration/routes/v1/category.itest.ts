@@ -109,34 +109,4 @@ describe('_category endpoints', () => {
         })
     })
   })
-
-  describe('find by query', () => {
-    test('top past week', async (done) => {
-      chai.request(global.app)
-        .get(`${v1Path}/category?page=&sort=top-past-week`)
-        .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
-
-          const category = res.body[0][0]
-          
-          chaiExpect(category.id).to.equal('H3kmMlJAPE')
-          chaiExpect(category.slug).to.equal('aftershows')
-          chaiExpect(category.title).to.equal('After Shows')
-
-          chaiExpect(category.category.id).to.equal('fEVhFxQCz')
-          chaiExpect(category.category.fullPath).to.equal('TV & Film')
-          chaiExpect(category.category.slug).to.equal('tvfilm')
-          chaiExpect(category.category.title).to.equal('TV & Film')
-          chaiExpect(category.category).to.have.property('createdAt')
-          chaiExpect(category.category).to.have.property('updatedAt')
-
-          chaiExpect(category.categories).to.eql([])
-
-          chaiExpect(Object.keys(res.body).length).to.equal(2)
-                
-          done()
-        })
-    })
-  })
-
 })

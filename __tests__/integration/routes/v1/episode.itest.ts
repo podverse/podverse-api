@@ -107,7 +107,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories[1]).to.have.property('createdAt')
           chaiExpect(categories[1]).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(33)
+          chaiExpect(Object.keys(res.body).length).to.equal(34)
           
           done()
         })
@@ -138,6 +138,7 @@ describe('_episode endpoints', () => {
           
           chaiExpect(episode.id).to.equal('z3kazYivU')
           chaiExpect(episode.chaptersUrl).to.equal(null)
+          chaiExpect(episode.credentialsRequired).to.equal(false)
           chaiExpect(episode).to.have.property('description')
           chaiExpect(episode.duration).to.equal(0)
           chaiExpect(episode.episodeType).to.equal('full')
@@ -157,7 +158,9 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(123456789)
           chaiExpect(episode).to.have.property('pubDate')
+          chaiExpect(episode.socialInteraction).to.equal(null)
           chaiExpect(episode.title).to.equal('#1428 - Brian Greene')
+          chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
 
@@ -165,11 +168,11 @@ describe('_episode endpoints', () => {
           const episode1 = episodes[2]
           const episode2 = episodes[3]
 
-          chaiExpect(episode0.id).to.equal('rggkv66fR')
+          chaiExpect(episode0.id).to.equal('18z7yrPvI')
 
-          chaiExpect(episode1.id).to.equal('18z7yrPvI')
+          chaiExpect(episode1.id).to.equal('rggkv66fR')
 
-          chaiExpect(episode2.id).to.equal('zElB-mF59Y')
+          chaiExpect(episode2.id).to.equal('tfAg_PJjx9')
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 
@@ -287,7 +290,7 @@ describe('_episode endpoints', () => {
           chaiExpect(categories).to.have.property('createdAt')
           chaiExpect(categories).to.have.property('updatedAt')
 
-          chaiExpect(Object.keys(res.body).length).to.equal(33)
+          chaiExpect(Object.keys(res.body).length).to.equal(34)
 
           done()
         })
@@ -342,7 +345,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(25)
+          chaiExpect(Object.keys(episode).length).to.equal(26)
           chaiExpect(res.body[0].length).to.equal(20)
 
           done()
@@ -385,7 +388,7 @@ describe('_episode endpoints', () => {
           chaiExpect(episode.transcript).to.equal(null)
           chaiExpect(episode.value).to.equal(null)
 
-          chaiExpect(Object.keys(episode).length).to.equal(25)
+          chaiExpect(Object.keys(episode).length).to.equal(26)
           chaiExpect(res.body[0].length).to.equal(20)
 
           done()
