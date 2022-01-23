@@ -49,7 +49,7 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
 
 const getUser = async (id: string) => {
   const repository = getRepository(User)
-  
+
   const user = await repository.findOne(
     { id },
     {
@@ -99,7 +99,6 @@ const createUser = async (obj) => {
 }
 
 const deleteLoggedInUser = async (id, loggedInUserId) => {
-
   if (id !== loggedInUserId) {
     throw new createError.Unauthorized('Log in to delete this user')
   }
@@ -115,7 +114,7 @@ const deleteLoggedInUser = async (id, loggedInUserId) => {
   return result
 }
 
-const getLoggedInUser = async id => {
+const getLoggedInUser = async (id) => {
   const repository = getRepository(User)
 
   const qb = repository
@@ -131,14 +130,9 @@ const getLoggedInUser = async id => {
     .addSelect('user.subscribedPlaylistIds')
     .addSelect('user.subscribedPodcastIds')
     .addSelect('user.subscribedUserIds')
-    .leftJoinAndSelect(
-      'user.playlists',
-      'playlists',
-      'playlists.owner = :ownerId',
-      {
-        ownerId: id
-      }
-    )
+    .leftJoinAndSelect('user.playlists', 'playlists', 'playlists.owner = :ownerId', {
+      ownerId: id
+    })
     .where('user.id = :id', { id })
 
   try {
@@ -155,7 +149,7 @@ const getLoggedInUser = async id => {
   }
 }
 
-const getPublicUser = async id => {
+const getPublicUser = async (id) => {
   const repository = getRepository(User)
 
   const qb = repository
@@ -176,10 +170,10 @@ const getPublicUser = async id => {
   return user
 }
 
-const getPublicUsers = async query => {
+const getPublicUsers = async (query) => {
   const repository = getRepository(User)
   const { skip, take } = query
-  const userIds = query.userIds && query.userIds.split(',') || []
+  const userIds = (query.userIds && query.userIds.split(',')) || []
 
   if (!userIds || userIds.length < 1) {
     return [[], 0]
@@ -224,15 +218,15 @@ const getUserSingleField = async (id, field) => {
   return user[field]
 }
 
-const getUserSubscribedPlaylistIds = async id => {
+const getUserSubscribedPlaylistIds = async (id) => {
   return getUserSingleField(id, 'subscribedPlaylistIds')
 }
 
-const getUserSubscribedPodcastIds = async id => {
+const getUserSubscribedPodcastIds = async (id) => {
   return getUserSingleField(id, 'subscribedPodcastIds')
 }
 
-const getUserSubscribedPublicUserIds = async id => {
+const getUserSubscribedPublicUserIds = async (id) => {
   return getUserSingleField(id, 'subscribedUserIds')
 }
 
@@ -243,27 +237,20 @@ const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => 
 
   let qb = await repository
     .createQueryBuilder('mediaRef')
-    .innerJoinAndSelect(
-      'mediaRef.episode',
-      'episode',
-      episodeJoinAndSelect,
-      {
-        isExplicit: !!includeNSFW
-      }
-    )
+    .innerJoinAndSelect('mediaRef.episode', 'episode', episodeJoinAndSelect, {
+      isExplicit: !!includeNSFW
+    })
     .innerJoinAndSelect('episode.podcast', 'podcast')
-    .where(
-      {
-        ...(includePrivate ? {} : { isPublic: true }),
-        owner: ownerId
-      }
-    )
+    .where({
+      ...(includePrivate ? {} : { isPublic: true }),
+      owner: ownerId
+    })
     .skip(skip)
     .take(take)
 
   const allowRandom = true
   qb = addOrderByToQuery(qb, 'mediaRef', sort, 'createdAt', allowRandom)
-    
+
   const results = await qb.getManyAndCount()
 
   return results
@@ -334,11 +321,7 @@ const getUserByEmail = async (email) => {
   const repository = getRepository(User)
   const user = await repository.findOne({
     where: { email },
-    select: [
-      'emailVerified',
-      'id',
-      'name'
-    ]
+    select: ['emailVerified', 'id', 'name']
   })
 
   if (!user) {
@@ -369,17 +352,10 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      where: { emailVerificationToken },
-      select: [
-        'emailVerificationToken',
-        'emailVerificationTokenExpiration',
-        'emailVerified',
-        'id'
-      ]
-    }
-  )
+  const user = await repository.findOne({
+    where: { emailVerificationToken },
+    select: ['emailVerificationToken', 'emailVerificationTokenExpiration', 'emailVerified', 'id']
+  })
 
   if (!user) {
     throw new createError.NotFound('Invalid verify email token.')
@@ -389,39 +365,28 @@ const getUserByVerificationToken = async (emailVerificationToken) => {
 }
 
 const toggleSubscribeToUser = async (userId, loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this profile.')
   }
 
   const repository = getRepository(User)
-  const loggedInUser = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'subscribedUserIds'
-      ]
-    }
-  )
+  const loggedInUser = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'subscribedUserIds']
+  })
 
   if (!loggedInUser) {
     throw new createError.NotFound('Logged In user not found')
   }
 
-  const userToSubscribe = await repository.findOne(
-    {
-      where: {
-        id: userId
-      },
-      select: [
-        'id',
-        'subscribedUserIds'
-      ]
-    }
-  )
+  const userToSubscribe = await repository.findOne({
+    where: {
+      id: userId
+    },
+    select: ['id', 'subscribedUserIds']
+  })
 
   if (!userToSubscribe) {
     throw new createError.NotFound('User not found')
@@ -431,7 +396,7 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
 
   // If no userIds match the filter, add the userId.
   // Else, remove the userId.
-  const filteredUsers = loggedInUser.subscribedUserIds.filter(x => x !== userId)
+  const filteredUsers = loggedInUser.subscribedUserIds.filter((x) => x !== userId)
   if (filteredUsers.length === loggedInUser.subscribedUserIds.length) {
     subscribedUserIds.push(userId)
   } else {
@@ -449,7 +414,6 @@ const toggleSubscribeToUser = async (userId, loggedInUserId) => {
 }
 
 const updateLoggedInUser = async (obj, loggedInUserId) => {
-
   if (!obj.id) {
     throw new createError.NotFound('Must provide a user id.')
   }
@@ -485,7 +449,7 @@ const updateLoggedInUser = async (obj, loggedInUserId) => {
   }
 }
 
-const updateUserEmailVerificationToken = async obj => {
+const updateUserEmailVerificationToken = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -506,7 +470,7 @@ const updateUserEmailVerificationToken = async obj => {
   return
 }
 
-const updateUserPassword = async obj => {
+const updateUserPassword = async (obj) => {
   const repository = getRepository(User)
   const user = await repository.findOne({ id: obj.id })
 
@@ -558,7 +522,6 @@ const updateUserResetPasswordToken = async (obj) => {
 }
 
 const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
-
   if (id !== loggedInUserId) {
     throw new createError.Unauthorized(`Unauthorized error. Please check that you are logged in.`)
   }
@@ -588,7 +551,7 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
 const addByRSSPodcastFeedUrlAddMany = async (urls: string[], loggedInUserId: string) => {
   let addByRSSPodcastFeedUrls = []
   for (const url of urls) {
-    addByRSSPodcastFeedUrls = await addByRSSPodcastFeedUrlAdd(url, loggedInUserId) as any
+    addByRSSPodcastFeedUrls = (await addByRSSPodcastFeedUrlAdd(url, loggedInUserId)) as any
   }
 
   const subscribedPodcastIds = await getUserSubscribedPodcastIds(loggedInUserId)
@@ -605,17 +568,12 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
   }
 
   const repository = getRepository(User)
-  const loggedInUser = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'addByRSSPodcastFeedUrls'
-      ]
-    }
-  )
+  const loggedInUser = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'addByRSSPodcastFeedUrls']
+  })
 
   if (!loggedInUser) {
     throw new createError.NotFound('Logged In user not found')
@@ -627,12 +585,12 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
 
   if (existingFeedUrl) {
     await subscribeToPodcast(existingFeedUrl.podcast.id, loggedInUserId)
-  } else {  
-    const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  } else {
+    const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter((x) => x !== url)
     if (filteredAddByRSSPodcastFeedUrls.length === loggedInUser.addByRSSPodcastFeedUrls.length) {
       addByRSSPodcastFeedUrls.push(url)
     }
-  
+
     await repository
       .createQueryBuilder()
       .update(User)
@@ -640,7 +598,7 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
       .where('id = :loggedInUserId', { loggedInUserId })
       .execute()
   }
-    
+
   return addByRSSPodcastFeedUrls
 }
 
@@ -650,17 +608,12 @@ const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string)
   }
 
   const repository = getRepository(User)
-  const loggedInUser = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'addByRSSPodcastFeedUrls'
-      ]
-    }
-  )
+  const loggedInUser = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'addByRSSPodcastFeedUrls']
+  })
 
   if (!loggedInUser) {
     throw new createError.NotFound('Logged In user not found')
@@ -668,7 +621,7 @@ const addByRSSPodcastFeedUrlRemove = async (url: string, loggedInUserId: string)
 
   let addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
 
-  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter(x => x !== url)
+  const filteredAddByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls.filter((x) => x !== url)
   addByRSSPodcastFeedUrls = filteredAddByRSSPodcastFeedUrls
 
   await repository

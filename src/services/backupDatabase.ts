@@ -26,9 +26,14 @@ export const backupDatabaseToS3 = async () => {
       ContentEncoding: 'gzip'
     }
 
-    await s3.upload(s3Params)
-      .on('httpUploadProgress', function (evt) { console.log(evt); })
-      .send(function (err, data) { console.log(err, data) })
+    await s3
+      .upload(s3Params)
+      .on('httpUploadProgress', function (evt) {
+        console.log(evt)
+      })
+      .send(function (err, data) {
+        console.log(err, data)
+      })
   } catch (error) {
     console.log('Database backup upload failed')
     console.log(error)

@@ -78,7 +78,7 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
     forceUpdateOrderDate: Joi.boolean(),
     mediaFileDuration: Joi.number().integer().min(0),
     mediaRefId: Joi.string().allow(null),
-    userPlaybackPosition: Joi.number().integer().min(0).required(),
+    userPlaybackPosition: Joi.number().integer().min(0).required()
   })
 
   await validateBaseBody(schema, ctx, next)
@@ -95,10 +95,13 @@ const validateAddOrUpdateUserQueueItem = async (ctx, next) => {
 }
 
 const validateUserHistoryItemRemove = async (ctx, next) => {
-  const schema = Joi.object().keys({
-    episodeId: Joi.string(),
-    mediaRefId: Joi.string()
-  }).min(1).max(1)
+  const schema = Joi.object()
+    .keys({
+      episodeId: Joi.string(),
+      mediaRefId: Joi.string()
+    })
+    .min(1)
+    .max(1)
 
   await validateBaseQuery(schema, ctx, next)
 }

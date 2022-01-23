@@ -5,14 +5,16 @@ const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
 describe('_author endpoints', () => {
-
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
-      chai.request(global.app)
-        .get(`${v1Path}/clips?mediaUrl=https://dts.podtrac.com/redirect.mp3/www.buzzsprout.com/1/814110-7-launch-your-new-podcast.mp3?blob_id=1707517`)
+      chai
+        .request(global.app)
+        .get(
+          `${v1Path}/clips?mediaUrl=https://dts.podtrac.com/redirect.mp3/www.buzzsprout.com/1/814110-7-launch-your-new-podcast.mp3?blob_id=1707517`
+        )
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
-          
+          chaiExpect(res).to.have.status(200)
+
           chaiExpect(res.body.version).to.equal('1.0.0')
 
           const chapter0 = res.body.chapters[0]
@@ -45,10 +47,9 @@ describe('_author endpoints', () => {
           chaiExpect(chapter4.startTime).to.equal(555)
 
           chaiExpect(Object.keys(res.body).length).to.equal(2)
-                
+
           done()
         })
     })
   })
-
 })

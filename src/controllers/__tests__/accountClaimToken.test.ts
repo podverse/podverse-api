@@ -4,10 +4,10 @@ jest.mock('typeorm')
 jest.mock('~/entities', () => ({
   AccountClaimToken: jest.fn()
 }))
- 
+
 const { getAccountClaimToken } = require('../accountClaimToken')
 
-const id ='testId'
+const id = 'testId'
 
 describe('controller accountClaimToken', () => {
   describe('getAccountClaimToken', () => {
@@ -36,7 +36,7 @@ describe('controller accountClaimToken', () => {
               typeorm.getRepository = jest.fn().mockReturnValue({
                 findOne: findOneMock.mockReturnValue({
                   testKey: 'testVal',
-                  claimed: true 
+                  claimed: true
                 })
               })
 

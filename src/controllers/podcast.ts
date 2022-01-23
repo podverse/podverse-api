@@ -108,15 +108,15 @@ const getPodcastsFromSearchEngine = async (query) => {
     limit: take,
     offset: skip
   })
-  
-  let podcastIds = [] as any[]  
+
+  let podcastIds = [] as any[]
   const { hits, total } = result.hits
   if (Array.isArray(hits)) {
     podcastIds = hits.map((x: any) => x._source.podverse_id)
   }
   const podcastIdsString = podcastIds.join(',')
   if (!podcastIdsString) return [hits, total]
-  
+
   delete query.searchTitle
   delete query.skip
   query.podcastId = podcastIdsString
@@ -127,8 +127,18 @@ const getPodcastsFromSearchEngine = async (query) => {
 
 const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   const repository = getRepository(Podcast)
-  const { categories, hasVideo, includeAuthors, includeCategories, maxResults, podcastId, searchAuthor,
-    skip, sort, take } = query
+  const {
+    categories,
+    hasVideo,
+    includeAuthors,
+    includeCategories,
+    maxResults,
+    podcastId,
+    searchAuthor,
+    skip,
+    sort,
+    take
+  } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
   let qb = repository
@@ -159,36 +169,18 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .addSelect('podcast.value')
     .addSelect('podcast.createdAt')
     .addSelect('feedUrls.url')
-    .innerJoin(
-      'podcast.feedUrls',
-      'feedUrls',
-      'feedUrls.isAuthority = :isAuthority',
-      { isAuthority: true }
-    )
+    .innerJoin('podcast.feedUrls', 'feedUrls', 'feedUrls.isAuthority = :isAuthority', { isAuthority: true })
 
   if (categories && categories.length > 0) {
-    qb.innerJoinAndSelect(
-      'podcast.categories',
-      'categories',
-      'categories.id = :id',
-      { id: categories[0] }
-    )
+    qb.innerJoinAndSelect('podcast.categories', 'categories', 'categories.id = :id', { id: categories[0] })
   } else {
     if (searchAuthor) {
       const name = `%${searchAuthor.toLowerCase().trim()}%`
       validateSearchQueryString(name)
-      qb.innerJoinAndSelect(
-        'podcast.authors',
-        'authors',
-        'LOWER(authors.name) LIKE :name',
-        { name }
-      )
+      qb.innerJoinAndSelect('podcast.authors', 'authors', 'LOWER(authors.name) LIKE :name', { name })
       qb.innerJoinAndSelect('podcast.categories', 'categories')
     } else if (podcastIds.length) {
-      qb.where(
-        'podcast.id IN (:...podcastIds)',
-        { podcastIds }
-      )
+      qb.where('podcast.id IN (:...podcastIds)', { podcastIds })
     }
   }
 
@@ -204,7 +196,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   if (hasVideo) {
     qb.andWhere('podcast."hasVideo" IS true')
   }
-  
+
   const allowRandom = !!podcastIds
   qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate', allowRandom)
 
@@ -214,10 +206,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     let podcastsCount
 
     if (categories?.length > 0 || podcastIds.length === 0) {
-      podcastResults = await qb
-        .offset(skip)
-        .limit(20)
-        .getMany()
+      podcastResults = await qb.offset(skip).limit(20).getMany()
       podcasts = podcastResults
       podcastsCount = 10000
     } else {
@@ -231,7 +220,6 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
 
     const finalPodcastResults = [] as any
 
-    
     // NOTE: I have no idea why I added this at one point...
     // commenting out since it breaks query sorting...
     if (podcastIds && podcastIds.length && isFromManticoreSearch) {
@@ -254,7 +242,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   }
 }
 
-const getMetadata = async query => {
+const getMetadata = async (query) => {
   const repository = getRepository(Podcast)
   const { podcastId } = query
 
@@ -278,16 +266,11 @@ const getMetadata = async query => {
     .addSelect('podcast.sortableTitle')
     .addSelect('podcast.title')
     .addSelect('podcast.value')
-    .where(
-      'podcast.id IN (:...podcastIds)',
-      { podcastIds }
-    )
+    .where('podcast.id IN (:...podcastIds)', { podcastIds })
     .andWhere('"isPublic" = true')
 
   try {
-    const podcasts = await qb
-      .take(500)
-      .getManyAndCount()
+    const podcasts = await qb.take(500).getManyAndCount()
 
     return podcasts
   } catch (error) {
@@ -298,17 +281,12 @@ const getMetadata = async query => {
 
 const getSubscribedPodcastIds = async (loggedInUserId) => {
   const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'subscribedPodcastIds'
-      ]
-    }
-  )
+  const user = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'subscribedPodcastIds']
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found')
@@ -327,7 +305,7 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 
   // If no podcastIds match the filter, add the podcastId.
   // Else, remove the podcastId.
-  const filteredPodcasts = subscribedPodcastIds.filter(x => x !== podcastId)
+  const filteredPodcasts = subscribedPodcastIds.filter((x) => x !== podcastId)
   if (filteredPodcasts.length === subscribedPodcastIds.length) {
     subscribedPodcastIds.push(podcastId)
   } else {
@@ -340,23 +318,17 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
 }
 
 const subscribeToPodcast = async (podcastId, loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this podcast')
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'subscribedPodcastIds'
-      ]
-    }
-  )
+  const user = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'subscribedPodcastIds']
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found')
@@ -366,7 +338,7 @@ const subscribeToPodcast = async (podcastId, loggedInUserId) => {
 
   // If no podcastIds match the filter, add the podcastId.
   // Else, do nothing
-  const filteredPodcasts = user.subscribedPodcastIds.filter(x => x !== podcastId)
+  const filteredPodcasts = user.subscribedPodcastIds.filter((x) => x !== podcastId)
   if (filteredPodcasts.length === user.subscribedPodcastIds.length) {
     subscribedPodcastIds.push(podcastId)
     await repository.update(loggedInUserId, { subscribedPodcastIds })

@@ -1,6 +1,6 @@
 import { addAllUntitledPodcastFeedUrlsToQueue } from '~/services/queue'
 
-(async function () {
+;(async function () {
   try {
     await addAllUntitledPodcastFeedUrlsToQueue()
   } catch (error) {

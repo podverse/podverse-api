@@ -6,17 +6,13 @@ export const loggerInstance = winston.createLogger({
   level: config.debugLogging ? 'debug' : 'info',
   transports: [
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple())
     }),
     new winston.transports.File({ filename: 'error.log', level: 'error' })
   ]
 })
 
-export function logger () {
-
+export function logger() {
   return async (ctx: Koa.Context, next: () => Promise<any>) => {
     const start = new Date().getMilliseconds()
 
@@ -37,5 +33,4 @@ export function logger () {
 
     await next()
   }
-
 }

@@ -4,9 +4,7 @@ import { validateClassOrThrow } from '~/lib/errors'
 import { removeProtocol } from '~/lib/utility'
 const createError = require('http-errors')
 
-const relations = [
-  'podcast'
-]
+const relations = ['podcast']
 
 const addFeedUrls = async (urls: any[] = []) => {
   const repository = getRepository(FeedUrl)
@@ -36,7 +34,7 @@ const addFeedUrls = async (urls: any[] = []) => {
   return feeds
 }
 
-const deleteFeedUrl = async id => {
+const deleteFeedUrl = async (id) => {
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository.findOne({
     where: { id }
@@ -50,7 +48,7 @@ const deleteFeedUrl = async id => {
   return result
 }
 
-const getFeedUrl = async id => {
+const getFeedUrl = async (id) => {
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository.findOne({ id }, { relations })
 
@@ -61,7 +59,7 @@ const getFeedUrl = async id => {
   return feedUrl
 }
 
-const getFeedUrlByUrl = async url => {
+const getFeedUrlByUrl = async (url) => {
   const repository = getRepository(FeedUrl)
 
   const feedUrl = await repository
@@ -88,10 +86,7 @@ const getFeedUrlByUrlIgnoreProtocol = async (url, skipNotFound) => {
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
-    .where(
-      'feedUrl.url LIKE :url',
-      { url: `%${feedUrlWithoutProtocol}` }
-    )
+    .where('feedUrl.url LIKE :url', { url: `%${feedUrlWithoutProtocol}` })
     .getOne()
 
   if (!feedUrl && !skipNotFound) {
@@ -149,10 +144,7 @@ const getFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
     .addSelect('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
     .where('podcast."podcastIndexId')
-    .where(
-      'podcast.podcastIndexId IN (:...podcastIndexIds)',
-      { podcastIndexIds }
-    )
+    .where('podcast.podcastIndexId IN (:...podcastIndexIds)', { podcastIndexIds })
     .andWhere('feedUrl.isAuthority = TRUE')
     .getMany()
 
@@ -163,7 +155,7 @@ const getFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
   return feedUrl
 }
 
-const updateFeedUrl = async obj => {
+const updateFeedUrl = async (obj) => {
   const repository = getRepository(FeedUrl)
   const feedUrl = await repository.findOne({
     where: {

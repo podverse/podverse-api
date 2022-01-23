@@ -73,10 +73,7 @@ const completePayPalOrder = async (paymentID, state, isV2) => {
     where: {
       id: paypalOrder.owner.id
     },
-    select: [
-      'id',
-      'membershipExpiration'
-    ]
+    select: ['id', 'membershipExpiration']
   })
 
   if (!user) {
@@ -94,8 +91,4 @@ const completePayPalOrder = async (paymentID, state, isV2) => {
   return
 }
 
-export {
-  completePayPalOrder,
-  createPayPalOrder,
-  getPayPalOrder
-}
+export { completePayPalOrder, createPayPalOrder, getPayPalOrder }

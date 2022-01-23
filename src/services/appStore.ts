@@ -37,7 +37,7 @@ const verifyAppStorePurchaseByReceiptRequest = (transactionReceipt: string, isPr
     headers: { 'Content-Type': 'application/json' },
     body: {
       'receipt-data': transactionReceipt,
-      'password': config.appStoreConfig.sharedSecret
+      password: config.appStoreConfig.sharedSecret
     },
     json: true
   })
@@ -78,7 +78,9 @@ export const verifyAppStorePurchaseByReceipt = async (transactionReceipt: string
     }
 
     if (status === 21007) {
-      console.log(`This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.`)
+      console.log(
+        `This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.`
+      )
       const response = await verifyAppStorePurchaseByReceiptRequest(transactionReceipt, false)
       return response.receipt
     }
@@ -94,9 +96,13 @@ export const verifyAppStorePurchaseByReceipt = async (transactionReceipt: string
     } else if (status === 21005) {
       console.log('The receipt server is not currently available.')
     } else if (status === 21006) {
-      console.log(`This receipt is valid but the subscription has expired. When this status code is returned to your server, the receipt data is also decoded and returned as part of the response.`)
+      console.log(
+        `This receipt is valid but the subscription has expired. When this status code is returned to your server, the receipt data is also decoded and returned as part of the response.`
+      )
     } else if (status === 21008) {
-      console.log('This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead.')
+      console.log(
+        'This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead.'
+      )
     } else if (status === 21010) {
       console.log('This receipt could not be authorized. Treat this the same as if a purchase was never made.')
     } else if (status >= 21100 && status <= 21199) {

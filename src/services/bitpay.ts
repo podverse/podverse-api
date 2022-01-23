@@ -18,7 +18,7 @@ try {
   client = bitpay.createClient(privkey)
   console.log('bitpay key found')
 } catch (error) {
-  console.log('bitpay api.key not found. You\'ll need to setup and pair a BitPay API token within this container.')
+  console.log("bitpay api.key not found. You'll need to setup and pair a BitPay API token within this container.")
   console.log('See https://github.com/bitpay/node-bitpay-client for pairing instructions.')
   console.log(error)
 }
@@ -37,7 +37,7 @@ try {
 //   console.log('bitpay client ready')
 // })
 
-export const createBitPayInvoiceVendor = email => {
+export const createBitPayInvoiceVendor = (email) => {
   return new Promise((resolve, reject) => {
     const orderId = uuidv4()
     const filteredData = {
@@ -63,7 +63,7 @@ export const createBitPayInvoiceVendor = email => {
   })
 }
 
-export const getBitPayInvoiceVendor = id => {
+export const getBitPayInvoiceVendor = (id) => {
   return new Promise((resolve, reject) => {
     if (client) {
       client.as('pos').get(`invoices/${id}`, function (err, invoice) {

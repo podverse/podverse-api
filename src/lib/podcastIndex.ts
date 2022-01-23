@@ -12,9 +12,8 @@ export const convertToChaptersFile = (mediaRefs) => {
     chapters.push(chapter)
   }
 
-
   return {
-    version: "1.0.0",
+    version: '1.0.0',
     chapters
   }
 }

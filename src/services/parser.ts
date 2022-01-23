@@ -8,8 +8,7 @@ import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
 import type { Value } from '~/entities/podcast'
-import { _logEnd, _logStart, convertToSlug, convertToSortableTitle,
-  isValidDate, logPerformance } from '~/lib/utility'
+import { _logEnd, _logStart, convertToSlug, convertToSortableTitle, isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
@@ -21,12 +20,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   try {
-    logPerformance("podcastFetchAndParse", _logStart)
+    logPerformance('podcastFetchAndParse', _logStart)
     const xml = await _fetch(feedUrl.url, {
-      headers: { "User-Agent": userAgent },
+      headers: { 'User-Agent': userAgent }
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml)
-    logPerformance("podcastFetchAndParse", _logEnd)
+    logPerformance('podcastFetchAndParse', _logEnd)
 
     if (!parsedFeed) {
       throw new Error('parseFeedUrl invalid partytime parser response')
@@ -59,11 +58,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     // Convert the podcast-partytime schema to a podverse compatible schema.
     const feedCompat = (feed: FeedObject) => {
       return {
-        author: Array.isArray(feed.author)
-          ? feed.author
-          : feed.author 
-            ? [feed.author]
-            : [],
+        author: Array.isArray(feed.author) ? feed.author : feed.author ? [feed.author] : [],
         blocked: feed.itunesBlock,
         categories: feed.itunesCategory,
         description: feed.description,
@@ -75,7 +70,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
-        medium: (feed.medium || "podcast") as any, // TODO: how do we handle type/enum here?
+        medium: (feed.medium || 'podcast') as any, // TODO: how do we handle type/enum here?
         owner: feed.owner,
         pubDate: feed.pubDate,
         subtitle: feed.subtitle,
@@ -108,7 +103,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
 
-    
     const meta = feedCompat(parsedFeed)
     const episodes = parsedFeed.items.map(itemCompat)
 
@@ -127,11 +121,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
-      !forceReparsing
-      && podcast.feedLastUpdated
-      && mostRecentDateFromFeed
-      && new Date(podcast.feedLastUpdated) >= new Date(mostRecentDateFromFeed)
-      && !podcast.alwaysFullyParse
+      !forceReparsing &&
+      podcast.feedLastUpdated &&
+      mostRecentDateFromFeed &&
+      new Date(podcast.feedLastUpdated) >= new Date(mostRecentDateFromFeed) &&
+      !podcast.alwaysFullyParse
     ) {
       console.log('Stop parsing if the feed has not been updated since it was last parsed')
       return
@@ -140,7 +134,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     let authors: Author[] = []
     if (Array.isArray(meta.author) && meta.author.length > 0) {
       logPerformance('findOrGenerateAuthors', _logStart)
-      authors = await findOrGenerateAuthors(meta.author) as never
+      authors = (await findOrGenerateAuthors(meta.author)) as never
       logPerformance('findOrGenerateAuthors', _logEnd)
     }
     const authorRepo = getRepository(Author)
@@ -184,7 +178,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     let updatedSavedEpisodes = [] as any
     if (episodes && Array.isArray(episodes)) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
-      const results = await findOrGenerateParsedEpisodes(episodes, podcast) as any
+      const results = (await findOrGenerateParsedEpisodes(episodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
       podcast.hasVideo = results.hasVideo
@@ -193,7 +187,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       updatedSavedEpisodes = results.updatedSavedEpisodes
       newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
       updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
-      
+
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
       }, [])
@@ -202,8 +196,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         return r.pubDate > a.pubDate ? r : a
       }, [])
 
-      const latestEpisode = (!Array.isArray(latestNewEpisode) && latestNewEpisode)
-        || (!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any
+      const latestEpisode =
+        (!Array.isArray(latestNewEpisode) && latestNewEpisode) ||
+        ((!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any)
       const lastEpisodePubDate = new Date(latestEpisode.pubDate)
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
@@ -259,8 +254,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     for (const updatedSavedEpisode of updatedSavedEpisodes) {
       const soundBiteArray = updatedSavedEpisode.soundbite
       if (Array.isArray(soundBiteArray) && soundBiteArray.length > 0) {
-        await updateSoundBites(updatedSavedEpisode.id, updatedSavedEpisode.soundbite,
-          updatedSavedEpisode.title, podcast.title)
+        await updateSoundBites(
+          updatedSavedEpisode.id,
+          updatedSavedEpisode.soundbite,
+          updatedSavedEpisode.title,
+          podcast.title
+        )
       }
     }
     logPerformance('updatedSavedEpisodes updateSoundBites', _logEnd)
@@ -274,7 +273,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
   } catch (error) {
-    throw(error)
+    throw error
   }
 }
 
@@ -337,14 +336,9 @@ export const parsePublicFeedUrls = async () => {
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
-    .innerJoinAndSelect(
-      'feedUrl.podcast',
-      'podcast',
-      'podcast.isPublic = :isPublic',
-      {
-        isPublic: true
-      }
-    )
+    .innerJoinAndSelect('feedUrl.podcast', 'podcast', 'podcast.isPublic = :isPublic', {
+      isPublic: true
+    })
     .innerJoinAndSelect('podcast.episodes', 'episodes')
     .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
 
@@ -397,7 +391,6 @@ export const parseFeedUrlsFromQueue = async (queueUrl, restartTimeOut) => {
   if (shouldContinue) {
     await parseFeedUrlsFromQueue(queueUrl, restartTimeOut)
   } else if (restartTimeOut) {
-    
     setTimeout(() => {
       parseFeedUrlsFromQueue(queueUrl, restartTimeOut)
     }, restartTimeOut)
@@ -427,10 +420,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .innerJoinAndSelect(
-        'feedUrl.podcast',
-        'podcast'
-      )
+      .innerJoinAndSelect('feedUrl.podcast', 'podcast')
       .where('feedUrl.id = :id', { id: feedUrlMsg.id })
       .getOne()
     logPerformance('parseNextFeedFromQueue > find feedUrl in db', _logEnd, 'queueUrl ' + queueUrl)
@@ -452,7 +442,6 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
         throw error
       }
     }
-
   } catch (error) {
     logPerformance('parseNextFeedFromQueue > error handling', _logStart)
     await handlePodcastFeedLastParseFailed(feedUrl || feedUrlMsg, error)
@@ -492,7 +481,7 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
       console.log('setPodcastFeedLastParseFailed', feedUrlMsg.podcast.id, err)
     }
   }
-  
+
   if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
     const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
     const forceReparsing = false
@@ -501,12 +490,11 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
   }
 }
 
-
 const findOrGenerateAuthors = async (authorNames) => {
   const authorRepo = getRepository(Author)
   // Make sure to remove duplicate values to avoid unique slug/name value collisions
-  const authorNamesArray = [...new Set(authorNames.map(x => x.trim()))]
-  const allAuthorSlugs = authorNamesArray.map(x => convertToSlug(x))
+  const authorNamesArray = [...new Set(authorNames.map((x) => x.trim()))]
+  const allAuthorSlugs = authorNamesArray.map((x) => convertToSlug(x))
 
   let existingAuthors = [] as any
   if (allAuthorSlugs && allAuthorSlugs.length > 0) {
@@ -518,8 +506,8 @@ const findOrGenerateAuthors = async (authorNames) => {
   }
 
   const newAuthors = []
-  const newAuthorNames = authorNamesArray.filter(x => {
-    return !existingAuthors.find(existingAuthor => {
+  const newAuthorNames = authorNamesArray.filter((x) => {
+    return !existingAuthors.find((existingAuthor) => {
       return existingAuthor.slug === convertToSlug(x)
     })
   })
@@ -530,7 +518,7 @@ const findOrGenerateAuthors = async (authorNames) => {
   }
 
   for (const existingAuthor of existingAuthors) {
-    const matchedName = authorNamesArray.find(x => convertToSlug(x) === existingAuthor.slug)
+    const matchedName = authorNamesArray.find((x) => convertToSlug(x) === existingAuthor.slug)
     existingAuthor.name = matchedName
   }
 
@@ -539,7 +527,7 @@ const findOrGenerateAuthors = async (authorNames) => {
   return allAuthors
 }
 
-const generateAuthor = name => {
+const generateAuthor = (name) => {
   const author = new Author()
   author.name = name
   return author
@@ -580,9 +568,8 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
   } else if (!mostRecentEpisodePubDate && meta.lastBuildDate) {
     mostRecentDateFromFeed = meta.lastBuildDate
   } else if (meta.lastBuildDate && mostRecentEpisodePubDate) {
-    mostRecentDateFromFeed = new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate)
-      ? mostRecentEpisodePubDate
-      : meta.lastBuildDate
+    mostRecentDateFromFeed =
+      new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate) ? mostRecentEpisodePubDate : meta.lastBuildDate
   }
 
   return mostRecentDateFromFeed
@@ -643,7 +630,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     return result
   }, [])
   // Create an array of only the episode media URLs from the parsed object
-  const parsedEpisodeMediaUrls = validParsedEpisodes.map(x => x.enclosure.url)
+  const parsedEpisodeMediaUrls = validParsedEpisodes.map((x) => x.enclosure.url)
 
   // Find episodes in the database that have matching episode media URLs AND podcast ids to
   // those found in the parsed object, then store an array of just those URLs.
@@ -681,13 +668,11 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     nonPublicEpisodes.push(e)
   }
 
-  const savedEpisodeMediaUrls = savedEpisodes.map(x => x.mediaUrl)
+  const savedEpisodeMediaUrls = savedEpisodes.map((x) => x.mediaUrl)
 
   // Create an array of only the parsed episodes that do not have a match
   // already saved in the database.
-  const newParsedEpisodes = validParsedEpisodes.filter(
-    x => !savedEpisodeMediaUrls.includes(x.enclosure.url)
-  )
+  const newParsedEpisodes = validParsedEpisodes.filter((x) => !savedEpisodeMediaUrls.includes(x.enclosure.url))
 
   const updatedSavedEpisodes = [] as any
   const newEpisodes = [] as any
@@ -699,9 +684,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
-    const parsedEpisode = validParsedEpisodes.find(
-      x => x.enclosure.url === existingEpisode.mediaUrl
-    )
+    const parsedEpisode = validParsedEpisodes.find((x) => x.enclosure.url === existingEpisode.mediaUrl)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
     if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
@@ -709,7 +692,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     } else {
       audioCount++
     }
-    
+
     if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
       updatedSavedEpisodes.push(existingEpisode)
     }
@@ -726,7 +709,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     } else {
       audioCount++
     }
-    
+
     if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
       newEpisodes.push(episode)
     }
@@ -741,52 +724,62 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
 
 export const generateFeedMessageAttributes = (feedUrl, error = {} as any, forceReparsing) => {
   return {
-    'id': {
+    id: {
       DataType: 'String',
       StringValue: feedUrl.id
     },
-    'url': {
+    url: {
       DataType: 'String',
       StringValue: feedUrl.url
     },
-    ...(feedUrl.podcast && feedUrl.podcast.id ? {
-      'podcastId': {
-        DataType: 'String',
-        StringValue: feedUrl.podcast && feedUrl.podcast.id
-      }
-    } : {}),
-    ...(feedUrl.podcast && feedUrl.podcast.title ? {
-      'podcastTitle': {
-        DataType: 'String',
-        StringValue: feedUrl.podcast && feedUrl.podcast.title
-      }
-    } : {}),
-    ...(forceReparsing ? {
-      'forceReparsing': {
-        DataType: 'String',
-        StringValue: 'TRUE'
-      }
-    } : {}),
-    ...(error && error.message ? {
-      'errorMessage': {
-        DataType: 'String',
-        StringValue: error.message
-      }
-    } : {})
+    ...(feedUrl.podcast && feedUrl.podcast.id
+      ? {
+          podcastId: {
+            DataType: 'String',
+            StringValue: feedUrl.podcast && feedUrl.podcast.id
+          }
+        }
+      : {}),
+    ...(feedUrl.podcast && feedUrl.podcast.title
+      ? {
+          podcastTitle: {
+            DataType: 'String',
+            StringValue: feedUrl.podcast && feedUrl.podcast.title
+          }
+        }
+      : {}),
+    ...(forceReparsing
+      ? {
+          forceReparsing: {
+            DataType: 'String',
+            StringValue: 'TRUE'
+          }
+        }
+      : {}),
+    ...(error && error.message
+      ? {
+          errorMessage: {
+            DataType: 'String',
+            StringValue: error.message
+          }
+        }
+      : {})
   }
 }
 
-const extractFeedMessage = message => {
+const extractFeedMessage = (message) => {
   const attrs = message.MessageAttributes
   return {
     id: attrs.id.StringValue,
     url: attrs.url.StringValue,
-    ...(attrs.podcastId && attrs.podcastTitle ? {
-      podcast: {
-        id: attrs.podcastId.StringValue,
-        title: attrs.podcastTitle.StringValue
-      }
-    } : {}),
+    ...(attrs.podcastId && attrs.podcastTitle
+      ? {
+          podcast: {
+            id: attrs.podcastId.StringValue,
+            title: attrs.podcastTitle.StringValue
+          }
+        }
+      : {}),
     ...(attrs.forceReparsing ? { forceReparsing: true } : {}),
     receiptHandle: message.ReceiptHandle
   } as any

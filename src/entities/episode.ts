@@ -2,12 +2,22 @@
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import { Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
-import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem,
-  UserQueueItem } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
-  Index, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn,
-  UpdateDateColumn } from 'typeorm'
-  import { generateShortId } from '~/lib/utility'
+import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
+import { generateShortId } from '~/lib/utility'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
@@ -18,7 +28,6 @@ import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity,
 @Index(['mediaType', 'pastMonthTotalUniquePageviews'])
 @Index(['mediaType', 'pastYearTotalUniquePageviews'])
 export class Episode {
-
   @PrimaryColumn('varchar', {
     default: generateShortId(),
     length: 14
@@ -33,7 +42,7 @@ export class Episode {
   @Column({ nullable: true })
   chaptersType?: string
 
-  @ValidateIf(a => a.chaptersUrl != null)
+  @ValidateIf((a) => a.chaptersUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   chaptersUrl?: string
@@ -47,7 +56,7 @@ export class Episode {
   @Column({ nullable: true })
   description?: string
 
-  @ValidateIf(a => a.duration != null)
+  @ValidateIf((a) => a.duration != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
@@ -63,7 +72,7 @@ export class Episode {
   @Column({ nullable: true })
   guid?: string
 
-  @ValidateIf(a => a.imageUrl != null)
+  @ValidateIf((a) => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   imageUrl?: string
@@ -75,12 +84,12 @@ export class Episode {
   @Column({ default: false })
   isPublic: boolean
 
-  @ValidateIf(a => a.linkUrl != null)
+  @ValidateIf((a) => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   linkUrl?: string
 
-  @ValidateIf(a => a.mediaFilesize != null)
+  @ValidateIf((a) => a.mediaFilesize != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
@@ -96,49 +105,49 @@ export class Episode {
   mediaUrl: string
 
   @Index()
-  @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastHourTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastDayTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastDayTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastWeekTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastWeekTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastMonthTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastMonthTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastYearTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
   @Column({ nullable: true })
-  pubDate?: Date 
+  pubDate?: Date
 
   @Column('simple-json', { nullable: true })
   socialInteraction: SocialInteraction[]
@@ -153,19 +162,19 @@ export class Episode {
   @Column('simple-json', { nullable: true })
   value: ValueTag[]
 
-  @ManyToMany(type => Author)
+  @ManyToMany((type) => Author)
   @JoinTable()
   authors: Author[]
 
-  @ManyToMany(type => Category)
+  @ManyToMany((type) => Category)
   @JoinTable()
   categories: Category[]
 
-  @OneToMany(type => MediaRef, mediaRef => mediaRef.episode)
+  @OneToMany((type) => MediaRef, (mediaRef) => mediaRef.episode)
   mediaRefs: MediaRef[]
 
   @Index()
-  @ManyToOne(type => Podcast, podcast => podcast.episodes, {
+  @ManyToOne((type) => Podcast, (podcast) => podcast.episodes, {
     onDelete: 'CASCADE'
   })
   podcast: Podcast
@@ -175,17 +184,13 @@ export class Episode {
   @Column()
   podcastId: string
 
-  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.episode)
+  @OneToMany((type) => UserHistoryItem, (userHistoryItem) => userHistoryItem.episode)
   userHistoryItems: UserHistoryItem[]
 
-  @OneToMany(
-    type => UserNowPlayingItem,
-    userNowPlayingItem => userNowPlayingItem.episode,
-    { nullable: true }
-  )
+  @OneToMany((type) => UserNowPlayingItem, (userNowPlayingItem) => userNowPlayingItem.episode, { nullable: true })
   userNowPlayingItems: UserNowPlayingItem[]
 
-  @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.episode)
+  @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.episode)
   userQueueItems: UserQueueItem[]
 
   @CreateDateColumn()
@@ -195,17 +200,16 @@ export class Episode {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = generateShortId()
     this.podcastId = this.podcast.id
   }
 
   @BeforeInsert()
   @BeforeUpdate()
-  beforeAll () {
+  beforeAll() {
     if (this.guid) {
       this.guid = this.guid.trim() === '' ? '' : this.guid.trim()
     }
   }
-
 }

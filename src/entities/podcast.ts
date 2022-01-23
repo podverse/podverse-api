@@ -3,8 +3,20 @@
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import type { PodcastMedium } from 'podverse-shared'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  JoinTable, ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { generateShortId } from '~/lib/utility'
 
 type Funding = {
@@ -37,7 +49,6 @@ type ValueRecipient = {
 @Index(['hasVideo', 'pastYearTotalUniquePageviews'])
 @Entity('podcasts')
 export class Podcast {
-
   @PrimaryColumn('varchar', {
     default: generateShortId(),
     length: 14
@@ -84,7 +95,7 @@ export class Podcast {
   @Column({ default: false })
   hideDynamicAdsWarning?: boolean
 
-  @ValidateIf(a => a.imageUrl != null)
+  @ValidateIf((a) => a.imageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   imageUrl?: string
@@ -109,7 +120,7 @@ export class Podcast {
   @Column({ nullable: true })
   lastFoundInPodcastIndex?: Date
 
-  @ValidateIf(a => a.linkUrl != null)
+  @ValidateIf((a) => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   linkUrl?: string
@@ -123,48 +134,48 @@ export class Podcast {
   medium: PodcastMedium
 
   @Index()
-  @ValidateIf(a => a.pastAllTimeTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastAllTimeTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastHourTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastHourTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastHourTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastDayTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastDayTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastWeekTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastWeekTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastMonthTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastMonthTotalUniquePageviews: number
 
   @Index()
-  @ValidateIf(a => a.pastYearTotalUniquePageviews != null)
+  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
   pastYearTotalUniquePageviews: number
 
-  @ValidateIf(a => a.shrunkImageUrl != null)
+  @ValidateIf((a) => a.shrunkImageUrl != null)
   @IsUrl()
   @Column({ nullable: true })
   shrunkImageUrl?: string
@@ -187,18 +198,18 @@ export class Podcast {
   @Column('simple-json', { nullable: true })
   value: Value[]
 
-  @ManyToMany(type => Author, author => author.podcasts)
+  @ManyToMany((type) => Author, (author) => author.podcasts)
   @JoinTable()
   authors: Author[]
 
-  @ManyToMany(type => Category, category => category.podcasts)
+  @ManyToMany((type) => Category, (category) => category.podcasts)
   @JoinTable()
   categories: Category[]
 
-  @OneToMany(type => Episode, episode => episode.podcast)
+  @OneToMany((type) => Episode, (episode) => episode.podcast)
   episodes: Episode[]
 
-  @OneToMany(type => FeedUrl, feedUrl => feedUrl.podcast)
+  @OneToMany((type) => FeedUrl, (feedUrl) => feedUrl.podcast)
   feedUrls: FeedUrl[]
 
   @CreateDateColumn()
@@ -208,13 +219,13 @@ export class Podcast {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = generateShortId()
   }
 
   @BeforeInsert()
   @BeforeUpdate()
-  beforeAll () {
+  beforeAll() {
     if (this.description) {
       this.description = this.description.trim() === '' ? undefined : this.description.trim()
     }
@@ -225,5 +236,4 @@ export class Podcast {
       this.title = this.title.trim() === '' ? undefined : this.title.trim()
     }
   }
-
 }

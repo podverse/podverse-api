@@ -49,7 +49,4 @@ const redeemAccountClaimToken = async (id: string, email: string) => {
   }
 }
 
-export {
-  getAccountClaimToken,
-  redeemAccountClaimToken
-}
+export { getAccountClaimToken, redeemAccountClaimToken }

@@ -1,6 +1,6 @@
 import { queryUniquePageviews } from '~/services/stats'
 
-(async function () {
+;(async function () {
   try {
     const pagePath = process.argv[2]
     const timeRange = process.argv[3]

@@ -19,22 +19,26 @@ export const sendVerification = async (ctx, email) => {
         id
       })
       await sendVerificationEmail(email, name, emailVerificationToken)
-      ctx.body = { message: `If that email exists in our system, a verification email should arrive in your inbox shortly.` }
+      ctx.body = {
+        message: `If that email exists in our system, a verification email should arrive in your inbox shortly.`
+      }
       ctx.status = 200
     }
   } catch (error) {
     console.log('sendVerification:', error)
   }
-  ctx.body = { message: `If that email exists in our system, a verification email should arrive in your inbox shortly.` }
+  ctx.body = {
+    message: `If that email exists in our system, a verification email should arrive in your inbox shortly.`
+  }
   ctx.status = 200
 }
 
-export const verifyEmail = async ctx => {
+export const verifyEmail = async (ctx) => {
   const { token } = ctx.request.query
 
   try {
-    const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration,
-      id } = await getUserByVerificationToken(token)
+    const { emailVerified, emailVerificationToken, emailVerificationTokenExpiration, id } =
+      await getUserByVerificationToken(token)
 
     if (emailVerified) {
       ctx.body = `Email already verified.`

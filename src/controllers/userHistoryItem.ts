@@ -33,7 +33,7 @@ export const cleanUserItemResult = (result) => {
       podcastTitle: result.clipPodcastTitle,
       podcastValue: parseProp(result, 'clipPodcastValue', []),
       ...(result.completed ? { completed: true } : {}),
-      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
+      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
     }
   } else {
     return {
@@ -59,10 +59,10 @@ export const cleanUserItemResult = (result) => {
       podcastTitle: result.podcastTitle,
       podcastValue: parseProp(result, 'podcastValue', []),
       ...(result.completed ? { completed: true } : {}),
-      ...((result.userPlaybackPosition || result.userPlaybackPosition === 0)
+      ...(result.userPlaybackPosition || result.userPlaybackPosition === 0
         ? { userPlaybackPosition: result.userPlaybackPosition }
         : {}),
-      ...((result.queuePosition || result.queuePosition === 0) ? { queuePosition: result.queuePosition } : {})
+      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
     }
   }
 }
@@ -77,10 +77,8 @@ export const cleanUserItemResults = (results) => {
 }
 
 export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
-  const qb = getRepository(table)
-    .createQueryBuilder(`${tableName}`)
-    .select(`${tableName}.id`, 'id')
-  
+  const qb = getRepository(table).createQueryBuilder(`${tableName}`).select(`${tableName}.id`, 'id')
+
   if (tableName === 'userHistoryItem') {
     qb.addSelect(`${tableName}.completed`, 'completed')
       .addSelect(`${tableName}.mediaFileDuration`, 'mediaFileDuration')
@@ -147,7 +145,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
 export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
 
-  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId) 
+  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId)
     .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .offset(skip)
     .limit(take)
@@ -193,7 +191,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
         userPlaybackPosition: result.userPlaybackPosition,
         ...(completed ? { completed } : {}),
         ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
-        ...(!mediaRefId ? { episodeId: episodeId } : {}),
+        ...(!mediaRefId ? { episodeId: episodeId } : {})
       }
       cleanedResults.push(cleanedResult)
     }
@@ -230,7 +228,7 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
         p: result.p,
         ...(c ? { c } : {}),
         ...(m ? { m } : {}),
-        ...(!m ? { e } : {}),
+        ...(!m ? { e } : {})
       }
       cleanedResults.push(cleanedResult)
     }
@@ -241,15 +239,16 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { completed, episodeId, forceUpdateOrderDate, mediaFileDuration, mediaRefId,
-    userPlaybackPosition } = query
+  const { completed, episodeId, forceUpdateOrderDate, mediaFileDuration, mediaRefId, userPlaybackPosition } = query
 
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
   }
 
   if (episodeId && mediaRefId) {
-    throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
+    throw new createError.NotFound(
+      'Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.'
+    )
   }
 
   if (!userPlaybackPosition && userPlaybackPosition !== 0) {
@@ -299,9 +298,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   userHistoryItem.mediaRef = mediaRefId || null
   userHistoryItem.owner = loggedInUserId
   userHistoryItem.orderChangedDate =
-    forceUpdateOrderDate || !userHistoryItem.orderChangedDate
-    ? new Date()
-    : userHistoryItem.orderChangedDate
+    forceUpdateOrderDate || !userHistoryItem.orderChangedDate ? new Date() : userHistoryItem.orderChangedDate
 
   await repository.save(userHistoryItem)
 }
@@ -322,7 +319,7 @@ const getUserHistoryItemByEpisodeId = async (loggedInUserId, episodeId) => {
 }
 
 const getUserHistoryItemByMediaRefId = async (loggedInUserId, mediaRefId) => {
-  const repository = getRepository(UserHistoryItem)  
+  const repository = getRepository(UserHistoryItem)
 
   return repository
     .createQueryBuilder('userHistoryItem')

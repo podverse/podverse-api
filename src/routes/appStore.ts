@@ -21,36 +21,31 @@ const createPurchaseLimiter = RateLimit.middleware({
 })
 
 // Create or Update App Store Purchases
-router.post('/update-purchase-status',
-  validateAppStorePurchaseCreate,
-  createPurchaseLimiter,
-  jwtAuth,
-  async ctx => {
-    try {
-      
-      const { transactionReceipt } = ctx.request.body as any
-      const user = await getLoggedInUser(ctx.state.user.id)
-      if (!user || !user.id) {
-        throw new Error('User not found')
-      } else {
-        const receipt = await verifyAppStorePurchaseByReceipt(transactionReceipt) as any
+router.post('/update-purchase-status', validateAppStorePurchaseCreate, createPurchaseLimiter, jwtAuth, async (ctx) => {
+  try {
+    const { transactionReceipt } = ctx.request.body as any
+    const user = await getLoggedInUser(ctx.state.user.id)
+    if (!user || !user.id) {
+      throw new Error('User not found')
+    } else {
+      const receipt = (await verifyAppStorePurchaseByReceipt(transactionReceipt)) as any
 
-        if (receipt) {
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          const { in_app } = receipt
-          const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
-  
-          ctx.status = 200
-          ctx.body = {
-            finishedTransactionIds
-          }
-        } else {
-          throw new Error('Receipt not found')
+      if (receipt) {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        const { in_app } = receipt
+        const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
+
+        ctx.status = 200
+        ctx.body = {
+          finishedTransactionIds
         }
+      } else {
+        throw new Error('Receipt not found')
       }
-    } catch (error) {
-      emitRouterError(error, ctx)
     }
-  })
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 export const appStoreRouter = router

@@ -2,8 +2,20 @@
 
 import { IsEmail, IsUUID, Validate, ValidateIf } from 'class-validator'
 import { NowPlayingItem } from 'podverse-shared'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  JoinColumn, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  Index,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { BitPayInvoice, MediaRef, PayPalOrder, Playlist, UserHistoryItem, UserQueueItem } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { AppStorePurchase } from './appStorePurchase'
@@ -13,7 +25,6 @@ import { generateShortId } from '~/lib/utility'
 
 @Entity('users')
 export class User {
-
   @PrimaryColumn('varchar', {
     default: generateShortId(),
     length: 14
@@ -39,7 +50,7 @@ export class User {
   })
   email: string
 
-  @ValidateIf(a => a.emailVerificationToken != null)
+  @ValidateIf((a) => a.emailVerificationToken != null)
   @IsUUID()
   @Column({
     nullable: true,
@@ -84,7 +95,7 @@ export class User {
   @Column({ select: false })
   password: string
 
-  @ValidateIf(a => a.resetPasswordToken != null)
+  @ValidateIf((a) => a.resetPasswordToken != null)
   @IsUUID()
   @Column({
     nullable: true,
@@ -133,35 +144,32 @@ export class User {
   @Column('simple-json', { select: false })
   queueItems: NowPlayingItem[]
 
-  @OneToMany(type => AppStorePurchase, appStorePurchase => appStorePurchase.owner)
+  @OneToMany((type) => AppStorePurchase, (appStorePurchase) => appStorePurchase.owner)
   appStorePurchases: AppStorePurchase[]
 
-  @OneToMany(type => BitPayInvoice, bitpayInvoice => bitpayInvoice.owner)
+  @OneToMany((type) => BitPayInvoice, (bitpayInvoice) => bitpayInvoice.owner)
   bitpayInvoices: BitPayInvoice[]
 
-  @OneToMany(type => GooglePlayPurchase, googlePlayPurchase => googlePlayPurchase.owner)
+  @OneToMany((type) => GooglePlayPurchase, (googlePlayPurchase) => googlePlayPurchase.owner)
   googlePlayPurchases: GooglePlayPurchase[]
 
-  @OneToMany(type => MediaRef, mediaRefs => mediaRefs.owner)
+  @OneToMany((type) => MediaRef, (mediaRefs) => mediaRefs.owner)
   mediaRefs: MediaRef[]
 
-  @OneToMany(type => PayPalOrder, paypalOrder => paypalOrder.owner)
+  @OneToMany((type) => PayPalOrder, (paypalOrder) => paypalOrder.owner)
   paypalOrders: PayPalOrder[]
 
-  @OneToMany(type => Playlist, playlist => playlist.owner)
+  @OneToMany((type) => Playlist, (playlist) => playlist.owner)
   playlists: Playlist[]
 
-  @OneToMany(type => UserHistoryItem, userHistoryItem => userHistoryItem.owner)
+  @OneToMany((type) => UserHistoryItem, (userHistoryItem) => userHistoryItem.owner)
   userHistoryItems: UserHistoryItem[]
 
-  @OneToOne(
-    type => UserNowPlayingItem,
-    userNowPlayingItem => userNowPlayingItem.owner
-  )
+  @OneToOne((type) => UserNowPlayingItem, (userNowPlayingItem) => userNowPlayingItem.owner)
   @JoinColumn()
   userNowPlayingItem: UserNowPlayingItem
 
-  @OneToMany(type => UserQueueItem, userQueueItem => userQueueItem.owner)
+  @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.owner)
   userQueueItems: UserQueueItem[]
 
   @CreateDateColumn({ select: false })
@@ -171,7 +179,7 @@ export class User {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = generateShortId()
 
     this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
@@ -181,7 +189,7 @@ export class User {
   }
 
   @BeforeUpdate()
-  beforeUpdate () {
+  beforeUpdate() {
     this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []

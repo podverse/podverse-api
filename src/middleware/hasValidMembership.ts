@@ -6,18 +6,12 @@ const createError = require('http-errors')
 export const hasValidMembership = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {
     const repository = getRepository(User)
-    const user = await repository.findOne(
-      {
-        where: {
-          id: ctx.state.user.id
-        },
-        select: [
-          'freeTrialExpiration',
-          'membershipExpiration',
-          'emailVerified'
-        ]
-      }
-    )
+    const user = await repository.findOne({
+      where: {
+        id: ctx.state.user.id
+      },
+      select: ['freeTrialExpiration', 'membershipExpiration', 'emailVerified']
+    })
 
     if (!user) {
       throw new createError.NotFound('User not found')
@@ -33,8 +27,8 @@ export const hasValidMembership = async (ctx, next) => {
     }
 
     if (
-      (user.membershipExpiration && isBeforeDate(user.membershipExpiration))
-      || (user.freeTrialExpiration && isBeforeDate(user.freeTrialExpiration))
+      (user.membershipExpiration && isBeforeDate(user.membershipExpiration)) ||
+      (user.freeTrialExpiration && isBeforeDate(user.freeTrialExpiration))
     ) {
       await next()
       return

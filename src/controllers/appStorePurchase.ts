@@ -11,10 +11,7 @@ const getAppStorePurchase = async (transactionId, loggedInUserId) => {
     throw new createError.Unauthorized('Login to get App Store Purchase by order id')
   }
 
-  const appStorePurchase = await repository.findOne(
-    { transactionId },
-    { relations: ['owner'] }
-  )
+  const appStorePurchase = await repository.findOne({ transactionId }, { relations: ['owner'] })
 
   if (!appStorePurchase) {
     return null
@@ -43,7 +40,11 @@ const createAppStorePurchase = async (transaction, loggedInUserId) => {
 
   const repository = getRepository(AppStorePurchase)
   const appStorePurchase = new AppStorePurchase()
-  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(appStorePurchase, transaction, loggedInUserId)
+  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(
+    appStorePurchase,
+    transaction,
+    loggedInUserId
+  )
   const newAppStorePurchase = Object.assign(formattedAppStorePurchase, formattedTransaction)
   await validateClassOrThrow(newAppStorePurchase)
   await repository.save(newAppStorePurchase)
@@ -80,14 +81,15 @@ const updateAppStorePurchase = async (transaction, loggedInUserId) => {
   if (appStorePurchase.owner && appStorePurchase.owner.id !== loggedInUserId) {
     throw new createError.Unauthorized('Unauthorized')
   }
-  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(appStorePurchase, transaction, loggedInUserId)
+  const { formattedAppStorePurchase, formattedTransaction } = formatAppStorePurchaseAndTransaction(
+    appStorePurchase,
+    transaction,
+    loggedInUserId
+  )
   const newAppStorePurchase = Object.assign(formattedAppStorePurchase, formattedTransaction)
   await validateClassOrThrow(newAppStorePurchase)
   await repository.save(newAppStorePurchase)
   return newAppStorePurchase
 }
 
-export {
-  createOrUpdateAppStorePurchase,
-  getAppStorePurchase
-}
+export { createOrUpdateAppStorePurchase, getAppStorePurchase }

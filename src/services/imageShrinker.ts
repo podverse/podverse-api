@@ -17,10 +17,7 @@ export const shrinkImage = async (podcast: any) => {
       encoding: null
     })
 
-    const shrunkImage = await sharp(imgResponse)
-      .resize(shrunkImageSize)
-      .toFormat('jpg')
-      .toBuffer()
+    const shrunkImage = await sharp(imgResponse).resize(shrunkImageSize).toFormat('jpg').toBuffer()
 
     let slug = podcast.title ? convertToSlug(podcast.title) : 'image'
     slug = `${slug}-${new Date().getSeconds()}`

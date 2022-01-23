@@ -12,7 +12,6 @@ const createError = require('http-errors')
 */
 
 const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Login to create a BitPayInvoice')
   }
@@ -48,10 +47,7 @@ const createBitPayInvoiceLocal = async (data, loggedInUserId) => {
 
 const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
   const repository = getRepository(BitPayInvoice)
-  const select = [
-    'id',
-    'status'
-  ]
+  const select = ['id', 'status']
 
   // eslint-disable-next-line
   // @ts-ignore
@@ -77,9 +73,8 @@ const getBitPayInvoiceStatusLocal = async (orderId, loggedInUserId) => {
   }
 }
 
-const updateBitPayInvoiceLocal = async data => {
-  const { amountPaid, currency, exceptionStatus, id, price, status,
-    transactionCurrency, transactionSpeed, url } = data
+const updateBitPayInvoiceLocal = async (data) => {
+  const { amountPaid, currency, exceptionStatus, id, price, status, transactionCurrency, transactionSpeed, url } = data
 
   const repository = getRepository(BitPayInvoice)
 
@@ -134,10 +129,7 @@ const updateBitPayInvoiceLocal = async data => {
     where: {
       id: bitpayInvoice.owner.id
     },
-    select: [
-      'id',
-      'membershipExpiration'
-    ]
+    select: ['id', 'membershipExpiration']
   })
 
   if (!user) {
@@ -151,8 +143,4 @@ const updateBitPayInvoiceLocal = async data => {
   return
 }
 
-export {
-  createBitPayInvoiceLocal,
-  getBitPayInvoiceStatusLocal,
-  updateBitPayInvoiceLocal
-}
+export { createBitPayInvoiceLocal, getBitPayInvoiceStatusLocal, updateBitPayInvoiceLocal }

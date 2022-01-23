@@ -28,7 +28,7 @@ export const chunkArray = (arr, chunkSize = 10) => {
 
 export const offsetDate = (minutesOffset = 0) => {
   const todayDate = new Date()
-  todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) + minutesOffset)
+  todayDate.setMinutes(todayDate.getMinutes() - todayDate.getTimezoneOffset() + minutesOffset)
   return todayDate.toISOString().slice(0, 10)
 }
 
@@ -37,7 +37,7 @@ export const offsetDate = (minutesOffset = 0) => {
 // This WILL cause a problem when DST happens.
 export const lastHour = () => {
   const todayDate = new Date()
-  todayDate.setMinutes((todayDate.getMinutes() - todayDate.getTimezoneOffset()) - 300 - 60)
+  todayDate.setMinutes(todayDate.getMinutes() - todayDate.getTimezoneOffset() - 300 - 60)
   const lastHour = todayDate.toISOString().slice(11, 13)
   return parseInt(lastHour, 10)
 }
@@ -49,8 +49,8 @@ export const convertSecondsToDaysText = (seconds) => {
 
 export const convertSecToHHMMSS = (sec: number) => {
   const totalSec = Math.floor(sec)
-  const hours = totalSec / 3600 % 24
-  const minutes = totalSec / 60 % 60
+  const hours = (totalSec / 3600) % 24
+  const minutes = (totalSec / 60) % 60
   const seconds = totalSec % 60
   let result = ''
 
@@ -123,7 +123,8 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
     qb.orderBy(`${type}.startTime`, ascKey)
   } else if (sort === 'createdAt') {
     qb.orderBy(`${type}.createdAt`, descKey)
-  } else { // sort = top-past-week
+  } else {
+    // sort = top-past-week
     qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)
   }
 
@@ -140,22 +141,22 @@ Date.prototype.addDays = function (days) {
 
 export const isBeforeDate = (expirationDate, dayOffset = 0) => {
   const currentDate = new Date() as any
-  
+
   const offsetDate = currentDate.addDays(dayOffset)
   return new Date(expirationDate) > offsetDate
 }
 
-export const removeObjectKeysWithEmptyValues = obj =>
-  Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key])
+export const removeObjectKeysWithEmptyValues = (obj) =>
+  Object.keys(obj).forEach((key) => obj[key] == null && delete obj[key])
 
-export const convertToSlug = str => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '').trim()
+export const convertToSlug = (str) => str.replace(/\s+/g, '-').toLowerCase().replace(/\W/g, '').trim()
 
 export const convertToSortableTitle = (title: string) => {
   const sortableTitle = title
     ? title
-      .toLowerCase()
-      .replace(/\b^the\b|\b^a\b|\b^an\b/i, '')
-      .trim()
+        .toLowerCase()
+        .replace(/\b^the\b|\b^a\b|\b^an\b/i, '')
+        .trim()
     : ''
   return sortableTitle ? sortableTitle.replace(/#/g, '') : ''
 }

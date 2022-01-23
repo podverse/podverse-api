@@ -17,7 +17,6 @@ export const deleteUserNowPlayingItem = async (loggedInUserId) => {
 }
 
 export const getUserNowPlayingItem = async (loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to get the now playing item')
   }
@@ -30,10 +29,7 @@ export const getUserNowPlayingItem = async (loggedInUserId) => {
     .addSelect('mediaRef.id', 'mediaRefId')
     .leftJoin('userNowPlayingItem.episode', 'episode')
     .leftJoin('userNowPlayingItem.mediaRef', 'mediaRef')
-    .leftJoin(
-      'userNowPlayingItem.owner',
-      'owner'
-    )
+    .leftJoin('userNowPlayingItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .getRawOne()
 }
@@ -50,7 +46,9 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
   }
 
   if (clipId && episodeId) {
-    throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
+    throw new createError.NotFound(
+      'Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.'
+    )
   }
 
   const currentNowPlayingItem = await getUserNowPlayingItem(loggedInUserId)
@@ -75,7 +73,7 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
   }
 
   if (clipId) {
-    userNowPlayingItem.episode = null    
+    userNowPlayingItem.episode = null
     userNowPlayingItem.mediaRef = clipId
   }
 

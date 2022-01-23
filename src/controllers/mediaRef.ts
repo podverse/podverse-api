@@ -8,16 +8,22 @@ const createError = require('http-errors')
 const { superUserId } = config
 
 const relations = [
-  'authors', 'categories', 'episode', 'episode.podcast', 'owner',
-  'episode.podcast.authors', 'episode.podcast.categories', 'episode.podcast.feedUrls'
+  'authors',
+  'categories',
+  'episode',
+  'episode.podcast',
+  'owner',
+  'episode.podcast.authors',
+  'episode.podcast.categories',
+  'episode.podcast.feedUrls'
 ]
 
-const createMediaRef = async obj => {
+const createMediaRef = async (obj) => {
   const repository = getRepository(MediaRef)
   const mediaRef = new MediaRef()
   const newMediaRef = Object.assign(mediaRef, obj)
-  
-  if (!newMediaRef.episodeId) throw new Error('An episodeId is required to create a mediaRef') 
+
+  if (!newMediaRef.episodeId) throw new Error('An episodeId is required to create a mediaRef')
 
   newMediaRef.episode = newMediaRef.episodeId
   delete newMediaRef.episodeId
@@ -51,7 +57,7 @@ const deleteMediaRef = async (id, loggedInUserId) => {
   return result
 }
 
-const getMediaRef = async id => {
+const getMediaRef = async (id) => {
   const repository = getRepository(MediaRef)
   const mediaRef = await repository.findOne({ id }, { relations })
 
@@ -69,10 +75,7 @@ const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.endTime')
     .addSelect('mediaRef.title')
-    .innerJoin(
-      'mediaRef.episode',
-      'episode'
-    )
+    .innerJoin('mediaRef.episode', 'episode')
     .where('episode.mediaUrl = :mediaUrl', { mediaUrl })
     .andWhere('mediaRef.isPublic = TRUE')
     .orderBy('mediaRef.startTime', 'ASC')
@@ -82,9 +85,9 @@ const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
 const getMediaRefs = async (query, includeNSFW) => {
   const repository = getRepository(MediaRef)
 
-  const podcastIds = query.podcastId && query.podcastId.split(',') || []
-  const episodeIds = query.episodeId && query.episodeId.split(',') || []
-  const categoriesIds = query.categories && query.categories.split(',') || []
+  const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
+  const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
+  const categoriesIds = (query.categories && query.categories.split(',')) || []
   const { /* hasVideo,*/ includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
 
   // ${hasVideo ? `AND episode.mediaType = 'video/%'` : ''}
@@ -99,45 +102,28 @@ const getMediaRefs = async (query, includeNSFW) => {
   let qb = repository.createQueryBuilder('mediaRef')
 
   if (includePodcast) {
-    qb.innerJoinAndSelect(
-      'mediaRef.episode',
-      'episode',
-      queryConditions,
-      {
-        isExplicit: !!includeNSFW,
-        podcastIds: podcastIds,
-        episodeIds: episodeIds
-      })
+    qb.innerJoinAndSelect('mediaRef.episode', 'episode', queryConditions, {
+      isExplicit: !!includeNSFW,
+      podcastIds: podcastIds,
+      episodeIds: episodeIds
+    })
     qb.innerJoinAndSelect('episode.podcast', 'podcast')
 
     if (categoryJoinConditions) {
-      qb.innerJoin(
-        'podcast.categories',
-        'categories',
-        categoryJoinConditions,
-        { categoriesIds }
-      )
+      qb.innerJoin('podcast.categories', 'categories', categoryJoinConditions, { categoriesIds })
     }
   } else if (includeEpisode) {
-    qb.innerJoinAndSelect(
-        'mediaRef.episode',
-        'episode',
-        queryConditions,
-      {
-        isExplicit: !!includeNSFW,
-        podcastIds: podcastIds,
-        episodeIds: episodeIds
-      })
+    qb.innerJoinAndSelect('mediaRef.episode', 'episode', queryConditions, {
+      isExplicit: !!includeNSFW,
+      podcastIds: podcastIds,
+      episodeIds: episodeIds
+    })
   } else {
-    qb.innerJoin(
-      'mediaRef.episode',
-      'episode',
-      queryConditions,
-      {
-        isExplicit: !!includeNSFW,
-        podcastIds: podcastIds,
-        episodeIds: episodeIds
-      })
+    qb.innerJoin('mediaRef.episode', 'episode', queryConditions, {
+      isExplicit: !!includeNSFW,
+      podcastIds: podcastIds,
+      episodeIds: episodeIds
+    })
   }
 
   qb.innerJoin('mediaRef.owner', 'user')
@@ -158,30 +144,24 @@ const getMediaRefs = async (query, includeNSFW) => {
     qb.where({ isPublic: true })
   }
   qb.andWhere('"mediaRef"."isOfficialChapter" IS null')
-  
+
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
   qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
 
   const shouldLimitResultTotal =
-    (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0)
-    || podcastIds.length > 1
-    || episodeIds.length > 1
-    || categoriesIds.length >= 1
+    (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0) ||
+    podcastIds.length > 1 ||
+    episodeIds.length > 1 ||
+    categoriesIds.length >= 1
 
   let mediaRefs = [] as any
   let mediaRefsCount = 0
   if (shouldLimitResultTotal) {
-    const results = await qb
-      .offset(skip)
-      .limit(take)
-      .getMany()
+    const results = await qb.offset(skip).limit(take).getMany()
     mediaRefs = results
     mediaRefsCount = 10000
   } else {
-    const results = await qb
-      .offset(skip)
-      .limit(take)
-      .getManyAndCount()
+    const results = await qb.offset(skip).limit(take).getManyAndCount()
     mediaRefs = results[0] || []
     mediaRefsCount = results[1] || 0
   }
@@ -230,7 +210,7 @@ const updateMediaRef = async (obj, loggedInUserId) => {
 
 const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastTitle) => {
   const repository = getRepository(MediaRef)
-  const existingSoundBitesResult = await repository
+  const existingSoundBitesResult = (await repository
     .createQueryBuilder('mediaRef')
     .select('mediaRef.id')
     .addSelect('mediaRef.endTime')
@@ -246,7 +226,7 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
       episode: episodeId
     })
     .orderBy('mediaRef.startTime', 'ASC')
-    .getManyAndCount() as any
+    .getManyAndCount()) as any
   let existingSoundBites = existingSoundBitesResult[0]
 
   for (const newSoundBite of newSoundBites) {
@@ -255,27 +235,25 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
     duration = Math.floor(duration)
     startTime = Math.floor(startTime)
 
-    if (duration <= 0) continue 
+    if (duration <= 0) continue
     const endTime = startTime + duration
 
     // use duck-typing to find an existingSoundBite with the same startTime
     // and duration as the newSoundBite
     const existingSoundBite = existingSoundBites.find((x: any) => {
-      return (x.startTime === startTime) && (x.endTime === endTime)
+      return x.startTime === startTime && x.endTime === endTime
     })
 
     if (existingSoundBite) {
       existingSoundBite.startTime = startTime
       existingSoundBite.endTime = endTime
-      existingSoundBite.title = title !== episodeTitle && title !== podcastTitle
-        ? title
-        : ''
+      existingSoundBite.title = title !== episodeTitle && title !== podcastTitle ? title : ''
 
       await updateMediaRef(existingSoundBite, superUserId)
 
       // remove existing soundbite from existingSoundBites
       existingSoundBites = existingSoundBites.filter((x: any) => {
-        return !((x.startTime === startTime) && (x.endTime === endTime))
+        return !(x.startTime === startTime && x.endTime === endTime)
       })
     } else {
       await createMediaRef({

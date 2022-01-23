@@ -5,27 +5,25 @@ const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
 describe('Auth endpoints', () => {
-
   describe('Login', () => {
-    
     const validLogin = {
-    "email": "premiumexpired@stage.podverse.fm",
-    "password": "Aa!1asdf"
+      email: 'premiumexpired@stage.podverse.fm',
+      password: 'Aa!1asdf'
     }
 
     const invalidLogin = {
-      "email": "premiumexpired@stage.podverse.fm",
-      "password": "Aa!1asdfs"
+      email: 'premiumexpired@stage.podverse.fm',
+      password: 'Aa!1asdfs'
     }
 
     test('Invalid login', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/login`)
         .send(invalidLogin)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
-          
-          
+
           chaiExpect(res.body.message).to.equal('Invalid username or password')
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 
@@ -34,7 +32,8 @@ describe('Auth endpoints', () => {
     })
 
     test('Valid login', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/login`)
         .send(validLogin)
         .end((err, res) => {
@@ -72,27 +71,24 @@ describe('Auth endpoints', () => {
 
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([
-            "mN25xFjDG",
-            "0RMk6UYGq",
-            "0orLYSBnp",
-            "qxQ_w69iJ",
-            "xSTqnMUb57K"
-        ])
-          chaiExpect(res.body.subscribedUserIds).to.eql([
-            "bvVjsQCH",
-            "QMReJmbE",
-            "EVHDBRZY"
-        ])
-        chaiExpect(Object.keys(res.body).length).to.equal(11)
-        
+            'mN25xFjDG',
+            '0RMk6UYGq',
+            '0orLYSBnp',
+            'qxQ_w69iJ',
+            'xSTqnMUb57K'
+          ])
+          chaiExpect(res.body.subscribedUserIds).to.eql(['bvVjsQCH', 'QMReJmbE', 'EVHDBRZY'])
+          chaiExpect(Object.keys(res.body).length).to.equal(11)
+
           done()
-      })
+        })
     })
   })
 
   describe('Logout', () => {
     test('Logout', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/logout`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(200)
@@ -104,7 +100,8 @@ describe('Auth endpoints', () => {
 
   describe('Get Authenticated User Info', () => {
     test('User Logged In', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/get-authenticated-user-info`)
         .set('Cookie', testUsers.premiumExpired.authCookie)
         .end((err, res) => {
@@ -143,23 +140,20 @@ describe('Auth endpoints', () => {
 
           chaiExpect(res.body.subscribedPlaylistIds).to.eql([])
           chaiExpect(res.body.subscribedPodcastIds).to.eql([
-            "mN25xFjDG",
-            "0RMk6UYGq",
-            "0orLYSBnp",
-            "qxQ_w69iJ",
-            "xSTqnMUb57K"
-        ])
-          chaiExpect(res.body.subscribedUserIds).to.eql([
-            "bvVjsQCH",
-            "QMReJmbE",
-            "EVHDBRZY"
-        ])
-        chaiExpect(Object.keys(res.body).length).to.equal(12)
+            'mN25xFjDG',
+            '0RMk6UYGq',
+            '0orLYSBnp',
+            'qxQ_w69iJ',
+            'xSTqnMUb57K'
+          ])
+          chaiExpect(res.body.subscribedUserIds).to.eql(['bvVjsQCH', 'QMReJmbE', 'EVHDBRZY'])
+          chaiExpect(Object.keys(res.body).length).to.equal(12)
           done()
         })
     })
     test('No User Logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/get-authenticated-user-info`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
@@ -170,34 +164,34 @@ describe('Auth endpoints', () => {
   })
 
   describe('reset password', () => {
-
     const premiumValidInsecure = {
-      "password": "newpassword",
-      "resetPasswordToken": "secretKey1"
+      password: 'newpassword',
+      resetPasswordToken: 'secretKey1'
     }
 
     const premiumValid = {
-      "password": "newPassword1!",
-      "resetPasswordToken": "secretKey1"
+      password: 'newPassword1!',
+      resetPasswordToken: 'secretKey1'
     }
-  
+
     const premiumExpired = {
-      "password": "newPassword1!",
-      "resetPasswordToken": "secretKey2"
+      password: 'newPassword1!',
+      resetPasswordToken: 'secretKey2'
     }
 
     const freeTrialValid = {
-      "password": "newPassword1!",
-      "resetPasswordToken": "secretKey3"
+      password: 'newPassword1!',
+      resetPasswordToken: 'secretKey3'
     }
 
     const freeTrialExpired = {
-      "password": "newPassword1!",
-      "resetPasswordToken": "secretKey4"
+      password: 'newPassword1!',
+      resetPasswordToken: 'secretKey4'
     }
 
     test('invalid password', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/reset-password`)
         .send(premiumValidInsecure)
         .end((err, res) => {
@@ -211,7 +205,8 @@ describe('Auth endpoints', () => {
     })
 
     test('Premium Valid', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/reset-password`)
         .send(premiumValid)
         .end((err, res) => {
@@ -225,7 +220,8 @@ describe('Auth endpoints', () => {
     })
 
     test('Premium Expired', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/reset-password`)
         .send(premiumExpired)
         .end((err, res) => {
@@ -239,7 +235,8 @@ describe('Auth endpoints', () => {
     })
 
     test('Free Trial Valid', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/reset-password`)
         .send(freeTrialValid)
         .end((err, res) => {
@@ -253,7 +250,8 @@ describe('Auth endpoints', () => {
     })
 
     test('Free Trial Expired', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/reset-password`)
         .send(freeTrialExpired)
         .end((err, res) => {
@@ -265,17 +263,16 @@ describe('Auth endpoints', () => {
           done()
         })
     })
-
   })
 
   describe('send reset password', () => {
-
     const sendBody = {
-      "email": "premium@stage.podverse.fm"
+      email: 'premium@stage.podverse.fm'
     }
 
     test('premium account', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/send-reset-password`)
         .send(sendBody)
         .end((err, res) => {
@@ -286,23 +283,22 @@ describe('Auth endpoints', () => {
           done()
         })
     })
-
   })
 
   describe('Login', () => {
-    
     const sendBody = {
-      "email": "verifyEmailTest@stage.podverse.fm",
-      "password": "Aa!1asdf"
+      email: 'verifyEmailTest@stage.podverse.fm',
+      password: 'Aa!1asdf'
     }
 
     test('attempt log in to unverified email', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/login`)
         .send(sendBody)
         .end((err, res) => {
           chaiExpect(res).to.have.status(460)
-          
+
           chaiExpect(res.body.message).to.equal('Please verify your email address to login.')
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 
@@ -311,7 +307,8 @@ describe('Auth endpoints', () => {
     })
 
     test('verify email', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/auth/verify-email?token=cff436a6-c456-4aa5-b407-faa122cedb19`)
         .send(sendBody)
         .end((err, res) => {
@@ -323,7 +320,8 @@ describe('Auth endpoints', () => {
     })
 
     test('log in to newly verified account', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/auth/login`)
         .send(sendBody)
         .end((err, res) => {
@@ -342,14 +340,8 @@ describe('Auth endpoints', () => {
           chaiExpect(res.body.subscribedUserIds).to.eql([])
           chaiExpect(Object.keys(res.body).length).to.equal(11)
 
-
-
-
-
-
           done()
-      })
+        })
     })
   })
-
 })

@@ -17,15 +17,17 @@ export const getCleanedUserQueueItems = async (loggedInUserId) => {
 
 export const addOrUpdateQueueItem = async (loggedInUserId, query) => {
   const { episodeId, mediaRefId, queuePosition } = query
-  
+
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
   }
 
   if (episodeId && mediaRefId) {
-    throw new createError.NotFound('Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.')
+    throw new createError.NotFound(
+      'Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.'
+    )
   }
-  
+
   if (!queuePosition && queuePosition !== 0) {
     throw new createError.NotFound('A queuePosition must be provided.')
   }
@@ -79,7 +81,7 @@ const updateQueueItemsPositions = async (queueItems) => {
 export const popNextFromQueue = async (loggedInUserId) => {
   const queueItems = await getUserQueueItems(loggedInUserId)
   let nextItem = queueItems.shift()
-  
+
   if (!nextItem) {
     return {
       nextItem: null,
@@ -105,7 +107,7 @@ export const popNextFromQueue = async (loggedInUserId) => {
 export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId) => {
   const queueItems = await getUserQueueItems(loggedInUserId)
 
-  const queueItem = queueItems.find(x => x.episodeId === episodeId)
+  const queueItem = queueItems.find((x) => x.episodeId === episodeId)
   if (!queueItem) {
     // UserQueueItem not found with episodeId.
     return queueItems
@@ -123,7 +125,7 @@ export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId) 
 export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId) => {
   const queueItems = await getUserQueueItems(loggedInUserId)
 
-  const queueItem = queueItems.find(x => x.clipId === mediaRefId)
+  const queueItem = queueItems.find((x) => x.clipId === mediaRefId)
   if (!queueItem) {
     // UserQueueItem not found with mediaRefId.
     return queueItems
