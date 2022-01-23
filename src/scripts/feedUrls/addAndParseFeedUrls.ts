@@ -1,7 +1,6 @@
 import { addFeedUrls } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { handlePodcastFeedLastParseFailed, parseFeedUrl } from '~/services/parser'
-
 ;(async function () {
   let feedUrls = []
 

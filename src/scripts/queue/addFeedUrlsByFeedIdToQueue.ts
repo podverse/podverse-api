@@ -1,5 +1,4 @@
 import { addFeedUrlsByFeedIdToQueue } from '~/services/queue'
-
 ;(async function () {
   let feedUrls = []
 

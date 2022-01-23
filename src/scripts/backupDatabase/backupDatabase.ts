@@ -1,5 +1,4 @@
 import { backupDatabaseToS3 } from '~/services/backupDatabase'
-
 ;(async function () {
   try {
     await backupDatabaseToS3()

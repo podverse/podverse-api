@@ -1,6 +1,5 @@
 import { addFeedUrls } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
-
 ;(async function () {
   let feedUrls = []
 
