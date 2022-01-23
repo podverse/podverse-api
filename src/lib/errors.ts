@@ -18,13 +18,13 @@ export const validateClassOrThrow = async (obj) => {
 }
 
 export class CustomStatusError extends Error {
-  public BadRequest () {
+  public BadRequest() {
     return new createError.BadRequest(this.message)
   }
 }
 
 export class CustomValidationError extends CustomStatusError {
-  constructor (error) {
+  constructor(error) {
     super(error)
     for (const key of Object.keys(error.constraints)) {
       this.name = key
@@ -36,7 +36,7 @@ export class CustomValidationError extends CustomStatusError {
 }
 
 export class JoiCustomValidationError extends CustomStatusError {
-  constructor (error) {
+  constructor(error) {
     super(error)
     for (const detail of error.details) {
       this.name = error.name
@@ -52,7 +52,8 @@ export const errorMessages = {
     redeem: {
       accountClaimTokenNotFound: 'AccountClaimToken not found. If the issue persists please contact support.',
       alreadyClaimed: 'This offer has already been claimed.',
-      emailNotFound: 'Account with this email not found. Please Sign Up before claiming this offer, or contact support for help.'
+      emailNotFound:
+        'Account with this email not found. Please Sign Up before claiming this offer, or contact support for help.'
     }
   }
 }

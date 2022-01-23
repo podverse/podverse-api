@@ -2,7 +2,6 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 
 @Entity('accountClaimToken')
 export class AccountClaimToken {
-
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -17,5 +16,4 @@ export class AccountClaimToken {
 
   @UpdateDateColumn()
   updatedAt: Date
-
 }

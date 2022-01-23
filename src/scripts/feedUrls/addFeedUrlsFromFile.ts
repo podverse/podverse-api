@@ -1,9 +1,9 @@
 import { addFeedUrls } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-(async function () {
+;(async function () {
   const json = fs.readFileSync(path.resolve(__dirname, '../../config/parser/addFeedUrlsFile.json'))
   const feedUrls = JSON.parse(json)
 

@@ -1,7 +1,7 @@
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrlsByPodcastIds } from '~/services/parser'
 
-(async function () {
+;(async function () {
   const connectToDbAndRunParser = async () => {
     try {
       const podcastIdsString = process.argv.length > 2 ? process.argv[2] : ''

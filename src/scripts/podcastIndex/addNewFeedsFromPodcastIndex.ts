@@ -1,6 +1,6 @@
 import { addNewFeedsFromPodcastIndex } from '~/services/podcastIndex'
 
-(async function () {
+;(async function () {
   try {
     await addNewFeedsFromPodcastIndex()
   } catch (error) {

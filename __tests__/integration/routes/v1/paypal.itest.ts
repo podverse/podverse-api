@@ -5,28 +5,29 @@ const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
 describe('Paypal endpoints', () => {
-
   describe('Create', () => {
     const sendBody = {
-      "paymentID": "test"
+      paymentID: 'test'
     }
     test('logged out', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/paypal/order`)
         .send(sendBody)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(401);
+          chaiExpect(res).to.have.status(401)
 
           done()
         })
     })
     test('logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/paypal/order`)
         .set('Cookie', testUsers.premium.authCookie)
         .send(sendBody)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
           chaiExpect(res.body.paymentID).to.equal('test')
           chaiExpect(res.body.owner).to.equal('QMReJmbE')
           chaiExpect(res.body.state).to.equal(null)
@@ -39,20 +40,22 @@ describe('Paypal endpoints', () => {
   })
   describe('Get by ID', () => {
     test('logged out', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/paypal/order/test`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(401);
+          chaiExpect(res).to.have.status(401)
 
           done()
         })
     })
     test('logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/paypal/order/test`)
         .set('Cookie', testUsers.premium.authCookie)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
           chaiExpect(res.body.paymentID).to.equal('test')
           chaiExpect(res.body.state).to.equal(null)
           chaiExpect(res.body).to.have.property('createdAt')

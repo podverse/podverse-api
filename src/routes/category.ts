@@ -11,10 +11,11 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/cat
 const delimitKeys = ['categories']
 
 // Search
-router.get('/',
-(ctx, next) => parseQueryPageOptions(ctx, next, 'categories'),
-validateCategorySearch,
-  async ctx => {
+router.get(
+  '/',
+  (ctx, next) => parseQueryPageOptions(ctx, next, 'categories'),
+  validateCategorySearch,
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const categories = await getCategories(ctx.state.query)
@@ -26,14 +27,13 @@ validateCategorySearch,
 )
 
 // Get
-router.get('/:id',
-  async ctx => {
-    try {
-      const category = await getCategory(ctx.params.id)
-      ctx.body = category
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/:id', async (ctx) => {
+  try {
+    const category = await getCategory(ctx.params.id)
+    ctx.body = category
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 export const categoryRouter = router

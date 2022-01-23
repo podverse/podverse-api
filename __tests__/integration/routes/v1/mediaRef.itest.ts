@@ -5,13 +5,13 @@ const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
 describe('MediaRef endpoints', () => {
-
   describe('get by id', () => {
     test('when a valid id is provided', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/mediaRef/9rA5BhWp`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
           chaiExpect(res.body.id).to.equal('9rA5BhWp')
           chaiExpect(res.body.endTime).to.equal(1680)
           chaiExpect(res.body.imageUrl).to.equal(null)
@@ -32,7 +32,6 @@ describe('MediaRef endpoints', () => {
           chaiExpect(res.body.authors).to.eql([])
           chaiExpect(res.body.categories).to.eql([])
           chaiExpect(Object.keys(res.body).length).to.equal(22)
-          
 
           const episode = res.body.episode
           chaiExpect(episode.id).to.equal('fFmGXkgIM')
@@ -50,7 +49,9 @@ describe('MediaRef endpoints', () => {
           chaiExpect(episode.linkUrl).to.equal(null)
           chaiExpect(episode.mediaFilesize).to.equal(0)
           chaiExpect(episode.mediaType).to.equal('audio/mpeg')
-          chaiExpect(episode.mediaUrl).to.equal('https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP3689667624.mp3')
+          chaiExpect(episode.mediaUrl).to.equal(
+            'https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP3689667624.mp3'
+          )
           chaiExpect(episode.pastHourTotalUniquePageviews).to.equal(1)
           chaiExpect(episode.pastDayTotalUniquePageviews).to.equal(2)
           chaiExpect(episode.pastWeekTotalUniquePageviews).to.equal(3)
@@ -58,7 +59,9 @@ describe('MediaRef endpoints', () => {
           chaiExpect(episode.pastYearTotalUniquePageviews).to.equal(5)
           chaiExpect(episode.pastAllTimeTotalUniquePageviews).to.equal(6)
           chaiExpect(episode).to.have.property('pubDate')
-          chaiExpect(episode.title).to.equal('Jason Calacanis: TikTok should be banned, Tim Cook doesn\'t have enough \"chutzpah,\" and Uber will be fine')
+          chaiExpect(episode.title).to.equal(
+            'Jason Calacanis: TikTok should be banned, Tim Cook doesn\'t have enough "chutzpah," and Uber will be fine'
+          )
           chaiExpect(episode.podcastId).to.equal('zRo1jwx67')
           chaiExpect(episode).to.have.property('createdAt')
           chaiExpect(episode).to.have.property('updatedAt')
@@ -74,12 +77,16 @@ describe('MediaRef endpoints', () => {
           chaiExpect(podcast.funding).to.equal(null)
           chaiExpect(podcast.guid).to.equal(null)
           chaiExpect(podcast.hideDynamicAdsWarning).to.equal(false)
-          chaiExpect(podcast.imageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
+          chaiExpect(podcast.imageUrl).to.equal(
+            'https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png'
+          )
           chaiExpect(podcast.isExplicit).to.equal(false)
           chaiExpect(podcast.isPublic).to.equal(true)
           chaiExpect(podcast.language).to.equal('en-us')
           chaiExpect(podcast).to.have.property('lastEpisodePubDate')
-          chaiExpect(podcast.lastEpisodeTitle).to.equal(`Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack's redesign`)
+          chaiExpect(podcast.lastEpisodeTitle).to.equal(
+            `Episode 500: Slack CEO Stewart Butterfield on coronavirus, working from home, and Slack's redesign`
+          )
           chaiExpect(podcast.linkUrl).to.equal('https://www.vox.com/recode-decode-podcast-kara-swisher')
           chaiExpect(podcast.pastAllTimeTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastHourTotalUniquePageviews).to.equal(1)
@@ -87,7 +94,9 @@ describe('MediaRef endpoints', () => {
           chaiExpect(podcast.pastWeekTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastMonthTotalUniquePageviews).to.equal(1)
           chaiExpect(podcast.pastYearTotalUniquePageviews).to.equal(1)
-          chaiExpect(podcast.shrunkImageUrl).to.equal('https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png')
+          chaiExpect(podcast.shrunkImageUrl).to.equal(
+            'https://d1gtnbjwzey0wh.cloudfront.net/podcast-images/-cykCbiMI3/recodedecode.png'
+          )
           chaiExpect(podcast.sortableTitle).to.equal('recode decode')
           chaiExpect(podcast.title).to.equal('Recode Decode')
           chaiExpect(podcast.type).to.equal('episodic')
@@ -129,10 +138,11 @@ describe('MediaRef endpoints', () => {
     })
 
     test('when an invalid id is provided', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/mediaRef/9rA5BasdfhWp`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(404);
+          chaiExpect(res).to.have.status(404)
           chaiExpect(res.body.message).to.equal('MediaRef not found')
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 
@@ -142,19 +152,20 @@ describe('MediaRef endpoints', () => {
   })
   describe('mediaRef create and delete', () => {
     const sendBody = {
-      "authors": [],
-      "categories": [],
-      "endTime": 100,
-      "episodeId": "gRgjd3YcKb",
-      "isPublic": "true",
-      "startTime": 50,
-      "title": "Sample clip title"
+      authors: [],
+      categories: [],
+      endTime: 100,
+      episodeId: 'gRgjd3YcKb',
+      isPublic: 'true',
+      startTime: 50,
+      title: 'Sample clip title'
     }
 
-    let newMediaRefId = '' 
+    let newMediaRefId = ''
 
     test('Create: when the user is not logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/mediaRef`)
         .send(sendBody)
         .end((err, res) => {
@@ -162,11 +173,11 @@ describe('MediaRef endpoints', () => {
           chaiExpect(Object.keys(res.body).length).to.equal(0)
           done()
         })
-        
     })
 
     test('Create: when the user is logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .post(`${v1Path}/mediaRef`)
         .set('Cookie', testUsers.premium.authCookie)
         .send(sendBody)
@@ -204,7 +215,8 @@ describe('MediaRef endpoints', () => {
     })
 
     test('Delete: when the user is not logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
         .end((err, res) => {
           chaiExpect(res).to.have.status(401)
@@ -214,7 +226,8 @@ describe('MediaRef endpoints', () => {
     })
 
     test('Delete: when the user is logged in', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .delete(`${v1Path}/mediaRef/${newMediaRefId}`)
         .set('Cookie', testUsers.premium.authCookie)
         .end((err, res) => {
@@ -227,14 +240,15 @@ describe('MediaRef endpoints', () => {
 
   describe('find by query', () => {
     test('top past week', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/mediaRef?sort=top-past-week`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
 
           const mediaRefs = res.body[0]
           const mediaRef0 = mediaRefs[0]
-          
+
           chaiExpect(mediaRef0.id).to.equal('uqBhM4ml')
           chaiExpect(mediaRef0.int_id).to.equal(59)
           chaiExpect(mediaRef0.endTime).to.equal(5640)
@@ -253,7 +267,7 @@ describe('MediaRef endpoints', () => {
           chaiExpect(mediaRef0.title).to.equal('Lacus sed turpis tincidunt id aliquet risus feugiat in ante.')
           chaiExpect(mediaRef0).to.have.property('createdAt')
           chaiExpect(mediaRef0).to.have.property('updatedAt')
-          
+
           chaiExpect(mediaRef0.owner.id).to.equal('EVHDBRZY')
           chaiExpect(mediaRef0.owner.isPublic).to.equal(true)
           chaiExpect(mediaRef0.owner).to.have.property('name')
@@ -267,7 +281,6 @@ describe('MediaRef endpoints', () => {
           const mediaRef3 = mediaRefs[3]
           chaiExpect(mediaRef3.id).to.equal('9rA5BhWp')
 
-
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
@@ -277,22 +290,23 @@ describe('MediaRef endpoints', () => {
 
   describe('MediaRef Update', () => {
     test('update', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .patch(`${v1Path}/mediaRef`)
         .set('Cookie', testUsers.premium.authCookie)
         .send({
-          "authors": [],
-          "categories": [],
-          "endTime": 100,
-          "episodeId": "gRgjd3YcKb",
-          "id": "o0WTxqON",
-          "isPublic": "true",
-          "startTime": 50,
-          "title": "New sample clip title"
+          authors: [],
+          categories: [],
+          endTime: 100,
+          episodeId: 'gRgjd3YcKb',
+          id: 'o0WTxqON',
+          isPublic: 'true',
+          startTime: 50,
+          title: 'New sample clip title'
         })
         .end((err, res) => {
-          chaiExpect(res).to.have.status(401);
-          
+          chaiExpect(res).to.have.status(401)
+
           chaiExpect(res.body.message).to.equal('Log in to edit this media ref')
 
           chaiExpect(Object.keys(res.body).length).to.equal(1)
@@ -301,5 +315,4 @@ describe('MediaRef endpoints', () => {
         })
     })
   })
-
 })

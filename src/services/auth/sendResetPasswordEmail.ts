@@ -1,7 +1,7 @@
 import { config } from '~/config'
 import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
-import { convertSecondsToDaysText } from '~/lib/utility';
+import { convertSecondsToDaysText } from '~/lib/utility'
 const createError = require('http-errors')
 
 const { mailerFrom, resetPasswordTokenExpiration } = config

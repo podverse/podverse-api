@@ -4,13 +4,10 @@ import { deleteCategoryByTitle, getCategories } from '~/controllers/category'
 import { Category } from '~/entities'
 import { connectToDb } from '~/lib/db'
 
-const generateCategories = async (
-  connection: Connection,
-  data: any
-): Promise<any> => {
+const generateCategories = async (connection: Connection, data: any): Promise<any> => {
   const existingCategoriesAndCount = await getCategories({})
   let existingCategories = existingCategoriesAndCount[0]
-  
+
   for (const category of data) {
     let title
     let parentId
@@ -63,9 +60,8 @@ const generateCategory = (fullPath, title, parentId) => {
   return category
 }
 
-connectToDb()
-  .then(async connection => {
-    if (connection) {
-      await generateCategories(connection, validCategories)
-    }
-  })
+connectToDb().then(async (connection) => {
+  if (connection) {
+    await generateCategories(connection, validCategories)
+  }
+})

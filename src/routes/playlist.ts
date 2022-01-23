@@ -3,8 +3,16 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { addOrRemovePlaylistItem, createPlaylist, deletePlaylist, getPlaylist, getPlaylists,
-  getSubscribedPlaylists, toggleSubscribeToPlaylist, updatePlaylist } from '~/controllers/playlist'
+import {
+  addOrRemovePlaylistItem,
+  createPlaylist,
+  deletePlaylist,
+  getPlaylist,
+  getPlaylists,
+  getSubscribedPlaylists,
+  toggleSubscribeToPlaylist,
+  updatePlaylist
+} from '~/controllers/playlist'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -22,11 +30,12 @@ const delimitKeys = ['mediaRefs']
 router.use(bodyParser())
 
 // Search
-router.get('/',
+router.get(
+  '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   validatePlaylistSearch,
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const playlists = await getPlaylists(ctx.state.query)
@@ -35,14 +44,16 @@ router.get('/',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Search Subscribed Playlists
-router.get('/subscribed',
+router.get(
+  '/subscribed',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   validatePlaylistSearch,
   jwtAuth,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
 
@@ -55,129 +66,109 @@ router.get('/subscribed',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get
-router.get('/:id',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const playlist = await getPlaylist(ctx.params.id)
+router.get('/:id', parseNSFWHeader, async (ctx) => {
+  try {
+    const playlist = await getPlaylist(ctx.params.id)
 
-      ctx.body = playlist
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+    ctx.body = playlist
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Create
 const createPlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 10,
+  max: rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'post/playlist'
 })
 
-router.post('/',
-  validatePlaylistCreate,
-  createPlaylistLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      body.owner = ctx.state.user.id
+router.post('/', validatePlaylistCreate, createPlaylistLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    body.owner = ctx.state.user.id
 
-      const playlist = await createPlaylist(body)
-      ctx.body = playlist
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+    const playlist = await createPlaylist(body)
+    ctx.body = playlist
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Update
 const updatePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 20,
+  max: rateLimiterMaxOverride || 20,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/playlist'
 })
 
-router.patch('/',
-  validatePlaylistUpdate,
-  updatePlaylistLimiter,
-  jwtAuth,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const playlist = await updatePlaylist(body, ctx.state.user.id)
-      ctx.body = playlist
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.patch('/', validatePlaylistUpdate, updatePlaylistLimiter, jwtAuth, async (ctx) => {
+  try {
+    const body = ctx.request.body
+    const playlist = await updatePlaylist(body, ctx.state.user.id)
+    ctx.body = playlist
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Delete
-router.delete('/:id',
-  jwtAuth,
-  async ctx => {
-    try {
-      await deletePlaylist(ctx.params.id, ctx.state.user.id)
-      ctx.status = 200
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.delete('/:id', jwtAuth, async (ctx) => {
+  try {
+    await deletePlaylist(ctx.params.id, ctx.state.user.id)
+    ctx.status = 200
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Add/remove mediaRef/episode to/from playlist
 const addOrRemovePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 30,
+  max: rateLimiterMaxOverride || 30,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'patch/add-or-remove'
 })
 
-router.patch('/add-or-remove',
-  addOrRemovePlaylistLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      const { episodeId, mediaRefId, playlistId } = body
+router.patch('/add-or-remove', addOrRemovePlaylistLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const { episodeId, mediaRefId, playlistId } = body
 
-      const results = await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, ctx.state.user.id)
-      const updatedPlaylist = results[0] as any
-      const actionTaken = results[1]
-      ctx.body = {
-        playlistId: updatedPlaylist.id,
-        playlistItemCount: updatedPlaylist.itemCount,
-        actionTaken
-      }
-    } catch (error) {
-      emitRouterError(error, ctx)
+    const results = await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, ctx.state.user.id)
+    const updatedPlaylist = results[0] as any
+    const actionTaken = results[1]
+    ctx.body = {
+      playlistId: updatedPlaylist.id,
+      playlistItemCount: updatedPlaylist.itemCount,
+      actionTaken
     }
-  })
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Toggle subscribe to playlist
 const toggleSubscribeLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 15,
+  max: rateLimiterMaxOverride || 15,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/playlist/toggle-subscribe'
 })
 
-router.get('/toggle-subscribe/:id',
-  toggleSubscribeLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const subscribedPlaylistIds = await toggleSubscribeToPlaylist(ctx.params.id, ctx.state.user.id)
-      ctx.body = subscribedPlaylistIds
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/toggle-subscribe/:id', toggleSubscribeLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const subscribedPlaylistIds = await toggleSubscribeToPlaylist(ctx.params.id, ctx.state.user.id)
+    ctx.body = subscribedPlaylistIds
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 export const playlistRouter = router

@@ -111,10 +111,8 @@ const podcastIndexAuthKey = process.env.PODCAST_INDEX_AUTH_KEY || ''
 const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
-const podcastIndexRecentlyUpdatedSinceTime =
-  process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
-const podcastIndexNewFeedsSinceTime =
-  process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
+const podcastIndexRecentlyUpdatedSinceTime = process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
+const podcastIndexNewFeedsSinceTime = process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -137,7 +135,7 @@ const appStoreConfig = {
   sharedSecret: process.env.APP_STORE_API_SHARED_SECRET
 }
 
-let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || 'en' as any
+let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || ('en' as any)
 parserSupportedLanguages = parserSupportedLanguages.split(',')
 
 const podcastIndexConfig = {
@@ -230,8 +228,9 @@ const config: Config = {
   minimumMobileVersion,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
-    downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED ?
-      parseInt(process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED) : 0
+    downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED
+      ? parseInt(process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED)
+      : 0
   }
 }
 

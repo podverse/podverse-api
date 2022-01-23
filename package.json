@@ -7,6 +7,12 @@
   ],
   "main": "dist/bundle.js",
   "scripts": {
+    "lint:prettier": "npm run prettier:check",
+    "prettier:base": "prettier",
+    "prettier:list": "npm run prettier:base -- --list-different  \"src/**/*.{ts,js}\" \"__tests__/**/*.{ts,js}\"",
+    "prettier:check": "npm run prettier:base -- --check  \"src/**/*.{ts,js}\" \"__tests__/**/*.{ts,js}\"",
+    "prettier:write": "npm run prettier:base -- --write",
+    "prettier:fix": "npm run prettier:write --  \"src/**/*.{ts,js}\" \"__tests__/**/*.{ts,js}\"",
     "build": "webpack --progress --colors",
     "dev": "NODE_ENV=development nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
     "dev:scripts:addAllOrphanFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToPriorityQueue.ts",

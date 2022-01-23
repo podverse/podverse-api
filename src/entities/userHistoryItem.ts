@@ -1,15 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsInt, Min } from 'class-validator'
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn,
-  Unique, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn
+} from 'typeorm'
 import { Episode, MediaRef, User } from '~/entities'
 
 @Entity('userHistoryItems')
 @Unique('index_episode_owner', ['episode', 'owner'])
 @Unique('index_mediaRef_owner', ['mediaRef', 'owner'])
 export class UserHistoryItem {
-
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -29,20 +36,20 @@ export class UserHistoryItem {
   @Column({ default: 0 })
   userPlaybackPosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userHistoryItems, {
+  @ManyToOne((type) => Episode, (episode) => episode.userHistoryItems, {
     nullable: true,
     onDelete: 'CASCADE'
   })
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userHistoryItems, {
+  @ManyToOne((type) => MediaRef, (mediaRef) => mediaRef.userHistoryItems, {
     nullable: true,
     onDelete: 'CASCADE'
   })
   mediaRef: MediaRef
 
   @Index()
-  @ManyToOne(type => User, user => user.userHistoryItems, {
+  @ManyToOne((type) => User, (user) => user.userHistoryItems, {
     nullable: false,
     onDelete: 'CASCADE'
   })
@@ -53,5 +60,4 @@ export class UserHistoryItem {
 
   @UpdateDateColumn()
   updatedAt: Date
-
 }

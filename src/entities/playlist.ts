@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Episode, MediaRef, User } from '~/entities'
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, Index,
-  JoinTable, ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  Index,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { generateShortId } from '~/lib/utility'
 
 @Entity('playlists')
 export class Playlist {
-
   @PrimaryColumn('varchar', {
     default: generateShortId(),
     length: 14
@@ -35,15 +46,15 @@ export class Playlist {
   @Column({ nullable: true })
   title?: string
 
-  @ManyToMany(type => Episode)
+  @ManyToMany((type) => Episode)
   @JoinTable()
   episodes: Episode[]
 
-  @ManyToMany(type => MediaRef)
+  @ManyToMany((type) => MediaRef)
   @JoinTable()
   mediaRefs: MediaRef[]
 
-  @ManyToOne(type => User, user => user.playlists, {
+  @ManyToOne((type) => User, (user) => user.playlists, {
     nullable: false,
     onDelete: 'CASCADE'
   })
@@ -56,14 +67,14 @@ export class Playlist {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = generateShortId()
     this.itemsOrder = this.itemsOrder || []
   }
 
   @BeforeInsert()
   @BeforeUpdate()
-  trimStrings () {
+  trimStrings() {
     if (this.description) {
       this.description = this.description.trim() === '' ? undefined : this.description.trim()
     }
@@ -74,7 +85,7 @@ export class Playlist {
 
   @BeforeInsert()
   @BeforeUpdate()
-  setItemCount () {
+  setItemCount() {
     if (this.mediaRefs) {
       this.itemCount = this.mediaRefs.length
     }

@@ -15,16 +15,13 @@ const podcastByIdLimiter = RateLimit.middleware({
 })
 
 // Get podcast from Podcast Index by feed id
-router.get('/podcast/by-id/:id',
-  podcastByIdLimiter,
-  async ctx => {
-    try {
-      const data = await getPodcastFromPodcastIndexById(ctx.params.id)
-      ctx.body = data
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
+router.get('/podcast/by-id/:id', podcastByIdLimiter, async (ctx) => {
+  try {
+    const data = await getPodcastFromPodcastIndexById(ctx.params.id)
+    ctx.body = data
+  } catch (error) {
+    emitRouterError(error, ctx)
   }
-)
+})
 
 export const podcastIndexRouter = router

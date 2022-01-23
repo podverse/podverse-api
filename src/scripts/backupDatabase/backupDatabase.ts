@@ -1,6 +1,6 @@
 import { backupDatabaseToS3 } from '~/services/backupDatabase'
 
-(async function () {
+;(async function () {
   try {
     await backupDatabaseToS3()
   } catch (error) {

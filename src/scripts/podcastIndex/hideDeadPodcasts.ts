@@ -1,7 +1,7 @@
 import { hideDeadPodcasts } from '~/services/podcastIndex'
 import { connectToDb } from '~/lib/db'
 
-(async function () {
+;(async function () {
   try {
     await connectToDb()
     await hideDeadPodcasts()

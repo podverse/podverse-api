@@ -8,10 +8,11 @@ import { validateAuthorSearch } from '~/middleware/queryValidation/search'
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/author` })
 
 // Search
-router.get('/',
+router.get(
+  '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'authors'),
   validateAuthorSearch,
-  async ctx => {
+  async (ctx) => {
     try {
       const authors = await getAuthors(ctx.state.query)
       ctx.body = authors
@@ -22,14 +23,13 @@ router.get('/',
 )
 
 // Get
-router.get('/:id',
-  async ctx => {
-    try {
-      const author = await getAuthor(ctx.params.id)
-      ctx.body = author
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/:id', async (ctx) => {
+  try {
+    const author = await getAuthor(ctx.params.id)
+    ctx.body = author
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 export const authorRouter = router
