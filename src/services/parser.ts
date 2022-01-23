@@ -1,5 +1,5 @@
 import * as _fetch from 'isomorphic-fetch'
-import { parseFeed } from 'podcast-partytime'
+import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
 import type { Funding } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
@@ -70,14 +70,15 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
-        medium: (feed.medium || 'podcast') as any, // TODO: how do we handle type/enum here?
+        medium: feed.medium ?? Phase4Medium.Podcast,
         owner: feed.owner,
         pubDate: feed.pubDate,
         subtitle: feed.subtitle,
         summary: feed.summary,
         title: feed.title,
         type: feed.itunesType,
-        value: feed.value ? [valueCompat(feed.value)] : []
+        value: feed.value ? [valueCompat(feed.value)] : [],
+        liveItems: feed.podcastLiveItems ?? []
       }
     }
 

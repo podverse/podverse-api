@@ -3434,13 +3434,6 @@ eslint-module-utils@^2.7.1:
     find-up "^2.1.0"
     pkg-dir "^2.0.0"
 
-eslint-plugin-flowtype@3.x:
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.13.0.tgz#e241ebd39c0ce519345a3f074ec1ebde4cf80f2c"
-  integrity sha512-bhewp36P+t7cEV0b6OdmoRWJCBYRiHFlqPZAG1oS3SF+Y0LQkeDvFSM4oxoxvczD1OdONCXMlJfQFiWLcV9urw==
-  dependencies:
-    lodash "^4.17.15"
-
 eslint-plugin-import@2.x:
   version "2.25.3"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.25.3.tgz#a554b5f66e08fb4f6dc99221866e57cfff824766"
@@ -7773,10 +7766,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.2.0.tgz#dfbb431013a51e3fd35ed84de5d3e24484365a0e"
-  integrity sha512-CHKUi/57pT99D8z63CwYIjuq33Novflyn4iCGhKPCK8T36aPxtiUQzOck0Wcmyl7fx+Pq6DhT07PuO7/uLjeTg==
+podcast-partytime@4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.0.tgz#64bbac7cc69fd1d36e9b24c6b0f18b59e40d4447"
+  integrity sha512-X0TNsuz5GJeUA05/wmzeF71sGUS8sjzRDLtDnkiUacWmZ9W8VgT6bqgPBdxLCwl3RxPxxGU9DRThPil5roay9A==
   dependencies:
     dotenv "^10.0.0"
     fast-xml-parser "^3.18.0"
