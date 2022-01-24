@@ -1,6 +1,5 @@
 import { connectToDb } from '~/lib/db'
 import { updateRecentEpisodesTables } from '~/controllers/recentEpisodes'
-
 ;(async function () {
   try {
     await connectToDb()

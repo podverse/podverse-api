@@ -1,6 +1,5 @@
 import { addOrUpdatePodcastFromPodcastIndex } from '~/services/podcastIndex'
 import { connectToDb } from '~/lib/db'
-
 ;(async function () {
   const connectToDbAndRunParser = async () => {
     try {

@@ -1,5 +1,4 @@
 import { queryUniquePageviews } from '~/services/stats'
-
 ;(async function () {
   try {
     const pagePath = process.argv[2]

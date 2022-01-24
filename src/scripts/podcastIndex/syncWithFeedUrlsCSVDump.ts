@@ -1,5 +1,4 @@
 import { syncWithFeedUrlsCSVDump } from '~/services/podcastIndex'
-
 ;(async function () {
   try {
     const rootFilePath = process.argv[2]

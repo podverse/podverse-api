@@ -1,6 +1,5 @@
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrlsByPodcastIndexIds } from '~/services/parser'
-
 ;(async function () {
   const connectToDbAndRunParser = async () => {
     try {

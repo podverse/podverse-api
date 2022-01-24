@@ -1,6 +1,5 @@
 import { removeDeadEpisodes } from '~/controllers/episode'
 import { connectToDb } from '~/lib/db'
-
 ;(async function () {
   try {
     if (process.argv.length < 2) {
