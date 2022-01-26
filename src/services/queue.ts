@@ -10,7 +10,6 @@ const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
 
 export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
-
   await connectToDb()
 
   try {
@@ -32,7 +31,6 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
 }
 
 export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
-
   await connectToDb()
 
   try {
@@ -45,12 +43,7 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
         .createQueryBuilder('feedUrl')
         .select('feedUrl.id')
         .addSelect('feedUrl.url')
-        .innerJoinAndSelect(
-          'feedUrl.podcast',
-          'podcast',
-          'podcast.isPublic = :isPublic',
-          { isPublic: true }
-        )
+        .innerJoinAndSelect('feedUrl.podcast', 'podcast', 'podcast.isPublic = :isPublic', { isPublic: true })
         .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
         .offset(i * 1000)
         .limit(1000)
@@ -71,7 +64,6 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
 }
 
 export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
-
   await connectToDb()
 
   try {
@@ -81,11 +73,7 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
       .createQueryBuilder('feedUrl')
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
-      .innerJoinAndSelect(
-        'feedUrl.podcast',
-        'podcast',
-        'podcast.title IS NULL'
-      )
+      .innerJoinAndSelect('feedUrl.podcast', 'podcast', 'podcast.title IS NULL')
       .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
       .getCount()
 
@@ -98,11 +86,7 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         .createQueryBuilder('feedUrl')
         .select('feedUrl.id')
         .addSelect('feedUrl.url')
-        .innerJoinAndSelect(
-          'feedUrl.podcast',
-          'podcast',
-          'podcast.title IS NULL'
-        )
+        .innerJoinAndSelect('feedUrl.podcast', 'podcast', 'podcast.title IS NULL')
         .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
         .offset(i * 10000)
         .limit(10000)
@@ -117,7 +101,6 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
 }
 
 export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
-
   await connectToDb()
 
   try {
@@ -128,10 +111,7 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
-      .where(
-        'feedUrl.isAuthority = true AND feedUrl.id IN (:...feedUrlIds)',
-        { feedUrlIds }
-      )
+      .where('feedUrl.isAuthority = true AND feedUrl.id IN (:...feedUrlIds)', { feedUrlIds })
       .getMany()
 
     console.log('Total feedUrls found:', feedUrls.length)
@@ -153,17 +133,14 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
       .select('feedUrl.id')
       .addSelect('feedUrl.url')
       .leftJoinAndSelect('feedUrl.podcast', 'podcast')
-      .where(
-        'feedUrl.isAuthority = true AND podcast.podcastIndexId IN (:...podcastIndexIds)',
-        { podcastIndexIds }
-      )
+      .where('feedUrl.isAuthority = true AND podcast.podcastIndexId IN (:...podcastIndexIds)', { podcastIndexIds })
       .getMany()
 
     console.log('Total feedUrls found:', feedUrls.length)
 
     const forceReparsing = false
     await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
-    
+
     const podcasts: Podcast[] = []
     const newLastFoundInPodcastIndex = new Date()
     for (const feedUrl of feedUrls) {
@@ -178,7 +155,6 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
 }
 
 export const addNonPodcastIndexFeedUrlsToPriorityQueue = async () => {
-
   await connectToDb()
 
   try {
@@ -231,10 +207,9 @@ export const sendFeedUrlsToQueue = async (feedUrls, queueUrl, forceParsing) => {
     messagePromises.push(sqs.sendMessageBatch(chunkParams).promise())
   }
 
-  Promise.all(messagePromises)
-    .catch(error => {
-      console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
-    })
+  Promise.all(messagePromises).catch((error) => {
+    console.error('addAllFeedsToQueue: sqs.sendMessageBatch error', error)
+  })
 }
 
 export const sendMessageToQueue = async (attrs, queue) => {
@@ -244,10 +219,11 @@ export const sendMessageToQueue = async (attrs, queue) => {
       MessageBody: 'aws sqs requires a message body - podverse rules',
       QueueUrl: queue
     }
-  
-    await sqs.sendMessage(message)
+
+    await sqs
+      .sendMessage(message)
       .promise()
-      .catch(error => console.error('sendMessageToQueue:sqs.sendMessage', error))
+      .catch((error) => console.error('sendMessageToQueue:sqs.sendMessage', error))
   }
 }
 
@@ -297,16 +273,17 @@ export const receiveErrorMessageFromQueue = async (count: number) => {
   console.log('')
 }
 
-export const receiveMessageFromQueue = async queue => {
+export const receiveMessageFromQueue = async (queue) => {
   const params = {
     QueueUrl: queue,
     MessageAttributeNames: ['All'],
     VisibilityTimeout: 30
   }
 
-  const message = await sqs.receiveMessage(params)
+  const message = await sqs
+    .receiveMessage(params)
     .promise()
-    .then(data => {
+    .then((data) => {
       if (!data.Messages || data.Messages.length === 0) {
         console.log('receiveMessageFromQueue: No messages found.')
         return
@@ -314,7 +291,7 @@ export const receiveMessageFromQueue = async queue => {
       const message = data.Messages[0]
       return message
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('receiveMessageFromQueue: sqs.receiveMessage error', error)
     })
 
@@ -328,9 +305,10 @@ export const deleteMessage = async (queueUrl, receiptHandle) => {
       ReceiptHandle: receiptHandle
     }
 
-    await sqs.deleteMessage(params)
+    await sqs
+      .deleteMessage(params)
       .promise()
-      .catch(error => {
+      .catch((error) => {
         console.error('deleteMessage:sqs.deleteMessage error', error)
       })
   }
@@ -340,9 +318,10 @@ export const purgeQueue = async () => {
   const queueUrl = queueUrls.feedsToParse.queueUrl
   const params = { QueueUrl: queueUrl }
 
-  await sqs.purgeQueue(params)
+  await sqs
+    .purgeQueue(params)
     .promise()
-    .catch(error => {
+    .catch((error) => {
       console.error('purgeQueue.sqs.purgeQueue error', error)
     })
 }

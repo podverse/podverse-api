@@ -2,9 +2,18 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { deleteLoggedInUser, getCompleteUserDataAsJSON, getLoggedInUserPlaylistsCombined,
-  getPublicUser, getPublicUsers, getSubscribedPublicUsers, getUserMediaRefs, getUserPlaylists,
-  toggleSubscribeToUser, updateLoggedInUser } from '~/controllers/user'
+import {
+  deleteLoggedInUser,
+  getCompleteUserDataAsJSON,
+  getLoggedInUserPlaylistsCombined,
+  getPublicUser,
+  getPublicUsers,
+  getSubscribedPublicUsers,
+  getUserMediaRefs,
+  getUserPlaylists,
+  toggleSubscribeToUser,
+  updateLoggedInUser
+} from '~/controllers/user'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -24,35 +33,29 @@ router.use(bodyParser())
 // Toggle subscribe to user
 const toggleSubscribeUserLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 10,
+  max: rateLimiterMaxOverride || 10,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/toggle-subscribe'
 })
 
-router.get('/toggle-subscribe/:id',
-  toggleSubscribeUserLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const subscribedUserIds = await toggleSubscribeToUser(ctx.params.id, ctx.state.user.id)
-      ctx.body = subscribedUserIds
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/toggle-subscribe/:id', toggleSubscribeUserLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const subscribedUserIds = await toggleSubscribeToUser(ctx.params.id, ctx.state.user.id)
+    ctx.body = subscribedUserIds
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Delete
-router.delete('/',
-  jwtAuth,
-  async ctx => {
-    try {
-      await deleteLoggedInUser(ctx.state.user.id, ctx.state.user.id)
-      ctx.status = 200
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.delete('/', jwtAuth, async (ctx) => {
+  try {
+    await deleteLoggedInUser(ctx.state.user.id, ctx.state.user.id)
+    ctx.status = 200
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Update
 const updateUserLimiter = RateLimit.middleware({
@@ -62,20 +65,15 @@ const updateUserLimiter = RateLimit.middleware({
   prefixKey: 'patch/user'
 })
 
-router.patch('/',
-  updateUserLimiter,
-  jwtAuth,
-  validateUserUpdate,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const body = ctx.request.body
-      const user = await updateLoggedInUser(body, ctx.state.user.id)
-      ctx.body = user
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.patch('/', updateUserLimiter, jwtAuth, validateUserUpdate, hasValidMembership, async (ctx) => {
+  try {
+    const body = ctx.request.body
+    const user = await updateLoggedInUser(body, ctx.state.user.id)
+    ctx.body = user
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Download user data
 const downloadUserLimiter = RateLimit.middleware({
@@ -85,62 +83,56 @@ const downloadUserLimiter = RateLimit.middleware({
   prefixKey: 'get/user/download'
 })
 
-router.get('/download',
-  downloadUserLimiter,
-  jwtAuth,
-  async ctx => {
-    try {
-      const userJSON = await getCompleteUserDataAsJSON(ctx.state.user.id, ctx.state.user.id)
-      ctx.body = userJSON
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/download', downloadUserLimiter, jwtAuth, async (ctx) => {
+  try {
+    const userJSON = await getCompleteUserDataAsJSON(ctx.state.user.id, ctx.state.user.id)
+    ctx.body = userJSON
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Get Logged In User's MediaRefs
-router.get('/mediaRefs',
+router.get(
+  '/mediaRefs',
   jwtAuth,
   parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  async ctx => {
+  async (ctx) => {
     try {
       const { query } = ctx.state
 
-      const mediaRefs = await getUserMediaRefs(
-        query,
-        ctx.state.user.id,
-        ctx.state.includeNSFW,
-        true
-      )
+      const mediaRefs = await getUserMediaRefs(query, ctx.state.user.id, ctx.state.includeNSFW, true)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get Logged In User's Playlists
-router.get('/playlists',
+router.get(
+  '/playlists',
   jwtAuth,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  async ctx => {
+  async (ctx) => {
     try {
       const { query } = ctx.state
 
-      const playlists = await getUserPlaylists(
-        query,
-        ctx.state.user.id
-      )
+      const playlists = await getUserPlaylists(query, ctx.state.user.id)
       ctx.body = playlists
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get Logged In User's Playlists Combined
-router.get('/playlists/combined',
+router.get(
+  '/playlists/combined',
   jwtAuth,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  async ctx => {
+  async (ctx) => {
     try {
       const { createdPlaylists, subscribedPlaylists } = await getLoggedInUserPlaylistsCombined(ctx.state.user.id)
 
@@ -151,14 +143,16 @@ router.get('/playlists/combined',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Search Public Users
-router.get('/',
+router.get(
+  '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
   validateUserSearch,
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const users = await getPublicUsers(ctx.state.query)
@@ -167,14 +161,16 @@ router.get('/',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Search Subscribed Public Users
-router.get('/subscribed',
+router.get(
+  '/subscribed',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
   validateUserSearch,
   jwtAuth,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
 
@@ -187,57 +183,52 @@ router.get('/subscribed',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get Public User
-router.get('/:id',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const user = await getPublicUser(ctx.params.id)
+router.get('/:id', parseNSFWHeader, async (ctx) => {
+  try {
+    const user = await getPublicUser(ctx.params.id)
 
-      ctx.body = user
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+    ctx.body = user
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Get Public User's MediaRefs
-router.get('/:id/mediaRefs',
+router.get(
+  '/:id/mediaRefs',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       const { query } = ctx.state
 
-      const mediaRefs = await getUserMediaRefs(
-        query,
-        ctx.params.id,
-        ctx.state.includeNSFW,
-        false
-      )
+      const mediaRefs = await getUserMediaRefs(query, ctx.params.id, ctx.state.includeNSFW, false)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get Public User's Playlists
-router.get('/:id/playlists',
+router.get(
+  '/:id/playlists',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       const { query } = ctx.state
 
-      const playlists = await getUserPlaylists(
-        query,
-        ctx.params.id
-      )
+      const playlists = await getUserPlaylists(query, ctx.params.id)
       ctx.body = playlists
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 export const userRouter = router

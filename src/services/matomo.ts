@@ -24,17 +24,17 @@ export const queryMatomoData = async (startDate, endDate, segmentPageUrl) => {
     flat: '1',
     segment: `pageUrl%3D@%25252F${segmentPageUrl}%25252F`
   }
-  
+
   const urlWithParams = `${url}?${generateQueryParams(batchPayload)}`
 
   try {
     return axios({
-     url: urlWithParams,
-     method: 'GET',
-     headers: {
-       'User-Agent': userAgent,
-     }
-   })
+      url: urlWithParams,
+      method: 'GET',
+      headers: {
+        'User-Agent': userAgent
+      }
+    })
   } catch (error) {
     console.log('queryMatomoData error:', error)
     return []

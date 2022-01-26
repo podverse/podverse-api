@@ -1,7 +1,11 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { getGooglePlayPurchase, createGooglePlayPurchase, updateGooglePlayPurchase } from '~/controllers/googlePlayPurchase'
+import {
+  getGooglePlayPurchase,
+  createGooglePlayPurchase,
+  updateGooglePlayPurchase
+} from '~/controllers/googlePlayPurchase'
 import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
 import { GooglePlayPurchase } from '~/entities'
 import { emitRouterError } from '~/lib/errors'
@@ -28,11 +32,12 @@ const createPurchaseLimiter = RateLimit.middleware({
 // 2 Pending
 
 // Create or Update Google Play Purchases
-router.post('/update-purchase-status',
+router.post(
+  '/update-purchase-status',
   validateGooglePlayPurchaseCreate,
   createPurchaseLimiter,
   jwtAuth,
-  async ctx => {
+  async (ctx) => {
     try {
       const body = ctx.request.body as any
       const purchaseToken = body.purchaseToken
@@ -41,14 +46,14 @@ router.post('/update-purchase-status',
       if (!user || !user.id) {
         throw new Error('User not found')
       } else {
-        const verified = await getGoogleApiPurchaseByToken(productId, purchaseToken) as any
+        const verified = (await getGoogleApiPurchaseByToken(productId, purchaseToken)) as any
         verified.owner = user
         verified.purchaseToken = purchaseToken
         verified.productId = productId
         verified.transactionId = verified.orderId
         delete verified.orderId
 
-        let purchase = await getGooglePlayPurchase(verified.transactionId, user.id) as GooglePlayPurchase
+        let purchase = (await getGooglePlayPurchase(verified.transactionId, user.id)) as GooglePlayPurchase
 
         if (purchase) {
           purchase = verified
@@ -65,10 +70,13 @@ router.post('/update-purchase-status',
 
         if (purchase && purchase.purchaseState === 0) {
           await addYearsToUserMembershipExpiration(user.id, 1)
-          await updateGooglePlayPurchase({
-            ...purchase,
-            consumptionState: 1
-          }, user.id)
+          await updateGooglePlayPurchase(
+            {
+              ...purchase,
+              consumptionState: 1
+            },
+            user.id
+          )
           ctx.body = {
             code: 0,
             message: 'Purchase completed successfully.'
@@ -93,6 +101,7 @@ router.post('/update-purchase-status',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 export const googlePlayRouter = router

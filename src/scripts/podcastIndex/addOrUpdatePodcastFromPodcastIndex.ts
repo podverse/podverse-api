@@ -1,7 +1,6 @@
 import { addOrUpdatePodcastFromPodcastIndex } from '~/services/podcastIndex'
 import { connectToDb } from '~/lib/db'
-
-(async function () {
+;(async function () {
   const connectToDbAndRunParser = async () => {
     try {
       const podcastIndexIdsString = process.argv.length > 2 ? process.argv[2] : ''
@@ -20,7 +19,7 @@ import { connectToDb } from '~/lib/db'
           try {
             await addOrUpdatePodcastFromPodcastIndex(connection, podcastIndexId)
           } catch (error) {
-            console.log('error', )
+            console.log('error')
           }
         }
       } else {
@@ -36,4 +35,3 @@ import { connectToDb } from '~/lib/db'
 
   connectToDbAndRunParser()
 })()
-

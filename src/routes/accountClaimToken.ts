@@ -12,15 +12,14 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/cla
 router.use(bodyParser())
 
 // Get
-router.get('/:id',
-  async ctx => {
-    try {
-      const accountClaimToken = await getAccountClaimToken(ctx.params.id)
-      ctx.body = accountClaimToken
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/:id', async (ctx) => {
+  try {
+    const accountClaimToken = await getAccountClaimToken(ctx.params.id)
+    ctx.body = accountClaimToken
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Redeem
 const redeemAccountClaimTokenLimiter = RateLimit.middleware({
@@ -30,35 +29,33 @@ const redeemAccountClaimTokenLimiter = RateLimit.middleware({
   prefixKey: 'post/claim-account'
 })
 
-router.post('/',
-  redeemAccountClaimTokenLimiter,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
+router.post('/', redeemAccountClaimTokenLimiter, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
 
-      if (body && body.id && body.email) {
-        await redeemAccountClaimToken(body.id, body.email)
-      } else if (body && body.id && !body.email) {
-        throw new createError.BadRequest('Please provide a valid email.')
-      } else {
-        throw new createError.NotFound('AccountClaimToken id not found. Please provide a valid claim token.')
-      }
-
-      ctx.status = 200
-    } catch (error) {
-      if (error.message === errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound) {
-        ctx.status = 404
-        ctx.body = { message: errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound }
-      } else if (error.message === errorMessages.accountClaimToken.redeem.alreadyClaimed) {
-        ctx.status = 405
-        ctx.body = { message: errorMessages.accountClaimToken.redeem.alreadyClaimed }
-      } else if (error.message === 'User not found.') {
-        ctx.status = 404
-        ctx.body = { message: errorMessages.accountClaimToken.redeem.emailNotFound }
-      }
-
-      emitRouterError(error, ctx)
+    if (body && body.id && body.email) {
+      await redeemAccountClaimToken(body.id, body.email)
+    } else if (body && body.id && !body.email) {
+      throw new createError.BadRequest('Please provide a valid email.')
+    } else {
+      throw new createError.NotFound('AccountClaimToken id not found. Please provide a valid claim token.')
     }
-  })
+
+    ctx.status = 200
+  } catch (error) {
+    if (error.message === errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound) {
+      ctx.status = 404
+      ctx.body = { message: errorMessages.accountClaimToken.redeem.accountClaimTokenNotFound }
+    } else if (error.message === errorMessages.accountClaimToken.redeem.alreadyClaimed) {
+      ctx.status = 405
+      ctx.body = { message: errorMessages.accountClaimToken.redeem.alreadyClaimed }
+    } else if (error.message === 'User not found.') {
+      ctx.status = 404
+      ctx.body = { message: errorMessages.accountClaimToken.redeem.emailNotFound }
+    }
+
+    emitRouterError(error, ctx)
+  }
+})
 
 export const accountClaimTokenRouter = router

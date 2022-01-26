@@ -2,15 +2,24 @@
 
 import { IsUrl } from 'class-validator'
 import { Podcast } from '~/entities'
-import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, Index, ManyToOne,
-  PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  Index,
+  ManyToOne,
+  PrimaryColumn,
+  Unique,
+  UpdateDateColumn
+} from 'typeorm'
 import { generateShortId } from '~/lib/utility'
 
 @Entity('feedUrls')
 @Unique('index_feedUrlId_isAuthority', ['id', 'isAuthority'])
 @Unique('feedUrl_index_podcastId_isAuthority', ['podcast', 'isAuthority'])
 export class FeedUrl {
-
   @PrimaryColumn('varchar', {
     default: generateShortId(),
     length: 14
@@ -29,7 +38,7 @@ export class FeedUrl {
   @Column({ unique: true })
   url: string
 
-  @ManyToOne(type => Podcast, podcast => podcast.feedUrls, {
+  @ManyToOne((type) => Podcast, (podcast) => podcast.feedUrls, {
     onDelete: 'CASCADE'
   })
   podcast: Podcast
@@ -41,8 +50,7 @@ export class FeedUrl {
   updatedAt: Date
 
   @BeforeInsert()
-  beforeInsert () {
+  beforeInsert() {
     this.id = generateShortId()
   }
-
 }

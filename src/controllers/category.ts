@@ -17,11 +17,14 @@ const deleteCategoryByTitle = async (title) => {
   return result
 }
 
-const getCategory = async id => {
+const getCategory = async (id) => {
   const repository = getRepository(Category)
-  const category = await repository.findOne({ id }, {
-    relations: ['category', 'category.category', 'categories']
-  })
+  const category = await repository.findOne(
+    { id },
+    {
+      relations: ['category', 'category.category', 'categories']
+    }
+  )
 
   if (!category) {
     throw new createError.NotFound('Category not found')
@@ -30,9 +33,9 @@ const getCategory = async id => {
   return category
 }
 
-const getCategories = async query => {
+const getCategories = async (query) => {
   const repository = getRepository(Category)
-  const categoryIds = query.id && query.id.split(',') || []
+  const categoryIds = (query.id && query.id.split(',')) || []
   const { slug, title, topLevelCategories } = query
 
   const qb = repository
@@ -50,35 +53,20 @@ const getCategories = async query => {
     .addSelect('categories.title')
 
   if (categoryIds.length > 0) {
-    qb.where(
-      'category.id IN (:...categoryIds)',
-      { categoryIds }
-    )
+    qb.where('category.id IN (:...categoryIds)', { categoryIds })
   } else if (slug) {
     const slugLowerCase = `%${slug.toLowerCase().trim()}%`
     validateSearchQueryString(slugLowerCase)
-    qb.where(
-      'LOWER(category.slug) LIKE :slug',
-      { slug: slugLowerCase }
-    )
+    qb.where('LOWER(category.slug) LIKE :slug', { slug: slugLowerCase })
   } else if (title) {
-    qb.where(
-      'category.title ILIKE :title',
-      { title }
-    )
+    qb.where('category.title ILIKE :title', { title })
   } else if (topLevelCategories) {
     qb.where(`category.category IS NULL`)
   }
 
-  const categories = await qb
-    .orderBy('category.title', 'ASC')
-    .getManyAndCount()
+  const categories = await qb.orderBy('category.title', 'ASC').getManyAndCount()
 
   return categories
 }
 
-export {
-  deleteCategoryByTitle,
-  getCategory,
-  getCategories
-}
+export { deleteCategoryByTitle, getCategory, getCategories }

@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const client = new paypal.core.PayPalHttpClient(env)
 
-export const getPayPalPaymentInfo = paymentId => {
+export const getPayPalPaymentInfo = (paymentId) => {
   console.log('getPayPalPaymentInfo', paymentId)
   const request = new payments.PaymentGetRequest(paymentId)
 
@@ -22,7 +22,7 @@ export const getPayPalPaymentInfo = paymentId => {
   })
 }
 
-export const getPayPalCaptureInfo = paymentId => {
+export const getPayPalCaptureInfo = (paymentId) => {
   console.log('getPayPalCaptureInfo', paymentId)
   const request = new payments.CaptureGetRequest(paymentId)
   return client.execute(request).then((response) => {

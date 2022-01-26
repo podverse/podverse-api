@@ -1,7 +1,6 @@
 import { getConnection } from 'typeorm'
 
-const days = process.env.RECENT_EPISODES_DATE_RANGE ?
-  parseInt(process.env.RECENT_EPISODES_DATE_RANGE) : 31
+const days = process.env.RECENT_EPISODES_DATE_RANGE ? parseInt(process.env.RECENT_EPISODES_DATE_RANGE) : 31
 
 const updateRecentEpisodesTables = async () => {
   const promises = [] as any
@@ -73,13 +72,13 @@ const updateRecentEpisodesTables = async () => {
 }
 
 const generateByCategoryQueryPromise = (em, i) => {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     await em.query(`
       CREATE TABLE "recentEpisodesByCategoryTemp${i}" (
         LIKE "recentEpisodesByCategory" EXCLUDING ALL
       );
     `)
-    
+
     await em.query(`
       INSERT INTO "recentEpisodesByCategoryTemp${i}" ("categoryId", "episodeId", "pubDate")
       SELECT COALESCE(podcasts_categories_categories."categoriesId", '0'),
@@ -91,13 +90,13 @@ const generateByCategoryQueryPromise = (em, i) => {
       AND episodes."pubDate" > '${getDateString(i)}'
       AND episodes."pubDate" <= '${getDateString(i, true)}'
     `)
-    
+
     resolve()
   })
 }
 
 const generateByPodcastQueryPromise = (em, i) => {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     await em.query(`
       CREATE TABLE "recentEpisodesByPodcastTemp${i}" (
         LIKE "recentEpisodesByPodcast" EXCLUDING ALL
@@ -139,6 +138,4 @@ const getDateString = (i, isEndDate = false) => {
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
-export {
-  updateRecentEpisodesTables
-}
+export { updateRecentEpisodesTables }

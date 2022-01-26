@@ -19,10 +19,7 @@ const getGooglePlayPurchase = async (transactionId, loggedInUserId) => {
     throw new createError.Unauthorized('Login to get Google Play Purchase by order id')
   }
 
-  const googlePlayPurchase = await repository.findOne(
-    { transactionId },
-    { relations: ['owner'] }
-  )
+  const googlePlayPurchase = await repository.findOne({ transactionId }, { relations: ['owner'] })
 
   if (!googlePlayPurchase) {
     return null
@@ -37,10 +34,7 @@ const getGooglePlayPurchase = async (transactionId, loggedInUserId) => {
 
 const updateGooglePlayPurchase = async (obj, loggedInUserId) => {
   const repository = getRepository(GooglePlayPurchase)
-  const googlePlayPurchase = await repository.findOne(
-    { transactionId: obj.transactionId },
-    { relations: ['owner'] }
-  )
+  const googlePlayPurchase = await repository.findOne({ transactionId: obj.transactionId }, { relations: ['owner'] })
 
   if (!googlePlayPurchase) {
     throw new createError.NotFound('GooglePlayPurchase not found')
@@ -56,8 +50,4 @@ const updateGooglePlayPurchase = async (obj, loggedInUserId) => {
   return newGooglePlayPurchase
 }
 
-export {
-  createGooglePlayPurchase,
-  getGooglePlayPurchase,
-  updateGooglePlayPurchase
-}
+export { createGooglePlayPurchase, getGooglePlayPurchase, updateGooglePlayPurchase }

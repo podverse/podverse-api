@@ -74,19 +74,15 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
   */
 
   const getTableRowsWithStatsData = `SELECT id, "${TimeRanges[timeRange]}" FROM "${tableName}s" WHERE "${TimeRanges[timeRange]}">0;`
-  const tableRowsWithStatsData = await getConnection()
-    .createEntityManager()
-    .query(getTableRowsWithStatsData)
+  const tableRowsWithStatsData = await getConnection().createEntityManager().query(getTableRowsWithStatsData)
   console.log('tableRowsWithStatsData length', tableRowsWithStatsData.length)
 
   for (const row of tableRowsWithStatsData) {
     try {
       // Updating the database one at a time to avoid deadlocks
-      // TODO: optimize with bulk updates, and avoid deadlocks! 
+      // TODO: optimize with bulk updates, and avoid deadlocks!
       const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=0 WHERE id='${row.id}';`
-      await getConnection()
-        .createEntityManager()
-        .query(rawSQLUpdate)
+      await getConnection().createEntityManager().query(rawSQLUpdate)
     } catch (err) {
       console.log('tableRowsWithStatsData err', err)
       console.log('tableRowsWithStatsData err row', row)
@@ -106,16 +102,14 @@ const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
         console.log('id too long!', id)
         continue
       }
-  
+
       const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
-  
+
       // Updating the database one at a time to avoid deadlocks
-      // TODO: optimize with bulk updates, and avoid deadlocks! 
+      // TODO: optimize with bulk updates, and avoid deadlocks!
       if (id) {
         const rawSQLUpdate = `UPDATE "${tableName}s" SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors} WHERE id='${id}';`
-        await getConnection()
-          .createEntityManager()
-          .query(rawSQLUpdate)
+        await getConnection().createEntityManager().query(rawSQLUpdate)
       }
     } catch (err) {
       console.log('row err', err)

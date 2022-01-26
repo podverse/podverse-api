@@ -1,9 +1,25 @@
 import { createConnection, ConnectionOptions } from 'typeorm'
 import { config } from '~/config'
-import { AccountClaimToken, AppStorePurchase, Author, BitPayInvoice, Category,
-  Episode, FeedUrl, GooglePlayPurchase,  MediaRef, PayPalOrder, Playlist,
-  Podcast, RecentEpisodeByCategory, RecentEpisodeByPodcast, User,
-  UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
+import {
+  AccountClaimToken,
+  AppStorePurchase,
+  Author,
+  BitPayInvoice,
+  Category,
+  Episode,
+  FeedUrl,
+  GooglePlayPurchase,
+  MediaRef,
+  PayPalOrder,
+  Playlist,
+  Podcast,
+  RecentEpisodeByCategory,
+  RecentEpisodeByPodcast,
+  User,
+  UserHistoryItem,
+  UserNowPlayingItem,
+  UserQueueItem
+} from '~/entities'
 
 const entities = [
   AccountClaimToken,
@@ -45,6 +61,6 @@ const connectionOptions: ConnectionOptions = {
 
 export const connectToDb = () => {
   return createConnection(connectionOptions)
-    .then(connection => connection)
-    .catch(error => console.error(error))
+    .then((connection) => connection)
+    .catch((error) => console.error(error))
 }

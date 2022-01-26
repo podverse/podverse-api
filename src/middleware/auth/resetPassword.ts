@@ -1,12 +1,16 @@
 import { addSeconds } from 'date-fns'
 import { config } from '~/config'
-import { getUserByEmail, getUserByResetPasswordToken,
-  updateUserPassword, updateUserResetPasswordToken} from '~/controllers/user'
+import {
+  getUserByEmail,
+  getUserByResetPasswordToken,
+  updateUserPassword,
+  updateUserResetPasswordToken
+} from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendResetPasswordEmail } from '~/services/auth/sendResetPasswordEmail'
 const uuidv4 = require('uuid/v4')
 
-export const resetPassword = async ctx => {
+export const resetPassword = async (ctx) => {
   const { password, resetPasswordToken } = ctx.request.body
 
   try {
@@ -34,22 +38,22 @@ export const resetPassword = async ctx => {
   }
 }
 
-export const sendResetPassword = async ctx => {
+export const sendResetPassword = async (ctx) => {
   if (process.env.NODE_ENV === 'production') {
     const { email } = ctx.request.body
-  
+
     try {
       const { id, name } = await getUserByEmail(email)
-  
+
       const resetPasswordToken = uuidv4()
       const resetPasswordTokenExpiration = addSeconds(new Date(), config.resetPasswordTokenExpiration)
-  
+
       await updateUserResetPasswordToken({
         id,
         resetPasswordToken,
         resetPasswordTokenExpiration
       })
-  
+
       await sendResetPasswordEmail(email, name, resetPasswordToken)
       ctx.body = { message: 'A reset password email will be sent to this address if it exists in our system.' }
       ctx.status = 200

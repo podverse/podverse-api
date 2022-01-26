@@ -1,12 +1,11 @@
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrlsFromQueue } from '~/services/parser'
 import { config } from '~/config'
-const { awsConfig } = config;
+const { awsConfig } = config
 
-(async function () {
+;(async function () {
   const connectToDbAndRunParser = async () => {
     try {
-
       if (process.argv.length <= 2) {
         console.log('The restartTimeout parameter is required.')
         console.log('Optionally provide a queueOverride parameter.')

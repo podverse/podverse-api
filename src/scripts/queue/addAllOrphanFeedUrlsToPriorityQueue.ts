@@ -1,6 +1,5 @@
 import { addAllOrphanFeedUrlsToPriorityQueue } from '~/services/queue'
-
-(async function () {
+;(async function () {
   try {
     await addAllOrphanFeedUrlsToPriorityQueue()
   } catch (error) {

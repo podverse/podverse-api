@@ -7,7 +7,6 @@ import { User } from '~/entities'
 
 @Entity('appStorePurchase')
 export class AppStorePurchase {
-
   @PrimaryColumn('varchar')
   transactionId: string
 
@@ -78,7 +77,7 @@ export class AppStorePurchase {
 
   // END: Apple Developer responseBody.Receipt.In_app based fields
 
-  @ManyToOne(type => User, user => user.appStorePurchases, {
+  @ManyToOne((type) => User, (user) => user.appStorePurchases, {
     nullable: false,
     onDelete: 'CASCADE'
   })

@@ -1,7 +1,6 @@
 import { removeDeadEpisodes } from '~/controllers/episode'
 import { connectToDb } from '~/lib/db'
-
-(async function () {
+;(async function () {
   try {
     if (process.argv.length < 2) {
       console.log('The restartTimeout parameter is required.')
@@ -15,14 +14,14 @@ import { connectToDb } from '~/lib/db'
     }
 
     await connectToDb()
-    
+
     const removeDeadEpisodesUntilFinished = async () => {
       const shouldContinue = await removeDeadEpisodes()
       if (shouldContinue) {
         await removeDeadEpisodesUntilFinished()
       }
     }
-    
+
     await removeDeadEpisodesUntilFinished()
 
     return

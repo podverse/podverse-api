@@ -1,14 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsInt, Min } from 'class-validator'
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne,
-  OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { Episode, MediaRef } from '~/entities'
 import { User } from './user'
 
 @Entity('userNowPlayingItems')
 export class UserNowPlayingItem {
-
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -17,25 +24,21 @@ export class UserNowPlayingItem {
   @Column({ default: 0 })
   userPlaybackPosition: number
 
-  @ManyToOne(type => Episode, episode => episode.userNowPlayingItems, {
+  @ManyToOne((type) => Episode, (episode) => episode.userNowPlayingItems, {
     onDelete: 'CASCADE'
   })
   episode: Episode
 
-  @ManyToOne(type => MediaRef, mediaRef => mediaRef.userNowPlayingItems, {
+  @ManyToOne((type) => MediaRef, (mediaRef) => mediaRef.userNowPlayingItems, {
     nullable: true,
     onDelete: 'CASCADE'
   })
   mediaRef: MediaRef
 
-  @OneToOne(
-    type => User,
-    user => user.userNowPlayingItem,
-    {
-      nullable: false,
-      onDelete: 'CASCADE'
-    }
-  )
+  @OneToOne((type) => User, (user) => user.userNowPlayingItem, {
+    nullable: false,
+    onDelete: 'CASCADE'
+  })
   @JoinColumn()
   owner: User
 
@@ -44,5 +47,4 @@ export class UserNowPlayingItem {
 
   @UpdateDateColumn()
   updatedAt: Date
-
 }

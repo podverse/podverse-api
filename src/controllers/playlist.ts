@@ -36,10 +36,13 @@ const deletePlaylist = async (id, loggedInUserId) => {
   return result
 }
 
-const getPlaylist = async id => {
+const getPlaylist = async (id) => {
   const relations = [
-    'episodes', 'episodes.podcast',
-    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'episodes',
+    'episodes.podcast',
+    'mediaRefs',
+    'mediaRefs.episode',
+    'mediaRefs.episode.podcast',
     'owner'
   ]
   const repository = getRepository(Playlist)
@@ -95,8 +98,11 @@ const getPlaylists = async (query) => {
 
 const updatePlaylist = async (obj, loggedInUserId) => {
   const relations = [
-    'episodes', 'episodes.podcast',
-    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'episodes',
+    'episodes.podcast',
+    'mediaRefs',
+    'mediaRefs.episode',
+    'mediaRefs.episode.podcast',
     'owner'
   ]
   const repository = getRepository(Playlist)
@@ -127,19 +133,20 @@ const updatePlaylist = async (obj, loggedInUserId) => {
 
 const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, loggedInUserId) => {
   const relations = [
-    'episodes', 'episodes.podcast',
-    'mediaRefs', 'mediaRefs.episode', 'mediaRefs.episode.podcast',
+    'episodes',
+    'episodes.podcast',
+    'mediaRefs',
+    'mediaRefs.episode',
+    'mediaRefs.episode.podcast',
     'owner'
   ]
   const repository = getRepository(Playlist)
-  const playlist = await repository.findOne(
-    {
-      where: {
-        id: playlistId
-      },
-      relations
-    }
-  )
+  const playlist = await repository.findOne({
+    where: {
+      id: playlistId
+    },
+    relations
+  })
 
   if (!playlist) {
     throw new createError.NotFound('Playlist not found')
@@ -155,7 +162,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
   if (mediaRefId) {
     // If no mediaRefs match filter, add the playlist item.
     // Else, remove the playlist item.
-    const filteredMediaRefs = playlist.mediaRefs.filter(x => x.id !== mediaRefId)
+    const filteredMediaRefs = playlist.mediaRefs.filter((x) => x.id !== mediaRefId)
 
     if (filteredMediaRefs.length === playlist.mediaRefs.length) {
       const mediaRefRepository = getRepository(MediaRef)
@@ -170,11 +177,11 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
       playlist.mediaRefs = filteredMediaRefs
     }
 
-    playlist.itemsOrder = itemsOrder.filter(x => x !== mediaRefId)
+    playlist.itemsOrder = itemsOrder.filter((x) => x !== mediaRefId)
   } else if (episodeId) {
     // If no episodes match filter, add the playlist item.
     // Else, remove the playlist item.
-    const filteredEpisodes = playlist.episodes.filter(x => x.id !== episodeId)
+    const filteredEpisodes = playlist.episodes.filter((x) => x.id !== episodeId)
 
     if (filteredEpisodes.length === playlist.episodes.length) {
       const episodeRepository = getRepository(Episode)
@@ -189,7 +196,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
       playlist.episodes = filteredEpisodes
     }
 
-    playlist.itemsOrder = itemsOrder.filter(x => x !== episodeId)
+    playlist.itemsOrder = itemsOrder.filter((x) => x !== episodeId)
   } else {
     throw new createError.NotFound('Must provide a MediaRef or Episode id')
   }
@@ -202,7 +209,6 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
 }
 
 const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
-
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to subscribe to this playlist')
   }
@@ -214,17 +220,12 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
   }
 
   const repository = getRepository(User)
-  const user = await repository.findOne(
-    {
-      where: {
-        id: loggedInUserId
-      },
-      select: [
-        'id',
-        'subscribedPlaylistIds'
-      ]
-    }
-  )
+  const user = await repository.findOne({
+    where: {
+      id: loggedInUserId
+    },
+    select: ['id', 'subscribedPlaylistIds']
+  })
 
   if (!user) {
     throw new createError.NotFound('User not found')
@@ -234,7 +235,7 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
 
   // If no playlistIds match the filter, add the playlistId.
   // Else, remove the playlistId.
-  const filteredPlaylists = user.subscribedPlaylistIds.filter(x => x !== playlistId)
+  const filteredPlaylists = user.subscribedPlaylistIds.filter((x) => x !== playlistId)
   if (filteredPlaylists.length === user.subscribedPlaylistIds.length) {
     subscribedPlaylistIds.push(playlistId)
   } else {

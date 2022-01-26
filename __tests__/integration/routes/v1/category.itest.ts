@@ -5,13 +5,13 @@ const { expect: chaiExpect } = chai
 chai.use(chaiHttp)
 
 describe('_category endpoints', () => {
-
   describe('get by id', () => {
     test('when a valid parent category id is provided', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/category/oqttP672MM`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
           chaiExpect(res.body.id).to.equal('oqttP672MM')
           chaiExpect(res.body.fullPath).to.equal('Health & Fitness')
           chaiExpect(res.body.slug).to.equal('healthfitness')
@@ -63,17 +63,16 @@ describe('_category endpoints', () => {
 
           chaiExpect(Object.keys(res.body).length).to.equal(9)
 
-
           done()
         })
-
     })
 
     test('when a valid child category id is provided', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/category/HOg7j7SXhk`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(200);
+          chaiExpect(res).to.have.status(200)
           chaiExpect(res.body.id).to.equal('HOg7j7SXhk')
           chaiExpect(res.body.fullPath).to.equal('Health & Fitness>Alternative Health')
           chaiExpect(res.body.slug).to.equal('alternativehealth')
@@ -98,10 +97,11 @@ describe('_category endpoints', () => {
         })
     })
     test('when an invalid id is provided', async (done) => {
-      chai.request(global.app)
+      chai
+        .request(global.app)
         .get(`${v1Path}/category/2ELHNasdnfE9Y`)
         .end((err, res) => {
-          chaiExpect(res).to.have.status(404);
+          chaiExpect(res).to.have.status(404)
           chaiExpect(res.body.message).to.equal('Category not found')
           chaiExpect(Object.keys(res.body).length).to.equal(1)
 

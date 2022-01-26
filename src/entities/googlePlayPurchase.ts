@@ -7,7 +7,6 @@ import { User } from '~/entities'
 
 @Entity('googlePlayPurchase')
 export class GooglePlayPurchase {
-
   @PrimaryColumn('varchar')
   transactionId: string
 
@@ -35,7 +34,7 @@ export class GooglePlayPurchase {
   @Column({ unique: true })
   purchaseToken: string
 
-  @ManyToOne(type => User, user => user.googlePlayPurchases, {
+  @ManyToOne((type) => User, (user) => user.googlePlayPurchases, {
     nullable: false,
     onDelete: 'CASCADE'
   })

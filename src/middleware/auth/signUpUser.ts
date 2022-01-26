@@ -23,7 +23,6 @@ export const validEmail = async (ctx, next) => {
 }
 
 export const emailNotExists = async (ctx, next) => {
-
   if (await emailExists(ctx.db, ctx.request.body.email)) {
     emitRouterError(new CustomStatusError('Email is already signed up.').BadRequest(), ctx)
     return
@@ -33,7 +32,6 @@ export const emailNotExists = async (ctx, next) => {
 }
 
 export const signUpUser = async (ctx, next) => {
-
   const emailVerificationExpiration = addSeconds(new Date(), config.emailVerificationTokenExpiration)
   const freeTrialExpiration = addSeconds(new Date(), config.freeTrialExpiration)
   const emailVerificationToken = uuidv4()

@@ -1,7 +1,15 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { findPodcastsByFeedUrls, getMetadata, getPodcast, getPodcastByPodcastIndexId, getPodcasts, getPodcastsFromSearchEngine,
-  getSubscribedPodcasts, toggleSubscribeToPodcast } from '~/controllers/podcast'
+import {
+  findPodcastsByFeedUrls,
+  getMetadata,
+  getPodcast,
+  getPodcastByPodcastIndexId,
+  getPodcasts,
+  getPodcastsFromSearchEngine,
+  getSubscribedPodcasts,
+  toggleSubscribeToPodcast
+} from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
@@ -17,11 +25,12 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/pod
 const delimitKeys = ['authors', 'categories', 'episodes', 'feedUrls']
 
 // Get only the podcasts most recent metadata to determine if new episodes are available
-router.get('/metadata',
+router.get(
+  '/metadata',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
       const podcasts = await getMetadata(ctx.state.query)
@@ -30,14 +39,16 @@ router.get('/metadata',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Search
-router.get('/',
+router.get(
+  '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   parseNSFWHeader,
-  async ctx => {
+  async (ctx) => {
     try {
       const { query = {} } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -53,14 +64,16 @@ router.get('/',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Search Subscribed Podcasts
-router.get('/subscribed',
+router.get(
+  '/subscribed',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
   jwtAuth,
-  async ctx => {
+  async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
 
@@ -73,82 +86,71 @@ router.get('/subscribed',
     } catch (error) {
       emitRouterError(error, ctx)
     }
-  })
+  }
+)
 
 // Get by Podcast Index ID
-router.get('/podcastindex/data/:id',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
-      ctx.body = podcast
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/podcastindex/data/:id', parseNSFWHeader, async (ctx) => {
+  try {
+    const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
+    ctx.body = podcast
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Redirect to Podcast web page by Podcast Index ID
-router.get('/podcastindex/:id',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
+router.get('/podcastindex/:id', parseNSFWHeader, async (ctx) => {
+  try {
+    const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
 
-      if (podcast.id) {
-        ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
-      } else {
-        ctx.status = 404
-      }
-    } catch (error) {
-      emitRouterError(error, ctx)
+    if (podcast.id) {
+      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+    } else {
+      ctx.status = 404
     }
-  })
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Get
-router.get('/:id',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const podcast = await getPodcast(ctx.params.id)
+router.get('/:id', parseNSFWHeader, async (ctx) => {
+  try {
+    const podcast = await getPodcast(ctx.params.id)
 
-      ctx.body = podcast
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+    ctx.body = podcast
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Find Podcasts by FeedUrls
-router.post('/find-by-feed-urls',
-  parseNSFWHeader,
-  async ctx => {
-    try {
-      const body: any = ctx.request.body
-      const results = await findPodcastsByFeedUrls(body.feedUrls)
-      ctx.body = results
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.post('/find-by-feed-urls', parseNSFWHeader, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const results = await findPodcastsByFeedUrls(body.feedUrls)
+    ctx.body = results
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 // Toggle subscribe to podcast
 const toggleSubscribeLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
-  max:  rateLimiterMaxOverride || 15,
+  max: rateLimiterMaxOverride || 15,
   message: `You're doing that too much. Please try again in a minute.`,
   prefixKey: 'get/toggle-subscribe'
 })
 
-router.get('/toggle-subscribe/:id',
-  toggleSubscribeLimiter,
-  jwtAuth,
-  hasValidMembership,
-  async ctx => {
-    try {
-      const subscribedPodcastIds = await toggleSubscribeToPodcast(ctx.params.id, ctx.state.user.id)
-      ctx.body = subscribedPodcastIds
-    } catch (error) {
-      emitRouterError(error, ctx)
-    }
-  })
+router.get('/toggle-subscribe/:id', toggleSubscribeLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const subscribedPodcastIds = await toggleSubscribeToPodcast(ctx.params.id, ctx.state.user.id)
+    ctx.body = subscribedPodcastIds
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
 
 export const podcastRouter = router
