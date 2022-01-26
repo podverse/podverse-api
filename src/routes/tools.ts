@@ -32,7 +32,14 @@ const extractHTTPSFromURL = async (url, tries) => {
       if (url.startsWith('https://')) {
         return url
       } else {
-        throw new createError.NotFound('Secure URL for ' + url + ' was not found.')
+        try {
+          const attemptHttpsUrl = url.replace('http://', 'https://')
+          // If no error is thrown,then assume it is a valid url.
+          await request(attemptHttpsUrl, { followRedirect: false, method: 'head' })
+          return attemptHttpsUrl
+        } catch (error) {
+          throw new createError.NotFound('Secure URL for ' + url + ' was not found.')
+        }
       }
     } else {
       return extractHTTPSFromURL(res.location, tries + 1)
