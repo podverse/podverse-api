@@ -233,11 +233,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     const episodeRepo = getRepository(Episode)
     logPerformance('episodeRepo.save updatedSavedEpisodes', updatedSavedEpisodes.length, _logStart)
-    await episodeRepo.save(updatedSavedEpisodes, { chunk: 1 })
+    await episodeRepo.save(updatedSavedEpisodes, { chunk: 400 })
     logPerformance('episodeRepo.save updatedSavedEpisodes', _logEnd)
 
     logPerformance('episodeRepo.save newEpisodes', newEpisodes.length, _logStart)
-    await episodeRepo.save(newEpisodes, { chunk: 1 })
+    await episodeRepo.save(newEpisodes, { chunk: 400 })
     logPerformance('episodeRepo.save newEpisodes', _logEnd)
 
     const feedUrlRepo = getRepository(FeedUrl)
@@ -660,7 +660,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       x.isPublic = false
       return x
     })
-    await episodeRepo.save(updatedEpisodesToHide, { chunk: 1 })
+    await episodeRepo.save(updatedEpisodesToHide, { chunk: 400 })
   }
 
   const nonPublicEpisodes = [] as any
