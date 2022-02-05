@@ -15,9 +15,20 @@ import { shrinkImage } from './imageShrinker'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
+/* If the script takes over 3 minutes then throw an error to cancel. */
+let parserCancelTimeout: any = null
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
+
+  if (parserCancelTimeout) {
+    clearTimeout(parserCancelTimeout)
+  }
+
+  parserCancelTimeout = setTimeout(() => {
+    throw new Error('parseFeedUrl timeout exceeded.')
+  }, 180000)
 
   try {
     logPerformance('podcastFetchAndParse', _logStart)
@@ -273,7 +284,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
+
+    if (parserCancelTimeout) {
+      clearTimeout(parserCancelTimeout)
+    }
   } catch (error) {
+    if (parserCancelTimeout) {
+      clearTimeout(parserCancelTimeout)
+    }
     throw error
   }
 }
