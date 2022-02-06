@@ -302,88 +302,92 @@ const retrieveLatestChapters = async (id) => {
   if (!episode) throw new Error('Episode not found')
   const { chaptersUrl, chaptersUrlLastParsed } = episode
 
-  // Update the latest chapters only once every 1 hour for an episode.
-  // If less than 1 hours, then just return the latest chapters from the database.
-  const halfDay = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
-  const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
+  /* Run chapters update logic in the background, since it can take 30+ seconds to iterate through. */
+  ;(async function () {
+    // Update the latest chapters only once every 1 hour for an episode.
+    // If less than 1 hours, then just return the latest chapters from the database.
+    const halfDay = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
+    const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
 
-  if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
-    try {
-      await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
-      const response = await request(chaptersUrl)
-      const trimmedResponse = (response && response.trim()) || {}
-      const parsedResponse = JSON.parse(trimmedResponse)
-      const { chapters: newChapters } = parsedResponse
+    if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
+      try {
+        await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
+        const response = await request(chaptersUrl)
+        const trimmedResponse = (response && response.trim()) || {}
+        const parsedResponse = JSON.parse(trimmedResponse)
+        const { chapters: newChapters } = parsedResponse
 
-      if (newChapters) {
-        const qb = mediaRefRepository
-          .createQueryBuilder('mediaRef')
-          .select('mediaRef.id', 'id')
-          .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
-          .addSelect('mediaRef.startTime', 'startTime')
-          .where({
-            isOfficialChapter: true,
-            episode: episode.id
+        if (newChapters) {
+          const qb = mediaRefRepository
+            .createQueryBuilder('mediaRef')
+            .select('mediaRef.id', 'id')
+            .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
+            .addSelect('mediaRef.startTime', 'startTime')
+            .where({
+              isOfficialChapter: true,
+              episode: episode.id,
+              isPublic: true
+            })
+          const existingChapters = await qb.getRawMany()
+
+          // If existing chapter with current chapter's startTime does not exist,
+          // then set the existingChapter to isPublic = false.
+          const deadChapters = existingChapters.filter((x) => {
+            return newChapters.every((y) => y.startTime !== x.startTime)
           })
-        const existingChapters = await qb.getRawMany()
 
-        // If existing chapter with current chapter's startTime does not exist,
-        // then set the existingChapter to isPublic = false.
-        const deadChapters = existingChapters.filter((x) => {
-          return newChapters.every((y) => y.startTime !== x.startTime)
-        })
+          for (const deadChapter of deadChapters) {
+            await updateMediaRef(
+              {
+                ...deadChapter,
+                isPublic: false
+              },
+              superUserId
+            )
+          }
 
-        for (const deadChapter of deadChapters) {
-          await updateMediaRef(
-            {
-              ...deadChapter,
-              isPublic: false
-            },
-            superUserId
-          )
-        }
-
-        for (const newChapter of newChapters) {
-          try {
-            const startTime = Math.round(newChapter.startTime)
-            // If a chapter with that startTime already exists, then update it.
-            // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
-            const existingChapter = existingChapters.find((x) => x.startTime === startTime)
-            if (existingChapter && existingChapter.id) {
-              await updateMediaRef(
-                {
-                  id: existingChapter.id,
+          for (const newChapter of newChapters) {
+            try {
+              const startTime = Math.round(newChapter.startTime)
+              // If a chapter with that startTime already exists, then update it.
+              // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
+              const existingChapter = existingChapters.find((x) => x.startTime === startTime)
+              if (existingChapter && existingChapter.id) {
+                await updateMediaRef(
+                  {
+                    id: existingChapter.id,
+                    imageUrl: newChapter.img || null,
+                    isOfficialChapter: true,
+                    isPublic: true,
+                    linkUrl: newChapter.url || null,
+                    startTime,
+                    title: newChapter.title,
+                    episodeId: id
+                  },
+                  superUserId
+                )
+              } else {
+                await createMediaRef({
                   imageUrl: newChapter.img || null,
                   isOfficialChapter: true,
                   isPublic: true,
                   linkUrl: newChapter.url || null,
                   startTime,
                   title: newChapter.title,
+                  owner: superUserId,
                   episodeId: id
-                },
-                superUserId
-              )
-            } else {
-              await createMediaRef({
-                imageUrl: newChapter.img || null,
-                isOfficialChapter: true,
-                isPublic: true,
-                linkUrl: newChapter.url || null,
-                startTime,
-                title: newChapter.title,
-                owner: superUserId,
-                episodeId: id
-              })
+                })
+              }
+            } catch (error) {
+              console.log('retrieveLatestChapters newChapter', error)
             }
-          } catch (error) {
-            console.log('retrieveLatestChapters newChapter', error)
           }
         }
+      } catch (error) {
+        console.log('retrieveLatestChapters request', error)
       }
-    } catch (error) {
-      console.log('retrieveLatestChapters request', error)
     }
-  }
+  })()
 
   const officialChaptersForEpisode = await mediaRefRepository
     .createQueryBuilder('mediaRef')
@@ -396,7 +400,8 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.title')
     .where({
       isOfficialChapter: true,
-      episode: id
+      episode: id,
+      isPublic: true
     })
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
