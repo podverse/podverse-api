@@ -13,7 +13,7 @@ import {
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
-import { getThreadCap } from '~/services/socialInteraction/activityPub'
+import { getThreadcap } from '~/services/socialInteraction/activityPub'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
@@ -81,7 +81,7 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
       throw new Error('No activityPub url found for episode.')
     }
 
-    const body = await getThreadCap(activityPub.url)
+    const body = await getThreadcap(activityPub.url)
     ctx.body = body
   } catch (error) {
     emitRouterError(error, ctx)

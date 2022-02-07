@@ -5,7 +5,7 @@ const { userAgent } = config
 const cache = new InMemoryCache()
 const fetcher = makeRateLimitedFetcher(_fetch)
 
-export const getThreadCap = async (url: string) => {
+export const getThreadcap = async (url: string) => {
   // initialize the threadcap
   const threadcap = await makeThreadcap(url, {
     userAgent,
