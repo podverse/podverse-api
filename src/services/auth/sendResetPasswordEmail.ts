@@ -13,6 +13,11 @@ export const sendResetPasswordEmail = async (email, name, token): Promise<void> 
     return Promise.resolve()
   }
 
+  if (!config.mailerHost) {
+    loggerInstance.error('Mailer host is not configured, password reset email will be skipped')
+    return Promise.resolve()
+  }
+
   const transporter = createTransporter()
   const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
 

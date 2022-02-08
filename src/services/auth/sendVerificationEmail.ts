@@ -12,6 +12,11 @@ export const sendVerificationEmail = async (email, name, token): Promise<void> =
     return Promise.resolve()
   }
 
+  if (!config.mailerHost) {
+    loggerInstance.error('Mailer host is not configured, verification email will be skipped')
+    return Promise.resolve()
+  }
+
   const transporter = createTransporter()
 
   const emailFields = {
