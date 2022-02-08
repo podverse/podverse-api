@@ -49,6 +49,7 @@ const rootRouter = new Router()
 const timeAppStarted = Date.now()
 
 export const createApp = async (conn: Connection) => {
+  loggerInstance.debug('Creating new Koa App')
   const app = new Koa()
 
   /* If in maintenance mode, always return 503 ServiceUnavailable error */
