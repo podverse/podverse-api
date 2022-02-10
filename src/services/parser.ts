@@ -35,7 +35,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     logPerformance('podcastFetchAndParse', _logStart)
     const xml = await _fetch(feedUrl.url, {
       headers: { 'User-Agent': userAgent },
-      size: 2500000
+      follow: 5,
+      size: 25000000
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml)
     logPerformance('podcastFetchAndParse', _logEnd)
