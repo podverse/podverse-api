@@ -44,6 +44,7 @@ export interface Config {
   mailerUsername: string
   mailerPassword: string
   mailerFrom: string
+  mailerDisabled: boolean
   appStoreConfig: any
   awsConfig: any
   bitpayConfig: any
@@ -156,6 +157,8 @@ const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 
 const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
 
+const parseBoolean = (value = ''): boolean => ['1', 'true'].includes(value.toLowerCase())
+
 const config: Config = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
@@ -197,7 +200,8 @@ const config: Config = {
   mailerPort: parseInt(mailerPort, 10),
   mailerUsername: process.env.MAILER_USERNAME || '',
   mailerPassword: process.env.MAILER_PASSWORD || '',
-  mailerFrom: process.env.MAILER_FROM || '',
+  mailerFrom: process.env.MAILER_FROM || 'dev@podverse.fm',
+  mailerDisabled: parseBoolean(process.env.MAILER_DISABLED),
   appStoreConfig,
   awsConfig,
   bitpayConfig,
