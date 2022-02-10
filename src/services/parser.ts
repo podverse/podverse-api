@@ -27,13 +27,16 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   }
 
   parserCancelTimeout = setTimeout(() => {
+    logPerformance('parseFeedUrl setTimeout exceeded!', _logStart)
     throw new Error('parseFeedUrl timeout exceeded.')
   }, 180000)
 
   try {
     logPerformance('podcastFetchAndParse', _logStart)
     const xml = await _fetch(feedUrl.url, {
-      headers: { 'User-Agent': userAgent }
+      headers: { 'User-Agent': userAgent },
+      follow: 5,
+      size: 25000000
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml)
     logPerformance('podcastFetchAndParse', _logEnd)

@@ -1,32 +1,43 @@
 import { config } from '~/config'
 import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
+import { loggerInstance } from '~/lib/logging'
 const createError = require('http-errors')
 
 const { mailerFrom } = config
 
-export const sendVerificationEmail = async (email, name, token) => {
-  if (process.env.NODE_ENV === 'production') {
-    const transporter = createTransporter()
+export const sendVerificationEmail = async (email, name, token): Promise<void> => {
+  if (config.mailerDisabled) {
+    loggerInstance.debug('Mailer has been disabled, verification email will be skipped')
+    return Promise.resolve()
+  }
 
-    const emailFields = {
-      buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
-      buttonText: 'Verify Email',
-      closing: '',
-      headerText: 'Verify your email',
-      paragraphText: 'Please click the button below to finish verification.',
-      unsubscribeLink: ''
-    }
+  if (!config.mailerHost) {
+    loggerInstance.error('Mailer host is not configured, verification email will be skipped')
+    return Promise.resolve()
+  }
 
-    try {
-      await transporter.sendMail({
-        from: `Podverse <${mailerFrom}>`,
-        to: email,
-        subject: 'Verify your email address with Podverse',
-        html: emailTemplate(emailFields)
-      })
-    } catch (error) {
-      throw new createError.InternalServerError(error)
-    }
+  const transporter = createTransporter()
+
+  const emailFields = {
+    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
+    buttonText: 'Verify Email',
+    closing: '',
+    headerText: 'Verify your email',
+    paragraphText: 'Please click the button below to finish verification.',
+    unsubscribeLink: ''
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `Podverse <${mailerFrom}>`,
+      to: email,
+      subject: 'Verify your email address with Podverse',
+      html: emailTemplate(emailFields),
+      text: `Verify your email by visiting the following: ${emailFields.buttonLink}`
+    })
+  } catch (error) {
+    loggerInstance.error(error)
+    throw new createError.InternalServerError(error)
   }
 }

@@ -20,6 +20,7 @@ import {
   UserNowPlayingItem,
   UserQueueItem
 } from '~/entities'
+import { loggerInstance } from './logging'
 
 const entities = [
   AccountClaimToken,
@@ -60,7 +61,6 @@ const connectionOptions: ConnectionOptions = {
 }
 
 export const connectToDb = () => {
+  loggerInstance.debug(`Connecting to the database`)
   return createConnection(connectionOptions)
-    .then((connection) => connection)
-    .catch((error) => console.error(error))
 }
