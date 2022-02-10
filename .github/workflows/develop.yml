@@ -30,7 +30,7 @@ jobs:
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           source ~/pgpassword.sh
-          nvm use 12.18.3
+          nvm use 16.13.1
           cd podverse-ops
           git pull
           cd ..
