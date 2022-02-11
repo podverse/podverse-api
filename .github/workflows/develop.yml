@@ -36,7 +36,7 @@ jobs:
           cd ..
           docker stop podverse_api_stage
           docker rm podverse_api_stage
-          docker image rm podverse/podverse_api:stage
+          docker rmi -f podverse/podverse_api:stage
           docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml up -d podverse_api
           sleep 120
           cd podverse-api
