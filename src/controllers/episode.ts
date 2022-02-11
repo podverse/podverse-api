@@ -19,10 +19,8 @@ const getEpisode = async (id) => {
     { relations }
   )
 
-  if (!episode) {
+  if (!episode || !episode.podcast.isPublic) {
     throw new createError.NotFound('Episode not found')
-  } else if (!episode.podcast.isPublic) {
-    return null
   } else if (!episode.isPublic) {
     // If a public version of the episode isn't available, check if a newer public version
     // of the episode is available and return that. Don't return the non-public version
