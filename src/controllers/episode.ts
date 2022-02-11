@@ -35,7 +35,11 @@ const getEpisode = async (id) => {
       { relations }
     )
 
-    if (publicEpisode) return publicEpisode
+    if (publicEpisode) {
+      return publicEpisode
+    } else {
+      return null
+    }
   }
 
   return episode
