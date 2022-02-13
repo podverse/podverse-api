@@ -5,6 +5,7 @@ import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl } from '~/controll
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
+import { request } from '~/lib/request'
 import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import { Podcast } from '~/entities'
 const shortid = require('shortid')
@@ -368,35 +369,51 @@ const getExistingPodcast = async (client, podcastIndexId) => {
   return podcasts[0]
 }
 
-const getDeadPodcasts = async () => {
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/dead`
-  console.log('url------------', url)
-  const response = await axiosRequest(url)
-
-  return response && response.data
-}
-
 export const hideDeadPodcasts = async () => {
-  const { feeds } = await getDeadPodcasts()
-  console.log('hideDeadPodcasts feeds', feeds.length)
-
-  for (const feed of feeds) {
-    try {
-      if (feed && feed.id) {
-        const podcast = await getPodcastByPodcastIndexId(feed.id)
-        if (podcast.isPublic) {
-          console.log('isPublic podcast title', podcast.title)
-          const repository = getRepository(Podcast)
-          podcast.isPublic = false
-          await new Promise((resolve) => setTimeout(resolve, 250))
-          await repository.save(podcast)
-        }
-      }
-    } catch (error) {
-      console.log('error podcast title: ', feed.title)
-      console.log('error podcast index id: ', feed.id)
-      console.log('error message: ', error.message)
+  console.log('hideDeadPodcasts')
+  const url = 'https://public.podcastindex.org/podcastindex_dead_feeds.csv'
+  const response = await request(url, {
+    headers: {
+      'Content-Type': 'text/csv'
     }
-    await new Promise((resolve) => setTimeout(resolve, 50))
+  })
+
+  try {
+    await csv({ noheader: true })
+      .fromString(response)
+      .subscribe((json) => {
+        return new Promise(async (resolve) => {
+          await new Promise((r) => setTimeout(r, 5))
+          try {
+            if (json?.field1) {
+              try {
+                const podcast = await getPodcastByPodcastIndexId(json.field1)
+                if (podcast.isPublic) {
+                  const repository = getRepository(Podcast)
+                  podcast.isPublic = false
+                  await new Promise((resolve) => setTimeout(resolve, 250))
+                  await repository.save(podcast)
+                  console.log('feed hidden successfully!', json.field1, json.field2)
+                }
+              } catch (error) {
+                if (error.message.indexOf('not found') === -1) {
+                  console.log('error hiding podcast json', json)
+                  console.log('error hiding podcast json error message:', error)
+                } else {
+                  console.log('feed already hidden', json.field1, json.field2)
+                }
+              }
+            }
+          } catch (error) {
+            console.log('podcastIndex:hideDeadPodcasts subscribe error', error)
+          }
+
+          resolve()
+        })
+      })
+  } catch (error) {
+    console.log('podcastIndex:hideDeadPodcasts', error)
   }
+
+  console.log('hideDeadPodcasts finished')
 }
