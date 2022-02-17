@@ -13,6 +13,7 @@ const createError = require('http-errors')
 
 const addYearsToUserMembershipExpiration = async (id: string, years: number) => {
   const user = await getUser(id)
+  const cleanedUser = {}
   if (user) {
     const { freeTrialExpiration } = user
     let { membershipExpiration } = user
@@ -36,7 +37,13 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
     user.membershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
 
     const repository = getRepository(User)
-    await repository.update(user.id, user)
+
+    const cleanedObj = {
+      freeTrialExpiration,
+      membershipExpiration
+    }
+
+    await repository.update(user.id, cleanedObj)
 
     return {
       id: user.id,

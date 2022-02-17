@@ -391,7 +391,7 @@ export const hideDeadPodcasts = async () => {
                 if (podcast.isPublic) {
                   const repository = getRepository(Podcast)
                   podcast.isPublic = false
-                  await new Promise((resolve) => setTimeout(resolve, 250))
+                  await new Promise((resolve) => setTimeout(resolve, 100))
                   await repository.save(podcast)
                   console.log('feed hidden successfully!', json.field1, json.field2)
                 }
