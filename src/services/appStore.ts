@@ -81,7 +81,8 @@ export const verifyAppStorePurchaseByReceipt = async (transactionReceipt: string
       console.log(
         `This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.`
       )
-      const response = await verifyAppStorePurchaseByReceiptRequest(transactionReceipt, false)
+      const isProd = false
+      const response = await verifyAppStorePurchaseByReceiptRequest(transactionReceipt, isProd)
       return response.receipt
     }
 

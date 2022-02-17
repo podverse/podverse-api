@@ -34,14 +34,14 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
     // @ts-ignore
     user.freeTrialExpiration = null
     const yearsInMilliseconds = years * 365 * 24 * 60 * 60 * 1000
-    user.membershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
 
     const repository = getRepository(User)
+    const newMembershipExpiration = new Date(membershipExpiration.getTime() + yearsInMilliseconds)
 
     const cleanedObj = {
-      freeTrialExpiration,
-      membershipExpiration
-    }
+      freeTrialExpiration: null,
+      membershipExpiration: newMembershipExpiration
+    } as any // Why won't typescript accept freeTrialExpiration null?
 
     await repository.update(user.id, cleanedObj)
 
