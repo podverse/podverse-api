@@ -13,7 +13,7 @@ const createError = require('http-errors')
 
 const addYearsToUserMembershipExpiration = async (id: string, years: number) => {
   const user = await getUser(id)
-  const cleanedUser = {}
+
   if (user) {
     const { freeTrialExpiration } = user
     let { membershipExpiration } = user
