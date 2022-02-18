@@ -18,6 +18,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
+import { EpisodeAlternateEnclosure } from './episodeAlternateEnclosure'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
@@ -169,6 +170,9 @@ export class Episode {
   @ManyToMany((type) => Category)
   @JoinTable()
   categories: Category[]
+
+  @OneToMany((type) => EpisodeAlternateEnclosure, (episodeAlternateEnclosure) => episodeAlternateEnclosure.episode)
+  episodeAlternateEnclosures: EpisodeAlternateEnclosure[]
 
   @OneToMany((type) => MediaRef, (mediaRef) => mediaRef.episode)
   mediaRefs: MediaRef[]
