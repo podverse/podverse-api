@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
+import { EpisodeAlternateEnclosure, Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
 import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
 import {
   BeforeInsert,
@@ -38,6 +38,9 @@ export class Episode {
   // @Column()
   // @Generated('increment')
   // int_id: number
+
+  @Column('simple-json', { nullable: true })
+  alternateEnclosures: EpisodeAlternateEnclosure[]
 
   @Column({ nullable: true })
   chaptersType?: string

@@ -73,6 +73,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
+    .addSelect('episode.alternateEnclosures')
     .addSelect('episode.chaptersUrl')
     .addSelect('episode.credentialsRequired')
     .addSelect('episode.description')
