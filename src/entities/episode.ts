@@ -18,6 +18,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
+import { EpisodeContentLinks } from 'podverse-shared/dist/Episode'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
@@ -53,6 +54,9 @@ export class Episode {
   @Column({ nullable: true })
   chaptersUrlLastParsed: Date
 
+  @Column('simple-json', { nullable: true })
+  contentLinks: EpisodeContentLinks[]
+
   @Column({ default: false })
   credentialsRequired?: boolean
 
@@ -82,6 +86,9 @@ export class Episode {
 
   @Column({ default: false })
   isExplicit: boolean
+
+  @Column({ default: false })
+  isLiveItem: boolean
 
   @Index()
   @Column({ default: false })
