@@ -18,3 +18,14 @@ CREATE TABLE IF NOT EXISTS "episodeAlternateEnclosure" (
 );
 
 -- WORK IN PROGRESS
+
+CREATE TABLE IF NOT EXISTS "episodeAlternateEnclosureSource" (
+  "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  "priority" integer NOT NULL,
+  "type" varchar NOT NULL,
+  "uri" varchar NOT NULL,
+  "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+  "updatedAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+-- WORK IN PROGRESS
