@@ -6,17 +6,47 @@ import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
-import { Author, Category, Episode, FeedUrl, Podcast } from '~/entities'
+import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
 import type { Value } from '~/entities/podcast'
 import { _logEnd, _logStart, convertToSlug, convertToSortableTitle, isValidDate, logPerformance } from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
+import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
 /* If the script takes over 3 minutes then throw an error to cancel. */
 let parserCancelTimeout: any = null
+
+type ParsedEpisode = {
+  alternateEnclosures: any[]
+  author: any[]
+  chapters?: any
+  contentLinks: any[]
+  description?: string
+  duration?: any
+  enclosure: any
+  explicit: boolean
+  // funding: any[]
+  guid?: string
+  imageURL?: string
+  link?: string
+  liveItemEnd?: Date | null
+  liveItemStart?: Date
+  liveItemStatus?: 'pending' | 'live' | 'ended'
+  pubDate: any
+  socialInteraction: any[]
+  soundbite: any[]
+  summary?: string
+  title?: string
+  transcript: any[]
+  value: any[]
+}
+
+interface ExtendedEpisode extends Episode {
+  soundbite: any[]
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
@@ -84,6 +114,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
+        liveItems: feed.podcastLiveItems ?? [],
         medium: feed.medium ?? Phase4Medium.Podcast,
         owner: feed.owner,
         pubDate: feed.pubDate,
@@ -91,8 +122,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         summary: feed.summary,
         title: feed.title,
         type: feed.itunesType,
-        value: feed.value ? [valueCompat(feed.value)] : [],
-        liveItems: feed.podcastLiveItems ?? []
+        value: feed.value ? [valueCompat(feed.value)] : []
       }
     }
 
@@ -102,11 +132,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         alternateEnclosures: episode.alternativeEnclosures ?? [],
         author: [episode.author],
         chapters: episode.podcastChapters,
-        // contentLinks: episode.contentLinks ?? [],
+        contentLinks: [],
         description: episode.description,
         duration: episode.duration,
         enclosure: episode.enclosure,
         explicit: episode.explicit,
+        // funding: Array.isArray(episode.podcastFunding) ? episode.podcastFunding?.map((f) => fundingCompat(f)) : [],
         guid: episode.guid,
         imageURL: episode.image,
         link: episode.link,
@@ -117,11 +148,43 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         title: episode.title,
         transcript: episode.podcastTranscripts ?? [],
         value: episode.value ? [valueCompat(episode.value)] : []
-      }
+      } as ParsedEpisode
+    }
+
+    const liveItemCompatToParsedEpisode = (liveItem: Phase4PodcastLiveItem) => {
+      return {
+        alternateEnclosures: liveItem.alternativeEnclosures ?? [],
+        author: [liveItem.author],
+        chapters: null,
+        contentLinks: liveItem.contentLinks ?? [],
+        description: liveItem.description,
+        duration: 0,
+        enclosure: {
+          url: 'http://listen.noagendastream.com/noagenda',
+          type: 'audio/mpeg'
+        }, // liveItem.enclosure,
+        explicit: false, // liveItem.explicit,
+        guid: liveItem.guid,
+        imageURL: 'https://avatars.githubusercontent.com/u/11860029?s=200&v=4', // liveItem.image,
+        link: liveItem.link,
+        liveItemEnd: liveItem.end,
+        liveItemStart: liveItem.start,
+        liveItemStatus: liveItem.status,
+        pubDate: null,
+        socialInteraction: [],
+        soundbite: [],
+        summary: '', // liveItem.summary,
+        title: liveItem.title,
+        transcript: [],
+        value: []
+        // value: liveItem.value ? [valueCompat(liveItem.value)] : []
+      } as ParsedEpisode
     }
 
     const meta = feedCompat(parsedFeed)
-    const episodes = parsedFeed.items.map(itemCompat)
+    let parsedEpisodes = parsedFeed.items.map(itemCompat)
+    const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
+    parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
     let podcast = new Podcast()
     if (feedUrl.podcast) {
@@ -134,7 +197,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     logPerformance('podcast id', podcast.id)
 
-    const mostRecentDateFromFeed = getMostRecentPubDateFromFeed(meta, episodes)
+    const mostRecentDateFromFeed = getMostRecentPubDateFromFeed(meta, parsedEpisodes)
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
@@ -193,9 +256,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     */
     let newEpisodes = [] as any
     let updatedSavedEpisodes = [] as any
-    if (episodes && Array.isArray(episodes)) {
+    if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
-      const results = (await findOrGenerateParsedEpisodes(episodes, podcast)) as any
+      const results = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
       podcast.hasVideo = results.hasVideo
@@ -599,7 +662,7 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
   return mostRecentDateFromFeed
 }
 
-const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
+const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: ParsedEpisode, podcast) => {
   episode.isPublic = true
 
   episode.alternateEnclosures = parsedEpisode.alternateEnclosures
@@ -609,8 +672,8 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   }
   episode.description = parsedEpisode.description
   episode.duration = parsedEpisode.duration ? parseInt(parsedEpisode.duration, 10) : 0
-  episode.episodeType = parsedEpisode.type
-  episode.funding = parsedEpisode.funding
+  // episode.episodeType = parsedEpisode.type
+  // episode.funding = parsedEpisode.funding
   episode.guid = parsedEpisode.guid
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
@@ -642,6 +705,17 @@ const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   // episode.categories = categories
 
   episode.podcast = podcast
+
+  if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus) {
+    const liveItem = new LiveItem()
+    liveItem.end = parsedEpisode.liveItemEnd || null
+    liveItem.start = parsedEpisode.liveItemStart
+    liveItem.status = parsedEpisode.liveItemStatus
+    episode.liveItem = liveItem
+  } else {
+    episode.liveItem = null
+  }
+
   return episode
 }
 
@@ -680,7 +754,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
         mediaUrl: Not(In(parsedEpisodeMediaUrls))
       }
     })
-    const updatedEpisodesToHide = episodesToHide.map((x: Episode) => {
+    const updatedEpisodesToHide = episodesToHide.map((x: ExtendedEpisode) => {
       x.isPublic = false
       return x
     })
@@ -726,7 +800,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // If episode from the parsed object is new (not already saved),
   // then create a new episode.
   for (const newParsedEpisode of newParsedEpisodes) {
-    let episode = new Episode()
+    let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
 
     if (newParsedEpisode.mediaType && newParsedEpisode.mediaType.indexOf('video') >= 0) {

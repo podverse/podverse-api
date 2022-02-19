@@ -9,7 +9,16 @@ import {
   Transcript,
   ValueTag
 } from 'podverse-shared'
-import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
+import {
+  Author,
+  Category,
+  LiveItem,
+  MediaRef,
+  Podcast,
+  UserHistoryItem,
+  UserNowPlayingItem,
+  UserQueueItem
+} from '~/entities'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -17,10 +26,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
@@ -92,9 +103,6 @@ export class Episode {
 
   @Column({ default: false })
   isExplicit: boolean
-
-  @Column({ default: false })
-  isLiveItem: boolean
 
   @Index()
   @Column({ default: false })
@@ -185,6 +193,10 @@ export class Episode {
   @ManyToMany((type) => Category)
   @JoinTable()
   categories: Category[]
+
+  @OneToOne((type) => LiveItem, (liveItem) => liveItem.episode, { nullable: true })
+  @JoinColumn()
+  liveItem: LiveItem | null
 
   @OneToMany((type) => MediaRef, (mediaRef) => mediaRef.episode)
   mediaRefs: MediaRef[]

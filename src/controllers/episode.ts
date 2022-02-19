@@ -84,7 +84,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .addSelect('episode.guid')
     .addSelect('episode.imageUrl')
     .addSelect('episode.isExplicit')
-    .addSelect('episode.isLiveItem')
+    // .addSelect('episode.liveItem')
     .addSelect('episode.isPublic')
     .addSelect('episode.linkUrl')
     .addSelect('episode.mediaFilesize')
