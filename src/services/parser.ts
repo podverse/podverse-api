@@ -102,7 +102,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         alternateEnclosures: episode.alternativeEnclosures ?? [],
         author: [episode.author],
         chapters: episode.podcastChapters,
-        contentLinks: episode.contentLinks,
+        // contentLinks: episode.contentLinks ?? [],
         description: episode.description,
         duration: episode.duration,
         enclosure: episode.enclosure,

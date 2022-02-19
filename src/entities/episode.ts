@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { EpisodeAlternateEnclosure, Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
+import {
+  EpisodeAlternateEnclosure,
+  EpisodeContentLinks,
+  Funding,
+  SocialInteraction,
+  Transcript,
+  ValueTag
+} from 'podverse-shared'
 import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
 import {
   BeforeInsert,
@@ -18,7 +25,6 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
-import { EpisodeContentLinks } from 'podverse-shared/dist/Episode'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
