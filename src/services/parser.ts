@@ -99,6 +99,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     // Convert the podcast-partytime schema to a podverse compatible schema.
     const itemCompat = (episode: EpisodeObject) => {
       return {
+        alternateEnclosures: episode.alternativeEnclosures ?? [],
         author: [episode.author],
         chapters: episode.podcastChapters,
         description: episode.description,
@@ -600,6 +601,7 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
 const assignParsedEpisodeData = async (episode, parsedEpisode, podcast) => {
   episode.isPublic = true
 
+  episode.alternateEnclosures = parsedEpisode.alternateEnclosures
   if (parsedEpisode.chapters) {
     episode.chaptersUrl = parsedEpisode.chapters.url
     episode.chaptersType = parsedEpisode.chapters.type
