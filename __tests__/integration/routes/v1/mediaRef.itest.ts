@@ -278,9 +278,6 @@ describe('MediaRef endpoints', () => {
           const mediaRef2 = mediaRefs[2]
           chaiExpect(mediaRef2.id).to.equal('U1CrtU3M')
 
-          const mediaRef3 = mediaRefs[3]
-          chaiExpect(mediaRef3.id).to.equal('9rA5BhWp')
-
           chaiExpect(Object.keys(res.body).length).to.equal(2)
 
           done()
