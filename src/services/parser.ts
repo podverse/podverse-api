@@ -19,7 +19,6 @@ const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
-  // Handle timeout for isomorphic-fetch
   const abortController = new AbortController()
   const abortTimeout = setTimeout(() => {
     abortController.abort()
