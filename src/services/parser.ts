@@ -1,4 +1,4 @@
-import * as _fetch from 'isomorphic-fetch'
+import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
 import type { Funding } from 'podverse-shared'
@@ -19,12 +19,19 @@ const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
+  // Handle timeout for isomorphic-fetch
+  const abortController = new AbortController()
+  const abortTimeout = setTimeout(() => {
+    abortController.abort()
+  }, 180000)
+
   try {
     logPerformance('podcastFetchAndParse', _logStart)
-    const xml = await _fetch(feedUrl.url, {
+    const xml = await nodeFetch(feedUrl.url, {
       headers: { 'User-Agent': userAgent },
       follow: 5,
-      size: 20000000
+      size: 20000000,
+      signal: abortController.signal
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml)
     logPerformance('podcastFetchAndParse', _logEnd)
@@ -278,6 +285,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     logPerformance('newEpisodes updateSoundBites', _logEnd)
   } catch (error) {
     throw error
+  } finally {
+    clearTimeout(abortTimeout)
   }
 }
 
