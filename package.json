@@ -168,6 +168,7 @@
     "koa2-ratelimit": "0.9.1",
     "lint-staged": "9.5.0",
     "manticoresearch": "^2.0.2",
+    "node-fetch": "2.6.6",
     "nodemailer": "6.6.1",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
