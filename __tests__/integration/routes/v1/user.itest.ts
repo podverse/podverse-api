@@ -145,12 +145,12 @@ describe('User endpoints', () => {
           chaiExpect(queueItem.id).to.equal('fgmGHz0o')
           chaiExpect(queueItem.endTime).to.equal(7380)
           chaiExpect(queueItem.isPublic).to.equal(true)
-          chaiExpect(queueItem.pastHourTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(queueItem.pastDayTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(queueItem.pastWeekTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(queueItem.pastMonthTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(queueItem.pastYearTotalUniquePageviews).to.equal(123456789)
-          chaiExpect(queueItem.pastAllTimeTotalUniquePageviews).to.equal(123456789)
+          chaiExpect(queueItem.pastHourTotalUniquePageviews).to.equal(12345678)
+          chaiExpect(queueItem.pastDayTotalUniquePageviews).to.equal(12345678)
+          chaiExpect(queueItem.pastWeekTotalUniquePageviews).to.equal(12345678)
+          chaiExpect(queueItem.pastMonthTotalUniquePageviews).to.equal(12345678)
+          chaiExpect(queueItem.pastYearTotalUniquePageviews).to.equal(12345678)
+          chaiExpect(queueItem.pastAllTimeTotalUniquePageviews).to.equal(12345678)
           chaiExpect(queueItem.startTime).to.equal(7200)
           chaiExpect(queueItem.title).to.equal(
             'Non tellus orci ac auctor augue mauris augue neque. Aliquet risus feugiat in ante metus dictum at tempor. Vehicula ipsum a arcu cursus vitae congue mauris rhoncus.'
