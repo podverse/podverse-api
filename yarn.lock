@@ -7779,10 +7779,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.0.tgz#64bbac7cc69fd1d36e9b24c6b0f18b59e40d4447"
-  integrity sha512-X0TNsuz5GJeUA05/wmzeF71sGUS8sjzRDLtDnkiUacWmZ9W8VgT6bqgPBdxLCwl3RxPxxGU9DRThPil5roay9A==
+podcast-partytime@4.3.1-beta.3:
+  version "4.3.1-beta.3"
+  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.1-beta.3.tgz#667334562a29402bd43454215fa527756293009b"
+  integrity sha512-3xuMI42HjPdRgW+69isGxpgbi6OAGLClqKeroGoZddcbqxiIUIL7czdGdjCrYtcYWl1nbnA80zgyhbGAi4QxMA==
   dependencies:
     dotenv "^10.0.0"
     fast-xml-parser "^3.18.0"
