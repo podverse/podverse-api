@@ -76,9 +76,11 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
     if (!episode.socialInteraction || episode.socialInteraction.length === 0) {
       throw new Error('No socialInteraction value found for episode.')
     }
-    const activityPub = episode.socialInteraction.find((item: SocialInteraction) => item.platform === 'activitypub')
+    const activityPub = episode.socialInteraction.find(
+      (item: SocialInteraction) => item.platform === 'activitypub' || item.platform === 'mastodon'
+    )
     if (!activityPub || !activityPub.url) {
-      throw new Error('No activityPub url found for episode.')
+      throw new Error('No activityPub/mastodon url found for episode.')
     }
 
     const body = await getThreadcap(activityPub.url)
