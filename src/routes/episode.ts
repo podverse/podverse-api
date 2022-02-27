@@ -76,7 +76,13 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
     if (!episode.socialInteraction || episode.socialInteraction.length === 0) {
       throw new Error('No socialInteraction value found for episode.')
     }
-    const activityPub = episode.socialInteraction.find((item: SocialInteraction) => item.platform === 'activitypub')
+    const activityPub = episode.socialInteraction.find(
+      (item: SocialInteraction) =>
+        item.protocol === 'activitypub' ||
+        item.platform === 'castopod' ||
+        item.platform === 'mastodon' ||
+        item.platform === 'peertube'
+    )
     if (!activityPub || !activityPub.url) {
       throw new Error('No activityPub url found for episode.')
     }

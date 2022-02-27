@@ -6960,7 +6960,7 @@ node-addon-api@^3.2.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.2.1.tgz#81325e0a2117789c0128dab65e7e38f07ceba161"
   integrity sha512-mmcei9JghVNDYydghQmeDX8KoAm0FAiYyIcUt/N4nhyAipB17pllZQDOJD2fotxABnt4Mdz+dKTO7eftLg4d0A==
 
-node-fetch@^2.3.0, node-fetch@^2.6.1:
+node-fetch@2.6.7, node-fetch@^2.3.0, node-fetch@^2.6.1:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -7779,10 +7779,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@4.3.1-beta.0:
-  version "4.3.1-beta.0"
-  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.1-beta.0.tgz#20a6eee1cc5fcf9ca3144da17d31187949405205"
-  integrity sha512-qRjMXZ1iYHJy41RkGPJYUWljimqHERQ4uP59RJOLr1rZOpifl/xle+aLgDBKNHlGCychh2ayjE2ChgEftsucxA==
+podcast-partytime@4.3.1-beta.3:
+  version "4.3.1-beta.3"
+  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.1-beta.3.tgz#667334562a29402bd43454215fa527756293009b"
+  integrity sha512-3xuMI42HjPdRgW+69isGxpgbi6OAGLClqKeroGoZddcbqxiIUIL7czdGdjCrYtcYWl1nbnA80zgyhbGAi4QxMA==
   dependencies:
     dotenv "^10.0.0"
     fast-xml-parser "^3.18.0"
@@ -7791,10 +7791,10 @@ podcast-partytime@4.3.1-beta.0:
     pino "^7.0.5"
     ramda "^0.27.1"
 
-podverse-shared@^4.2.7:
-  version "4.2.7"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.2.7.tgz#44480e08c9b7f3c8082173d85168650937945c84"
-  integrity sha512-K+e7tGS5KPo/Oxa0ghqnBqk/I7qmfYF/df0WmwTpVVjDZh8WdpkXKGufovdNq5yrgeE57OKg4bKmwZCLaKjODg==
+podverse-shared@^4.2.8:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.2.8.tgz#27131b733adad23a4b0e42b3602adb387ed27346"
+  integrity sha512-gU2CvYlIUzi65t1ZfiG2feDaHP3etV1vO6bpApuktC89cHgwl4mJOFRfkYx5wylXYCXINIi1HpSAU3ukHme8TQ==
   dependencies:
     typescript "3.9.7"
 

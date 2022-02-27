@@ -1,4 +1,4 @@
-import * as _fetch from 'isomorphic-fetch'
+import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
 import type { Funding } from 'podverse-shared'
@@ -15,9 +15,6 @@ import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
-
-/* If the script takes over 3 minutes then throw an error to cancel. */
-let parserCancelTimeout: any = null
 
 type ParsedEpisode = {
   alternateEnclosures: any[]
@@ -52,21 +49,18 @@ interface ExtendedEpisode extends Episode {
 export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
-  if (parserCancelTimeout) {
-    clearTimeout(parserCancelTimeout)
-  }
-
-  parserCancelTimeout = setTimeout(() => {
-    logPerformance('parseFeedUrl setTimeout exceeded!', _logStart)
-    throw new Error('parseFeedUrl timeout exceeded.')
+  const abortController = new AbortController()
+  const abortTimeout = setTimeout(() => {
+    abortController.abort()
   }, 180000)
 
   try {
     logPerformance('podcastFetchAndParse', _logStart)
-    const xml = await _fetch(feedUrl.url, {
+    const xml = await nodeFetch(feedUrl.url, {
       headers: { 'User-Agent': userAgent },
       follow: 5,
-      size: 25000000
+      size: 20000000,
+      signal: abortController.signal
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml)
     logPerformance('podcastFetchAndParse', _logEnd)
@@ -352,15 +346,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       }
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
-
-    if (parserCancelTimeout) {
-      clearTimeout(parserCancelTimeout)
-    }
   } catch (error) {
-    if (parserCancelTimeout) {
-      clearTimeout(parserCancelTimeout)
-    }
     throw error
+  } finally {
+    clearTimeout(abortTimeout)
   }
 }
 
