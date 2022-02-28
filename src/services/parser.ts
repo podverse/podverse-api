@@ -174,6 +174,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const meta = feedCompat(parsedFeed)
     let parsedEpisodes = parsedFeed.items.map(itemCompat)
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
+    const hasLiveItem = parsedLiveItemEpisodes.length > 0
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
     let podcast = new Podcast()
@@ -251,6 +252,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       const results = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
+      podcast.hasLiveItem = hasLiveItem
       podcast.hasVideo = results.hasVideo
 
       newEpisodes = results.newEpisodes
