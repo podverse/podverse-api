@@ -26,7 +26,6 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -194,8 +193,10 @@ export class Episode {
   @JoinTable()
   categories: Category[]
 
-  @OneToOne((type) => LiveItem, (liveItem) => liveItem.episode, { nullable: true })
-  @JoinColumn()
+  @OneToOne((type) => LiveItem, (liveItem) => liveItem.episode, {
+    cascade: true,
+    nullable: true
+  })
   liveItem: LiveItem | null
 
   @OneToMany((type) => MediaRef, (mediaRef) => mediaRef.episode)

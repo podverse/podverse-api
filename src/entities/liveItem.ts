@@ -11,12 +11,15 @@ import { Episode } from '.'
 
 type LiveItemStatus = 'pending' | 'live' | 'ended'
 
-@Entity('liveItem')
+@Entity('liveItems')
 export class LiveItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'date',
+    nullable: true
+  })
   end: Date | null
 
   @Column()
@@ -25,7 +28,7 @@ export class LiveItem {
   @Column()
   status: LiveItemStatus
 
-  @OneToOne((type) => Episode, (episode) => episode.liveItem, {
+  @OneToOne(() => Episode, (episode) => episode.liveItem, {
     nullable: false,
     onDelete: 'CASCADE'
   })
