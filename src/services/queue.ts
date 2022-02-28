@@ -123,9 +123,9 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
   }
 }
 
-export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds: string[]) => {
+export const addFeedUrlsByPodcastIndexId = async (podcastIndexIds: string[], queueType = 'priority') => {
   try {
-    // Call connectToDb prior to calling addFeedUrlsByPodcastIndexIdToPriorityQueue
+    // Call connectToDb prior to calling addFeedUrlsByPodcastIndexId
     const feedUrlRepo = getRepository(FeedUrl)
 
     const feedUrls = await feedUrlRepo
@@ -138,8 +138,11 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
 
     console.log('Total feedUrls found:', feedUrls.length)
 
+    const queueUrl =
+      queueType === 'live' ? queueUrls.feedsToParse.liveQueueUrl : queueUrls.feedsToParse.priorityQueueUrl
+
     const forceReparsing = false
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
+    await sendFeedUrlsToQueue(feedUrls, queueUrl, forceReparsing)
 
     const podcasts: Podcast[] = []
     const newLastFoundInPodcastIndex = new Date()
@@ -150,7 +153,7 @@ export const addFeedUrlsByPodcastIndexIdToPriorityQueue = async (podcastIndexIds
     const podcastRepo = getRepository(Podcast)
     await podcastRepo.save(podcasts)
   } catch (error) {
-    console.log('queue:addFeedUrlsByPodcastIndexIdToPriorityQueue', error)
+    console.log('queue:addFeedUrlsByPodcastIndexId', error)
   }
 }
 

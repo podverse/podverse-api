@@ -18,6 +18,8 @@ const { awsConfig } = config
 
       if (queueOverride === 'priority') {
         queueUrl = awsConfig.queueUrls.feedsToParse.priorityQueueUrl
+      } else if (queueOverride === 'live') {
+        queueUrl = awsConfig.queueUrls.feedsToParse.liveQueueUrl
       }
 
       console.log('should connect')

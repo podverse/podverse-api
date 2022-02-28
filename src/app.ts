@@ -20,6 +20,7 @@ import {
   episodeRouter,
   feedUrlRouter,
   googlePlayRouter,
+  liveItemRouter,
   mediaRefRouter,
   metaRouter,
   paypalRouter,
@@ -150,6 +151,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(googlePlayRouter.routes())
     app.use(googlePlayRouter.allowedMethods())
+
+    app.use(liveItemRouter.routes())
+    app.use(liveItemRouter.allowedMethods())
 
     app.use(mediaRefRouter.routes())
     app.use(mediaRefRouter.allowedMethods())

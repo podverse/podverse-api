@@ -4,7 +4,7 @@ import { getConnection, getRepository } from 'typeorm'
 import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrl } from '~/services/parser'
-import { addFeedUrlsByPodcastIndexIdToPriorityQueue } from '~/services/queue'
+import { addFeedUrlsByPodcastIndexId } from '~/services/queue'
 import { request } from '~/lib/request'
 import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import { Podcast } from '~/entities'
@@ -145,7 +145,7 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
     // Send the feedUrls with matching podcastIndexIds found in our database to
     // the priority parsing queue for immediate parsing.
     if (recentlyUpdatedPodcastIndexIds.length > 0) {
-      await addFeedUrlsByPodcastIndexIdToPriorityQueue(uniquePodcastIndexIds)
+      await addFeedUrlsByPodcastIndexId(uniquePodcastIndexIds)
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
