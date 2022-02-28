@@ -17,3 +17,5 @@ ALTER TABLE ONLY public."liveItems"
 ALTER TABLE ONLY public."liveItems"
     ADD CONSTRAINT "FK_liveItems_episode" FOREIGN KEY ("episodeId") REFERENCES public.episodes(id);
 
+ALTER TABLE ONLY public."podcasts"
+    ADD COLUMN "hasLiveItem" boolean DEFAULT false NOT NULL;
