@@ -75,7 +75,7 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
     .select('episode.id')
     .addSelect('episode.alternateEnclosures')
     .addSelect('episode.chaptersUrl')
-    .addSelect('episode.contentsLinks')
+    .addSelect('episode.contentLinks')
     .addSelect('episode.credentialsRequired')
     .addSelect('episode.description')
     .addSelect('episode.duration')
