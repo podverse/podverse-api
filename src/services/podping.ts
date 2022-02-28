@@ -15,7 +15,6 @@ export const runLiveItemListener = () => {
 
   let openedSocket: boolean | null = null
   const timeInterval = 5000
-  const port = 3000
   const url = 'wss://api.livewire.io/ws/podping'
 
   function connect() {
@@ -24,7 +23,7 @@ export const runLiveItemListener = () => {
       console.log('client try to connect...')
 
       client.on('open', () => {
-        console.log('WEBSOCKET_OPEN: client connected to server at port %s', port)
+        console.log('WEBSOCKET_OPEN: client connected to server at %s', url)
         openedSocket = true
         resolve(openedSocket)
       })
