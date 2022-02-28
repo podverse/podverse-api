@@ -1,6 +1,7 @@
 export default {
   queueUrls: {
     feedsToParse: {
+      liveQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_LIVE_URL,
       priorityQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_PRIORITY_URL,
       queueUrl: process.env.AWS_QUEUE_FEED_PARSER_URL,
       errorsQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_ERRORS_URL

@@ -32,6 +32,7 @@
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "dev:scripts:parseOrphanFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
     "dev:scripts:parsePublicFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
+    "dev:scripts:podping:runLiveItemListener": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "dev:scripts:queryUniquePageviews": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "dev:scripts:receiveErrorMessageFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
     "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
@@ -57,6 +58,7 @@
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "scripts:parseOrphanFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
     "scripts:parsePublicFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
+    "scripts:podping:runLiveItemListener": "ts-node -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "scripts:queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "scripts:receiveErrorMessageFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
     "scripts:removeDeadEpisodes": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
@@ -192,6 +194,7 @@
     "valid-url": "1.0.9",
     "validator": "13.7.0",
     "webpack": "4.41.2",
-    "winston": "3.2.1"
+    "winston": "3.2.1",
+    "ws": "^8.5.0"
   }
 }
