@@ -153,13 +153,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         contentLinks: liveItem.contentLinks ?? [],
         description: liveItem.description,
         duration: 0,
-        enclosure: {
-          url: 'http://listen.noagendastream.com/noagenda',
-          type: 'audio/mpeg'
-        }, // liveItem.enclosure,
+        enclosure: liveItem.enclosure,
         explicit: false, // liveItem.explicit,
         guid: liveItem.guid,
-        imageURL: 'https://avatars.githubusercontent.com/u/11860029?s=200&v=4', // liveItem.image,
+        imageURL: '', // liveItem.image,
         link: liveItem.link,
         liveItemEnd: liveItem.end,
         liveItemStart: liveItem.start,
@@ -170,8 +167,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         summary: '', // liveItem.summary,
         title: liveItem.title,
         transcript: [],
-        value: []
-        // value: liveItem.value ? [valueCompat(liveItem.value)] : []
+        value: liveItem.value ? [valueCompat(liveItem.value)] : []
       } as ParsedEpisode
     }
 
