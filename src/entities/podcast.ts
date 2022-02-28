@@ -90,6 +90,9 @@ export class Podcast {
   guid?: string
 
   @Column({ default: false })
+  hasLiveItem: boolean
+
+  @Column({ default: false })
   hasVideo: boolean
 
   @Column({ default: false })

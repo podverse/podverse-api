@@ -1,8 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import { EpisodeAlternateEnclosure, Funding, SocialInteraction, Transcript, ValueTag } from 'podverse-shared'
-import { Author, Category, MediaRef, Podcast, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
+import {
+  EpisodeAlternateEnclosure,
+  EpisodeContentLinks,
+  Funding,
+  SocialInteraction,
+  Transcript,
+  ValueTag
+} from 'podverse-shared'
+import {
+  Author,
+  Category,
+  LiveItem,
+  MediaRef,
+  Podcast,
+  UserHistoryItem,
+  UserNowPlayingItem,
+  UserQueueItem
+} from '~/entities'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -14,6 +30,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
@@ -52,6 +69,9 @@ export class Episode {
 
   @Column({ nullable: true })
   chaptersUrlLastParsed: Date
+
+  @Column('simple-json', { nullable: true })
+  contentLinks: EpisodeContentLinks[]
 
   @Column({ default: false })
   credentialsRequired?: boolean
@@ -172,6 +192,12 @@ export class Episode {
   @ManyToMany((type) => Category)
   @JoinTable()
   categories: Category[]
+
+  @OneToOne((type) => LiveItem, (liveItem) => liveItem.episode, {
+    cascade: true,
+    nullable: true
+  })
+  liveItem: LiveItem | null
 
   @OneToMany((type) => MediaRef, (mediaRef) => mediaRef.episode)
   mediaRefs: MediaRef[]
