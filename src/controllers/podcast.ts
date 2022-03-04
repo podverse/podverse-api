@@ -221,9 +221,10 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
 
     const finalPodcastResults = [] as any
 
-    // NOTE: I have no idea why I added this at one point...
-    // commenting out since it breaks query sorting...
-    if (podcastIds && podcastIds.length && isFromManticoreSearch) {
+    /* If no sort is provided, then return Manticore search results
+       in descending order by Manticore ranking score, else leave the results
+       sorted like normal normal. */
+    if (podcastIds && podcastIds.length && isFromManticoreSearch && !sort) {
       podcasts.sort(function (p1, p2) {
         return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id)
       })
