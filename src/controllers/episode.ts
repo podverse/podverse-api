@@ -156,7 +156,7 @@ const getEpisodesFromSearchEngine = async (query) => {
   let episodeIds = [] as any[]
   const { hits, total } = result.hits
   if (Array.isArray(hits)) {
-    episodeIds = hits.map((x: any) => x._source.podverseid)
+    episodeIds = hits.map((x: any) => x._source.podverse_id)
   }
   const episodeIdsString = episodeIds.join(',')
   if (!episodeIdsString) return [hits, total]

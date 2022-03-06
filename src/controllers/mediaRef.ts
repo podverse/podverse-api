@@ -2,8 +2,8 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
-import { addOrderByToQuery } from '~/lib/utility'
-import { validateSearchQueryString } from '~/lib/utility/validation'
+import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
+import { searchApi } from '~/services/manticore'
 const createError = require('http-errors')
 const { superUserId } = config
 
@@ -82,13 +82,54 @@ const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
     .getManyAndCount()
 }
 
-const getMediaRefs = async (query, includeNSFW) => {
-  const repository = getRepository(MediaRef)
+const getMediaRefsFromSearchEngine = async (query) => {
+  const { searchTitle, skip, sort, take } = query
+  let manticoreSort: any = null
 
+  if (sort) {
+    const orderByColumnName = getManticoreOrderByColumnName(sort)
+    manticoreSort = [{ [orderByColumnName]: 'desc' }]
+  }
+
+  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+
+  const result = await searchApi.search({
+    index: 'idx_media_ref',
+    query: {
+      match: {
+        title: `*${searchTitle}*`
+      }
+    },
+    ...(manticoreSort ? { sort: manticoreSort } : null),
+    limit: take,
+    offset: skip
+  })
+
+  let mediaRefIds = [] as any[]
+  const { hits, total } = result.hits
+  if (Array.isArray(hits)) {
+    mediaRefIds = hits.map((x: any) => x._source.podverse_id)
+  }
+  const mediaRefIdsString = mediaRefIds.join(',')
+  if (!mediaRefIdsString) return [hits, total]
+
+  delete query.searchTitle
+  delete query.skip
+  query.mediaRefId = mediaRefIdsString
+
+  const isFromManticoreSearch = true
+  return getMediaRefs(query, isFromManticoreSearch)
+}
+
+const getMediaRefs = async (query, isFromManticoreSearch) => {
+  const includeNSFW = true
+  const repository = getRepository(MediaRef)
+  const { mediaRefId } = query
+  const mediaRefIds = (mediaRefId && mediaRefId.split(',')) || []
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
   const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
   const categoriesIds = (query.categories && query.categories.split(',')) || []
-  const { /* hasVideo,*/ includeEpisode, includePodcast, searchTitle, skip, take } = query
+  const { /* hasVideo,*/ includeEpisode, includePodcast, skip, take } = query
 
   // ${hasVideo ? `AND episode.mediaType = 'video/%'` : ''}
   const queryConditions = `
@@ -131,25 +172,18 @@ const getMediaRefs = async (query, includeNSFW) => {
   qb.addSelect('user.name')
   qb.addSelect('user.isPublic')
 
-  if (searchTitle) {
-    validateSearchQueryString(searchTitle)
-    qb.where(
-      `LOWER(mediaRef.title) LIKE :searchTitle OR
-      LOWER(episode.title) LIKE :searchTitle OR
-      LOWER(podcast.title) LIKE :searchTitle`,
-      { searchTitle: `%${searchTitle.toLowerCase().trim()}%` }
-    )
-    qb.andWhere('"mediaRef"."isPublic" = true')
-  } else {
-    qb.where({ isPublic: true })
-  }
+  qb.where({ isPublic: true })
   qb.andWhere('"mediaRef"."isOfficialChapter" IS null')
+
+  if (mediaRefIds?.length) {
+    qb.andWhere('mediaRef.id IN (:...mediaRefIds)', { mediaRefIds })
+  }
 
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
   qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
 
   const shouldLimitResultTotal =
-    (podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0) ||
+    (mediaRefIds.length === 0 && podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0) ||
     podcastIds.length > 1 ||
     episodeIds.length > 1 ||
     categoriesIds.length >= 1
@@ -173,6 +207,12 @@ const getMediaRefs = async (query, includeNSFW) => {
     }
     return x
   })
+
+  if (mediaRefIds?.length && isFromManticoreSearch) {
+    mediaRefs.sort(function (m1, m2) {
+      return mediaRefIds.indexOf(m1.id) - mediaRefIds.indexOf(m2.id)
+    })
+  }
 
   return [PIIScrubbedMediaRefs, mediaRefsCount]
 }
@@ -280,6 +320,7 @@ export {
   deleteMediaRef,
   getMediaRef,
   getMediaRefs,
+  getMediaRefsFromSearchEngine,
   getPublicMediaRefsByEpisodeMediaUrl,
   updateMediaRef,
   updateSoundBites
