@@ -180,7 +180,7 @@ const getMediaRefs = async (query, isFromManticoreSearch) => {
   }
 
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0
-  qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom)
+  qb = addOrderByToQuery(qb, 'mediaRef', query.sort, 'createdAt', allowRandom, isFromManticoreSearch)
 
   const shouldLimitResultTotal =
     (mediaRefIds.length === 0 && podcastIds.length === 0 && episodeIds.length === 0 && categoriesIds.length === 0) ||
