@@ -8,6 +8,7 @@ import {
   getEpisodes,
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
+  getEpisodesFromSearchEngine,
   retrieveLatestChapters
 } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -27,15 +28,19 @@ router.get(
   parseNSFWHeader,
   async (ctx) => {
     try {
+      const { query = {} } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
 
       let episodes
-      if (ctx.state.query.categories) {
-        episodes = await getEpisodesByCategoryIds(ctx.state.query)
-      } else if (ctx.state.query.podcastId) {
-        episodes = await getEpisodesByPodcastIds(ctx.state.query)
+
+      if (query.searchTitle) {
+        episodes = await getEpisodesFromSearchEngine(query)
+      } else if (query.categories) {
+        episodes = await getEpisodesByCategoryIds(query)
+      } else if (query.podcastId) {
+        episodes = await getEpisodesByPodcastIds(query)
       } else {
-        episodes = await getEpisodes(ctx.state.query)
+        episodes = await getEpisodes(query)
       }
 
       ctx.body = episodes

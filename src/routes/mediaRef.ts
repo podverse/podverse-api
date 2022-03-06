@@ -3,7 +3,14 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { createMediaRef, deleteMediaRef, getMediaRef, getMediaRefs, updateMediaRef } from '~/controllers/mediaRef'
+import {
+  createMediaRef,
+  deleteMediaRef,
+  getMediaRef,
+  getMediaRefs,
+  getMediaRefsFromSearchEngine,
+  updateMediaRef
+} from '~/controllers/mediaRef'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -28,8 +35,15 @@ router.get(
   parseNSFWHeader,
   async (ctx) => {
     try {
+      const { includeNSFW, query } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
-      const mediaRefs = await getMediaRefs(ctx.state.query, ctx.state.includeNSFW)
+      let mediaRefs = [[], 0]
+
+      if (query.searchTitle) {
+        mediaRefs = await getMediaRefsFromSearchEngine(query)
+      } else {
+        mediaRefs = await getMediaRefs(query, includeNSFW)
+      }
 
       ctx.body = mediaRefs
     } catch (error) {
