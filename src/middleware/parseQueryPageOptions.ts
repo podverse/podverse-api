@@ -28,7 +28,6 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
   } = query
 
   const options = {
-    sort: 'top-past-week',
     skip: 0,
     take: 50,
     ...(categories ? { categories } : {}),
