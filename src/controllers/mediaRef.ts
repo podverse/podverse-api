@@ -88,7 +88,7 @@ const getMediaRefs = async (query, includeNSFW) => {
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
   const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
   const categoriesIds = (query.categories && query.categories.split(',')) || []
-  const { /* hasVideo,*/ includeEpisode, includePodcast, searchAllFieldsText, skip, take } = query
+  const { /* hasVideo,*/ includeEpisode, includePodcast, searchTitle, skip, take } = query
 
   // ${hasVideo ? `AND episode.mediaType = 'video/%'` : ''}
   const queryConditions = `
@@ -131,13 +131,13 @@ const getMediaRefs = async (query, includeNSFW) => {
   qb.addSelect('user.name')
   qb.addSelect('user.isPublic')
 
-  if (searchAllFieldsText) {
-    validateSearchQueryString(searchAllFieldsText)
+  if (searchTitle) {
+    validateSearchQueryString(searchTitle)
     qb.where(
-      `LOWER(mediaRef.title) LIKE :searchAllFieldsText OR
-      LOWER(episode.title) LIKE :searchAllFieldsText OR
-      LOWER(podcast.title) LIKE :searchAllFieldsText`,
-      { searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%` }
+      `LOWER(mediaRef.title) LIKE :searchTitle OR
+      LOWER(episode.title) LIKE :searchTitle OR
+      LOWER(podcast.title) LIKE :searchTitle`,
+      { searchTitle: `%${searchTitle.toLowerCase().trim()}%` }
     )
     qb.andWhere('"mediaRef"."isPublic" = true')
   } else {
