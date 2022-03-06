@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
-import { addOrderByToQuery } from '~/lib/utility'
+import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 
@@ -94,7 +94,13 @@ const getSubscribedPodcasts = async (query, loggedInUserId) => {
 }
 
 const getPodcastsFromSearchEngine = async (query) => {
-  const { searchTitle, skip, take } = query
+  const { searchTitle, skip, sort, take } = query
+  let manticoreSort: any = null
+
+  if (sort) {
+    const orderByColumnName = getManticoreOrderByColumnName(sort)
+    manticoreSort = [{ [orderByColumnName]: 'desc' }]
+  }
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
@@ -105,6 +111,7 @@ const getPodcastsFromSearchEngine = async (query) => {
         title: `*${searchTitle}*`
       }
     },
+    ...(manticoreSort ? { sort: manticoreSort } : null),
     limit: take,
     offset: skip
   })
@@ -221,10 +228,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
 
     const finalPodcastResults = [] as any
 
-    /* If no sort is provided, then return Manticore search results
-       in descending order by Manticore ranking score, else leave the results
-       sorted like normal normal. */
-    if (podcastIds && podcastIds.length && isFromManticoreSearch && !sort) {
+    if (podcastIds && podcastIds.length && isFromManticoreSearch) {
       podcasts.sort(function (p1, p2) {
         return podcastIds.indexOf(p1.id) - podcastIds.indexOf(p2.id)
       })

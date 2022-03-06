@@ -2,8 +2,9 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
 import { request } from '~/lib/request'
-import { addOrderByToQuery } from '~/lib/utility'
+import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
+import { searchApi } from '~/services/manticore'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
 const { superUserId } = config
@@ -69,7 +70,7 @@ const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => 
   return qb
 }
 
-const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sincePubDate = '', hasVideo) => {
+const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate = '', hasVideo) => {
   const qb = getRepository(Episode)
     .createQueryBuilder('episode')
     .select('episode.id')
@@ -103,11 +104,11 @@ const generateEpisodeSelects = (includePodcast, searchAllFieldsText = '', sinceP
 
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
 
-  // Throws an error if searchAllFieldsText is defined but invalid
-  if (searchAllFieldsText) validateSearchQueryString(searchAllFieldsText)
+  // Throws an error if searchTitle is defined but invalid
+  if (searchTitle) validateSearchQueryString(searchTitle)
 
-  qb.where(`${searchAllFieldsText ? 'LOWER(episode.title) LIKE :searchAllFieldsText' : 'true'}`, {
-    searchAllFieldsText: `%${searchAllFieldsText.toLowerCase().trim()}%`
+  qb.where(`${searchTitle ? 'LOWER(episode.title) LIKE :searchTitle' : 'true'}`, {
+    searchTitle: `%${searchTitle.toLowerCase().trim()}%`
   })
 
   if (sincePubDate) {
@@ -129,24 +130,74 @@ const cleanEpisodes = (episodes) => {
   })
 }
 
-const getEpisodes = async (query) => {
-  const { hasVideo, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+const getEpisodesFromSearchEngine = async (query) => {
+  const { searchTitle, skip, sort, take } = query
+  let manticoreSort: any = null
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
+  if (sort) {
+    const orderByColumnName = getManticoreOrderByColumnName(sort)
+    manticoreSort = [{ [orderByColumnName]: 'desc' }]
+  }
+
+  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+
+  const result = await searchApi.search({
+    index: 'idx_episode_00',
+    query: {
+      match: {
+        title: `*${searchTitle}*`
+      }
+    },
+    ...(manticoreSort ? { sort: manticoreSort } : null),
+    limit: take,
+    offset: skip
+  })
+
+  let episodeIds = [] as any[]
+  const { hits, total } = result.hits
+  if (Array.isArray(hits)) {
+    episodeIds = hits.map((x: any) => x._source.podverse_id)
+  }
+  const episodeIdsString = episodeIds.join(',')
+  if (!episodeIdsString) return [hits, total]
+
+  delete query.searchTitle
+  delete query.skip
+  query.episodeId = episodeIdsString
+
+  const isFromManticoreSearch = true
+  return getEpisodes(query, isFromManticoreSearch)
+}
+
+const getEpisodes = async (query, isFromManticoreSearch?) => {
+  const { episodeId, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
+  const episodeIds = (episodeId && episodeId.split(',')) || []
+
+  let qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
   const shouldLimit = true
   qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
 
+  if (episodeIds.length) {
+    qb.andWhere('episode.id IN (:...episodeIds)', { episodeIds })
+  }
+
   const shouldLimitCount = true
   const allowRandom = false
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
+  return handleGetEpisodesWithOrdering(
+    { qb, query, skip, sort, take },
+    allowRandom,
+    shouldLimitCount,
+    episodeIds,
+    isFromManticoreSearch
+  )
 }
 
 const getEpisodesByCategoryIds = async (query) => {
-  const { categories, hasVideo, includePodcast, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+  const { categories, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
   const categoriesIds = (categories && categories.split(',')) || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
+  let qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
 
   if (sort === 'most-recent') {
     return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
@@ -174,10 +225,10 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
 }
 
 const getEpisodesByPodcastIds = async (query) => {
-  const { hasVideo, includePodcast, podcastId, searchAllFieldsText, sincePubDate, skip, sort, take } = query
+  const { hasVideo, includePodcast, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
-  let qb = generateEpisodeSelects(includePodcast, searchAllFieldsText, sincePubDate, hasVideo)
+  let qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
 
   if (podcastIds.length === 1) {
     return getEpisodesByPodcastId(query, qb, podcastIds)
@@ -192,7 +243,7 @@ const getEpisodesByPodcastIds = async (query) => {
     qb.andWhere('episode."isPublic" IS true')
 
     const allowRandom = true
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimit)
+    return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
   }
 }
 
@@ -228,7 +279,13 @@ const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
   return [cleanedEpisodes, totalCount]
 }
 
-const handleGetEpisodesWithOrdering = async (obj, allowRandom, shouldLimitCount) => {
+const handleGetEpisodesWithOrdering = async (
+  obj,
+  allowRandom,
+  shouldLimitCount,
+  episodeIds?,
+  isFromManticoreSearch?
+) => {
   const { skip, sort, take } = obj
   let { qb } = obj
   qb.offset(skip)
@@ -247,6 +304,12 @@ const handleGetEpisodesWithOrdering = async (obj, allowRandom, shouldLimitCount)
     const results = await qb.offset(skip).limit(take).getManyAndCount()
     episodes = results[0] || []
     episodesCount = results[1] || 0
+  }
+
+  if (episodeIds?.length && isFromManticoreSearch) {
+    episodes.sort(function (e1, e2) {
+      return episodeIds.indexOf(e1.id) - episodeIds.indexOf(e2.id)
+    })
   }
 
   const cleanedEpisodes = cleanEpisodes(episodes)
@@ -420,6 +483,7 @@ export {
   getEpisodes,
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
+  getEpisodesFromSearchEngine,
   removeDeadEpisodes,
   retrieveLatestChapters
 }

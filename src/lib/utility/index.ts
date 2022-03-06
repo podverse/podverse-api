@@ -97,6 +97,24 @@ export const generateQueryParams = (query: any) => {
     .join('&')
 }
 
+export const getManticoreOrderByColumnName = (sort) => {
+  let orderByColumn = ''
+
+  if (sort === 'top-past-hour') {
+    orderByColumn = 'pastHourTotalUniquePageviews'
+  } else if (sort === 'top-past-week') {
+    orderByColumn = 'pastWeekTotalUniquePageviews'
+  } else if (sort === 'top-past-month') {
+    orderByColumn = 'pastMonthTotalUniquePageviews'
+  } else if (sort === 'top-past-year') {
+    orderByColumn = 'pastYearTotalUniquePageviews'
+  } else if (sort === 'top-all-time') {
+    orderByColumn = 'pastAllTimeTotalUniquePageviews'
+  }
+
+  return orderByColumn
+}
+
 export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
   const ascKey = 'ASC'
   const descKey = 'DESC'

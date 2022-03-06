@@ -701,7 +701,7 @@
           "episode"
         ],
         "summary": "Find episodes by query",
-        "description": "Returns an array of episodes. Set includePodcast = true if you want the podcast included in the response. Pass a string to searchAllFieldsText to filter based on episode title.",
+        "description": "Returns an array of episodes. Set includePodcast = true if you want the podcast included in the response. Pass a string to searchTitle to filter based on episode title.",
         "operationId": "getEpisodes",
         "produces": [
           "application/json"
@@ -718,7 +718,7 @@
             "type": "string"
           },
           {
-            "name": "searchAllFieldsText",
+            "name": "searchTitle",
             "in": "query",
             "type": "string"
           },
@@ -855,7 +855,7 @@
           "mediaRef"
         ],
         "summary": "Find mediaRefs by query",
-        "description": "Returns an array of mediaRefs. Pass a string to searchAllFieldsText to filter based on clip, episode, or podcast title. Set includeEpisode to true if you want episode data returned, or includePodcast to true if you want episode and podcast data returned.",
+        "description": "Returns an array of mediaRefs. Pass a string to searchTitle to filter based on clip, episode, or podcast title. Set includeEpisode to true if you want episode data returned, or includePodcast to true if you want episode and podcast data returned.",
         "operationId": "getMediaRefs",
         "produces": [
           "application/json"
@@ -882,7 +882,7 @@
             "type": "string"
           },
           {
-            "name": "searchAllFieldsText",
+            "name": "searchTitle",
             "in": "query",
             "type": "string"
           },
