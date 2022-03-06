@@ -206,7 +206,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   }
 
   const allowRandom = !!podcastIds
-  qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate', allowRandom)
+  qb = addOrderByToQuery(qb, 'podcast', sort, 'lastEpisodePubDate', allowRandom, isFromManticoreSearch)
 
   try {
     let podcastResults

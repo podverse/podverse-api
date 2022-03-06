@@ -291,7 +291,7 @@ const handleGetEpisodesWithOrdering = async (
   qb.offset(skip)
   qb.limit(take)
 
-  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom)
+  qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom, isFromManticoreSearch)
 
   let episodes = [] as any
   let episodesCount = 0

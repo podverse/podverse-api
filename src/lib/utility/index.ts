@@ -115,11 +115,13 @@ export const getManticoreOrderByColumnName = (sort) => {
   return orderByColumn
 }
 
-export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom) => {
+export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFromManticoreSearch?) => {
   const ascKey = 'ASC'
   const descKey = 'DESC'
 
-  if (sort === 'top-past-hour') {
+  if (!sort && isFromManticoreSearch) {
+    // apply no sorting
+  } else if (sort === 'top-past-hour') {
     qb.orderBy(`${type}.pastHourTotalUniquePageviews`, descKey)
   } else if (sort === 'top-past-day') {
     qb.orderBy(`${type}.pastDayTotalUniquePageviews`, descKey)
