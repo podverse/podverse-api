@@ -39,7 +39,9 @@ router.get(
       ctx = delimitQueryValues(ctx, delimitKeys)
       let mediaRefs = [[], 0]
 
-      if (query.searchTitle) {
+      if (query.podcastId && query.searchTitle) {
+        mediaRefs = await getMediaRefs(query, includeNSFW)
+      } else if (query.searchTitle) {
         mediaRefs = await getMediaRefsFromSearchEngine(query)
       } else {
         mediaRefs = await getMediaRefs(query, includeNSFW)

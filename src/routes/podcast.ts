@@ -54,7 +54,9 @@ router.get(
       ctx = delimitQueryValues(ctx, delimitKeys)
 
       let podcasts
-      if (query.searchTitle) {
+      if (query.podcastId && query.searchTitle) {
+        podcasts = await getPodcasts(query)
+      } else if (query.searchTitle) {
         podcasts = await getPodcastsFromSearchEngine(query)
       } else {
         podcasts = await getPodcasts(query)
