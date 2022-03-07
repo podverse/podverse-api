@@ -33,7 +33,9 @@ router.get(
 
       let episodes
 
-      if (query.searchTitle) {
+      if (query.podcastId && query.searchTitle) {
+        episodes = await getEpisodesByPodcastIds(query)
+      } else if (query.searchTitle) {
         episodes = await getEpisodesFromSearchEngine(query)
       } else if (query.categories) {
         episodes = await getEpisodesByCategoryIds(query)
