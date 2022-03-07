@@ -101,15 +101,15 @@ export const getManticoreOrderByColumnName = (sort) => {
   let orderByColumn = ''
 
   if (sort === 'top-past-hour') {
-    orderByColumn = 'pastHourTotalUniquePageviews'
+    orderByColumn = 'pasthourtotaluniquepageviews'
   } else if (sort === 'top-past-week') {
-    orderByColumn = 'pastWeekTotalUniquePageviews'
+    orderByColumn = 'pastweektotaluniquepageviews'
   } else if (sort === 'top-past-month') {
-    orderByColumn = 'pastMonthTotalUniquePageviews'
+    orderByColumn = 'pastmonthtotaluniquepageviews'
   } else if (sort === 'top-past-year') {
-    orderByColumn = 'pastYearTotalUniquePageviews'
+    orderByColumn = 'pastyeartotaluniquepageviews'
   } else if (sort === 'top-all-time') {
-    orderByColumn = 'pastAllTimeTotalUniquePageviews'
+    orderByColumn = 'pastalltimetotaluniquepageviews'
   }
 
   return orderByColumn
