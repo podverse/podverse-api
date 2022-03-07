@@ -49,17 +49,7 @@ const getEpisode = async (id) => {
 // Use where clause to reduce the size of very large data sets and speed up queries
 const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => {
   if (shouldLimit) {
-    const topSorts = [
-      'top-past-hour',
-      'top-past-day',
-      'top-past-week',
-      'top-past-month',
-      'top-past-year',
-      'top-all-time'
-    ]
-    if (topSorts.includes(sort)) {
-      qb.andWhere('episode."pastAllTimeTotalUniquePageviews" > 0')
-    } else if (sort === 'most-recent') {
+    if (sort === 'most-recent') {
       const date = new Date()
       date.setDate(date.getDate() - 1)
       const dateString = date.toISOString().slice(0, 19).replace('T', ' ')
