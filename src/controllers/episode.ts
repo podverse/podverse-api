@@ -122,26 +122,27 @@ const cleanEpisodes = (episodes) => {
 
 const getEpisodesFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
-  let manticoreSort: any = null
 
-  if (sort) {
-    const orderByColumnName = getManticoreOrderByColumnName(sort)
-    manticoreSort = [{ [orderByColumnName]: 'desc' }]
-  }
+  const orderByColumnName = getManticoreOrderByColumnName(sort)
+  const manticoreSort = ['_score', { [orderByColumnName]: 'desc' }]
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
   const result = await searchApi.search({
-    index: 'idx_episode_00',
+    index: 'idx_episode',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    track_scores: true,
     query: {
       match: {
         title: `*${searchTitle}*`
       }
     },
-    ...(manticoreSort ? { sort: manticoreSort } : null),
+    sort: manticoreSort,
     limit: take,
     offset: skip
   })
+
+  console.log('hits', result.hits.hits)
 
   let episodeIds = [] as any[]
   const { hits, total } = result.hits

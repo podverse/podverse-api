@@ -95,35 +95,22 @@ const getSubscribedPodcasts = async (query, loggedInUserId) => {
 
 const getPodcastsFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
-  let manticoreSort: any = null
 
-  if (sort) {
-    const orderByColumnName = getManticoreOrderByColumnName(sort)
-    manticoreSort = [{ [orderByColumnName]: 'desc' }]
-  }
+  const orderByColumnName = getManticoreOrderByColumnName(sort)
+  const manticoreSort = ['_score', { [orderByColumnName]: 'desc' }]
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  console.log('query', {
-    index: 'idx_podcast',
-    query: {
-      match: {
-        title: `*${searchTitle}*`
-      }
-    },
-    ...(manticoreSort ? { sort: manticoreSort } : null),
-    limit: take,
-    offset: skip
-  })
-
   const result = await searchApi.search({
     index: 'idx_podcast',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    track_scores: true,
     query: {
       match: {
         title: `*${searchTitle}*`
       }
     },
-    ...(manticoreSort ? { sort: manticoreSort } : null),
+    sort: manticoreSort,
     limit: take,
     offset: skip
   })

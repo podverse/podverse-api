@@ -110,6 +110,14 @@ export const getManticoreOrderByColumnName = (sort) => {
     orderByColumn = 'pastyeartotaluniquepageviews'
   } else if (sort === 'top-all-time') {
     orderByColumn = 'pastalltimetotaluniquepageviews'
+  } else if (sort === 'recent') {
+    orderByColumn = 'created_date'
+  } else {
+    /*
+      Default to pastmonthtotaluniquepageviews for all other searches
+      so there is at least some popularity ranking in the match score.
+    */
+    orderByColumn = 'pastmonthtotaluniquepageviews'
   }
 
   return orderByColumn
