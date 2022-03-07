@@ -104,6 +104,18 @@ const getPodcastsFromSearchEngine = async (query) => {
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
+  console.log('query', {
+    index: 'idx_podcast',
+    query: {
+      match: {
+        title: `*${searchTitle}*`
+      }
+    },
+    ...(manticoreSort ? { sort: manticoreSort } : null),
+    limit: take,
+    offset: skip
+  })
+
   const result = await searchApi.search({
     index: 'idx_podcast',
     query: {
@@ -115,6 +127,8 @@ const getPodcastsFromSearchEngine = async (query) => {
     limit: take,
     offset: skip
   })
+
+  console.log('hits', result.hits.hits)
 
   let podcastIds = [] as any[]
   const { hits, total } = result.hits
