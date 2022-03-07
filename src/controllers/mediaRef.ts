@@ -178,7 +178,7 @@ const getMediaRefs = async (query, isFromManticoreSearch) => {
   // Throws an error if searchTitle is defined but invalid
   if (searchTitle) validateSearchQueryString(searchTitle)
   qb.andWhere(`${searchTitle ? 'LOWER(mediaRef.title) LIKE :searchTitle' : 'true'}`, {
-    searchTitle: `%${searchTitle.toLowerCase().trim()}%`
+    searchTitle: `%${searchTitle?.toLowerCase().trim()}%`
   })
 
   qb.andWhere('"mediaRef"."isOfficialChapter" IS null')

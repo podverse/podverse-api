@@ -108,7 +108,7 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
   if (searchTitle) validateSearchQueryString(searchTitle)
 
   qb.where(`${searchTitle ? 'LOWER(episode.title) LIKE :searchTitle' : 'true'}`, {
-    searchTitle: `%${searchTitle.toLowerCase().trim()}%`
+    searchTitle: `%${searchTitle?.toLowerCase().trim()}%`
   })
 
   if (sincePubDate) {
