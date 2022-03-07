@@ -3,6 +3,7 @@ import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
+import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 const createError = require('http-errors')
 const { superUserId } = config
@@ -124,7 +125,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
 const getMediaRefs = async (query, isFromManticoreSearch) => {
   const includeNSFW = true
   const repository = getRepository(MediaRef)
-  const { mediaRefId } = query
+  const { mediaRefId, searchTitle } = query
   const mediaRefIds = (mediaRefId && mediaRefId.split(',')) || []
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
   const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
@@ -173,6 +174,13 @@ const getMediaRefs = async (query, isFromManticoreSearch) => {
   qb.addSelect('user.isPublic')
 
   qb.where({ isPublic: true })
+
+  // Throws an error if searchTitle is defined but invalid
+  if (searchTitle) validateSearchQueryString(searchTitle)
+  qb.andWhere(`${searchTitle ? 'LOWER(mediaRef.title) LIKE :searchTitle' : 'true'}`, {
+    searchTitle: `%${searchTitle.toLowerCase().trim()}%`
+  })
+
   qb.andWhere('"mediaRef"."isOfficialChapter" IS null')
 
   if (mediaRefIds?.length) {
