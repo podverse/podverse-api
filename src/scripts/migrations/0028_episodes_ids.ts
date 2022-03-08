@@ -5,7 +5,8 @@ import { connectToDb } from '~/lib/db'
     await connectToDb()
     console.log('start 0028_episodes_ids.ts')
 
-    for (let i = 0; i <= 20; i++) {
+    // There are just over 80 million episodes at the moment.
+    for (let i = 0; i <= 8000; i++) {
       await getConnection()
         .createEntityManager()
         .query(
