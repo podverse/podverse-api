@@ -7,6 +7,7 @@ import { connectToDb } from '~/lib/db'
 
     // There are just over 80 million episodes at the moment.
     for (let i = 0; i <= 8000; i++) {
+      console.log('row count', i * 10000)
       await getConnection()
         .createEntityManager()
         .query(
