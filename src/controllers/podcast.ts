@@ -115,8 +115,6 @@ const getPodcastsFromSearchEngine = async (query) => {
     offset: skip
   })
 
-  console.log('hits', result.hits.hits)
-
   let podcastIds = [] as any[]
   const { hits, total } = result.hits
   if (Array.isArray(hits)) {
@@ -154,6 +152,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .select('podcast.id')
     .addSelect('podcast.podcastIndexId')
     .addSelect('podcast.credentialsRequired')
+    .addSelect('podcast.description')
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.funding')
     .addSelect('podcast.hasLiveItem')

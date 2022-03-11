@@ -113,9 +113,10 @@ export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDa
  * addRecentlyUpdatedFeedUrlsToPriorityQueue
  *
  * Request a list of all podcast feeds that have been updated
- * within the past X minutes from Podcast Index, then add
+ * within the past X time from Podcast Index, then add
  * the feeds that have a matching podcastIndexId in our database
  * to the queue for parsing.
+ * sinceTime = epoch time to start from in seconds
  */
 export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: number) => {
   try {
