@@ -105,8 +105,6 @@ const getMediaRefsFromSearchEngine = async (query) => {
     offset: skip
   })
 
-  console.log('hits', result.hits.hits)
-
   let mediaRefIds = [] as any[]
   const { hits, total } = result.hits
   if (Array.isArray(hits)) {
