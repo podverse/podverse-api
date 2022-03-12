@@ -38,6 +38,7 @@ jobs:
           docker rm podverse_api_stage
           docker rmi -f podverse/podverse_api:stage
           docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml up -d podverse_api
+          /home/mitch/podverse-ops/manticore/generate_indexes_rotate_stage.sh
           sleep 120
           cd podverse-api
           git pull
