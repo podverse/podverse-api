@@ -96,8 +96,8 @@ const getSubscribedPodcasts = async (query, loggedInUserId) => {
 const getPodcastsFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
 
-  const orderByColumnName = getManticoreOrderByColumnName(sort)
-  const manticoreSort = ['_score', { [orderByColumnName]: 'desc' }]
+  const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
+  const manticoreSort = ['_score', { [orderByColumnName]: orderByDirection }]
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
