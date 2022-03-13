@@ -17,6 +17,7 @@ import {
   authorRouter,
   categoryRouter,
   clipsRouter,
+  devAdminRouter,
   episodeRouter,
   feedUrlRouter,
   googlePlayRouter,
@@ -142,6 +143,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(clipsRouter.routes())
     app.use(clipsRouter.allowedMethods())
+
+    app.use(devAdminRouter.routes())
+    app.use(devAdminRouter.allowedMethods())
 
     app.use(episodeRouter.routes())
     app.use(episodeRouter.allowedMethods())
