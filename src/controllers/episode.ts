@@ -129,7 +129,7 @@ const getEpisodesFromSearchEngine = async (query) => {
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
   const result = await searchApi.search({
-    index: 'idx_episode',
+    index: 'idx_episode_dist',
     // eslint-disable-next-line @typescript-eslint/camelcase
     track_scores: true,
     query: {
