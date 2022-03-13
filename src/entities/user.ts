@@ -77,6 +77,9 @@ export class User {
   })
   freeTrialExpiration: Date
 
+  @Column({ default: false })
+  isDevAdmin: boolean
+
   @Index()
   @Column({ default: false })
   isPublic: boolean
