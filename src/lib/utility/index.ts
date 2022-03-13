@@ -98,29 +98,36 @@ export const generateQueryParams = (query: any) => {
 }
 
 export const getManticoreOrderByColumnName = (sort) => {
-  let orderByColumn = ''
+  let orderByColumnName = ''
+  let orderByDirection = 'desc'
 
   if (sort === 'top-past-hour') {
-    orderByColumn = 'pasthourtotaluniquepageviews'
+    orderByColumnName = 'pasthourtotaluniquepageviews'
   } else if (sort === 'top-past-week') {
-    orderByColumn = 'pastweektotaluniquepageviews'
+    orderByColumnName = 'pastweektotaluniquepageviews'
   } else if (sort === 'top-past-month') {
-    orderByColumn = 'pastmonthtotaluniquepageviews'
+    orderByColumnName = 'pastmonthtotaluniquepageviews'
   } else if (sort === 'top-past-year') {
-    orderByColumn = 'pastyeartotaluniquepageviews'
+    orderByColumnName = 'pastyeartotaluniquepageviews'
   } else if (sort === 'top-all-time') {
-    orderByColumn = 'pastalltimetotaluniquepageviews'
-  } else if (sort === 'recent') {
-    orderByColumn = 'created_date'
+    orderByColumnName = 'pastalltimetotaluniquepageviews'
+  } else if (sort === 'oldest') {
+    orderByColumnName = 'created_date'
+    orderByDirection = 'asc'
+  } else if (sort === 'most-recent') {
+    orderByColumnName = 'created_date'
+  } else if (sort === 'alphabetical') {
+    orderByColumnName = 'sortabletitle'
+    orderByDirection = 'asc'
   } else {
     /*
       Default to pastmonthtotaluniquepageviews for all other searches
       so there is at least some popularity ranking in the match score.
     */
-    orderByColumn = 'pastmonthtotaluniquepageviews'
+    orderByColumnName = 'pastmonthtotaluniquepageviews'
   }
 
-  return orderByColumn
+  return { orderByColumnName, orderByDirection }
 }
 
 export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFromManticoreSearch?) => {
