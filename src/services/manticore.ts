@@ -7,4 +7,4 @@ const Manticoresearch = require('manticoresearch')
 const client = new Manticoresearch.ApiClient()
 client.basePath = `${protocol}://${domain}:${port}`
 
-export const searchApi = new Manticoresearch.SearchApi(client)
+export const searchApi = new Manticoresearch.UtilsApi(client)
