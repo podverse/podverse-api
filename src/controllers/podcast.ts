@@ -97,31 +97,26 @@ const getPodcastsFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
 
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
-  const manticoreSort = ['_score', { [orderByColumnName]: orderByDirection }]
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  const result = await searchApi.search({
-    index: 'idx_podcast',
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    track_scores: true,
-    query: {
-      match: {
-        title: `*${searchTitle}*`
-      }
-    },
-    sort: manticoreSort,
-    limit: take,
-    offset: skip
-  })
+  const result = await searchApi.sql(`
+      SELECT *
+      FROM idx_podcast
+      WHERE match('*${searchTitle}*')
+      ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
+      LIMIT ${skip},${take}
+      OPTION ranker=sph04;
+  `)
 
   let podcastIds = [] as any[]
-  const { hits, total } = result.hits
-  if (Array.isArray(hits)) {
-    podcastIds = hits.map((x: any) => x._source.podverse_id)
+  const { data, total } = result
+
+  if (Array.isArray(data)) {
+    podcastIds = data.map((x: any) => x.podverse_id)
   }
   const podcastIdsString = podcastIds.join(',')
-  if (!podcastIdsString) return [hits, total]
+  if (!podcastIdsString) return [data, total]
 
   delete query.searchTitle
   delete query.skip

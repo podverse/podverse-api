@@ -87,31 +87,25 @@ const getMediaRefsFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
 
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
-  const manticoreSort = ['_score', { [orderByColumnName]: orderByDirection }]
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  const result = await searchApi.search({
-    index: 'idx_media_ref',
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    track_scores: true,
-    query: {
-      match: {
-        title: `*${searchTitle}*`
-      }
-    },
-    sort: manticoreSort,
-    limit: take,
-    offset: skip
-  })
+  const result = await searchApi.sql(`
+      SELECT *
+      FROM idx_media_ref
+      WHERE match('*${searchTitle}*')
+      ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
+      LIMIT ${skip},${take}
+      OPTION ranker=sph04;
+  `)
 
   let mediaRefIds = [] as any[]
-  const { hits, total } = result.hits
-  if (Array.isArray(hits)) {
-    mediaRefIds = hits.map((x: any) => x._source.podverse_id)
+  const { data, total } = result
+  if (Array.isArray(data)) {
+    mediaRefIds = data.map((x: any) => x.podverse_id)
   }
   const mediaRefIdsString = mediaRefIds.join(',')
-  if (!mediaRefIdsString) return [hits, total]
+  if (!mediaRefIdsString) return [data, total]
 
   delete query.searchTitle
   delete query.skip
