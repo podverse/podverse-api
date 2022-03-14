@@ -133,7 +133,7 @@ const getEpisodesFromSearchEngine = async (query) => {
       WHERE match('*${searchTitle}*')
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ${skip},${take}
-      OPTION ranker=sph04;
+      OPTION ranker=expr('sum(lcs*user_weight)');
   `)
 
   let episodeIds = [] as any[]
