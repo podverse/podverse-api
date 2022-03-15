@@ -219,14 +219,18 @@ const getEpisodesByPodcastIds = async (query) => {
     return getEpisodesByPodcastId(query, qb, podcastIds)
   }
 
-  qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
-  const shouldLimit = true
-  // const shouldLimit = podcastIds.length > 10
-  // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-  qb.andWhere('episode."isPublic" IS true')
+  if (sort === 'most-recent' && !hasVideo) {
+    return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
+  } else {
+    qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
+    const shouldLimit = false
+    // const shouldLimit = podcastIds.length > 10
+    // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+    qb.andWhere('episode."isPublic" IS true')
 
-  const allowRandom = true
-  return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
+    const allowRandom = true
+    return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
+  }
 }
 
 const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
