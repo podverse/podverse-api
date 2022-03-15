@@ -105,8 +105,7 @@ const getPodcastsFromSearchEngine = async (query) => {
       FROM idx_podcast
       WHERE match('*${searchTitle}*')
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
-      LIMIT ${skip},${take}
-      OPTION ranker=expr('sum(lcs*user_weight)');
+      LIMIT ${skip},${take};
   `)
 
   let podcastIds = [] as any[]
