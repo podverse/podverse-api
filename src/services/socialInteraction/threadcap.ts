@@ -1,16 +1,19 @@
 import * as _fetch from 'isomorphic-fetch'
-import { makeThreadcap, InMemoryCache, updateThreadcap, makeRateLimitedFetcher } from 'threadcap'
+import { makeThreadcap, InMemoryCache, updateThreadcap, makeRateLimitedFetcher, Protocol } from 'threadcap'
 import { config } from '~/config'
 const { userAgent } = config
 const cache = new InMemoryCache()
 const fetcher = makeRateLimitedFetcher(_fetch)
 
-export const getThreadcap = async (url: string) => {
+export const getThreadcap = async (url: string, protocol: Protocol, bearerToken?: string) => {
   // initialize the threadcap
+
   const threadcap = await makeThreadcap(url, {
     userAgent,
     cache,
-    fetcher
+    fetcher,
+    protocol,
+    bearerToken
   })
 
   // update the threadcap, process all replies
@@ -22,7 +25,14 @@ export const getThreadcap = async (url: string) => {
       }
     }
   }
-  await updateThreadcap(threadcap, { updateTime: new Date().toISOString(), userAgent, cache, fetcher, callbacks })
+  await updateThreadcap(threadcap, {
+    updateTime: new Date().toISOString(),
+    userAgent,
+    cache,
+    fetcher,
+    callbacks,
+    bearerToken
+  })
 
   // final threadcap includes the comment/commenter info for the root post and all replies
   return threadcap
