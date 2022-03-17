@@ -14,7 +14,7 @@ import {
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
-import { getThreadcap } from '~/services/socialInteraction/activityPub'
+import { getThreadcap } from '~/services/socialInteraction/threadcap'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
@@ -86,6 +86,7 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
     const activityPub = episode.socialInteraction.find(
       (item: SocialInteraction) =>
         item.protocol === 'activitypub' ||
+        item.platform === 'activitypub' ||
         item.platform === 'castopod' ||
         item.platform === 'mastodon' ||
         item.platform === 'peertube'
@@ -94,7 +95,35 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
       throw new Error('No activityPub url found for episode.')
     }
 
-    const body = await getThreadcap(activityPub.url)
+    const protocol = 'activitypub'
+    const body = await getThreadcap(activityPub.url, protocol)
+    ctx.body = body
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+router.get('/:id/proxy/twitter', async (ctx) => {
+  try {
+    if (!ctx.params.id) throw new Error('An episodeId is required.')
+    const episode = await getEpisode(ctx.params.id)
+    if (!episode) {
+      throw new Error('No episode found with that id.')
+    }
+    if (!episode.socialInteraction || episode.socialInteraction.length === 0) {
+      throw new Error('No socialInteraction value found for episode.')
+    }
+
+    const twitter = episode.socialInteraction.find(
+      (item: SocialInteraction) => item.protocol === 'twitter' || item.platform === 'twitter'
+    )
+
+    if (!twitter || !twitter.url) {
+      throw new Error('No twitter url found for episode.')
+    }
+
+    const protocol = 'twitter'
+    const body = await getThreadcap(twitter.url, protocol, config.twitterAPIBearerToken)
     ctx.body = body
   } catch (error) {
     emitRouterError(error, ctx)
