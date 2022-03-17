@@ -122,6 +122,8 @@ router.get('/:id/proxy/twitter', async (ctx) => {
       throw new Error('No twitter url found for episode.')
     }
 
+    console.log('config.twitterAPIBearerToken', config.twitterAPIBearerToken, process.env.TWITTER_API_BEARER_TOKEN)
+
     const protocol = 'twitter'
     const body = await getThreadcap(twitter.url, protocol, config.twitterAPIBearerToken)
     ctx.body = body
