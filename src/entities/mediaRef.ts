@@ -29,6 +29,7 @@ export class MediaRef {
   })
   id: string
 
+  @Index()
   @Column()
   @Generated('increment')
   int_id: number

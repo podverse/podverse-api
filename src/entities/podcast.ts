@@ -55,6 +55,7 @@ export class Podcast {
   })
   id: string
 
+  @Index()
   @Column()
   @Generated('increment')
   int_id: number

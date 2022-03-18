@@ -24,6 +24,7 @@ export class Author {
   })
   id: string
 
+  @Index()
   @Column()
   @Generated('increment')
   int_id: number
