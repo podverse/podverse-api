@@ -33,7 +33,7 @@ export const runLiveItemListener = () => {
           const msg = JSON.parse(data)
           if (msg.t === 'podping') {
             for (const p of msg.p) {
-              if (p.p.reason === 'live') {
+              if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {
