@@ -101,6 +101,9 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
   let mediaRefIds = [] as any[]
   const { data, total } = result
+
+  console.log('getMediaRefsFromSearchEngine data', data, total)
+
   if (Array.isArray(data)) {
     mediaRefIds = data.map((x: any) => x.podverse_id)
   }
