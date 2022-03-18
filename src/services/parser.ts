@@ -62,7 +62,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       size: 20000000,
       signal: abortController.signal
     }).then((resp) => resp.text())
-    const parsedFeed = parseFeed(xml)
+    const parsedFeed = parseFeed(xml, { allowMissingGuid: true })
     logPerformance('podcastFetchAndParse', _logEnd)
 
     if (!parsedFeed) {
