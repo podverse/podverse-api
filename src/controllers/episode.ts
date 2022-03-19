@@ -151,10 +151,10 @@ const getEpisodesFromSearchEngine = async (query) => {
   query.episodeId = episodeIdsString
 
   const isFromManticoreSearch = true
-  return getEpisodes(query, isFromManticoreSearch)
+  return getEpisodes(query, isFromManticoreSearch, total)
 }
 
-const getEpisodes = async (query, isFromManticoreSearch?) => {
+const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
   const { episodeId, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
   const episodeIds = (episodeId && episodeId.split(',')) || []
 
@@ -174,7 +174,8 @@ const getEpisodes = async (query, isFromManticoreSearch?) => {
     allowRandom,
     shouldLimitCount,
     episodeIds,
-    isFromManticoreSearch
+    isFromManticoreSearch,
+    totalOverride
   )
 }
 
@@ -270,7 +271,8 @@ const handleGetEpisodesWithOrdering = async (
   allowRandom,
   shouldLimitCount,
   episodeIds?,
-  isFromManticoreSearch?
+  isFromManticoreSearch?,
+  totalOverride?
 ) => {
   const { skip, sort, take } = obj
   let { qb } = obj
@@ -289,6 +291,10 @@ const handleGetEpisodesWithOrdering = async (
     const results = await qb.offset(skip).limit(take).getManyAndCount()
     episodes = results[0] || []
     episodesCount = results[1] || 0
+  }
+
+  if (totalOverride) {
+    episodesCount = totalOverride
   }
 
   if (episodeIds?.length && isFromManticoreSearch) {
