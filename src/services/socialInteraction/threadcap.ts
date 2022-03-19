@@ -3,7 +3,25 @@ import { makeThreadcap, InMemoryCache, updateThreadcap, makeRateLimitedFetcher, 
 import { config } from '~/config'
 const { userAgent } = config
 const cache = new InMemoryCache()
-const fetcher = makeRateLimitedFetcher(_fetch)
+
+const fetcherWithTimeout = async (url, opts) => {
+  const abortController = new AbortController()
+  setTimeout(() => {
+    abortController.abort()
+  }, 3000) // 3 seconds
+
+  return await _fetch(url, {
+    ...opts,
+    signal: abortController.signal
+  })
+}
+
+const fetcher = makeRateLimitedFetcher(fetcherWithTimeout)
+
+let cacheTimeToLive = new Date().toISOString()
+setInterval(() => {
+  cacheTimeToLive = new Date().toISOString()
+}, 43200000) // 12 hours
 
 export const getThreadcap = async (url: string, protocol: Protocol, bearerToken?: string) => {
   // initialize the threadcap
@@ -25,8 +43,9 @@ export const getThreadcap = async (url: string, protocol: Protocol, bearerToken?
       }
     }
   }
+
   await updateThreadcap(threadcap, {
-    updateTime: new Date().toISOString(),
+    updateTime: cacheTimeToLive,
     userAgent,
     cache,
     fetcher,
