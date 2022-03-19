@@ -115,7 +115,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
   query.mediaRefId = mediaRefIdsString
 
   const isFromManticoreSearch = true
-  return getMediaRefs(query, isFromManticoreSearch, totalOverride)
+  return getMediaRefs(query, isFromManticoreSearch, total)
 }
 
 const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
