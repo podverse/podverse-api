@@ -115,10 +115,10 @@ const getMediaRefsFromSearchEngine = async (query) => {
   query.mediaRefId = mediaRefIdsString
 
   const isFromManticoreSearch = true
-  return getMediaRefs(query, isFromManticoreSearch)
+  return getMediaRefs(query, isFromManticoreSearch, totalOverride)
 }
 
-const getMediaRefs = async (query, isFromManticoreSearch) => {
+const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
   const includeNSFW = true
   const repository = getRepository(MediaRef)
   const { mediaRefId, searchTitle } = query
@@ -202,6 +202,10 @@ const getMediaRefs = async (query, isFromManticoreSearch) => {
     const results = await qb.offset(skip).limit(take).getManyAndCount()
     mediaRefs = results[0] || []
     mediaRefsCount = results[1] || 0
+  }
+
+  if (totalOverride) {
+    mediaRefsCount = totalOverride
   }
 
   const PIIScrubbedMediaRefs = mediaRefs.map((x: any) => {
