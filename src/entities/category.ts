@@ -25,6 +25,7 @@ export class Category {
   })
   id: string
 
+  @Index()
   @Column()
   @Generated('increment')
   int_id: number

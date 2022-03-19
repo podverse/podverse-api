@@ -26,6 +26,7 @@ export class FeedUrl {
   })
   id: string
 
+  @Index()
   @Column()
   @Generated('increment')
   int_id: number
