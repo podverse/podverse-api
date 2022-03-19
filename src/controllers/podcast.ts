@@ -103,7 +103,7 @@ const getPodcastsFromSearchEngine = async (query) => {
   const result = await searchApi.sql(`
       SELECT *
       FROM idx_podcast
-      WHERE match('*${searchTitle}*')
+      WHERE match('${searchTitle}')
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ${skip},${take};
   `)

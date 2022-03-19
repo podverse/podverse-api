@@ -93,7 +93,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
   const result = await searchApi.sql(`
       SELECT *
       FROM idx_media_ref
-      WHERE match('*${searchTitle}*')
+      WHERE match('${searchTitle}')
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ${skip},${take}
       OPTION ranker=expr('sum(lcs*user_weight)');
