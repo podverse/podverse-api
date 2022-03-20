@@ -34,6 +34,7 @@ export const runLiveItemListener = () => {
           if (msg.t === 'podping') {
             for (const p of msg.p) {
               if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
+                console.log('p.p', p.p)
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {
