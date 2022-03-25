@@ -7,6 +7,7 @@ import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
+const SqlString = require('sqlstring')
 const { superUserId } = config
 
 const relations = ['authors', 'categories', 'podcast', 'podcast.feedUrls', 'podcast.authors', 'podcast.categories']
@@ -127,20 +128,27 @@ const getEpisodesFromSearchEngine = async (query) => {
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  const result = await searchApi.sql(`
+  const safeSqlString = SqlString.format(
+    `
       SELECT *
       FROM idx_episode_dist
-      WHERE match('${searchTitle}')
+      WHERE match(?)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
-      LIMIT ${skip},${take}
+      LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
-  `)
+  `,
+    [searchTitle, skip, take]
+  )
+
+  const result = await searchApi.sql(safeSqlString)
 
   let episodeIds = [] as any[]
   const { data, total } = result
 
   if (Array.isArray(data)) {
     episodeIds = data.map((x: any) => x.podverse_id)
+  } else {
+    return [[], 0]
   }
 
   const episodeIdsString = episodeIds.join(',')

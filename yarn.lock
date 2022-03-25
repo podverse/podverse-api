@@ -6570,7 +6570,7 @@ mamacro@^0.0.3:
   resolved "https://registry.yarnpkg.com/mamacro/-/mamacro-0.0.3.tgz#ad2c9576197c9f1abf308d0787865bd975a3f3e4"
   integrity sha512-qMEwh+UujcQ+kbz3T6V+wAmO2U8veoq2w+3wY8MquqwVA3jChfwY+Tk52GZKDfACEPjuZ7r2oJLejwpt8jtwTA==
 
-manticoresearch@^2.0.2:
+manticoresearch@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/manticoresearch/-/manticoresearch-2.0.3.tgz#153238cb2322b7cbf1a47864b8453ec04cb951df"
   integrity sha512-DQLQUsvG6HfQNBKFyR9WIoIdZTAopn9FKyux0e8mVU0ORjmH+535yy5cj2/KdtGkK4nchRtUy/9glOv2lHp3Zg==
@@ -8904,6 +8904,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+sqlstring@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.3.tgz#2ddc21f03bce2c387ed60680e739922c65751d0c"
+  integrity sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==
 
 sshpk@^1.7.0:
   version "1.17.0"
