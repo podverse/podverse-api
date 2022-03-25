@@ -125,6 +125,10 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
 export const addFeedUrlsByPodcastIndexId = async (podcastIndexIds: string[], queueType = 'priority') => {
   try {
+    if (!podcastIndexIds || podcastIndexIds.length === 0) {
+      throw new Error('No podcastIndexIds provided.')
+    }
+
     // Call connectToDb prior to calling addFeedUrlsByPodcastIndexId
     const feedUrlRepo = getRepository(FeedUrl)
 

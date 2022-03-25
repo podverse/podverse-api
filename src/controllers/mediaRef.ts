@@ -6,6 +6,7 @@ import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 const createError = require('http-errors')
+const SqlString = require('sqlstring')
 const { superUserId } = config
 
 const relations = [
@@ -90,14 +91,19 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  const result = await searchApi.sql(`
+  const safeSqlString = SqlString.format(
+    `
       SELECT *
       FROM idx_media_ref
-      WHERE match('${searchTitle}')
+      WHERE match(?)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
-      LIMIT ${skip},${take}
+      LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
-  `)
+  `,
+    [searchTitle, skip, take]
+  )
+
+  const result = await searchApi.sql(safeSqlString)
 
   let mediaRefIds = [] as any[]
   const { data, total } = result
@@ -106,7 +112,10 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
   if (Array.isArray(data)) {
     mediaRefIds = data.map((x: any) => x.podverse_id)
+  } else {
+    return [[], 0]
   }
+
   const mediaRefIdsString = mediaRefIds.join(',')
   if (!mediaRefIdsString) return [data, total]
 

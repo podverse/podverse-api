@@ -4,8 +4,8 @@ import { FeedUrl, Podcast, User } from '~/entities'
 import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
-
 const createError = require('http-errors')
+const SqlString = require('sqlstring')
 
 const getPodcast = async (id, includeRelations = true) => {
   const repository = getRepository(Podcast)
@@ -100,20 +100,28 @@ const getPodcastsFromSearchEngine = async (query) => {
 
   if (!searchTitle) throw new Error('Must provide a searchTitle.')
 
-  const result = await searchApi.sql(`
+  const safeSqlString = SqlString.format(
+    `
       SELECT *
       FROM idx_podcast
-      WHERE match('${searchTitle}')
+      WHERE match(?)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
-      LIMIT ${skip},${take};
-  `)
+      LIMIT ?,?;
+  `,
+    [searchTitle, skip, take]
+  )
+
+  const result = await searchApi.sql(safeSqlString)
 
   let podcastIds = [] as any[]
   const { data, total } = result
 
   if (Array.isArray(data)) {
     podcastIds = data.map((x: any) => x.podverse_id)
+  } else {
+    return [[], 0]
   }
+
   const podcastIdsString = podcastIds.join(',')
   if (!podcastIdsString) return [data, total]
 
