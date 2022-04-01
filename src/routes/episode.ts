@@ -91,12 +91,15 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
         item.platform === 'mastodon' ||
         item.platform === 'peertube'
     )
-    if (!activityPub || !activityPub.url) {
-      throw new Error('No activityPub url found for episode.')
+
+    const finalUrl = activityPub?.uri || activityPub?.url
+
+    if (!finalUrl) {
+      throw new Error('No activityPub uri or url found for episode.')
     }
 
     const protocol = 'activitypub'
-    const body = await getThreadcap(activityPub.url, protocol)
+    const body = await getThreadcap(finalUrl, protocol)
     ctx.body = body
   } catch (error) {
     emitRouterError(error, ctx)
@@ -118,14 +121,14 @@ router.get('/:id/proxy/twitter', async (ctx) => {
       (item: SocialInteraction) => item.protocol === 'twitter' || item.platform === 'twitter'
     )
 
-    if (!twitter || !twitter.url) {
-      throw new Error('No twitter url found for episode.')
+    const finalUrl = twitter?.uri || twitter?.url
+
+    if (!finalUrl) {
+      throw new Error('No twitter uri or url found for episode.')
     }
 
-    console.log('config.twitterAPIBearerToken', config.twitterAPIBearerToken, process.env.TWITTER_API_BEARER_TOKEN)
-
     const protocol = 'twitter'
-    const body = await getThreadcap(twitter.url, protocol, config.twitterAPIBearerToken)
+    const body = await getThreadcap(finalUrl, protocol, config.twitterAPIBearerToken)
     ctx.body = body
   } catch (error) {
     emitRouterError(error, ctx)

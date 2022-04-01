@@ -4665,6 +4665,11 @@ html-encoding-sniffer@^2.0.1:
   dependencies:
     whatwg-encoding "^1.0.5"
 
+html-entities@^2.3.2:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.3.3.tgz#117d7626bece327fc8baace8868fa6f5ef856e46"
+  integrity sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==
+
 html-escaper@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.2.tgz#dfd60027da36a36dfcbe236262c00a5822681453"
@@ -7802,11 +7807,13 @@ podcast-partytime@4.3.3-beta.3:
     pino "^7.0.5"
     ramda "^0.27.1"
 
-podverse-shared@^4.2.8:
-  version "4.2.8"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.2.8.tgz#27131b733adad23a4b0e42b3602adb387ed27346"
-  integrity sha512-gU2CvYlIUzi65t1ZfiG2feDaHP3etV1vO6bpApuktC89cHgwl4mJOFRfkYx5wylXYCXINIi1HpSAU3ukHme8TQ==
+podverse-shared@^4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.3.3.tgz#4ee66e5981bd3e643be6fa8aefc57fdde1945772"
+  integrity sha512-WhIhYvnLPRzR5aIZkf+u1N8EauW6Cfg7IRWflp/IPCqveWS16RJ5GrDuDZNG4hI+ruaPKBrLokkzmUWS70m95Q==
   dependencies:
+    html-entities "^2.3.2"
+    striptags "^3.2.0"
     typescript "3.9.7"
 
 posix-character-classes@^0.1.0:
@@ -9172,6 +9179,11 @@ strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
+
+striptags@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/striptags/-/striptags-3.2.0.tgz#cc74a137db2de8b0b9a370006334161f7dd67052"
+  integrity sha512-g45ZOGzHDMe2bdYMdIvdAfCQkCTDMGBazSw1ypMowwGIee7ZQ5dU0rBJ8Jqgl+jAKIv4dbeE1jscZq9wid1Tkw==
 
 strnum@^1.0.4:
   version "1.0.5"
