@@ -25,9 +25,12 @@ const getEpisode = async (id) => {
     throw new createError.NotFound('Episode not found')
   } else if (!episode.isPublic) {
     // If a public version of the episode isn't available, check if a newer public version
-    // of the episode is available and return that. Don't return the non-public version
-    // because it is more likely to contain a dead / out-of-date mediaUrl.
-    // Non-public episodes may be attached to old mediaRefs that are still accessible on clip pages.
+    // of the episode is available and return that.
+    // Otherwise, return the non-public version of the episode. Any episode that no longer appears
+    // in an RSS feed is marked as isPublic=false, so there is no guarantee that an isPublic=false
+    // podcast will still work. The front-end should provide (but doesn't yet) some kind of disclaimer
+    // to the user that the non-public episode they are viewing may be out of date and not accessible any more.
+    // Also, non-public episodes may be attached to old mediaRefs that are still accessible on clip pages.
     const publicEpisode = await repository.findOne(
       {
         isPublic: true,
@@ -37,11 +40,7 @@ const getEpisode = async (id) => {
       { relations }
     )
 
-    if (publicEpisode) {
-      return publicEpisode
-    } else {
-      return null
-    }
+    return publicEpisode || episode
   }
 
   return episode
