@@ -47,6 +47,7 @@ declare module 'koa' {
 }
 
 const rootRouter = new Router()
+const routePrefix = `${config.apiPrefix}${config.apiVersion}`
 
 const timeAppStarted = Date.now()
 
@@ -115,6 +116,10 @@ export const createApp = async (conn: Connection) => {
 
     rootRouter.get('/', async (ctx) => {
       ctx.body = 'Please visit /api/v1/swagger for current documentation.'
+    })
+
+    rootRouter.head(`${routePrefix}/network-reachability-check`, async (ctx) => {
+      ctx.status = 204
     })
 
     app.use(rootRouter.routes())
