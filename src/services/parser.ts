@@ -35,6 +35,7 @@ type ParsedEpisode = {
   pubDate: any
   socialInteraction: any[]
   soundbite: any[]
+  subtitle?: string
   summary?: string
   title?: string
   transcript: any[]
@@ -138,6 +139,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         pubDate: episode.pubDate,
         socialInteraction: episode.podcastSocialInteraction ?? [],
         soundbite: episode.podcastSoundbites ?? [],
+        subtitle: episode.subtitle,
         summary: episode.summary,
         title: episode.title,
         transcript: episode.podcastTranscripts ?? [],
@@ -164,6 +166,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         pubDate: null,
         socialInteraction: [],
         soundbite: [],
+        subtitle: '', // liveItem.subtitle,
         summary: '', // liveItem.summary,
         title: liveItem.title,
         transcript: [],
@@ -283,6 +286,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.linkUrl = meta.link
     podcast.medium = meta.medium
     podcast.sortableTitle = meta.title ? convertToSortableTitle(meta.title) : ''
+    podcast.subtitle = meta.subtitle
     podcast.title = meta.title
     podcast.type = meta.type
     podcast.value = meta.value
@@ -674,6 +678,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
 
   episode.socialInteraction = parsedEpisode.socialInteraction
   episode.soundbite = parsedEpisode.soundbite
+  episode.subtitle = parsedEpisode.subtitle
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
   episode.value = parsedEpisode.value

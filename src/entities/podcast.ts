@@ -192,6 +192,9 @@ export class Podcast {
   @Column({ nullable: true })
   sortableTitle?: string
 
+  @Column({ nullable: true })
+  subtitle?: string
+
   @Index()
   @Column({ nullable: true })
   title?: string

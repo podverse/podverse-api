@@ -175,6 +175,9 @@ export class Episode {
   @Column('simple-json', { nullable: true })
   socialInteraction: SocialInteraction[]
 
+  @Column({ nullable: true })
+  subtitle?: string
+
   @Index()
   @Column({ nullable: true })
   title?: string
