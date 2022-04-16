@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm'
 import { config } from '~/config'
 import { MediaRef } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
-import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
+import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 const createError = require('http-errors')
@@ -89,7 +89,8 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
 
-  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+  const cleanedSearchTitle = removeAllSpaces(searchTitle)
+  if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
 
   const safeSqlString = SqlString.format(
     `
@@ -100,7 +101,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
       LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
   `,
-    [searchTitle, skip, take]
+    [cleanedSearchTitle, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)

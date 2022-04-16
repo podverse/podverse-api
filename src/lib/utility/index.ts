@@ -248,3 +248,9 @@ export const parseProp = (item: any, key: string, defaultValue: any) => {
 export const generateShortId = () => {
   return shortid.generate().slice(-14)
 }
+
+export const removeAllSpaces = (str: string) => {
+  str = str.replace(/%20/g, ' ')
+  str = str.replace(/\s/g, '')
+  return str
+}
