@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
-import { addOrderByToQuery, getManticoreOrderByColumnName } from '~/lib/utility'
+import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
 const createError = require('http-errors')
@@ -97,8 +97,8 @@ const getPodcastsFromSearchEngine = async (query) => {
   const { searchTitle, skip, sort, take } = query
 
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
-
-  if (!searchTitle) throw new Error('Must provide a searchTitle.')
+  const cleanedSearchTitle = removeAllSpaces(searchTitle)
+  if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
 
   const safeSqlString = SqlString.format(
     `
@@ -108,7 +108,7 @@ const getPodcastsFromSearchEngine = async (query) => {
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ?,?;
   `,
-    [searchTitle, skip, take]
+    [cleanedSearchTitle, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)
