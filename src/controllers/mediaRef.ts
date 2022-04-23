@@ -334,7 +334,7 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
 
 const refreshMediaRefsVideosMaterializedView = async () => {
   const em = await getConnection().createEntityManager()
-  await em.query('REFRESH MATERIALIZED VIEW mediaRefs_videos')
+  await em.query('REFRESH MATERIALIZED VIEW "mediaRefs_videos"')
 }
 
 export {
