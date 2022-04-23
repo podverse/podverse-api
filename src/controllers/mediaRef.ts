@@ -1,6 +1,6 @@
-import { getRepository } from 'typeorm'
+import { getConnection, getRepository } from 'typeorm'
 import { config } from '~/config'
-import { MediaRef } from '~/entities'
+import { MediaRef, MediaRefVideos } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
@@ -128,15 +128,16 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
 const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
   const includeNSFW = true
-  const repository = getRepository(MediaRef)
   const { mediaRefId, searchTitle } = query
   const mediaRefIds = (mediaRefId && mediaRefId.split(',')) || []
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
   const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
   const categoriesIds = (query.categories && query.categories.split(',')) || []
-  const { /* hasVideo,*/ includeEpisode, includePodcast, skip, take } = query
+  const { hasVideo, includeEpisode, includePodcast, skip, take } = query
+  const repositoryName = hasVideo ? MediaRefVideos : MediaRef
 
-  // ${hasVideo ? `AND episode.mediaType = 'video/%'` : ''}
+  const repository = getRepository(repositoryName)
+
   const queryConditions = `
     episode.isPublic = true
     ${includeNSFW ? '' : 'AND episode.isExplicit = :isExplicit'}
@@ -331,6 +332,11 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
   }
 }
 
+const refreshMediaRefsVideosMaterializedView = async () => {
+  const em = await getConnection().createEntityManager()
+  await em.query('REFRESH MATERIALIZED VIEW mediaRefs_videos')
+}
+
 export {
   createMediaRef,
   deleteMediaRef,
@@ -338,6 +344,7 @@ export {
   getMediaRefs,
   getMediaRefsFromSearchEngine,
   getPublicMediaRefsByEpisodeMediaUrl,
+  refreshMediaRefsVideosMaterializedView,
   updateMediaRef,
   updateSoundBites
 }
