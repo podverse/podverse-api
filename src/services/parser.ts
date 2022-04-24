@@ -105,7 +105,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         funding: Array.isArray(feed.podcastFunding) ? feed.podcastFunding?.map((f) => fundingCompat(f)) : [],
         generator: feed.generator,
         guid: feed.guid,
-        imageURL: feed.itunesImage,
+        imageURL: feed.itunesImage || feed.image?.url,
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
