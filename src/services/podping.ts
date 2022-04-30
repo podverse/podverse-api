@@ -1,16 +1,17 @@
 import { getFeedUrlByUrl } from '~/controllers/feedUrl'
+import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { addFeedUrlsByPodcastIndexId } from './queue'
 const ws = require('ws')
 
 export const runLiveItemListener = () => {
-  console.log('starting runLiveItemListener')
+  logPerformance('starting runLiveItemListener', _logStart)
 
   /*
     Run an interval to keep the node script running forever.
     Is there a better way to do this?
   */
   setInterval(() => {
-    console.log('runLiveItemListener interval')
+    logPerformance('runLiveItemListener interval', _logStart)
   }, 100000000)
 
   let openedSocket: boolean | null = null
@@ -20,10 +21,10 @@ export const runLiveItemListener = () => {
   function connect() {
     const client = new ws(url)
     return new Promise((resolve, reject) => {
-      console.log('client try to connect...')
+      logPerformance('client try to connect...', _logStart)
 
       client.on('open', () => {
-        console.log('WEBSOCKET_OPEN: client connected to server at %s', url)
+        logPerformance(`WEBSOCKET_OPEN: client connected to server at ${url}`, _logStart)
         openedSocket = true
         resolve(openedSocket)
       })
@@ -34,7 +35,7 @@ export const runLiveItemListener = () => {
           if (msg.t === 'podping') {
             for (const p of msg.p) {
               if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
-                console.log('p.p', p.p)
+                logPerformance(`p.p ${p.p}`, _logStart)
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {
@@ -44,7 +45,7 @@ export const runLiveItemListener = () => {
                       if (podcastIndexId) podcastIndexIds.push(podcastIndexId)
                     }
                   } catch (err) {
-                    console.log('p.p.iris error', err)
+                    logPerformance(`p.p.iris error ${err}`, _logStart)
                   }
                 }
                 const queueType = 'live'
@@ -53,18 +54,18 @@ export const runLiveItemListener = () => {
             }
           }
         } catch (err) {
-          console.log('message error:', err)
+          logPerformance(`message error: ${err}`, _logEnd)
         }
       })
 
       client.on('close', (err) => {
-        console.log('WEBSOCKET_CLOSE: connection closed %o', err)
+        logPerformance(`WEBSOCKET_CLOSE: connection closed ${err}`, _logEnd)
         openedSocket = false
         reject(err)
       })
 
       client.on('error', (err) => {
-        console.log('WEBSOCKET_ERROR: Error', new Error(err.message))
+        logPerformance(`WEBSOCKET_ERROR: Error ${new Error(err.message)}`, _logEnd)
         openedSocket = false
         reject(err)
       })
@@ -75,7 +76,7 @@ export const runLiveItemListener = () => {
     try {
       await connect()
     } catch (err) {
-      console.log('WEBSOCKET_RECONNECT: Error', new Error(err).message)
+      logPerformance(`WEBSOCKET_RECONNECT: Error ${new Error(err).message}`, _logStart)
     }
   }
 
