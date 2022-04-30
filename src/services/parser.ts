@@ -1,7 +1,7 @@
 import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
-import type { Funding } from 'podverse-shared'
+import { Funding, ParsedEpisode, parseLatestLiveItemStatus } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
@@ -15,32 +15,6 @@ import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
-
-type ParsedEpisode = {
-  alternateEnclosures: any[]
-  author: any[]
-  chapters?: any
-  contentLinks: any[]
-  description?: string
-  duration?: any
-  enclosure: any
-  explicit: boolean
-  // funding: any[]
-  guid?: string
-  imageURL?: string
-  link?: string
-  liveItemEnd?: Date | null
-  liveItemStart?: Date
-  liveItemStatus?: 'pending' | 'live' | 'ended'
-  pubDate: any
-  socialInteraction: any[]
-  soundbite: any[]
-  subtitle?: string
-  summary?: string
-  title?: string
-  transcript: any[]
-  value: any[]
-}
 
 interface ExtendedEpisode extends Episode {
   soundbite: any[]
@@ -178,6 +152,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     let parsedEpisodes = parsedFeed.items.map(itemCompat)
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
     const hasLiveItem = parsedLiveItemEpisodes.length > 0
+    const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
+
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
     let podcast = new Podcast()
@@ -283,6 +259,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       podcast.lastEpisodeTitle = ''
     }
 
+    podcast.latestLiveItemStatus = latestLiveItemStatus
     podcast.linkUrl = meta.link
     podcast.medium = meta.medium
     podcast.sortableTitle = meta.title ? convertToSortableTitle(meta.title) : ''

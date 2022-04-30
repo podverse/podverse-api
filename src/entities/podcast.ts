@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import type { PodcastMedium } from 'podverse-shared'
+import type { LiveItemStatus, PodcastMedium } from 'podverse-shared'
 import { Author, Category, Episode, FeedUrl } from '~/entities'
 import {
   BeforeInsert,
@@ -123,6 +123,14 @@ export class Podcast {
 
   @Column({ nullable: true })
   lastFoundInPodcastIndex?: Date
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'live', 'ended', 'none'],
+    default: 'none'
+  })
+  latestLiveItemStatus: LiveItemStatus
 
   @ValidateIf((a) => a.linkUrl != null)
   @IsUrl()

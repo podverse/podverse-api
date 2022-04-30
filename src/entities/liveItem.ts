@@ -1,3 +1,4 @@
+import { LiveItemStatus } from 'podverse-shared'
 import {
   Column,
   CreateDateColumn,
@@ -8,8 +9,6 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { Episode } from '.'
-
-type LiveItemStatus = 'pending' | 'live' | 'ended'
 
 @Entity('liveItems')
 export class LiveItem {
