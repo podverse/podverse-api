@@ -13,6 +13,7 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
+import { getLiveItemByMediaUrl } from '~/controllers/liveItem'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -677,7 +678,12 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   episode.podcast = podcast
 
   if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus) {
-    const liveItem = new LiveItem()
+    let liveItem = await getLiveItemByMediaUrl(parsedEpisode.enclosure.url, podcast.id)
+
+    if (!liveItem) {
+      liveItem = new LiveItem()
+    }
+
     liveItem.end = parsedEpisode.liveItemEnd || null
     liveItem.start = parsedEpisode.liveItemStart
     liveItem.status = parsedEpisode.liveItemStatus
