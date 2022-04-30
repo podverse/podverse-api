@@ -94,6 +94,7 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
     .addSelect('episode.value')
 
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
+  qb.leftJoin('episode.liveItem', 'liveItem')
 
   // Throws an error if searchTitle is defined but invalid
   if (searchTitle) validateSearchQueryString(searchTitle)
@@ -109,6 +110,8 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
   if (hasVideo) {
     qb.andWhere(`episode."mediaType" LIKE 'video%'`)
   }
+
+  qb.andWhere('"liveItem" IS null')
 
   return qb
 }
