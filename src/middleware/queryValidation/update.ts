@@ -111,6 +111,7 @@ const validateUserNowPlayingItemUpdate = async (ctx, next) => {
   const schema = Joi.object().keys({
     episodeId: Joi.string().allow(null),
     mediaRefId: Joi.string().allow(null),
+    liveItem: Joi.object().allow(null),
     userPlaybackPosition: Joi.number().integer().min(0).required()
   })
 
