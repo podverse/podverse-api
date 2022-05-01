@@ -10,7 +10,15 @@ const createError = require('http-errors')
 const SqlString = require('sqlstring')
 const { superUserId } = config
 
-const relations = ['authors', 'categories', 'podcast', 'podcast.feedUrls', 'podcast.authors', 'podcast.categories']
+const relations = [
+  'authors',
+  'categories',
+  'liveItem',
+  'podcast',
+  'podcast.feedUrls',
+  'podcast.authors',
+  'podcast.categories'
+]
 
 const getEpisode = async (id) => {
   const repository = getRepository(Episode)
@@ -94,7 +102,7 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
     .addSelect('episode.value')
 
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
-  qb.leftJoin('episode.liveItem', 'liveItem')
+  qb.leftJoinAndSelect('episode.liveItem', 'liveItem')
 
   // Throws an error if searchTitle is defined but invalid
   if (searchTitle) validateSearchQueryString(searchTitle)
