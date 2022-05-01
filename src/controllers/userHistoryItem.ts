@@ -53,6 +53,7 @@ export const cleanUserItemResult = (result) => {
       episodeTranscript: parseProp(result, 'episodeTranscript', []),
       episodeValue: parseProp(result, 'episodeValue', []),
       id: result.id,
+      liveItem: result.liveItem,
       podcastFunding: parseProp(result, 'podcastFunding', []),
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
@@ -142,6 +143,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipPodcast.title', 'clipPodcastTitle')
     .addSelect('clipPodcast.value', 'clipPodcastValue')
     .leftJoin(`${tableName}.episode`, 'episode')
+    .leftJoinAndSelect(`episode.liveItem`, 'liveItem')
     .leftJoin('episode.podcast', 'podcast')
     .leftJoin(`${tableName}.mediaRef`, 'mediaRef')
     .leftJoin('mediaRef.episode', 'clipEpisode')
@@ -184,6 +186,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     .addSelect('episode.id', 'episodeId')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
     .leftJoin('userHistoryItem.episode', 'episode')
+    .leftJoinAndSelect('episode.liveItem', 'liveItem')
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .orderBy('userHistoryItem.orderChangedDate', 'DESC')
@@ -221,6 +224,7 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
     .addSelect('episode.id', 'e')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
     .leftJoin('userHistoryItem.episode', 'episode')
+    .leftJoinAndSelect('episode.liveItem', 'liveItem')
     .leftJoin('userHistoryItem.owner', 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .orderBy('userHistoryItem.orderChangedDate', 'DESC')
@@ -247,7 +251,8 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { completed, episodeId, forceUpdateOrderDate, mediaFileDuration, mediaRefId, userPlaybackPosition } = query
+  const { completed, episodeId, forceUpdateOrderDate, liveItem, mediaFileDuration, mediaRefId, userPlaybackPosition } =
+    query
 
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
@@ -286,6 +291,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
       .addSelect('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
       .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
       .leftJoin('userHistoryItem.episode', 'episode')
+      .leftJoinAndSelect('episode.liveItem', 'liveItem')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
       .where('owner.id = :loggedInUserId', { loggedInUserId })
@@ -295,8 +301,13 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   }
 
   userHistoryItem = userHistoryItem ? userHistoryItem : new UserHistoryItem()
-  if (mediaFileDuration) userHistoryItem.mediaFileDuration = mediaFileDuration
-  userHistoryItem.userPlaybackPosition = userPlaybackPosition
+  if (mediaFileDuration && !liveItem) userHistoryItem.mediaFileDuration = mediaFileDuration
+
+  if (liveItem) {
+    userHistoryItem.userPlaybackPosition = 0
+  } else {
+    userHistoryItem.userPlaybackPosition = userPlaybackPosition
+  }
 
   if (completed === true || completed === false) {
     userHistoryItem.completed = completed
