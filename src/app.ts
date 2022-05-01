@@ -19,6 +19,7 @@ import {
   clipsRouter,
   devAdminRouter,
   episodeRouter,
+  fcmRouter,
   feedUrlRouter,
   googlePlayRouter,
   liveItemRouter,
@@ -154,6 +155,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(episodeRouter.routes())
     app.use(episodeRouter.allowedMethods())
+
+    app.use(fcmRouter.routes())
+    app.use(fcmRouter.allowedMethods())
 
     app.use(feedUrlRouter.routes())
     app.use(feedUrlRouter.allowedMethods())

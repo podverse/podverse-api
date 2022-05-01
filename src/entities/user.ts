@@ -16,7 +16,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { BitPayInvoice, MediaRef, PayPalOrder, Playlist, UserHistoryItem, UserQueueItem } from '~/entities'
+import { BitPayInvoice, FCM, MediaRef, PayPalOrder, Playlist, UserHistoryItem, UserQueueItem } from '~/entities'
 import { ValidatePassword } from '~/entities/validation/password'
 import { AppStorePurchase } from './appStorePurchase'
 import { GooglePlayPurchase } from './googlePlayPurchase'
@@ -153,6 +153,9 @@ export class User {
 
   @OneToMany((type) => BitPayInvoice, (bitpayInvoice) => bitpayInvoice.owner)
   bitpayInvoices: BitPayInvoice[]
+
+  @OneToMany((type) => FCM, (fcm) => fcm.podcast)
+  fcms: FCM[]
 
   @OneToMany((type) => GooglePlayPurchase, (googlePlayPurchase) => googlePlayPurchase.owner)
   googlePlayPurchases: GooglePlayPurchase[]
