@@ -35,7 +35,7 @@ export const getUserNowPlayingItem = async (loggedInUserId) => {
 }
 
 export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) => {
-  const { clipId, episodeId, userPlaybackPosition = 0 } = nowPlayingItem
+  const { clipId, episodeId, liveItem, userPlaybackPosition = 0 } = nowPlayingItem
 
   if (!loggedInUserId) {
     throw new createError.Unauthorized('Log in to update the now playing item')
@@ -59,7 +59,7 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
   }
 
   const repository = getRepository(UserNowPlayingItem)
-
+  const isLiveItem = !!liveItem
   const userNowPlayingItem = currentNowPlayingItem || new UserNowPlayingItem()
   delete userNowPlayingItem.episode
   delete userNowPlayingItem.episodeId
@@ -78,7 +78,12 @@ export const updateUserNowPlayingItem = async (nowPlayingItem, loggedInUserId) =
   }
 
   userNowPlayingItem.owner = loggedInUserId
-  userNowPlayingItem.userPlaybackPosition = userPlaybackPosition
+
+  if (isLiveItem) {
+    userNowPlayingItem.userPlaybackPosition = 0
+  } else {
+    userNowPlayingItem.userPlaybackPosition = userPlaybackPosition
+  }
 
   await validateClassOrThrow(userNowPlayingItem)
 
