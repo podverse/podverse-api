@@ -81,6 +81,9 @@ export class User {
   @Column({ default: false })
   isDevAdmin: boolean
 
+  @Column({ default: false })
+  isPodpingAdmin: boolean
+
   @Index()
   @Column({ default: false })
   isPublic: boolean

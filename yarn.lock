@@ -655,6 +655,14 @@
   resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-3.0.0.tgz#851489a9065a067cb7f3c9cbe4ce9bed8bba0876"
   integrity sha512-nohgNyv+1ViVcubKBh0+XiNJ3dO8nYu///9aJ4cgSqv70gBL+94SNy/iC2NLzKPT2Zt/QavrOkBVbZRLZmw6NQ==
 
+"@types/blue-tape@^0.1.30":
+  version "0.1.33"
+  resolved "https://registry.yarnpkg.com/@types/blue-tape/-/blue-tape-0.1.33.tgz#61796d4f0455a00a61be59e52288cb3428209804"
+  integrity sha512-l5cQcLM3aPh55bBQ4geWQ8hZ4Ew+s4RvyhMaBpgW3aJ2HUfRgwd8ENKrk/utC4Hz1dJAiehyIa4vN6emxBMaog==
+  dependencies:
+    "@types/node" "*"
+    "@types/tape" "*"
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -916,6 +924,11 @@
   dependencies:
     "@types/koa" "*"
 
+"@types/lodash@4.14.119":
+  version "4.14.119"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.119.tgz#be847e5f4bc3e35e46d041c394ead8b603ad8b39"
+  integrity sha512-Z3TNyBL8Vd/M9D9Ms2S3LmFq2sSMzahodD6rCS9V2N44HUMINb75jNkSuwAx7eo2ufqTdfOdtGQpNbieUjPQmw==
+
 "@types/mime@^1":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.2.tgz#93e25bf9ee75fe0fd80b594bc4feb0e862111b5a"
@@ -1042,6 +1055,13 @@
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
   integrity sha512-ipixuVrh2OdNmauvtT51o3d8z12p6LtFW9in7U79der/kwejjdNchQC5UMn5u/KxNoM7VHHOs/l8KS8uHxhODQ==
+
+"@types/tape@*":
+  version "4.13.2"
+  resolved "https://registry.yarnpkg.com/@types/tape/-/tape-4.13.2.tgz#77215c065b1c7840da3ca5e061337bb4c7258122"
+  integrity sha512-V1ez/RtYRGN9cNYApw5xf27DpMkTB0033X6a2i3KUmKhSojBfbWN0i3EgZxboUG96WJLHLdOyZ01aiZwVW5aSA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/uglify-js@*":
   version "3.13.2"
@@ -2419,6 +2439,15 @@ cli-highlight@^2.0.0:
     parse5-htmlparser2-tree-adapter "^6.0.0"
     yargs "^16.0.0"
 
+cli-table-2-json@1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/cli-table-2-json/-/cli-table-2-json-1.0.13.tgz#33d5be36851477854b004356197a6409c7370aea"
+  integrity sha512-CpUj9dubfuIZSEezwUPycAJqM2dlATyyRUyBkfGeK2KNfrqK3XrdaBohMt0XlkEvsZyDfUEmPWCNvUO+a/7Wsw==
+  dependencies:
+    "@types/blue-tape" "^0.1.30"
+    "@types/lodash" "4.14.119"
+    lodash "^4.17.15"
+
 cli-truncate@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/cli-truncate/-/cli-truncate-0.2.1.tgz#9f15cfbb0705005369216c626ac7d05ab90dd574"
@@ -3123,6 +3152,24 @@ dir-glob@^3.0.1:
   integrity sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==
   dependencies:
     path-type "^4.0.0"
+
+docker-cli-js@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/docker-cli-js/-/docker-cli-js-2.9.0.tgz#1584461134cbb6beb548fed2c33de8f5593280bf"
+  integrity sha512-wl6M3uQmrR1Tak/U0mix4om6scuuGeOIcH3WIhJXGGu/KcnS5F3M5/yb8I7N3yn0l1tmf6mTmy/BbDMnDaEXtA==
+  dependencies:
+    cli-table-2-json "1.0.13"
+    dockermachine-cli-js "3.0.5"
+    lodash.snakecase "^4.1.1"
+    nodeify-ts "1.0.6"
+
+dockermachine-cli-js@3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/dockermachine-cli-js/-/dockermachine-cli-js-3.0.5.tgz#7e7aa37adba885572e6b59ed9050fe347e558227"
+  integrity sha512-oV9RRKGvWrvsGl8JW9TWKpjBJVGxn/1qMvhqwPJiOPfRES0+lrq/Q8Wzixb6qinuXPVBhlWqhXb/Oxrh6Vuf/g==
+  dependencies:
+    cli-table-2-json "1.0.13"
+    nodeify-ts "1.0.6"
 
 doctrine@^2.1.0:
   version "2.1.0"
@@ -6462,6 +6509,11 @@ lodash.once@^4.0.0:
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
 
+lodash.snakecase@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.snakecase/-/lodash.snakecase-4.1.1.tgz#39d714a35357147837aefd64b5dcbb16becd8f8d"
+  integrity sha1-OdcUo1NXFHg3rv1ktdy7Fr7Nj40=
+
 lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.3, lodash@^4.17.5, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -7052,6 +7104,11 @@ node-releases@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.3.tgz#225ee7488e4a5e636da8da52854844f9d716ca96"
   integrity sha512-maHFz6OLqYxz+VQyCAtA3PTX4UP/53pa05fyDNc9CwjvJ0yEh6+xBwKsgCxMNhS8taUKBFYxfuiaD9U/55iFaw==
+
+nodeify-ts@1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/nodeify-ts/-/nodeify-ts-1.0.6.tgz#ceef172c4fad1a45a1ae60a31c7e295150b5e221"
+  integrity sha512-jq+8sqVG1aLqy5maMTceL8NUJ1CvarWztlxvrYh3G0aao9BsVeoVmVedUnrUSBLetP7oLIAJrPrw4+iIo7v3GA==
 
 nodemailer@6.6.1:
   version "6.6.1"
