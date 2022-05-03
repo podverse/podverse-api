@@ -35,7 +35,7 @@ export const runLiveItemListener = () => {
           if (msg.t === 'podping') {
             for (const p of msg.p) {
               if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
-                logPerformance(`p.p ${p.p}`, _logStart)
+                logPerformance(`p.p ${JSON.stringify(p.p)}`, _logStart)
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {
