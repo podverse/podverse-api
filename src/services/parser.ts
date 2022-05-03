@@ -175,6 +175,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       !forceReparsing &&
       podcast.feedLastUpdated &&
       mostRecentDateFromFeed &&
+      // we always want to parse feeds that have liveItem tags, so we get the latest liveItem status
+      !hasLiveItem &&
       new Date(podcast.feedLastUpdated) >= new Date(mostRecentDateFromFeed) &&
       !podcast.alwaysFullyParse
     ) {
@@ -619,13 +621,37 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
   }, [])
   const mostRecentEpisodePubDate = mostRecentEpisode && mostRecentEpisode.pubDate
 
+  /*
+    NOTE: This helper is needed to let us know if a feed has been updated recently
+    and has to be fully parsed, or if it hasn't been updated recently and can be skipped.
+    We usually want to use the lastBuildDate when it is available
+    because sometimes a feed will update/remove old episodes, without adding a new mostRecentEpisode.
+    HOWEVER, there are some feeds that always return the current time as the lastBuildDate,
+    and in those cases, the lastBuildDate will always be more recent than the mostRecentEpisode.pubDate,
+    so the feed will never parse...
+    AND...if PodPing tells us to update a feed, it is possible that we receive that notification
+    very shortly after the lastBuildDate is set for a podcast...
+    SO to handle all this, I'm always using the lastBuildDate *unless* the lastBuildDate is within
+    2 minutes of the current time, in which case we'll use the mostRecentEpisode.pubDate instead,
+    and feeds that have any liveItems will always be fully parsed no matter what.
+  */
+
+  const currentDateTime = new Date()
+  const currentDateTimeTwoMinutesEarlier = new Date(currentDateTime)
+  currentDateTimeTwoMinutesEarlier.setMinutes(currentDateTime.getMinutes() - 2)
   if (!meta.lastBuildDate && mostRecentEpisodePubDate) {
     mostRecentDateFromFeed = mostRecentEpisodePubDate
   } else if (!mostRecentEpisodePubDate && meta.lastBuildDate) {
     mostRecentDateFromFeed = meta.lastBuildDate
   } else if (meta.lastBuildDate && mostRecentEpisodePubDate) {
-    mostRecentDateFromFeed =
-      new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate) ? mostRecentEpisodePubDate : meta.lastBuildDate
+    if (new Date(meta.lastBuildDate) > currentDateTimeTwoMinutesEarlier) {
+      mostRecentDateFromFeed = mostRecentEpisodePubDate
+    } else {
+      mostRecentDateFromFeed =
+        new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate)
+          ? mostRecentEpisodePubDate
+          : meta.lastBuildDate
+    }
   }
 
   return mostRecentDateFromFeed
