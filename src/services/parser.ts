@@ -14,6 +14,7 @@ import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 import { getLiveItemByMediaUrl } from '~/controllers/liveItem'
+import { parseLatestLiveItemPubDate } from 'podverse-shared/dist/LiveItem'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -154,6 +155,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
     const hasLiveItem = parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
+    const latestLiveItemPubDate = parseLatestLiveItemPubDate(parsedLiveItemEpisodes) as any
 
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
@@ -253,7 +255,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       const latestEpisode =
         (!Array.isArray(latestNewEpisode) && latestNewEpisode) ||
         ((!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any)
-      const lastEpisodePubDate = new Date(latestEpisode.pubDate)
+
+      const lastEpisodePubDate =
+        new Date(latestLiveItemPubDate) > new Date(latestEpisode.pubDate)
+          ? new Date(latestLiveItemPubDate)
+          : new Date(latestEpisode.pubDate)
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
       podcast.lastEpisodeTitle = latestEpisode.title
