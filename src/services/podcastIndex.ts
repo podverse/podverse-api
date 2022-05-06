@@ -85,6 +85,7 @@ type PodcastIndexDataFeed = {
 */
 export const updateFeedUrlsIfNewAuthorityFeedUrlDetected = async (podcastIndexDataFeeds: PodcastIndexDataFeed[]) => {
   try {
+    console.log('updateFeedUrlsIfNewAuthorityFeedUrlDetected', podcastIndexDataFeeds?.length)
     const client = await getConnection().createEntityManager()
     if (Array.isArray(podcastIndexDataFeeds)) {
       for (const podcastIndexDataFeed of podcastIndexDataFeeds) {
@@ -160,6 +161,7 @@ export const getPodcastFromPodcastIndexById = async (id: string) => {
 }
 
 export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
+  console.log('addOrUpdatePodcastFromPodcastIndex', id)
   const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
   await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
   const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id)
@@ -190,6 +192,7 @@ const getNewFeeds = async () => {
  * that feed to our database if it doesn't already exist.
  */
 export const addNewFeedsFromPodcastIndex = async () => {
+  console.log('addNewFeedsFromPodcastIndex')
   await connectToDb()
   const client = await getConnection().createEntityManager()
   try {
@@ -291,9 +294,9 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
         `
         UPDATE "podcasts"
         ${setSQLCommand}
-        WHERE id=$1
+        WHERE "podcastIndexId"=$1
       `,
-        [existingPodcast.id]
+        [podcastIndexId.toString()]
       )
       console.log('updatedPodcast id: ', existingPodcast.id)
       console.log('updatedPodcast podcastIndexId: ', podcastIndexId)
@@ -309,9 +312,24 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
       [existingPodcast.id]
     )
 
+    /*
+      In case the feed URL already exists in our system, but is assigned to another podcastId,
+      get the feed URL for the other podcastId, so it can be assigned to the new podcastId.
+    */
+    const existingFeedUrlsByFeedUrl = await client.query(
+      `
+        SELECT id, url
+        FROM "feedUrls"
+        WHERE "url"=$1
+      `,
+      [url]
+    )
+
+    const combinedExistingFeedUrls = [...existingFeedUrls, ...existingFeedUrlsByFeedUrl]
+
     console.log('existingFeedUrls count', existingFeedUrls.length)
 
-    for (const existingFeedUrl of existingFeedUrls) {
+    for (const existingFeedUrl of combinedExistingFeedUrls) {
       console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
 
       const isMatchingFeedUrl = url === existingFeedUrl.url
@@ -319,7 +337,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
       await client.query(
         `
         UPDATE "feedUrls"
-        SET "isAuthority"=${isMatchingFeedUrl ? 'TRUE' : 'NULL'}
+        SET ("isAuthority", "podcastId") = (${isMatchingFeedUrl ? 'TRUE' : 'NULL'}, '${existingPodcast.id}')
         WHERE id=$1
       `,
         [existingFeedUrl.id]
