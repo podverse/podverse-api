@@ -19,12 +19,13 @@ import {
   clipsRouter,
   devAdminRouter,
   episodeRouter,
-  fcmRouter,
+  fcmDeviceRouter,
   feedUrlRouter,
   googlePlayRouter,
   liveItemRouter,
   mediaRefRouter,
   metaRouter,
+  notificationRouter,
   paypalRouter,
   playlistRouter,
   podcastRouter,
@@ -156,8 +157,8 @@ export const createApp = async (conn: Connection) => {
     app.use(episodeRouter.routes())
     app.use(episodeRouter.allowedMethods())
 
-    app.use(fcmRouter.routes())
-    app.use(fcmRouter.allowedMethods())
+    app.use(fcmDeviceRouter.routes())
+    app.use(fcmDeviceRouter.allowedMethods())
 
     app.use(feedUrlRouter.routes())
     app.use(feedUrlRouter.allowedMethods())
@@ -173,6 +174,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(metaRouter.routes())
     app.use(metaRouter.allowedMethods())
+
+    app.use(notificationRouter.routes())
+    app.use(notificationRouter.allowedMethods())
 
     app.use(paypalRouter.routes())
     app.use(paypalRouter.allowedMethods())
