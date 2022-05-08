@@ -46,6 +46,7 @@ router.post('/get-authenticated-user-info', optionalJwtAuth, async (ctx) => {
           isPublic: user.isPublic,
           membershipExpiration: user.membershipExpiration,
           name: user.name,
+          notifications: user.notifications,
           playlists: user.playlists,
           subscribedPlaylistIds: user.subscribedPlaylistIds,
           subscribedPodcastIds: user.subscribedPodcastIds,

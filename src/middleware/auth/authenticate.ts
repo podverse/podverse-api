@@ -24,6 +24,7 @@ export function authenticate(ctx, next) {
         isPublic: user.isPublic,
         membershipExpiration: user.membershipExpiration,
         name: user.name,
+        notifications: user.notifications,
         playlists: user.playlists,
         subscribedPlaylistIds: user.subscribedPlaylistIds,
         subscribedPodcastIds: user.subscribedPodcastIds,

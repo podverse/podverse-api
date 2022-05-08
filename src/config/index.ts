@@ -69,6 +69,7 @@ export interface Config {
   rateLimiterMaxOverride: any
   manticore: any
   twitterAPIBearerToken: string
+  fcmGoogleApiAuthToken: string
   minimumMobileVersion: string
   maintenanceMode: {
     isEnabled: boolean
@@ -115,6 +116,7 @@ const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime = process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
 const podcastIndexNewFeedsSinceTime = process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
+const fcmGoogleApiAuthToken = process.env.FCM_GOOGLE_API_AUTH_TOKEN || ''
 
 const bitpayConfig = {
   apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
@@ -234,6 +236,7 @@ const config: Config = {
   },
   twitterAPIBearerToken,
   minimumMobileVersion,
+  fcmGoogleApiAuthToken,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
     downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED

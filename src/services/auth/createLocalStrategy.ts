@@ -1,35 +1,37 @@
 import { compare as compareHash } from 'bcryptjs'
 import { Strategy as LocalStrategy } from 'passport-local'
-import { Repository } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { User } from '~/entities'
 const createError = require('http-errors')
 
-const relations = ['playlists']
-
-export const createLocalStrategy = (userRepo: Repository<User>) =>
+export const createLocalStrategy = () =>
   new LocalStrategy({ session: false, usernameField: 'email' }, async (email, password, done) => {
     try {
-      const user = await userRepo.findOne(
-        {
-          email
-        },
-        {
-          select: [
-            'addByRSSPodcastFeedUrls',
-            'email',
-            'emailVerified',
-            'freeTrialExpiration',
-            'id',
-            'membershipExpiration',
-            'name',
-            'password',
-            'subscribedPlaylistIds',
-            'subscribedPodcastIds',
-            'subscribedUserIds'
-          ],
-          relations
-        }
-      )
+      const repository = getRepository(User)
+
+      const qb = repository
+        .createQueryBuilder('user')
+        .select([
+          'user.id',
+          'user.addByRSSPodcastFeedUrls',
+          'user.email',
+          'user.emailVerified',
+          'user.freeTrialExpiration',
+          'user.name',
+          'user.password',
+          'user.subscribedPlaylistIds',
+          'user.subscribedPodcastIds',
+          'user.subscribedUserIds',
+          'notifications.createdAt',
+          'notifications.updatedAt',
+          'podcast.id'
+        ])
+        .leftJoin('user.notifications', 'notifications')
+        .leftJoin('notifications.podcast', 'podcast')
+        .leftJoinAndSelect('user.playlists', 'playlists')
+        .where('user.email = :email', { email })
+
+      const user = await qb.getOne()
 
       if (user) {
         const isValid = await compareHash(password, user.password)
@@ -42,6 +44,7 @@ export const createLocalStrategy = (userRepo: Repository<User>) =>
         throw new createError.Unauthorized('Invalid email or password')
       }
     } catch (error) {
+      console.log('error', error)
       done(new createError.Unauthorized('Invalid email or password'))
     }
   })

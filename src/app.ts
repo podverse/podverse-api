@@ -7,7 +7,6 @@ import * as passport from 'koa-passport'
 import * as Router from 'koa-router'
 import { Connection } from 'typeorm'
 import { config } from '~/config'
-import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import {
   accountClaimTokenRouter,
@@ -84,7 +83,7 @@ export const createApp = async (conn: Connection) => {
       })
     )
 
-    passport.use(createLocalStrategy(conn.getRepository(User)))
+    passport.use(createLocalStrategy())
     passport.use(createJwtStrategy())
 
     app.use(helmet())
