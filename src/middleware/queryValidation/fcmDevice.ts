@@ -23,4 +23,16 @@ const validateFCMDeviceDelete = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
-export { validateFCMDeviceCreate, validateFCMDeviceDelete }
+const validateFCMDeviceUpdate = async (ctx, next) => {
+  const schema = Joi.object()
+    .keys({
+      nextFCMToken: Joi.string(),
+      previousFCMToken: Joi.string()
+    })
+    .required()
+    .min(2)
+
+  await validateBaseBody(schema, ctx, next)
+}
+
+export { validateFCMDeviceCreate, validateFCMDeviceDelete, validateFCMDeviceUpdate }

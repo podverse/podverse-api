@@ -1,10 +1,14 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
-import { createFCMDevice, deleteFCMDevice } from '~/controllers/fcmDevice'
+import { createFCMDevice, deleteFCMDevice, updateFCMDevice } from '~/controllers/fcmDevice'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
-import { validateFCMDeviceCreate, validateFCMDeviceDelete } from '~/middleware/queryValidation/fcmDevice'
+import {
+  validateFCMDeviceCreate,
+  validateFCMDeviceDelete,
+  validateFCMDeviceUpdate
+} from '~/middleware/queryValidation/fcmDevice'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -26,6 +30,27 @@ router.post('/create', createFCMDeviceLimiter, jwtAuth, validateFCMDeviceCreate,
     ctx.status = 200
     ctx.body = {
       message: 'FCMDevice created'
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+const updateFCMDeviceLimiter = RateLimit.middleware({
+  interval: 1 * 60 * 1000,
+  max: rateLimiterMaxOverride || 10,
+  message: `You're doing that too much. Please try again in a minute.`,
+  prefixKey: 'post/fcm-device/update'
+})
+
+// Update an FCMDevice for a logged-in user
+router.post('/update', updateFCMDeviceLimiter, jwtAuth, validateFCMDeviceUpdate, async (ctx) => {
+  try {
+    const { nextFCMToken, previousFCMToken } = ctx.request.body as any
+    await updateFCMDevice(previousFCMToken, nextFCMToken, ctx.state.user.id)
+    ctx.status = 200
+    ctx.body = {
+      message: 'FCMDevice updated'
     }
   } catch (error) {
     emitRouterError(error, ctx)

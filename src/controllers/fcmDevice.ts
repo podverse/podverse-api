@@ -25,6 +25,37 @@ export const createFCMDevice = async (fcmToken: string, loggedInUserId: string) 
   await repository.save(newFCMDevice)
 }
 
+export const updateFCMDevice = async (previousFCMToken: string, nextFCMToken: string, loggedInUserId: string) => {
+  if (!previousFCMToken) {
+    throw new createError.BadRequest('A previous fcmToken must be provided.')
+  }
+
+  if (!nextFCMToken) {
+    throw new createError.BadRequest('A new fcmToken must be provided.')
+  }
+
+  if (!loggedInUserId) {
+    throw new createError.BadRequest('A user id must be provided.')
+  }
+
+  const user = await getLoggedInUser(loggedInUserId)
+  if (!user) {
+    throw new createError.NotFound(`User for id ${loggedInUserId} not found.`)
+  }
+
+  const existingFCMDevice = await getFCMDevice(previousFCMToken, loggedInUserId)
+  const repository = getRepository(FCMDevice)
+  if (!existingFCMDevice) {
+    const newFCMDevice = new FCMDevice()
+    newFCMDevice.fcmToken = nextFCMToken
+    newFCMDevice.user = user
+    await repository.save(newFCMDevice)
+  } else {
+    const newData = { fcmToken: nextFCMToken }
+    await repository.update(previousFCMToken, newData)
+  }
+}
+
 export const deleteFCMDevice = async (fcmToken: string, loggedInUserId: string) => {
   if (!fcmToken) {
     throw new createError.BadRequest('An fcmToken must be provided.')
