@@ -47,13 +47,15 @@ export const sendFCMGoogleApiNotification = async (
         body,
         title,
         podcastId,
-        notificationType
+        notificationType,
+        timeSent: new Date()
       },
       data: {
         body,
         title,
         podcastId,
-        notificationType
+        notificationType,
+        timeSent: new Date()
       }
     },
     json: true
