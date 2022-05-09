@@ -158,7 +158,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
     const hasLiveItem = parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemTitle } = parseLatestLiveItemPubDateAndTitle(parsedLiveItemEpisodes)
+    const { liveItemLatestPubDate, liveItemTitle } = parseLatestLiveItemPubDateAndTitle(parsedLiveItemEpisodes)
 
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
@@ -272,8 +272,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         ((!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any)
 
       const lastEpisodePubDate =
-        new Date(latestLiveItemPubDate) > new Date(latestEpisode.pubDate)
-          ? new Date(latestLiveItemPubDate)
+        liveItemLatestPubDate && new Date(liveItemLatestPubDate) > new Date(latestEpisode.pubDate)
+          ? new Date(liveItemLatestPubDate)
           : new Date(latestEpisode.pubDate)
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
