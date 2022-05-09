@@ -94,6 +94,8 @@ const getFCMDevice = async (fcmToken: string, loggedInUserId: string) => {
     .createQueryBuilder('fcmDevices')
     .select('"fcmDevices"."fcmToken"', 'fcmToken')
     .where('"fcmToken" = :fcmToken', { fcmToken })
+    .andWhere('user.id = :loggedInUserId', { loggedInUserId })
+    .leftJoin('fcmDevices.user', 'user')
     .getRawOne()
 }
 
