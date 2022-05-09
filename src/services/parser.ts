@@ -1,7 +1,7 @@
 import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
-import { Funding, ParsedEpisode, parseLatestLiveItemStatus } from 'podverse-shared'
+import { Funding, ParsedEpisode, parseLatestLiveItemStatus, parseLatestLiveItemPubDateAndTitle } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
@@ -14,7 +14,10 @@ import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 import { getLiveItemByMediaUrl } from '~/controllers/liveItem'
-import { parseLatestLiveItemPubDate } from 'podverse-shared/dist/LiveItem'
+import {
+  sendLiveItemLiveDetectedNotification,
+  sendNewEpisodeDetectedNotification
+} from '~/lib/notifications/fcmGoogleApi'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -155,7 +158,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
     const hasLiveItem = parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const latestLiveItemPubDate = parseLatestLiveItemPubDate(parsedLiveItemEpisodes) as any
+    const { liveItemLatestPubDate, liveItemTitle } = parseLatestLiveItemPubDateAndTitle(parsedLiveItemEpisodes)
 
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
@@ -170,16 +173,28 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     logPerformance('podcast id', podcast.id)
 
-    const mostRecentDateFromFeed = getMostRecentPubDateFromFeed(meta, parsedEpisodes)
+    const { mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } = getMostRecentPubDateFromFeed(
+      meta,
+      parsedEpisodes
+    )
+    const previousLastEpisodePubDate = podcast.lastEpisodePubDate
+    const shouldSendNewEpisodeNotification =
+      (!previousLastEpisodePubDate && mostRecentEpisodePubDate) ||
+      (previousLastEpisodePubDate &&
+        mostRecentEpisodePubDate &&
+        new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate))
+
+    const previousLiveItemStatus = podcast.latestLiveItemStatus
+    const shouldSendLiveNotification = latestLiveItemStatus === 'live' && previousLiveItemStatus !== 'live'
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
       !forceReparsing &&
       podcast.feedLastUpdated &&
-      mostRecentDateFromFeed &&
+      mostRecentUpdateDateFromFeed &&
       // we always want to parse feeds that have liveItem tags, so we get the latest liveItem status
       !hasLiveItem &&
-      new Date(podcast.feedLastUpdated) >= new Date(mostRecentDateFromFeed) &&
+      new Date(podcast.feedLastUpdated) >= new Date(mostRecentUpdateDateFromFeed) &&
       !podcast.alwaysFullyParse
     ) {
       console.log('Stop parsing if the feed has not been updated since it was last parsed')
@@ -213,7 +228,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.description = meta.description
     podcast.feedLastParseFailed = false
 
-    const feedLastUpdated = new Date(mostRecentDateFromFeed || meta.lastBuildDate || meta.pubDate || '')
+    const feedLastUpdated = new Date(mostRecentUpdateDateFromFeed || meta.lastBuildDate || meta.pubDate || '')
     podcast.feedLastUpdated = isValidDate(feedLastUpdated) ? feedLastUpdated : new Date()
 
     podcast.funding = meta.funding
@@ -257,8 +272,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
         ((!Array.isArray(latestUpdatedSavedEpisode) && latestUpdatedSavedEpisode) as any)
 
       const lastEpisodePubDate =
-        new Date(latestLiveItemPubDate) > new Date(latestEpisode.pubDate)
-          ? new Date(latestLiveItemPubDate)
+        liveItemLatestPubDate && new Date(liveItemLatestPubDate) > new Date(latestEpisode.pubDate)
+          ? new Date(liveItemLatestPubDate)
           : new Date(latestEpisode.pubDate)
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
@@ -311,6 +326,18 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     logPerformance('feedUrlRepo.update', _logStart)
     await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
     logPerformance('feedUrlRepo.update', _logEnd)
+
+    if (shouldSendNewEpisodeNotification) {
+      logPerformance('sendNewEpisodeDetectedNotification', _logStart)
+      await sendNewEpisodeDetectedNotification(podcast.id, podcast.title, podcast.lastEpisodeTitle)
+      logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
+    }
+
+    if (shouldSendLiveNotification) {
+      logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
+      await sendLiveItemLiveDetectedNotification(podcast.id, podcast.title, liveItemTitle)
+      logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+    }
 
     logPerformance('updatedSavedEpisodes updateSoundBites', _logStart)
     for (const updatedSavedEpisode of updatedSavedEpisodes) {
@@ -620,12 +647,11 @@ const findCategories = async (categories: string[]) => {
 }
 
 const getMostRecentPubDateFromFeed = (meta, episodes) => {
-  let mostRecentDateFromFeed = null
-
   const mostRecentEpisode = episodes.reduce((r: any, a: any) => {
     return new Date(r.pubDate) > new Date(a.pubDate) ? r : a
   }, [])
   const mostRecentEpisodePubDate = mostRecentEpisode && mostRecentEpisode.pubDate
+  let mostRecentUpdateDateFromFeed = mostRecentEpisode && mostRecentEpisode.pubDate
 
   /*
     NOTE: This helper is needed to let us know if a feed has been updated recently
@@ -646,21 +672,21 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
   const currentDateTimeTwoMinutesEarlier = new Date(currentDateTime)
   currentDateTimeTwoMinutesEarlier.setMinutes(currentDateTime.getMinutes() - 2)
   if (!meta.lastBuildDate && mostRecentEpisodePubDate) {
-    mostRecentDateFromFeed = mostRecentEpisodePubDate
+    mostRecentUpdateDateFromFeed = mostRecentEpisodePubDate
   } else if (!mostRecentEpisodePubDate && meta.lastBuildDate) {
-    mostRecentDateFromFeed = meta.lastBuildDate
+    mostRecentUpdateDateFromFeed = meta.lastBuildDate
   } else if (meta.lastBuildDate && mostRecentEpisodePubDate) {
     if (new Date(meta.lastBuildDate) > currentDateTimeTwoMinutesEarlier) {
-      mostRecentDateFromFeed = mostRecentEpisodePubDate
+      mostRecentUpdateDateFromFeed = mostRecentEpisodePubDate
     } else {
-      mostRecentDateFromFeed =
+      mostRecentUpdateDateFromFeed =
         new Date(mostRecentEpisodePubDate) >= new Date(meta.lastBuildDate)
           ? mostRecentEpisodePubDate
           : meta.lastBuildDate
     }
   }
 
-  return mostRecentDateFromFeed
+  return { mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed }
 }
 
 const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: ParsedEpisode, podcast) => {

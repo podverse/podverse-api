@@ -2,7 +2,7 @@
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
 import type { LiveItemStatus, PodcastMedium } from 'podverse-shared'
-import { Author, Category, Episode, FeedUrl } from '~/entities'
+import { Author, Category, Episode, FeedUrl, Notification } from '~/entities'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -226,6 +226,9 @@ export class Podcast {
 
   @OneToMany((type) => FeedUrl, (feedUrl) => feedUrl.podcast)
   feedUrls: FeedUrl[]
+
+  @OneToMany((type) => Notification, (notification) => notification.podcast)
+  notifications: Notification[]
 
   @CreateDateColumn()
   createdAt: Date
