@@ -14,7 +14,7 @@ export const sendNewEpisodeDetectedNotification = async (
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const title = podcastTitle || 'Untitled Podcast'
   const body = episodeTitle || 'Untitled Episode'
-  return sendFCMGoogleApiNotification(fcmTokens, title, body)
+  return sendFCMGoogleApiNotification(fcmTokens, title, body, podcastId)
 }
 
 export const sendLiveItemLiveDetectedNotification = async (
@@ -25,10 +25,15 @@ export const sendLiveItemLiveDetectedNotification = async (
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const title = `LIVE: ${podcastTitle || 'Untitled Podcast'}`
   const body = episodeTitle || 'Untitled Episode'
-  return sendFCMGoogleApiNotification(fcmTokens, title, body)
+  return sendFCMGoogleApiNotification(fcmTokens, title, body, podcastId)
 }
 
-export const sendFCMGoogleApiNotification = async (fcmTokens: string[], title: string, body: string) => {
+export const sendFCMGoogleApiNotification = async (
+  fcmTokens: string[],
+  title: string,
+  body: string,
+  podcastId: string
+) => {
   return request(fcmGoogleApiPath, {
     method: 'POST',
     headers: {
@@ -39,11 +44,13 @@ export const sendFCMGoogleApiNotification = async (fcmTokens: string[], title: s
       registration_ids: fcmTokens || [],
       notification: {
         body,
-        title
+        title,
+        podcastId
       },
       data: {
         body,
-        title
+        title,
+        podcastId
       }
     },
     json: true
