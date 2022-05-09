@@ -126,20 +126,25 @@ const getLoggedInUser = async (id) => {
 
   const qb = repository
     .createQueryBuilder('user')
-    .select('user.id')
-    .addSelect('user.addByRSSPodcastFeedUrls')
-    .addSelect('user.email')
-    .addSelect('user.emailVerified')
-    .addSelect('user.freeTrialExpiration')
-    .addSelect('user.isPublic')
-    .addSelect('user.membershipExpiration')
-    .addSelect('user.name')
-    .addSelect('user.subscribedPlaylistIds')
-    .addSelect('user.subscribedPodcastIds')
-    .addSelect('user.subscribedUserIds')
-    .leftJoinAndSelect('user.playlists', 'playlists', 'playlists.owner = :ownerId', {
-      ownerId: id
-    })
+    .select([
+      'user.id',
+      'user.addByRSSPodcastFeedUrls',
+      'user.email',
+      'user.emailVerified',
+      'user.freeTrialExpiration',
+      'user.isPublic',
+      'user.membershipExpiration',
+      'user.name',
+      'user.subscribedPlaylistIds',
+      'user.subscribedPodcastIds',
+      'user.subscribedUserIds',
+      'notifications.createdAt',
+      'notifications.updatedAt',
+      'podcast.id'
+    ])
+    .leftJoin('user.notifications', 'notifications')
+    .leftJoin('notifications.podcast', 'podcast')
+    .leftJoinAndSelect('user.playlists', 'playlists')
     .where('user.id = :id', { id })
 
   try {

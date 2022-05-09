@@ -7,7 +7,6 @@ import * as passport from 'koa-passport'
 import * as Router from 'koa-router'
 import { Connection } from 'typeorm'
 import { config } from '~/config'
-import { User } from '~/entities'
 import { logger, loggerInstance } from '~/lib/logging'
 import {
   accountClaimTokenRouter,
@@ -19,11 +18,13 @@ import {
   clipsRouter,
   devAdminRouter,
   episodeRouter,
+  fcmDeviceRouter,
   feedUrlRouter,
   googlePlayRouter,
   liveItemRouter,
   mediaRefRouter,
   metaRouter,
+  notificationRouter,
   paypalRouter,
   playlistRouter,
   podcastRouter,
@@ -86,7 +87,7 @@ export const createApp = async (conn: Connection) => {
       })
     )
 
-    passport.use(createLocalStrategy(conn.getRepository(User)))
+    passport.use(createLocalStrategy())
     passport.use(createJwtStrategy())
 
     app.use(helmet())
@@ -159,6 +160,9 @@ export const createApp = async (conn: Connection) => {
     app.use(episodeRouter.routes())
     app.use(episodeRouter.allowedMethods())
 
+    app.use(fcmDeviceRouter.routes())
+    app.use(fcmDeviceRouter.allowedMethods())
+
     app.use(feedUrlRouter.routes())
     app.use(feedUrlRouter.allowedMethods())
 
@@ -173,6 +177,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(metaRouter.routes())
     app.use(metaRouter.allowedMethods())
+
+    app.use(notificationRouter.routes())
+    app.use(notificationRouter.allowedMethods())
 
     app.use(paypalRouter.routes())
     app.use(paypalRouter.allowedMethods())
