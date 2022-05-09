@@ -71,6 +71,10 @@ export interface Config {
   twitterAPIBearerToken: string
   fcmGoogleApiAuthToken: string
   minimumMobileVersion: string
+  podping: {
+    hiveAccount: string
+    hivePostingKey: string
+  }
   maintenanceMode: {
     isEnabled: boolean
     downtimeExpected: number
@@ -162,6 +166,11 @@ const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
 
 const twitterAPIBearerToken = process.env.TWITTER_API_BEARER_TOKEN || ''
 
+const podping = {
+  hiveAccount: process.env.PODPING_HIVE_ACCOUNT || '',
+  hivePostingKey: process.env.PODPING_HIVE_POSTING_KEY || ''
+}
+
 const parseBoolean = (value = ''): boolean => ['1', 'true'].includes(value.toLowerCase())
 
 const config: Config = {
@@ -237,6 +246,7 @@ const config: Config = {
   twitterAPIBearerToken,
   minimumMobileVersion,
   fcmGoogleApiAuthToken,
+  podping,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
     downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED

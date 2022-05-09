@@ -1,7 +1,36 @@
+import { config } from '~/config'
 import { getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { addFeedUrlsByPodcastIndexId } from './queue'
 const ws = require('ws')
+const { dockerCommand } = require('docker-cli-js')
+
+export const pullPodpingImage = async () => {
+  const options = {
+    machineName: undefined, // uses local docker
+    currentWorkingDirectory: '/usr/bin', // uses current working directory
+    echo: true, // echo command output to stdout/stderr
+    env: undefined,
+    stdin: undefined
+  }
+
+  await dockerCommand(`pull docker.io/podcastindexorg/podping-hivewriter`, options)
+}
+
+export const sendPodpingLiveStatusUpdate = async (validatedUrl: string, status: string) => {
+  const options = {
+    machineName: undefined, // uses local docker
+    currentWorkingDirectory: '/usr/bin', // uses current working directory
+    echo: true, // echo command output to stdout/stderr
+    env: undefined,
+    stdin: undefined
+  }
+
+  await dockerCommand(
+    `run --rm --storage-driver=vfs -e PODPING_HIVE_ACCOUNT=${config.podping.hiveAccount} -e PODPING_HIVE_POSTING_KEY=${config.podping.hivePostingKey} docker.io/podcastindexorg/podping-hivewriter --ignore-config-updates --no-sanity-check --reason ${status} write ${validatedUrl}`,
+    options
+  )
+}
 
 export const runLiveItemListener = () => {
   logPerformance('starting runLiveItemListener', _logStart)
@@ -35,7 +64,7 @@ export const runLiveItemListener = () => {
           if (msg.t === 'podping') {
             for (const p of msg.p) {
               if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
-                logPerformance(`p.p ${p.p}`, _logStart)
+                logPerformance(`p.p ${JSON.stringify(p.p)}`, _logStart)
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {

@@ -29,6 +29,7 @@ import {
   playlistRouter,
   podcastRouter,
   podcastIndexRouter,
+  podpingRouter,
   userHistoryItemRouter,
   userNowPlayingItemRouter,
   userQueueItemRouter,
@@ -36,6 +37,7 @@ import {
   toolsRouter
 } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
+import { startup } from './startup'
 
 const cookie = require('cookie')
 const cors = require('@koa/cors')
@@ -51,6 +53,8 @@ const rootRouter = new Router()
 const routePrefix = `${config.apiPrefix}${config.apiVersion}`
 
 const timeAppStarted = Date.now()
+
+startup()
 
 export const createApp = async (conn: Connection) => {
   loggerInstance.debug('Creating new Koa App')
@@ -188,6 +192,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(podcastIndexRouter.routes())
     app.use(podcastIndexRouter.allowedMethods())
+
+    app.use(podpingRouter.routes())
+    app.use(podpingRouter.allowedMethods())
 
     app.use(toolsRouter.routes())
     app.use(toolsRouter.allowedMethods())
