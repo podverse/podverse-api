@@ -1,7 +1,7 @@
 import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
-import { Funding, ParsedEpisode, parseLatestLiveItemStatus, parseLatestLiveItemPubDateAndTitle } from 'podverse-shared'
+import { Funding, ParsedEpisode, parseLatestLiveItemStatus, parseLatestLiveItemInfo } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
@@ -158,7 +158,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
     const hasLiveItem = parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemLatestPubDate, liveItemTitle } = parseLatestLiveItemPubDateAndTitle(parsedLiveItemEpisodes)
+    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
+      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
     parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
@@ -246,6 +247,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     */
     let newEpisodes = [] as any
     let updatedSavedEpisodes = [] as any
+    let latestEpisodeImageUrl = ''
     if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const results = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
@@ -278,6 +280,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
       podcast.lastEpisodeTitle = latestEpisode.title
+
+      latestEpisodeImageUrl = latestEpisode.imageUrl || ''
     } else {
       podcast.lastEpisodePubDate = undefined
       podcast.lastEpisodeTitle = ''
@@ -329,13 +333,29 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
 
     if (shouldSendNewEpisodeNotification) {
       logPerformance('sendNewEpisodeDetectedNotification', _logStart)
-      await sendNewEpisodeDetectedNotification(podcast.id, podcast.title, podcast.lastEpisodeTitle)
+      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
+      const finalEpisodeImageUrl = latestEpisodeImageUrl
+      await sendNewEpisodeDetectedNotification(
+        podcast.id,
+        podcast.title,
+        podcast.lastEpisodeTitle,
+        finalPodcastImageUrl,
+        finalEpisodeImageUrl
+      )
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
-    if (shouldSendLiveNotification) {
+    if (!shouldSendLiveNotification) {
       logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
-      await sendLiveItemLiveDetectedNotification(podcast.id, podcast.title, liveItemTitle)
+      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
+      const finalEpisodeImageUrl = liveItemLatestImageUrl
+      await sendLiveItemLiveDetectedNotification(
+        podcast.id,
+        podcast.title,
+        liveItemLatestTitle,
+        finalPodcastImageUrl,
+        finalEpisodeImageUrl
+      )
       logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
     }
 
