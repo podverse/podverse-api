@@ -9,23 +9,51 @@ const fcmGoogleApiPath = 'https://fcm.googleapis.com/fcm/send'
 export const sendNewEpisodeDetectedNotification = async (
   podcastId: string,
   podcastTitle?: string,
-  episodeTitle?: string
+  episodeTitle?: string,
+  podcastImage?: string,
+  episodeImage?: string
 ) => {
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  const title = podcastTitle || 'Untitled Podcast'
-  const body = episodeTitle || 'Untitled Episode'
-  return sendFCMGoogleApiNotification(fcmTokens, title, body, podcastId, 'new-episode', podcastTitle, episodeTitle)
+  podcastTitle = podcastTitle || 'Untitled Podcast'
+  episodeTitle = episodeTitle || 'Untitled Episode'
+  const title = podcastTitle
+  const body = episodeTitle
+  return sendFCMGoogleApiNotification(
+    fcmTokens,
+    title,
+    body,
+    podcastId,
+    'new-episode',
+    podcastTitle,
+    episodeTitle,
+    podcastImage,
+    episodeImage
+  )
 }
 
 export const sendLiveItemLiveDetectedNotification = async (
   podcastId: string,
   podcastTitle?: string,
-  episodeTitle?: string
+  episodeTitle?: string,
+  podcastImage?: string,
+  episodeImage?: string
 ) => {
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  const title = `LIVE: ${podcastTitle || 'Untitled Podcast'}`
-  const body = episodeTitle || 'Untitled Episode'
-  return sendFCMGoogleApiNotification(fcmTokens, title, body, podcastId, 'live', podcastTitle, episodeTitle)
+  podcastTitle = podcastTitle || 'Untitled Podcast'
+  episodeTitle = episodeTitle || 'Livestream starting'
+  const title = `LIVE: ${podcastTitle}`
+  const body = episodeTitle
+  return sendFCMGoogleApiNotification(
+    fcmTokens,
+    title,
+    body,
+    podcastId,
+    'live',
+    podcastTitle,
+    episodeTitle,
+    podcastImage,
+    episodeImage
+  )
 }
 
 export const sendFCMGoogleApiNotification = async (
@@ -34,36 +62,63 @@ export const sendFCMGoogleApiNotification = async (
   body: string,
   podcastId: string,
   notificationType: 'live' | 'new-episode',
-  podcastTitle?: string,
-  episodeTitle?: string
+  podcastTitle: string,
+  episodeTitle: string,
+  podcastImage?: string,
+  episodeImage?: string
 ) => {
-  return request(fcmGoogleApiPath, {
-    method: 'POST',
-    headers: {
-      Authorization: `key=${fcmGoogleApiAuthToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: {
-      registration_ids: fcmTokens || [],
-      notification: {
-        body,
-        title,
-        podcastId,
-        podcastTitle: podcastTitle || 'Untitled Podcast',
-        episodeTitle: episodeTitle || 'Untitled Episode',
-        notificationType,
-        timeSent: new Date()
+  if (fcmTokens?.length > 0) {
+    const imageUrl = episodeImage || podcastImage
+
+    request(fcmGoogleApiPath, {
+      method: 'POST',
+      headers: {
+        Authorization: `key=${fcmGoogleApiAuthToken}`,
+        'Content-Type': 'application/json'
       },
-      data: {
-        body,
-        title,
-        podcastId,
-        podcastTitle: podcastTitle || 'Untitled Podcast',
-        episodeTitle: episodeTitle || 'Untitled Episode',
-        notificationType,
-        timeSent: new Date()
-      }
-    },
-    json: true
-  })
+      body: {
+        registration_ids: fcmTokens || [],
+        notification: {
+          body,
+          title,
+          podcastId,
+          podcastTitle: podcastTitle,
+          episodeTitle: episodeTitle,
+          notificationType,
+          timeSent: new Date(),
+          image: imageUrl
+        },
+        data: {
+          body,
+          title,
+          podcastId,
+          podcastTitle: podcastTitle,
+          episodeTitle: episodeTitle,
+          notificationType,
+          timeSent: new Date()
+        },
+        android: {
+          notification: {
+            imageUrl
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              'mutable-content': 1
+            }
+          },
+          fcm_options: {
+            image: imageUrl
+          }
+        },
+        webpush: {
+          headers: {
+            image: imageUrl
+          }
+        }
+      },
+      json: true
+    })
+  }
 }
