@@ -345,7 +345,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
-    if (!shouldSendLiveNotification) {
+    if (shouldSendLiveNotification) {
       logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
       const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
       const finalEpisodeImageUrl = liveItemLatestImageUrl
