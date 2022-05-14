@@ -20,11 +20,11 @@ const getLiveItems = async (podcastId: string) => {
 
 /*
   This function is used in the parser to ensure that we only ever
-  save or update only one liveItem for each mediaUrl per podcast.
+  save or update only one liveItem for each guid per podcast.
   We have to specify the podcastId since different podcasts
-  could potentially share the same streaming URL at different times.
+  could potentially share the same guid.
 */
-const getLiveItemByMediaUrl = async (mediaUrl: string, podcastId: string) => {
+const getLiveItemByGuid = async (guid: string, podcastId: string) => {
   const repository = getRepository(LiveItem)
 
   const liveItem = await repository
@@ -35,10 +35,10 @@ const getLiveItemByMediaUrl = async (mediaUrl: string, podcastId: string) => {
     .addSelect('liveItem.status')
     .innerJoinAndSelect('liveItem.episode', 'episode')
     .where(`episode.podcastId = :podcastId`, { podcastId })
-    .andWhere(`episode.mediaUrl = :mediaUrl`, { mediaUrl })
+    .andWhere(`episode.guid = :guid`, { guid })
     .getOne()
 
   return liveItem
 }
 
-export { getLiveItemByMediaUrl, getLiveItems }
+export { getLiveItemByGuid, getLiveItems }

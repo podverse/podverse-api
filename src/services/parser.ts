@@ -13,7 +13,7 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
-import { getLiveItemByMediaUrl } from '~/controllers/liveItem'
+import { getLiveItemByGuid } from '~/controllers/liveItem'
 import {
   sendLiveItemLiveDetectedNotification,
   sendNewEpisodeDetectedNotification
@@ -247,19 +247,30 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     */
     let newEpisodes = [] as any
     let updatedSavedEpisodes = [] as any
+    let newLiveItems = [] as any
+    let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
     if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
-      const results = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
+      const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
-      podcast.hasLiveItem = hasLiveItem
-      podcast.hasVideo = results.hasVideo
+      logPerformance('findOrGenerateParsedLiveItems', _logStart)
+      const liveItemsResults = (await findOrGenerateParsedLiveItems(parsedLiveItemEpisodes, podcast)) as any
+      logPerformance('findOrGenerateParsedLiveItems', _logEnd)
 
-      newEpisodes = results.newEpisodes
-      updatedSavedEpisodes = results.updatedSavedEpisodes
+      podcast.hasLiveItem = hasLiveItem
+      podcast.hasVideo = episodesResults.hasVideo || liveItemsResults.hasVideo
+
+      newEpisodes = episodesResults.newEpisodes
+      updatedSavedEpisodes = episodesResults.updatedSavedEpisodes
       newEpisodes = newEpisodes && newEpisodes.length > 0 ? newEpisodes : []
       updatedSavedEpisodes = updatedSavedEpisodes && updatedSavedEpisodes.length > 0 ? updatedSavedEpisodes : []
+
+      newLiveItems = liveItemsResults.newLiveItems
+      updatedSavedLiveItems = liveItemsResults.updatedSavedLiveItems
+      newLiveItems = newLiveItems && newLiveItems.length > 0 ? newLiveItems : []
+      updatedSavedLiveItems = updatedSavedLiveItems && updatedSavedLiveItems.length > 0 ? updatedSavedLiveItems : []
 
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
@@ -319,6 +330,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     logPerformance('episodeRepo.save newEpisodes', newEpisodes.length, _logStart)
     await episodeRepo.save(newEpisodes, { chunk: 400 })
     logPerformance('episodeRepo.save newEpisodes', _logEnd)
+
+    logPerformance('episodeRepo.save updatedSavedLiveItems', updatedSavedLiveItems.length, _logStart)
+    await episodeRepo.save(updatedSavedLiveItems, { chunk: 400 })
+    logPerformance('episodeRepo.save updatedSavedLiveItems', _logEnd)
+
+    logPerformance('episodeRepo.save newLiveItems', newLiveItems.length, _logStart)
+    await episodeRepo.save(newLiveItems, { chunk: 400 })
+    logPerformance('episodeRepo.save newLiveItems', _logEnd)
 
     const feedUrlRepo = getRepository(FeedUrl)
     const cleanedFeedUrl = {
@@ -755,8 +774,8 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
 
   episode.podcast = podcast
 
-  if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus) {
-    let liveItem = await getLiveItemByMediaUrl(parsedEpisode.enclosure.url, podcast.id)
+  if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus && parsedEpisode.guid) {
+    let liveItem = await getLiveItemByGuid(parsedEpisode.guid, podcast.id)
 
     if (!liveItem) {
       liveItem = new LiveItem()
@@ -771,6 +790,112 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   }
 
   return episode
+}
+
+/*
+  Livestreams will often use the same episode.enclosure.url every time,
+  so we need to handle the new/update episode/liveitem logic separately.
+  For liveItems, we rely on a guid instead of the enclosure.url.
+  Sorry...this whole parser should be rewritten from scratch.
+*/
+
+const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
+  const episodeRepo = getRepository(Episode)
+
+  // Parsed episodes are only valid if they have enclosure.url, liveItemStart, and guid tags,
+  // so ignore all that do not.
+  const validParsedLiveItems = parsedLiveItems.reduce((result, x) => {
+    if (x.enclosure && x.enclosure.url && x.liveItemStart && x.guid) result.push(x)
+    return result
+  }, [])
+
+  const parsedLiveItemGuids = validParsedLiveItems.map((x) => x.guid)
+
+  // Find liveItems (episodes) in the database that have matching guids AND podcast ids to
+  // those found in the parsed object, then store an array of just those guids.
+  let savedLiveItems = [] as any
+
+  if (parsedLiveItemGuids && parsedLiveItemGuids.length > 0) {
+    savedLiveItems = await episodeRepo.find({
+      where: {
+        podcast,
+        guid: In(parsedLiveItemGuids)
+      }
+    })
+
+    /*
+      If liveItems exist in the database for this podcast,
+      but they aren't currently in the feed, then retrieve
+      and set them to isPublic = false
+    */
+    let liveItemsToHide = await episodeRepo.find({
+      where: {
+        podcast,
+        isPublic: true,
+        guid: Not(In(parsedLiveItemGuids))
+      }
+    })
+
+    liveItemsToHide = liveItemsToHide.filter((x) => x.liveItem)
+
+    const updatedLiveItemsToHide = liveItemsToHide.map((x: ExtendedEpisode) => {
+      x.isPublic = false
+      return x
+    })
+    await episodeRepo.save(updatedLiveItemsToHide, { chunk: 400 })
+  }
+
+  const savedLiveItemGuids = savedLiveItems.map((x) => x.guid)
+
+  // Create an array of only the parsed liveItems that do not have a match
+  // already saved in the database.
+  const newParsedLiveItems = validParsedLiveItems.filter((x) => !savedLiveItemGuids.includes(x.guid))
+  const updatedSavedLiveItems = [] as any
+  const newLiveItems = [] as any
+
+  /* If a feed has more video episodes than audio episodes, mark it as a hasVideo podcast. */
+  let videoCount = 0
+  let audioCount = 0
+
+  // If episode is already saved, then merge the matching episode found in
+  // the parsed object with what is already saved.
+  for (let existingLiveItem of savedLiveItems) {
+    const parsedLiveItem = validParsedLiveItems.find((x) => x.guid === existingLiveItem.guid)
+    existingLiveItem = await assignParsedEpisodeData(existingLiveItem, parsedLiveItem, podcast)
+
+    if (parsedLiveItem.mediaType && parsedLiveItem.mediaType.indexOf('video') >= 0) {
+      videoCount++
+    } else {
+      audioCount++
+    }
+
+    if (!updatedSavedLiveItems.some((x: any) => x.guid === existingLiveItem.guid)) {
+      updatedSavedLiveItems.push(existingLiveItem)
+    }
+  }
+
+  // If liveItem from the parsed object is new (not already saved),
+  // then create a new liveItem (episode).
+  for (const newParsedLiveItem of newParsedLiveItems) {
+    let episode = new Episode() as ExtendedEpisode
+    episode = await assignParsedEpisodeData(episode, newParsedLiveItem, podcast)
+
+    if (newParsedLiveItem.mediaType && newParsedLiveItem.mediaType.indexOf('video') >= 0) {
+      videoCount++
+    } else {
+      audioCount++
+    }
+
+    if (!newLiveItems.some((x: any) => x.guid === episode.guid)) {
+      newLiveItems.push(episode)
+    }
+  }
+
+  return {
+    newLiveItems,
+    updatedSavedLiveItems,
+    hasVideo: videoCount > audioCount
+  }
 }
 
 const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
@@ -801,24 +926,25 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       but they aren't currently in the feed, then retrieve
       and set them to isPublic = false
     */
-    const episodesToHide = await episodeRepo.find({
+    let episodesToHide = await episodeRepo.find({
       where: {
         podcast,
         isPublic: true,
         mediaUrl: Not(In(parsedEpisodeMediaUrls))
       }
     })
+
+    /* Handle the live items separately. This should be made more efficient... */
+    if (podcast.hasLiveItem) {
+      savedEpisodes = savedEpisodes.filter((x) => !x.liveItem)
+      episodesToHide = episodesToHide.filter((x) => !x.liveItem)
+    }
+
     const updatedEpisodesToHide = episodesToHide.map((x: ExtendedEpisode) => {
       x.isPublic = false
       return x
     })
     await episodeRepo.save(updatedEpisodesToHide, { chunk: 400 })
-  }
-
-  const nonPublicEpisodes = [] as any
-  for (const e of savedEpisodes) {
-    e.isPublic = false
-    nonPublicEpisodes.push(e)
   }
 
   const savedEpisodeMediaUrls = savedEpisodes.map((x) => x.mediaUrl)
