@@ -145,7 +145,7 @@ export const addFeedUrlsByPodcastIndexId = async (podcastIndexIds: string[], que
     const queueUrl =
       queueType === 'live' ? queueUrls.feedsToParse.liveQueueUrl : queueUrls.feedsToParse.priorityQueueUrl
 
-    const forceReparsing = false
+    const forceReparsing = queueType === 'live'
     await sendFeedUrlsToQueue(feedUrls, queueUrl, forceReparsing)
 
     const podcasts: Podcast[] = []
