@@ -67,7 +67,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
             type: r.type,
             address: r.address,
             split: r.split.toString(),
-            fee: r.fee
+            fee: r.fee,
+            customKey: r.customKey,
+            customValue: r.customValue
           }
         })
       }
