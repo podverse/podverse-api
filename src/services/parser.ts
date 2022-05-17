@@ -156,14 +156,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     }
 
     const meta = feedCompat(parsedFeed)
-    let parsedEpisodes = parsedFeed.items.map(itemCompat)
+    const parsedEpisodes = parsedFeed.items.map(itemCompat)
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
-    const hasLiveItem = parsedLiveItemEpisodes.length > 0
-    const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
-      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
-
-    parsedEpisodes = [...parsedEpisodes, ...parsedLiveItemEpisodes]
 
     let podcast = new Podcast()
     if (feedUrl.podcast) {
@@ -175,6 +169,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     }
 
     logPerformance('podcast id', podcast.id)
+
+    const hasLiveItem = podcast.hasLiveItem || parsedLiveItemEpisodes.length > 0
+    const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
+    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
+      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
     const { mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } = getMostRecentPubDateFromFeed(
       meta,
@@ -824,28 +823,28 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
         guid: In(parsedLiveItemGuids)
       }
     })
-
-    /*
-      If liveItems exist in the database for this podcast,
-      but they aren't currently in the feed, then retrieve
-      and set them to isPublic = false
-    */
-    let liveItemsToHide = await episodeRepo.find({
-      where: {
-        podcast,
-        isPublic: true,
-        guid: Not(In(parsedLiveItemGuids))
-      }
-    })
-
-    liveItemsToHide = liveItemsToHide.filter((x) => x.liveItem)
-
-    const updatedLiveItemsToHide = liveItemsToHide.map((x: ExtendedEpisode) => {
-      x.isPublic = false
-      return x
-    })
-    await episodeRepo.save(updatedLiveItemsToHide, { chunk: 400 })
   }
+
+  /*
+    If liveItems exist in the database for this podcast,
+    but they aren't currently in the feed, then retrieve
+    and set them to isPublic = false
+  */
+  let liveItemsToHide = await episodeRepo.find({
+    where: {
+      podcast,
+      isPublic: true,
+      guid: Not(In(parsedLiveItemGuids))
+    }
+  })
+
+  liveItemsToHide = liveItemsToHide.filter((x) => x.liveItem)
+
+  const updatedLiveItemsToHide = liveItemsToHide.map((x: ExtendedEpisode) => {
+    x.isPublic = false
+    return x
+  })
+  await episodeRepo.save(updatedLiveItemsToHide, { chunk: 400 })
 
   const savedLiveItemGuids = savedLiveItems.map((x) => x.guid)
 
@@ -906,7 +905,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // Parsed episodes are only valid if they have enclosure.url tags,
   // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
-    if (x.enclosure && x.enclosure.url) result.push(x)
+    if (x.enclosure && x.enclosure.url && !x.liveItemStart) result.push(x)
     return result
   }, [])
   // Create an array of only the episode media URLs from the parsed object
@@ -928,19 +927,13 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       but they aren't currently in the feed, then retrieve
       and set them to isPublic = false
     */
-    let episodesToHide = await episodeRepo.find({
+    const episodesToHide = await episodeRepo.find({
       where: {
         podcast,
         isPublic: true,
         mediaUrl: Not(In(parsedEpisodeMediaUrls))
       }
     })
-
-    /* Handle the live items separately. This should be made more efficient... */
-    if (podcast.hasLiveItem) {
-      savedEpisodes = savedEpisodes.filter((x) => !x.liveItem)
-      episodesToHide = episodesToHide.filter((x) => !x.liveItem)
-    }
 
     const updatedEpisodesToHide = episodesToHide.map((x: ExtendedEpisode) => {
       x.isPublic = false
