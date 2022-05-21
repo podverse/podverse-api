@@ -12,6 +12,7 @@ const getLiveItems = async (podcastId: string) => {
     .addSelect('liveItem.status')
     .innerJoinAndSelect('liveItem.episode', 'episode')
     .where(`episode.podcastId = :podcastId`, { podcastId })
+    .andWhere(`episode.isPublic = true`)
     .limit(100)
     .getMany()
 

@@ -94,6 +94,9 @@ export class Podcast {
   hasLiveItem: boolean
 
   @Column({ default: false })
+  hasPodcastIndexValueTag?: boolean
+
+  @Column({ default: false })
   hasVideo: boolean
 
   @Column({ default: false })

@@ -3,6 +3,7 @@ import { config } from '~/config'
 import { getConnection, getRepository } from 'typeorm'
 import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl } from '~/controllers/feedUrl'
 import { connectToDb } from '~/lib/db'
+import { convertPIValueTagToPVValueTagArray } from '~/lib/podcastIndex'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexId } from '~/services/queue'
 import { request } from '~/lib/request'
@@ -30,6 +31,19 @@ const axiosRequest = async (url) => {
       Authorization: hash
     }
   })
+}
+
+export const getValueTagEnabledPodcastIdsFromPI = async () => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/bytag?podcast-value`
+  const response = await axiosRequest(url)
+  const { data } = response
+
+  const podcastIndexIds: string[] = []
+  for (const feed of data.feeds) {
+    podcastIndexIds.push(feed.id)
+  }
+
+  return podcastIndexIds
 }
 
 const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = [], since?: number) => {
@@ -160,8 +174,13 @@ export const getPodcastFromPodcastIndexById = async (id: string) => {
   return response && response.data
 }
 
+export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
+  const podcast = await getPodcastFromPodcastIndexById(id)
+  const pvValueTagArray = convertPIValueTagToPVValueTagArray(podcast.feed.value)
+  return pvValueTagArray
+}
+
 export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
-  console.log('addOrUpdatePodcastFromPodcastIndex', id)
   const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
   await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
   const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id)
