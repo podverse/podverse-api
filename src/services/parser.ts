@@ -4,6 +4,7 @@ import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value }
 import { Funding, ParsedEpisode, parseLatestLiveItemStatus, parseLatestLiveItemInfo } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
+import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
@@ -13,11 +14,11 @@ import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/se
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
-import { getLiveItemByGuid } from '~/controllers/liveItem'
 import {
   sendLiveItemLiveDetectedNotification,
   sendNewEpisodeDetectedNotification
 } from '~/lib/notifications/fcmGoogleApi'
+import { getPodcastValueTagForPodcastIndexId } from '~/services/podcastIndex'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -39,7 +40,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     const xml = await nodeFetch(feedUrl.url, {
       headers: { 'User-Agent': userAgent },
       follow: 5,
-      size: 20000000,
+      size: 40000000,
       signal: abortController.signal
     }).then((resp) => resp.text())
     const parsedFeed = parseFeed(xml, { allowMissingGuid: true })
@@ -307,6 +308,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
     podcast.title = meta.title
     podcast.type = meta.type
     podcast.value = meta.value
+
+    if ((!podcast.value || podcast.value.length === 0) && podcast.hasPodcastIndexValueTag && podcast.podcastIndexId) {
+      try {
+        podcast.value = await getPodcastValueTagForPodcastIndexId(podcast.podcastIndexId)
+      } catch (error) {
+        console.log('getPodcastValueTagForPodcastIndexId error', error)
+      }
+    }
 
     const podcastRepo = getRepository(Podcast)
 
@@ -786,6 +795,12 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
     liveItem.start = parsedEpisode.liveItemStart
     liveItem.status = parsedEpisode.liveItemStatus
     episode.liveItem = liveItem
+
+    // If a livestream has ended, set it to isPublic=false
+    // so it doesn't get returned in requests anymore.
+    if (liveItem.status === 'ended') {
+      episode.isPublic = false
+    }
   } else {
     episode.liveItem = null
   }

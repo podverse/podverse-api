@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { getRepository, In } from 'typeorm'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
@@ -360,6 +360,40 @@ const subscribeToPodcast = async (podcastId, loggedInUserId) => {
   return subscribedPodcastIds
 }
 
+const updateHasPodcastIndexValueTags = async (podcastIndexIds: string[]) => {
+  console.log('updateHasPodcastIndexValueTags', podcastIndexIds.length)
+  const repository = getRepository(Podcast)
+
+  // First reset all the podcasts with hasPodcastIndexValueTag=true already to false.
+  const podcastsToResetValueTag = await repository.find({
+    where: {
+      hasPodcastIndexValueTag: true
+    }
+  })
+  const newPodcastsToReset = podcastsToResetValueTag.map((podcast) => {
+    podcast.hasPodcastIndexValueTag = false
+    return podcast
+  })
+
+  console.log('newPodcastsToReset', newPodcastsToReset.length)
+  await repository.save(newPodcastsToReset, { chunk: 400 })
+
+  const podcastsToUpdate = await repository.find({
+    where: {
+      podcastIndexId: In(podcastIndexIds)
+    }
+  })
+
+  const newPodcastsToUpdate = podcastsToUpdate.map((podcast) => {
+    podcast.hasPodcastIndexValueTag = true
+    return podcast
+  })
+
+  console.log('newPodcastsToUpdate', newPodcastsToUpdate.length)
+  await repository.save(newPodcastsToUpdate, { chunk: 400 })
+  console.log('newPodcastsToUpdate finished')
+}
+
 export {
   findPodcastsByFeedUrls,
   getPodcast,
@@ -369,5 +403,6 @@ export {
   getMetadata,
   getSubscribedPodcasts,
   subscribeToPodcast,
-  toggleSubscribeToPodcast
+  toggleSubscribeToPodcast,
+  updateHasPodcastIndexValueTags
 }
