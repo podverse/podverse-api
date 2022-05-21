@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.5.8",
+  "version": "4.5.9",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -33,7 +33,7 @@
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "dev:scripts:parseOrphanFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
     "dev:scripts:parsePublicFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
-    "dev:scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastindex/updateValueTagEnabledPodcastIdsFromPI.ts",
+    "dev:scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/updateValueTagEnabledPodcastIdsFromPI.ts",
     "dev:scripts:podping:runLiveItemListener": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "dev:scripts:queryUniquePageviews": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "dev:scripts:receiveErrorMessageFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
@@ -61,7 +61,7 @@
     "scripts:parseFeedUrlsFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
     "scripts:parseOrphanFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseOrphanFeedUrls.ts",
     "scripts:parsePublicFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parsePublicFeedUrls.ts",
-    "scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r tsconfig-paths/register ./src/scripts/podcastindex/updateValueTagEnabledPodcastIdsFromPI.ts",
+    "scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/updateValueTagEnabledPodcastIdsFromPI.ts",
     "scripts:podping:runLiveItemListener": "ts-node -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "scripts:queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
     "scripts:receiveErrorMessageFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
