@@ -9496,10 +9496,10 @@ thread-stream@^0.15.1:
   dependencies:
     real-require "^0.1.0"
 
-threadcap@0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/threadcap/-/threadcap-0.1.7.tgz#e4f78089e121b9e1d6f62f7ea8f75daf81d8aa34"
-  integrity sha512-iF9b6o4IfD/eQGTzd2Zj1/7RDdLwMlFwQrxLcJ+HOogjpgdS9QzPr+HwQmPsJDMBY+ojmIH7dmLeyu3kGsOldw==
+threadcap@^0.1.8:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/threadcap/-/threadcap-0.1.8.tgz#be41bf75721b1f8ce93456647e32866eaf25c56f"
+  integrity sha512-WpXpco3LEUQPmn9sIbNCFF5coBnj1DsreXcXZ9Fs/+R/cLOYVFj2a6e/tccIXpUjYDy8iTLlD1JOffjGf+wFzQ==
 
 throat@^5.0.0:
   version "5.0.0"
