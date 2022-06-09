@@ -191,7 +191,7 @@
     "sharp": "0.28.3",
     "shortid": "2.2.15",
     "sqlstring": "2.3.3",
-    "threadcap": "0.1.7",
+    "threadcap": "0.1.8",
     "ts-jest": "26.1.1",
     "ts-loader": "6.2.1",
     "tsconfig-paths": "3.9.0",
