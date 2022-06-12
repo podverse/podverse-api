@@ -7913,10 +7913,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@4.3.3-beta.3:
-  version "4.3.3-beta.3"
-  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.3-beta.3.tgz#3577c11d49389516fd9d7db05754d1f6dacd1509"
-  integrity sha512-3jTwtgAbBsZVA2OIe61Tb5L1JR3kbkt9FNp7d8EZjO4AOibAjEt73KajEnIqZL74VgwxwOvIgXKBPemo1bDdqQ==
+podcast-partytime@4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.4.tgz#da61e2967aab0454d14583ef484e691bef024ed3"
+  integrity sha512-0CPmrhoik8VW5ft/08u5WPzKXEO/nT5Emg0en9LcBdUps7vxzgFaVb1yRPmrBaww2nLo62Jo0hG1tk9g1tHIOg==
   dependencies:
     dotenv "^10.0.0"
     fast-xml-parser "^3.18.0"
@@ -9496,7 +9496,7 @@ thread-stream@^0.15.1:
   dependencies:
     real-require "^0.1.0"
 
-threadcap@^0.1.8:
+threadcap@0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/threadcap/-/threadcap-0.1.8.tgz#be41bf75721b1f8ce93456647e32866eaf25c56f"
   integrity sha512-WpXpco3LEUQPmn9sIbNCFF5coBnj1DsreXcXZ9Fs/+R/cLOYVFj2a6e/tccIXpUjYDy8iTLlD1JOffjGf+wFzQ==
