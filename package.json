@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.5.10",
+  "version": "4.5.11",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -183,7 +183,7 @@
     "password-validator": "5.0.3",
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "8.7.3",
-    "podcast-partytime": "4.3.3-beta.3",
+    "podcast-partytime": "4.3.4",
     "podverse-shared": "^4.5.0",
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
