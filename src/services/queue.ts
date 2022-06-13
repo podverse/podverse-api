@@ -24,7 +24,8 @@ export const addAllOrphanFeedUrlsToPriorityQueue = async () => {
       .getMany()
 
     const forceReparsing = false
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
+    const cacheBust = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing, cacheBust)
   } catch (error) {
     console.log('queue:addAllOrphanFeedUrlsToPriorityQueue', error)
   }
@@ -50,7 +51,8 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
         .getMany()
 
       const forceReparsing = true
-      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
+      const cacheBust = false
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing, cacheBust)
 
       if (feedUrls.length === 1000) {
         recursivelySendFeedUrls(i + 1)
@@ -93,7 +95,8 @@ export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
         .getMany()
 
       const forceReparsing = true
-      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
+      const cacheBust = false
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing, cacheBust)
     }
   } catch (error) {
     console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
@@ -117,7 +120,8 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
     console.log('Total feedUrls found:', feedUrls.length)
 
     const forceReparsing = false
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing)
+    const cacheBust = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.queueUrl, forceReparsing, cacheBust)
   } catch (error) {
     console.log('queue:addFeedUrlsByFeedIdToQueue', error)
   }
@@ -146,7 +150,8 @@ export const addFeedUrlsByPodcastIndexId = async (podcastIndexIds: string[], que
       queueType === 'live' ? queueUrls.feedsToParse.liveQueueUrl : queueUrls.feedsToParse.priorityQueueUrl
 
     const forceReparsing = queueType === 'live'
-    await sendFeedUrlsToQueue(feedUrls, queueUrl, forceReparsing)
+    const cacheBust = queueType === 'live'
+    await sendFeedUrlsToQueue(feedUrls, queueUrl, forceReparsing, cacheBust)
 
     const podcasts: Podcast[] = []
     const newLastFoundInPodcastIndex = new Date()
@@ -178,17 +183,18 @@ export const addNonPodcastIndexFeedUrlsToPriorityQueue = async () => {
     console.log('Total feedUrls found:', feedUrls.length)
 
     const forceReparsing = false
-    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing)
+    const cacheBust = false
+    await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing, cacheBust)
   } catch (error) {
     console.log('queue:addNonPodcastIndexFeedUrlsToPriorityQueue', error)
   }
 }
 
-export const sendFeedUrlsToQueue = async (feedUrls, queueUrl, forceParsing) => {
+export const sendFeedUrlsToQueue = async (feedUrls, queueUrl, forceParsing: boolean, cacheBust: boolean) => {
   const attributes = []
 
   for (const feedUrl of feedUrls) {
-    const attribute = generateFeedMessageAttributes(feedUrl, {}, forceParsing) as never
+    const attribute = generateFeedMessageAttributes(feedUrl, {}, forceParsing, cacheBust) as never
     attributes.push(attribute)
   }
 
