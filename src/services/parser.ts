@@ -1,7 +1,13 @@
 import nodeFetch from 'node-fetch'
 import { parseFeed, Phase4Medium } from 'podcast-partytime'
 import type { FeedObject, Episode as EpisodeObject, Phase1Funding, Phase4Value } from 'podcast-partytime'
-import { Funding, ParsedEpisode, parseLatestLiveItemStatus, parseLatestLiveItemInfo } from 'podverse-shared'
+import {
+  addParameterToURL,
+  Funding,
+  ParsedEpisode,
+  parseLatestLiveItemStatus,
+  parseLatestLiveItemInfo
+} from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
@@ -27,7 +33,7 @@ interface ExtendedEpisode extends Episode {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
+export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   const abortController = new AbortController()
@@ -36,6 +42,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false) => {
   }, 180000)
 
   try {
+    const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+    console.log('*** urlToParse', urlToParse)
+
     logPerformance('podcastFetchAndParse', _logStart)
     const xml = await nodeFetch(feedUrl.url, {
       headers: { 'User-Agent': userAgent },
@@ -439,11 +448,12 @@ export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
     podcastId: podcastIds,
     isAuthority: true
   })
-  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl, forceReparsing)
+      const forceReparsing = true
+      const cacheBust = false
+      await parseFeedUrl(feedUrl, forceReparsing, cacheBust)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
@@ -455,11 +465,12 @@ export const parseFeedUrlsByPodcastIds = async (podcastIds: string[]) => {
 
 export const parseFeedUrlsByPodcastIndexIds = async (podcastIndexIds: string[]) => {
   const feedUrls = await getFeedUrlsByPodcastIndexIds(podcastIndexIds)
-  const forceReparsing = true
 
   for (const feedUrl of feedUrls) {
     try {
-      await parseFeedUrl(feedUrl, forceReparsing)
+      const forceReparsing = true
+      const cacheBust = false
+      await parseFeedUrl(feedUrl, forceReparsing, cacheBust)
     } catch (error) {
       await handlePodcastFeedLastParseFailed(feedUrl, error)
     }
@@ -549,7 +560,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
   }
 
   const feedUrlMsg = extractFeedMessage(message)
-  const { forceReparsing } = feedUrlMsg
+  const { cacheBust, forceReparsing } = feedUrlMsg
   let feedUrl
 
   try {
@@ -567,7 +578,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
 
     if (feedUrl) {
       try {
-        await parseFeedUrl(feedUrl, !!forceReparsing)
+        await parseFeedUrl(feedUrl, !!forceReparsing, !!cacheBust)
       } catch (error) {
         console.log('error parseNextFeedFromQueue parseFeedUrl', feedUrl.id, feedUrl.url)
         console.log('error', error)
@@ -575,7 +586,7 @@ export const parseNextFeedFromQueue = async (queueUrl: string) => {
       }
     } else {
       try {
-        await parseFeedUrl(feedUrlMsg, !!forceReparsing)
+        await parseFeedUrl(feedUrlMsg, !!forceReparsing, !!cacheBust)
       } catch (error) {
         console.log('parsePublicFeedUrls feedUrlMsg parseFeedUrl', feedUrlMsg)
         console.log('error', error)
@@ -625,7 +636,8 @@ export const handlePodcastFeedLastParseFailed = async (feedUrlMsg, inheritedErro
   if (queueUrls.feedsToParse && queueUrls.feedsToParse.errorsQueueUrl) {
     const errorsQueueUrl = queueUrls.feedsToParse.errorsQueueUrl
     const forceReparsing = false
-    const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError, forceReparsing)
+    const cacheBust = false
+    const attrs = generateFeedMessageAttributes(feedUrlMsg, inheritedError, forceReparsing, cacheBust)
     await sendMessageToQueue(attrs, errorsQueueUrl)
   }
 }
@@ -1011,7 +1023,12 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   }
 }
 
-export const generateFeedMessageAttributes = (feedUrl, error = {} as any, forceReparsing) => {
+export const generateFeedMessageAttributes = (
+  feedUrl,
+  error = {} as any,
+  forceReparsing: boolean,
+  cacheBust: boolean
+) => {
   return {
     id: {
       DataType: 'String',
@@ -1045,6 +1062,14 @@ export const generateFeedMessageAttributes = (feedUrl, error = {} as any, forceR
           }
         }
       : {}),
+    ...(cacheBust
+      ? {
+          cacheBust: {
+            DataType: 'String',
+            StringValue: 'TRUE'
+          }
+        }
+      : {}),
     ...(error && error.message
       ? {
           errorMessage: {
@@ -1070,6 +1095,7 @@ const extractFeedMessage = (message) => {
         }
       : {}),
     ...(attrs.forceReparsing ? { forceReparsing: true } : {}),
+    ...(attrs.cacheBust ? { cacheBust: true } : {}),
     receiptHandle: message.ReceiptHandle
   } as any
 }
