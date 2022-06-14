@@ -1,6 +1,6 @@
-import { getRepository } from 'typeorm'
+import { getConnection, getRepository } from 'typeorm'
 import { config } from '~/config'
-import { Episode, MediaRef, RecentEpisodeByCategory, RecentEpisodeByPodcast } from '~/entities'
+import { Episode, EpisodeMostRecent, MediaRef } from '~/entities'
 import { request } from '~/lib/request'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
@@ -68,8 +68,9 @@ const getEpisode = async (id) => {
 //   return qb
 // }
 
-const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate = '', hasVideo) => {
-  const qb = getRepository(Episode)
+const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate = '', hasVideo, mostRecent) => {
+  const table = mostRecent ? EpisodeMostRecent : Episode
+  const qb = getRepository(table)
     .createQueryBuilder('episode')
     .select('episode.id')
     .addSelect('episode.alternateEnclosures')
@@ -177,7 +178,8 @@ const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
   const { episodeId, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
   const episodeIds = (episodeId && episodeId.split(',')) || []
 
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
+  const shouldUseEpisodesMostRecent = false
+  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
   // const shouldLimit = true
   // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
@@ -202,21 +204,18 @@ const getEpisodesByCategoryIds = async (query) => {
   const { categories, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
   const categoriesIds = (categories && categories.split(',')) || []
 
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
+  const shouldUseEpisodesMostRecent = sort === 'most-recent'
+  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
 
-  if (sort === 'most-recent') {
-    return handleMostRecentEpisodesQuery(qb, 'categoriesIds', categoriesIds, skip, take)
-  } else {
-    qb.innerJoin('podcast.categories', 'categories', 'categories.id IN (:...categoriesIds)', { categoriesIds })
+  qb.innerJoin('podcast.categories', 'categories', 'categories.id IN (:...categoriesIds)', { categoriesIds })
 
-    // const shouldLimit = true
-    // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-    qb.andWhere('episode."isPublic" IS true')
+  // const shouldLimit = true
+  // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+  qb.andWhere('episode."isPublic" IS true')
 
-    const allowRandom = true
-    const shouldLimitCount = true
-    return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
-  }
+  const allowRandom = true
+  const shouldLimitCount = true
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
 const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
@@ -233,56 +232,21 @@ const getEpisodesByPodcastIds = async (query) => {
   const { hasVideo, includePodcast, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo)
+  const shouldUseEpisodesMostRecent = podcastId.length > 1 && sort === 'most-recent'
+  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
 
   if (podcastIds.length === 1) {
     return getEpisodesByPodcastId(query, qb, podcastIds)
   }
 
-  if (sort === 'most-recent' && !hasVideo) {
-    return handleMostRecentEpisodesQuery(qb, 'podcastIds', podcastIds, skip, take)
-  } else {
-    qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
-    const shouldLimit = false
-    // const shouldLimit = podcastIds.length > 10
-    // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
-    qb.andWhere('episode."isPublic" IS true')
+  qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
+  const shouldLimit = false
+  // const shouldLimit = podcastIds.length > 10
+  // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
+  qb.andWhere('episode."isPublic" IS true')
 
-    const allowRandom = true
-    return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
-  }
-}
-
-const handleMostRecentEpisodesQuery = async (qb, type, ids, skip, take) => {
-  const table = type === 'categoriesIds' ? RecentEpisodeByCategory : RecentEpisodeByPodcast
-  const select = type === 'categoriesIds' ? 'recentEpisode.categoryId' : 'recentEpisode.podcastId'
-  const where =
-    type === 'categoriesIds' ? 'recentEpisode.categoryId IN (:...ids)' : 'recentEpisode.podcastId IN (:...ids)'
-
-  const recentEpisodesResult = await getRepository(table)
-    .createQueryBuilder('recentEpisode')
-    .select('recentEpisode.episodeId')
-    .addSelect(select)
-    .addSelect('recentEpisode.pubDate')
-    .where(where, { ids })
-    .orderBy('recentEpisode.pubDate', 'DESC')
-    .offset(skip)
-    .limit(take)
-    .getManyAndCount()
-
-  const totalCount = recentEpisodesResult[1]
-  if (!totalCount) return [[], 0]
-
-  const recentEpisodeIds = recentEpisodesResult[0].map((x) => x.episodeId)
-  if (recentEpisodeIds.length <= 0) return [[], totalCount]
-
-  qb.andWhere('episode.id IN (:...recentEpisodeIds)', { recentEpisodeIds })
-  const allowRandom = false
-  qb = addOrderByToQuery(qb, 'episode', 'most-recent', 'pubDate', allowRandom)
-
-  const episodes = await qb.getMany()
-  const cleanedEpisodes = cleanEpisodes(episodes)
-  return [cleanedEpisodes, totalCount]
+  const allowRandom = true
+  return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
 }
 
 const handleGetEpisodesWithOrdering = async (
@@ -488,12 +452,18 @@ const retrieveLatestChapters = async (id) => {
   return officialChaptersForEpisode
 }
 
+const refreshEpisodesMostRecentMaterializedView = async () => {
+  const em = await getConnection().createEntityManager()
+  await em.query('REFRESH MATERIALIZED VIEW "episodes_most_recent"')
+}
+
 export {
   getEpisode,
   getEpisodes,
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
   getEpisodesFromSearchEngine,
+  refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
   retrieveLatestChapters
 }
