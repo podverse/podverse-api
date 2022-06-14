@@ -68,8 +68,14 @@ const getEpisode = async (id) => {
 //   return qb
 // }
 
-const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate = '', hasVideo, mostRecent) => {
-  const table = mostRecent ? EpisodeMostRecent : Episode
+const generateEpisodeSelects = (
+  includePodcast,
+  searchTitle = '',
+  sincePubDate = '',
+  hasVideo,
+  shouldUseEpisodesMostRecent
+) => {
+  const table = shouldUseEpisodesMostRecent ? EpisodeMostRecent : Episode
   const qb = getRepository(table)
     .createQueryBuilder('episode')
     .select('episode.id')
@@ -103,7 +109,10 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
     .addSelect('episode.value')
 
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
-  qb.leftJoinAndSelect('episode.liveItem', 'liveItem')
+
+  if (!shouldUseEpisodesMostRecent) {
+    qb.leftJoinAndSelect('episode.liveItem', 'liveItem')
+  }
 
   // Throws an error if searchTitle is defined but invalid
   if (searchTitle) validateSearchQueryString(searchTitle)
@@ -120,7 +129,9 @@ const generateEpisodeSelects = (includePodcast, searchTitle = '', sincePubDate =
     qb.andWhere(`episode."mediaType" LIKE 'video%'`)
   }
 
-  qb.andWhere('"liveItem" IS null')
+  if (!shouldUseEpisodesMostRecent) {
+    qb.andWhere('"liveItem" IS null')
+  }
 
   return qb
 }
