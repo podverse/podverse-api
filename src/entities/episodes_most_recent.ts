@@ -61,6 +61,9 @@ export class EpisodeMostRecent {
   linkUrl?: string
 
   @ViewColumn()
+  mediaFilesize: number
+
+  @ViewColumn()
   mediaType?: string
 
   @ViewColumn()
