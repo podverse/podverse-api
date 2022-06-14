@@ -234,8 +234,8 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
   qb.andWhere('episode."isPublic" IS true')
 
-  const shouldLimitCount = false
   const allowRandom = true
+  const shouldLimitCount = false
   return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
@@ -243,7 +243,7 @@ const getEpisodesByPodcastIds = async (query) => {
   const { hasVideo, includePodcast, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
-  const shouldUseEpisodesMostRecent = podcastId.length > 1 && sort === 'most-recent'
+  const shouldUseEpisodesMostRecent = podcastIds.length > 1 && sort === 'most-recent'
   const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
 
   if (podcastIds.length === 1) {
@@ -251,13 +251,11 @@ const getEpisodesByPodcastIds = async (query) => {
   }
 
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
-  const shouldLimit = false
-  // const shouldLimit = podcastIds.length > 10
-  // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
 
   const allowRandom = true
-  return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimit)
+  const shouldLimitCount = shouldUseEpisodesMostRecent
+  return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
 const handleGetEpisodesWithOrdering = async (
