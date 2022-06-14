@@ -7,8 +7,8 @@ import {
   Transcript,
   ValueTag
 } from 'podverse-shared'
-import { JoinTable, ManyToMany, ManyToOne, OneToOne, ViewColumn, ViewEntity } from 'typeorm'
-import { Author, Category, LiveItem, Podcast } from '~/entities'
+import { JoinTable, ManyToMany, ManyToOne, ViewColumn, ViewEntity } from 'typeorm'
+import { Author, Category, Podcast } from '~/entities'
 
 @ViewEntity('episodes_most_recent')
 export class EpisodeMostRecent {
@@ -109,9 +109,6 @@ export class EpisodeMostRecent {
   @ManyToMany((type) => Category)
   @JoinTable()
   categories: Category[]
-
-  @OneToOne((type) => LiveItem, (type) => LiveItem)
-  liveItem: LiveItem | null
 
   @ManyToOne((type) => Podcast, (podcast) => podcast.episodes)
   podcast: Podcast
