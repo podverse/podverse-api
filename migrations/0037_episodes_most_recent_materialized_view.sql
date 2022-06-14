@@ -1,11 +1,11 @@
 CREATE MATERIALIZED VIEW "episodes_most_recent" AS
-SELECT e.*, p.id as podcast_id
+SELECT e.*
 FROM
     "episodes" e
-JOIN podcasts p ON p.id = e."podcastId"
 WHERE e."isPublic" = true
 	AND e."pubDate" > (NOW() - interval '14 days')
    	AND e."pubDate" < (NOW() + interval '1 days');
 
-CREATE INDEX "IDX_episodes_most_recent" ON public."episodes_most_recent" USING btree ("podcastId");
+CREATE UNIQUE INDEX CONCURRENTLY "IDX_episodes_most_recent_id" ON "episodes_most_recent" (id);
 
+CREATE INDEX CONCURRENTLY "IDX_episodes_most_recent_podcastId_isPublic_pubDate" ON public."episodes_most_recent" USING btree ("podcastId", "isPublic", "pubDate");

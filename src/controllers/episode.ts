@@ -463,7 +463,7 @@ const retrieveLatestChapters = async (id) => {
 
 const refreshEpisodesMostRecentMaterializedView = async () => {
   const em = await getConnection().createEntityManager()
-  await em.query('REFRESH MATERIALIZED VIEW "episodes_most_recent"')
+  await em.query('REFRESH MATERIALIZED VIEW CONCURRENTLY "episodes_most_recent"')
 }
 
 export {

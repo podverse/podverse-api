@@ -7,3 +7,5 @@ WHERE
     m."isPublic" = TRUE
     AND m."isOfficialChapter" IS NULL
     AND e."mediaType" = 'video/mp4';
+
+CREATE UNIQUE INDEX CONCURRENTLY "mediaRefs_videos_id" ON "mediaRefs_videos" (id);
