@@ -40,6 +40,9 @@ export class EpisodeMostRecent {
   description?: string
 
   @ViewColumn()
+  duration?: number
+
+  @ViewColumn()
   episodeType?: string
 
   @ViewColumn()
