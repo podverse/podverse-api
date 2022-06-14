@@ -7,7 +7,7 @@ import {
   Transcript,
   ValueTag
 } from 'podverse-shared'
-import { JoinTable, ManyToMany, ManyToOne, ViewColumn, ViewEntity } from 'typeorm'
+import { Column, JoinTable, ManyToMany, ManyToOne, ViewColumn, ViewEntity } from 'typeorm'
 import { Author, Category, Podcast } from '~/entities'
 
 @ViewEntity('episodes_most_recent')
@@ -18,7 +18,7 @@ export class EpisodeMostRecent {
   @ViewColumn()
   int_id: number
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   alternateEnclosures: EpisodeAlternateEnclosure[]
 
   @ViewColumn()
@@ -30,7 +30,7 @@ export class EpisodeMostRecent {
   @ViewColumn()
   chaptersUrlLastParsed: Date
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   contentLinks: EpisodeContentLinks[]
 
   @ViewColumn()
@@ -45,7 +45,7 @@ export class EpisodeMostRecent {
   @ViewColumn()
   episodeType?: string
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   funding: Funding[]
 
   @ViewColumn()
@@ -93,7 +93,7 @@ export class EpisodeMostRecent {
   @ViewColumn()
   pubDate?: Date
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   socialInteraction: SocialInteraction[]
 
   @ViewColumn()
@@ -102,10 +102,10 @@ export class EpisodeMostRecent {
   @ViewColumn()
   title?: string
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   transcript: Transcript[]
 
-  @ViewColumn()
+  @Column('simple-json', { nullable: true })
   value: ValueTag[]
 
   @ManyToMany((type) => Author)
