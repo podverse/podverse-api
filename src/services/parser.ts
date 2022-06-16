@@ -46,7 +46,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     console.log('*** urlToParse', urlToParse)
 
     logPerformance('podcastFetchAndParse', _logStart)
-    const xml = await nodeFetch(feedUrl.url, {
+    const xml = await nodeFetch(urlToParse, {
       headers: { 'User-Agent': userAgent },
       follow: 5,
       size: 40000000,
