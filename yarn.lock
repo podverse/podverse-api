@@ -7879,7 +7879,7 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@^4.3.6:
+podcast-partytime@4.3.6:
   version "4.3.6"
   resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.3.6.tgz#eb0a8df2a6643c46ea4b33810f84e8469a5ac904"
   integrity sha512-L9B/AW02r06YQAThSzVX20uMB215Nx/XA7zRo0DIxsb0I1a00DNY6XuAplOc3lc8av+erWODp+dBLYGZGdBJ9A==
