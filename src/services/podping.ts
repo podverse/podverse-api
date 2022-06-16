@@ -69,7 +69,18 @@ export const runLiveItemListener = () => {
                 for (const url of p.p.iris) {
                   try {
                     if (url?.startsWith('http')) {
-                      const feedUrl = await getFeedUrlByUrl(url)
+                      let feedUrl = await getFeedUrlByUrl(url)
+
+                      if (!feedUrl) {
+                        if (url.startsWith('https:')) {
+                          const nextUrl = url.replace('https:', 'http:')
+                          feedUrl = await getFeedUrlByUrl(nextUrl)
+                        } else if (url.startsWith('http:')) {
+                          const nextUrl = url.replace('http:', 'https:')
+                          feedUrl = await getFeedUrlByUrl(nextUrl)
+                        }
+                      }
+
                       const { podcastIndexId } = feedUrl.podcast
                       if (podcastIndexId) podcastIndexIds.push(podcastIndexId)
                     }
