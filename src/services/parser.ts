@@ -767,7 +767,13 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
+
   episode.mediaType = parsedEpisode.enclosure.type
+  const mediumVideoOverrides = ['video', 'film']
+  if (!episode.mediaType && mediumVideoOverrides.includes(podcast?.medium)) {
+    episode.mediaType = 'video/mp4'
+  }
+
   episode.mediaUrl = parsedEpisode.enclosure.url
 
   const pubDate = new Date(parsedEpisode.pubDate)
