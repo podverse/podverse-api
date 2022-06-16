@@ -32,28 +32,67 @@ interface ExtendedEpisode extends Episode {
   soundbite: any[]
 }
 
+const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = false) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   const abortController = new AbortController()
-  const abortTimeout = setTimeout(() => {
-    abortController.abort()
-  }, 180000)
+  let abortTimeout
 
   try {
     const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
     console.log('*** urlToParse', urlToParse)
 
-    logPerformance('podcastFetchAndParse', _logStart)
-    const xml = await nodeFetch(urlToParse, {
-      headers: { 'User-Agent': userAgent },
-      follow: 5,
-      size: 40000000,
-      signal: abortController.signal
-    }).then((resp) => resp.text())
-    const parsedFeed = parseFeed(xml, { allowMissingGuid: true })
-    logPerformance('podcastFetchAndParse', _logEnd)
+    let xml
+    let parsedFeed
+    let retryCount = 1
+    const retryMax = 5 // retry up to 5 times
+    const retryTime = 60000 // retry every 1 minute
+
+    const podcastFetchAndParse = async () => {
+      logPerformance(`podcastFetchAndParse attempt ${retryCount}`, _logStart)
+      return nodeFetch(urlToParse, {
+        headers: { 'User-Agent': userAgent },
+        follow: 5,
+        size: 40000000,
+        signal: abortController.signal
+      })
+        .then(async (resp) => {
+          if (resp.ok) {
+            xml = await resp.text()
+            parsedFeed = parseFeed(xml, { allowMissingGuid: true })
+            logPerformance('podcastFetchAndParse', _logEnd)
+          } else {
+            const errorBody = await resp.text()
+            throw new Error(errorBody)
+          }
+        })
+        .catch(async (error) => {
+          console.log('nodeFetch error:', error)
+
+          // Only retrying when cacheBust is true to handle the special case of Podping livestream updates.
+          // When cacheBust is false, it means we are parsing based on updates from Podcast Index API,
+          // and we already will attempt to reparse PI API feeds every 15 minutes with the redundancy
+          // in our current PI API syncing setup.
+          if (cacheBust && retryCount < retryMax) {
+            clearTimeout(abortTimeout)
+            await delay(retryTime)
+            retryCount++
+            abortTimeout = setTimeout(() => {
+              abortController.abort()
+            }, 180000) // abort if request takes longer than 3 minutes
+            await podcastFetchAndParse()
+          } else if (cacheBust) {
+            throw new Error('nodeFetch retry attempt exceeded. ' + error)
+          } else {
+            throw new Error(error)
+          }
+        })
+    }
+
+    await podcastFetchAndParse()
 
     if (!parsedFeed) {
       throw new Error('parseFeedUrl invalid partytime parser response')
@@ -185,16 +224,17 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
       parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
-    const { mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } = getMostRecentPubDateFromFeed(
-      meta,
-      parsedEpisodes
-    )
+    const { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
+      getMostRecentEpisodeDataFromFeed(meta, parsedEpisodes)
     const previousLastEpisodePubDate = podcast.lastEpisodePubDate
+    const previousLastEpisodeTitle = podcast.lastEpisodeTitle
+
     const shouldSendNewEpisodeNotification =
       (!previousLastEpisodePubDate && mostRecentEpisodePubDate) ||
       (previousLastEpisodePubDate &&
         mostRecentEpisodePubDate &&
-        new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate))
+        new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate) &&
+        previousLastEpisodeTitle !== mostRecentEpisodeTitle)
 
     const previousLiveItemStatus = podcast.latestLiveItemStatus
     const shouldSendLiveNotification = latestLiveItemStatus === 'live' && previousLiveItemStatus !== 'live'
@@ -707,10 +747,11 @@ const findCategories = async (categories: string[]) => {
   return matchedCategories
 }
 
-const getMostRecentPubDateFromFeed = (meta, episodes) => {
+const getMostRecentEpisodeDataFromFeed = (meta, episodes) => {
   const mostRecentEpisode = episodes.reduce((r: any, a: any) => {
     return new Date(r.pubDate) > new Date(a.pubDate) ? r : a
   }, [])
+  const mostRecentEpisodeTitle = mostRecentEpisode && mostRecentEpisode.title
   const mostRecentEpisodePubDate = mostRecentEpisode && mostRecentEpisode.pubDate
   let mostRecentUpdateDateFromFeed = mostRecentEpisode && mostRecentEpisode.pubDate
 
@@ -747,7 +788,7 @@ const getMostRecentPubDateFromFeed = (meta, episodes) => {
     }
   }
 
-  return { mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed }
+  return { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed }
 }
 
 const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: ParsedEpisode, podcast) => {
