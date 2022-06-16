@@ -37,6 +37,15 @@ export const cleanUserItemResult = (result) => {
       ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
     }
   } else {
+    let liveItem: any = null
+    if (result.liveItem_id) {
+      liveItem = {
+        end: result.liveItem_end,
+        start: result.liveItem_start,
+        status: result.liveItem_status
+      }
+    }
+
     return {
       episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
@@ -53,7 +62,7 @@ export const cleanUserItemResult = (result) => {
       episodeTranscript: parseProp(result, 'episodeTranscript', []),
       episodeValue: parseProp(result, 'episodeValue', []),
       id: result.id,
-      liveItem: result.liveItem,
+      ...(liveItem ? { liveItem } : {}),
       podcastFunding: parseProp(result, 'podcastFunding', []),
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
