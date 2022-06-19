@@ -132,7 +132,10 @@ export const runLiveItemListener = () => {
     try {
       await connect()
     } catch (err) {
-      logPerformance(`WEBSOCKET_RECONNECT: Error ${new Error(err).message}, connectionId: ${connectionId}`, _logStart)
+      logPerformance(
+        `WEBSOCKET_RECONNECT: Error ${new Error(err).message}, connectionIdCount: ${connectionIdCount}`,
+        _logStart
+      )
     }
   }
 
