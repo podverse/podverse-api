@@ -46,7 +46,7 @@ export const runLiveItemListener = () => {
   const timeInterval = 5000
   const url = 'wss://api.livewire.io/ws/podping'
 
-  let connectionId = 0
+  let connectionIdCount = 0
   const hiveBlocksHandled = {}
 
   function connect() {
@@ -54,8 +54,11 @@ export const runLiveItemListener = () => {
     return new Promise((resolve, reject) => {
       logPerformance('client try to connect...', _logStart)
 
+      let connectionId = connectionIdCount
+
       client.on('open', () => {
-        connectionId++
+        connectionId = connectionIdCount + 1
+        connectionIdCount++
         logPerformance(`WEBSOCKET_OPEN: client connected to server at ${url}, connectionId: ${connectionId}`, _logStart)
         openedSocket = true
         resolve(openedSocket)
