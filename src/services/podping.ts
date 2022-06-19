@@ -37,7 +37,6 @@ export const runLiveItemListener = () => {
 
   /*
     Run an interval to keep the node script running forever.
-    Is there a better way to do this?
   */
   setInterval(() => {
     logPerformance('runLiveItemListener interval', _logStart)
@@ -47,13 +46,20 @@ export const runLiveItemListener = () => {
   const timeInterval = 5000
   const url = 'wss://api.livewire.io/ws/podping'
 
+  let connectionIdCount = 0
+  const hiveBlocksHandled = {}
+
   function connect() {
     const client = new ws(url)
     return new Promise((resolve, reject) => {
       logPerformance('client try to connect...', _logStart)
 
+      let connectionId = connectionIdCount
+
       client.on('open', () => {
-        logPerformance(`WEBSOCKET_OPEN: client connected to server at ${url}`, _logStart)
+        connectionId = connectionIdCount + 1
+        connectionIdCount++
+        logPerformance(`WEBSOCKET_OPEN: client connected to server at ${url}, connectionId: ${connectionId}`, _logStart)
         openedSocket = true
         resolve(openedSocket)
       })
@@ -61,10 +67,20 @@ export const runLiveItemListener = () => {
       client.on('message', async function message(data) {
         try {
           const msg = JSON.parse(data)
+
+          // If the hiveBlock was already processed by our listener, then skip the message.
+          if (hiveBlocksHandled[msg.n]) return
+
+          const prodPodpingLiveIdRegex = new RegExp('^pp_(.*)_(live|liveEnd)$')
+
           if (msg.t === 'podping') {
+            hiveBlocksHandled[msg.n] = true
             for (const p of msg.p) {
-              if (p.p.reason === 'live' || p.p.reason === 'liveEnd') {
-                logPerformance(`p.p ${JSON.stringify(p.p)}`, _logStart)
+              if (prodPodpingLiveIdRegex.test(p.i) && (p.p.reason === 'live' || p.p.reason === 'liveEnd')) {
+                logPerformance(
+                  `p.p ${JSON.stringify(p.p)}, p.n Hive block number ${p.n}, connectionId: ${connectionId}`,
+                  _logStart
+                )
                 const podcastIndexIds: string[] = []
                 for (const url of p.p.iris) {
                   try {
@@ -85,7 +101,7 @@ export const runLiveItemListener = () => {
                       if (podcastIndexId) podcastIndexIds.push(podcastIndexId)
                     }
                   } catch (err) {
-                    logPerformance(`p.p.iris error ${err}`, _logStart)
+                    logPerformance(`p.p.iris error ${err}, connectionId: ${connectionId}`, _logStart)
                   }
                 }
                 const queueType = 'live'
@@ -94,18 +110,18 @@ export const runLiveItemListener = () => {
             }
           }
         } catch (err) {
-          logPerformance(`message error: ${err}`, _logEnd)
+          logPerformance(`message error: ${err}, connectionId: ${connectionId}`, _logEnd)
         }
       })
 
       client.on('close', (err) => {
-        logPerformance(`WEBSOCKET_CLOSE: connection closed ${err}`, _logEnd)
+        logPerformance(`WEBSOCKET_CLOSE: connection closed ${err}, connectionId: ${connectionId}`, _logEnd)
         openedSocket = false
         reject(err)
       })
 
       client.on('error', (err) => {
-        logPerformance(`WEBSOCKET_ERROR: Error ${new Error(err.message)}`, _logEnd)
+        logPerformance(`WEBSOCKET_ERROR: Error ${new Error(err.message)}, connectionId: ${connectionId}`, _logEnd)
         openedSocket = false
         reject(err)
       })
@@ -116,7 +132,10 @@ export const runLiveItemListener = () => {
     try {
       await connect()
     } catch (err) {
-      logPerformance(`WEBSOCKET_RECONNECT: Error ${new Error(err).message}`, _logStart)
+      logPerformance(
+        `WEBSOCKET_RECONNECT: Error ${new Error(err).message}, connectionIdCount: ${connectionIdCount}`,
+        _logStart
+      )
     }
   }
 
