@@ -71,7 +71,7 @@ export const runLiveItemListener = () => {
           // If the hiveBlock was already processed by our listener, then skip the message.
           if (hiveBlocksHandled[msg.n]) return
 
-          const prodPodpingLiveIdRegex = new RegExp('^pp_(.*)_(live|liveEnd)')
+          const prodPodpingLiveIdRegex = new RegExp('^pp_(.*)_(live|liveEnd)$')
 
           if (msg.t === 'podping') {
             hiveBlocksHandled[msg.n] = true
