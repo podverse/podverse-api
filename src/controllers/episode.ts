@@ -124,6 +124,9 @@ const generateEpisodeSelects = (
 
   if (sincePubDate) {
     qb.andWhere(`episode.createdAt >= :sincePubDate`, { sincePubDate })
+    const sincePubDate7DaysEarlier = new Date(sincePubDate)
+    sincePubDate7DaysEarlier.setDate(sincePubDate7DaysEarlier.getDate() - 7)
+    qb.andWhere(`episode.pubDate >= :sincePubDate7DaysEarlier`, { sincePubDate7DaysEarlier })
   }
 
   if (hasVideo) {
