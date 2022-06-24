@@ -107,6 +107,7 @@ const generateEpisodeSelects = (
     .addSelect('episode.title')
     .addSelect('episode.transcript')
     .addSelect('episode.value')
+    .addSelect('episode.createdAt')
 
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
 
@@ -122,7 +123,7 @@ const generateEpisodeSelects = (
   })
 
   if (sincePubDate) {
-    qb.andWhere(`episode.pubDate >= :sincePubDate`, { sincePubDate })
+    qb.andWhere(`episode.createdAt >= :sincePubDate`, { sincePubDate })
   }
 
   if (hasVideo) {
