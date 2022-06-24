@@ -71,7 +71,10 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     options.sort = sort
   }
 
-  if (type === 'authors') {
+  if (sincePubDate) {
+    // Use a larger than normal limit for sincePubDate requests
+    options.take = 50
+  } else if (type === 'authors') {
     options.take = config.queryAuthorsLimit
   } else if (type === 'categories') {
     options.take = config.queryCategoriesLimit
