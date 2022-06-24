@@ -4,6 +4,7 @@ import { FeedUrl, Podcast, User } from '~/entities'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { searchApi } from '~/services/manticore'
+import { deleteNotification } from './notification'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
 
@@ -319,13 +320,23 @@ const toggleSubscribeToPodcast = async (podcastId, loggedInUserId) => {
   // If no podcastIds match the filter, add the podcastId.
   // Else, remove the podcastId.
   const filteredPodcasts = subscribedPodcastIds.filter((x) => x !== podcastId)
-  if (filteredPodcasts.length === subscribedPodcastIds.length) {
+  const shouldSubscribe = filteredPodcasts.length === subscribedPodcastIds.length
+
+  if (shouldSubscribe) {
     subscribedPodcastIds.push(podcastId)
   } else {
     subscribedPodcastIds = filteredPodcasts
   }
 
   await repository.update(loggedInUserId, { subscribedPodcastIds })
+
+  if (!shouldSubscribe) {
+    try {
+      await deleteNotification(podcastId, loggedInUserId)
+    } catch (error) {
+      //
+    }
+  }
 
   return subscribedPodcastIds
 }
