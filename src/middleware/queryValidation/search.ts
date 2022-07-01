@@ -36,6 +36,7 @@ const validateEpisodeSearch = async (ctx, next) => {
   const schema = Joi.object().keys({
     hasVideo: Joi.boolean(),
     includePodcast: Joi.boolean(),
+    maxResults: Joi.boolean(),
     podcastId: Joi.string(),
     searchTitle: Joi.string().min(2),
     sincePubDate: Joi.date().iso(),

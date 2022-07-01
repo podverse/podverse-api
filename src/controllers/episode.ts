@@ -234,13 +234,13 @@ const getEpisodesByCategoryIds = async (query) => {
 }
 
 const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
-  const { skip, sort, take } = query
+  const { maxResults, skip, sort, take } = query
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
   qb.andWhere('episode."isPublic" IS true')
 
   const allowRandom = true
   const shouldLimitCount = false
-  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
+  return handleGetEpisodesWithOrdering({ maxResults, qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
 const getEpisodesByPodcastIds = async (query) => {
@@ -270,21 +270,23 @@ const handleGetEpisodesWithOrdering = async (
   isFromManticoreSearch?,
   totalOverride?
 ) => {
-  const { skip, sort, take } = obj
+  const { maxResults, skip, sort, take } = obj
+  const finalTake = maxResults ? 5000 : take
+
   let { qb } = obj
   qb.offset(skip)
-  qb.limit(take)
+  qb.limit(finalTake)
 
   qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom, isFromManticoreSearch)
 
   let episodes = [] as any
   let episodesCount = 0
   if (shouldLimitCount) {
-    const results = await qb.offset(skip).limit(take).getMany()
+    const results = await qb.offset(skip).limit(finalTake).getMany()
     episodes = results
     episodesCount = 10000
   } else {
-    const results = await qb.offset(skip).limit(take).getManyAndCount()
+    const results = await qb.offset(skip).limit(finalTake).getManyAndCount()
     episodes = results[0] || []
     episodesCount = results[1] || 0
   }
