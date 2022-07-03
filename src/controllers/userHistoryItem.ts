@@ -74,7 +74,8 @@ export const cleanUserItemResult = (result) => {
       ...(result.userPlaybackPosition || result.userPlaybackPosition === 0
         ? { userPlaybackPosition: result.userPlaybackPosition }
         : {}),
-      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
+      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {}),
+      ...(result.updatedAt ? { updatedAt: result.updatedAt } : {})
     }
   }
 }
@@ -96,6 +97,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
       .addSelect(`${tableName}.mediaFileDuration`, 'mediaFileDuration')
       .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
       .addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
+      .addSelect(`${tableName}.updatedAt`, 'updatedAt')
   } else if (tableName === 'userQueueItem') {
     qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
@@ -193,6 +195,7 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     .addSelect('userHistoryItem.completed', 'completed')
     .addSelect('mediaRef.id', 'mediaRefId')
     .addSelect('episode.id', 'episodeId')
+    .addSelect('userHistoryItem.updatedAt', 'updatedAt')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
     .leftJoin('userHistoryItem.episode', 'episode')
     .leftJoinAndSelect('episode.liveItem', 'liveItem')
@@ -205,13 +208,14 @@ export const getUserHistoryItemsMetadata = async (loggedInUserId) => {
     const cleanedResults = [] as any[]
     for (let i = 0; i < results.length; i++) {
       const result = results[i]
-      const { completed, episodeId, mediaRefId } = result
+      const { completed, episodeId, mediaRefId, updatedAt } = result
       const cleanedResult = {
         mediaFileDuration: result.mediaFileDuration,
         userPlaybackPosition: result.userPlaybackPosition,
         ...(completed ? { completed } : {}),
         ...(mediaRefId ? { mediaRefId: mediaRefId } : {}),
-        ...(!mediaRefId ? { episodeId: episodeId } : {})
+        ...(!mediaRefId ? { episodeId: episodeId } : {}),
+        ...(updatedAt ? { updatedAt } : {})
       }
       cleanedResults.push(cleanedResult)
     }
@@ -229,6 +233,7 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
     .select('userHistoryItem.mediaFileDuration', 'd')
     .addSelect('userHistoryItem.userPlaybackPosition', 'p')
     .addSelect('userHistoryItem.completed', 'c')
+    .addSelect('userHistoryItem.updatedAt', 'u')
     .addSelect('mediaRef.id', 'm')
     .addSelect('episode.id', 'e')
     .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
@@ -243,13 +248,14 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
     const cleanedResults = [] as any[]
     for (let i = 0; i < results.length; i++) {
       const result = results[i]
-      const { c, e, m } = result
+      const { c, e, m, u } = result
       const cleanedResult = {
         d: result.d,
         p: result.p,
         ...(c ? { c } : {}),
         ...(m ? { m } : {}),
-        ...(!m ? { e } : {})
+        ...(!m ? { e } : {}),
+        ...(u ? { u } : {})
       }
       cleanedResults.push(cleanedResult)
     }
@@ -260,8 +266,16 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
 }
 
 export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { completed, episodeId, forceUpdateOrderDate, liveItem, mediaFileDuration, mediaRefId, userPlaybackPosition } =
-    query
+  const {
+    completed,
+    episodeId,
+    forceUpdateOrderDate,
+    liveItem,
+    mediaFileDuration,
+    mediaRefId,
+    timeRequestSent,
+    userPlaybackPosition
+  } = query
 
   if (!episodeId && !mediaRefId) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
@@ -287,6 +301,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
       .addSelect('userHistoryItem.completed', 'completed')
       .addSelect('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
       .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+      .addSelect('userHistoryItem.updatedAt', 'updatedAt')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
       .leftJoin('userHistoryItem.owner', 'owner')
       .where('owner.id = :loggedInUserId', { loggedInUserId })
@@ -299,6 +314,7 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
       .addSelect('userHistoryItem.completed', 'completed')
       .addSelect('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
       .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+      .addSelect('userHistoryItem.updatedAt', 'updatedAt')
       .leftJoin('userHistoryItem.episode', 'episode')
       .leftJoinAndSelect('episode.liveItem', 'liveItem')
       .leftJoin('userHistoryItem.mediaRef', 'mediaRef')
@@ -327,6 +343,15 @@ export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
   userHistoryItem.owner = loggedInUserId
   userHistoryItem.orderChangedDate =
     forceUpdateOrderDate || !userHistoryItem.orderChangedDate ? new Date() : userHistoryItem.orderChangedDate
+
+  const updatedAtDate = new Date(userHistoryItem.updatedAt)
+  const timeRequestSentDate = timeRequestSent ? new Date(timeRequestSent) : new Date()
+
+  if (timeRequestSentDate < updatedAtDate) {
+    // Don't save the update if the item saved in the db has a more recent
+    // updatedAt value than the time the request was sent.
+    return
+  }
 
   await repository.save(userHistoryItem)
 }

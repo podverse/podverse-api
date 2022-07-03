@@ -27,6 +27,7 @@ export const getUserNowPlayingItem = async (loggedInUserId) => {
     .addSelect('userNowPlayingItem.userPlaybackPosition', 'userPlaybackPosition')
     .addSelect('episode.id', 'episodeId')
     .addSelect('mediaRef.id', 'mediaRefId')
+    .addSelect('userNowPlayingItem.updatedAt', 'updatedAt')
     .leftJoin('userNowPlayingItem.episode', 'episode')
     .leftJoin('userNowPlayingItem.mediaRef', 'mediaRef')
     .leftJoin('userNowPlayingItem.owner', 'owner')

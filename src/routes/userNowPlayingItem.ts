@@ -33,7 +33,8 @@ router.get('/', jwtAuth, hasValidMembership, async (ctx) => {
       const episode = await getEpisode(userNowPlayingItem.episodeId)
       ctx.body = {
         episode,
-        userPlaybackPosition: userNowPlayingItem.userPlaybackPosition
+        userPlaybackPosition: userNowPlayingItem.userPlaybackPosition,
+        updatedAt: userNowPlayingItem.updatedAt
       }
     }
 

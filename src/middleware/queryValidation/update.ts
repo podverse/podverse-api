@@ -79,6 +79,7 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
     liveItem: Joi.object().allow(null),
     mediaFileDuration: Joi.number().integer().min(0),
     mediaRefId: Joi.string().allow(null),
+    requestTimeSent: Joi.string().allow(null),
     userPlaybackPosition: Joi.number().integer().min(0).required()
   })
 
