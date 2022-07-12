@@ -77,6 +77,9 @@ export class Podcast {
   @Column({ nullable: true })
   description?: string
 
+  @Column({ nullable: true })
+  embedApprovedMediaUrlPaths?: string
+
   @Column({ default: false })
   feedLastParseFailed?: boolean
 
