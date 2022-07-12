@@ -54,6 +54,40 @@ const getEpisode = async (id) => {
   return episode
 }
 
+const getEpisodeByPodcastIdAndGuid = async (podcastId: string, guid: string) => {
+  const repository = getRepository(Episode)
+  const episode = await repository.findOne(
+    {
+      guid,
+      podcastId
+    },
+    { relations }
+  )
+
+  if (!episode || !episode.podcast.isPublic) {
+    throw new createError.NotFound('Episode not found')
+  }
+
+  return episode
+}
+
+const getEpisodeByPodcastIdAndMediaUrl = async (podcastId: string, mediaUrl: string) => {
+  const repository = getRepository(Episode)
+  const episode = await repository.findOne(
+    {
+      mediaUrl,
+      podcastId
+    },
+    { relations }
+  )
+
+  if (!episode || !episode.podcast.isPublic) {
+    throw new createError.NotFound('Episode not found')
+  }
+
+  return episode
+}
+
 // Use where clause to reduce the size of very large data sets and speed up queries
 // const limitEpisodesQuerySize = (qb: any, shouldLimit: boolean, sort: string) => {
 //   if (shouldLimit) {
@@ -474,6 +508,8 @@ const refreshEpisodesMostRecentMaterializedView = async () => {
 
 export {
   getEpisode,
+  getEpisodeByPodcastIdAndGuid,
+  getEpisodeByPodcastIdAndMediaUrl,
   getEpisodes,
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
