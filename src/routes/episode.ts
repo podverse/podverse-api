@@ -5,6 +5,8 @@ import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import {
   getEpisode,
+  getEpisodeByPodcastIdAndGuid,
+  getEpisodeByPodcastIdAndMediaUrl,
   getEpisodes,
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
@@ -130,6 +132,30 @@ router.get('/:id/proxy/twitter', async (ctx) => {
     const protocol = 'twitter'
     const body = await getThreadcap(finalUrl, protocol, config.twitterAPIBearerToken)
     ctx.body = body
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Get Episode by GUID
+router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const { episodeGuid, podcastId } = body
+    const results = await getEpisodeByPodcastIdAndGuid(podcastId, episodeGuid)
+    ctx.body = results
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Get Episode by GUID
+router.post('/get-by-media-url', parseNSFWHeader, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const { episodeMediaUrl, podcastId } = body
+    const results = await getEpisodeByPodcastIdAndMediaUrl(podcastId, episodeMediaUrl)
+    ctx.body = results
   } catch (error) {
     emitRouterError(error, ctx)
   }
