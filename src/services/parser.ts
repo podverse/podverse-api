@@ -799,7 +799,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
     episode.chaptersUrl = parsedEpisode.chapters.url
     episode.chaptersType = parsedEpisode.chapters.type
   }
-  episode.description = parsedEpisode.description
+  episode.description = parsedEpisode.summary || parsedEpisode.description
   episode.duration = parsedEpisode.duration ? parseInt(parsedEpisode.duration, 10) : 0
   /* TODO: podcast-partytime is missing type and funding on episode */
   // episode.episodeType = parsedEpisode.type
