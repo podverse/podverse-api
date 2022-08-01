@@ -11,7 +11,8 @@ export const sendNewEpisodeDetectedNotification = async (
   podcastTitle?: string,
   episodeTitle?: string,
   podcastImage?: string,
-  episodeImage?: string
+  episodeImage?: string,
+  episodeId?: string
 ) => {
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   podcastTitle = podcastTitle || 'Untitled Podcast'
@@ -27,7 +28,8 @@ export const sendNewEpisodeDetectedNotification = async (
     podcastTitle,
     episodeTitle,
     podcastImage,
-    episodeImage
+    episodeImage,
+    episodeId
   )
 }
 
@@ -36,7 +38,8 @@ export const sendLiveItemLiveDetectedNotification = async (
   podcastTitle?: string,
   episodeTitle?: string,
   podcastImage?: string,
-  episodeImage?: string
+  episodeImage?: string,
+  episodeId?: string
 ) => {
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   podcastTitle = podcastTitle || 'Untitled Podcast'
@@ -52,7 +55,8 @@ export const sendLiveItemLiveDetectedNotification = async (
     podcastTitle,
     episodeTitle,
     podcastImage,
-    episodeImage
+    episodeImage,
+    episodeId
   )
 }
 
@@ -65,7 +69,8 @@ export const sendFCMGoogleApiNotification = async (
   podcastTitle: string,
   episodeTitle: string,
   podcastImage?: string,
-  episodeImage?: string
+  episodeImage?: string,
+  episodeId?: string
 ) => {
   if (fcmTokens?.length > 0) {
     const imageUrl = episodeImage || podcastImage
@@ -82,6 +87,7 @@ export const sendFCMGoogleApiNotification = async (
           body,
           title,
           podcastId,
+          episodeId,
           podcastTitle: podcastTitle,
           episodeTitle: episodeTitle,
           notificationType,
@@ -92,6 +98,7 @@ export const sendFCMGoogleApiNotification = async (
           body,
           title,
           podcastId,
+          episodeId,
           podcastTitle: podcastTitle,
           episodeTitle: episodeTitle,
           notificationType,
