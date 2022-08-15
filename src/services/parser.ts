@@ -302,6 +302,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
     let latestEpisodeId = ''
+    let latestLiveItemEpisodeId = ''
     if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
@@ -346,6 +347,22 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
       latestEpisodeId = latestEpisode.id
       latestEpisodeImageUrl = latestEpisode.imageUrl || ''
+
+      const latestNewLiveItem = newLiveItems.reduce((r: any, a: any) => {
+        return r.pubDate > a.pubDate ? r : a
+      }, [])
+
+      const latestSavedLiveItem = updatedSavedLiveItems.reduce((r: any, a: any) => {
+        return r.pubDate > a.pubDate ? r : a
+      }, [])
+
+      const latestLiveItem =
+        (!Array.isArray(latestNewLiveItem) && latestNewLiveItem) ||
+        ((!Array.isArray(latestSavedLiveItem) && latestSavedLiveItem) as any)
+
+      if (latestLiveItem) {
+        latestLiveItemEpisodeId = latestLiveItem.id
+      }
     } else {
       podcast.lastEpisodePubDate = undefined
       podcast.lastEpisodeTitle = ''
@@ -436,7 +453,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         liveItemLatestTitle,
         finalPodcastImageUrl,
         finalEpisodeImageUrl,
-        latestEpisodeId
+        latestLiveItemEpisodeId
       )
       logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
     }
