@@ -32,6 +32,10 @@ interface ExtendedEpisode extends Episode {
   soundbite: any[]
 }
 
+interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
+  image?: string
+}
+
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -177,7 +181,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       } as ParsedEpisode
     }
 
-    const liveItemCompatToParsedEpisode = (liveItem: Phase4PodcastLiveItem) => {
+    const liveItemCompatToParsedEpisode = (liveItem: ExtendedPhase4PodcastLiveItem) => {
       return {
         alternateEnclosures: liveItem.alternativeEnclosures ?? [],
         author: [liveItem.author],
@@ -188,7 +192,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         enclosure: liveItem.enclosure,
         explicit: false, // liveItem.explicit,
         guid: liveItem.guid,
-        imageURL: '', // liveItem.image,
+        imageURL: liveItem.image,
         link: liveItem.link,
         liveItemEnd: liveItem.end,
         liveItemStart: liveItem.start,
