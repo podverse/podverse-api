@@ -185,7 +185,7 @@
     "password-validator": "5.0.3",
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "8.7.3",
-    "podcast-partytime": "4.3.7",
+    "podcast-partytime": "4.4.0",
     "podverse-shared": "^4.5.16",
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
