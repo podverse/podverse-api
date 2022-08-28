@@ -196,7 +196,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         link: liveItem.link,
         liveItemEnd: liveItem.end,
         liveItemStart: liveItem.start,
-        liveItemStatus: liveItem.status,
+        liveItemStatus: liveItem.status?.toLowerCase(),
         pubDate: null,
         socialInteraction: [],
         soundbite: [],
