@@ -1,5 +1,5 @@
 import * as Router from 'koa-router'
-import type { SocialInteraction } from 'podverse-shared'
+import type { SocialInteraction, Transcript } from 'podverse-shared'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
@@ -17,6 +17,7 @@ import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { getThreadcap } from '~/services/socialInteraction/threadcap'
+import { request } from '~/lib/request'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
@@ -73,6 +74,60 @@ router.get('/:id/retrieve-latest-chapters', async (ctx) => {
   } catch (error) {
     emitRouterError(error, ctx)
   }
+})
+
+const transcriptHandler = async (ctx) => {
+  try {
+    if (!ctx.params.id) throw new Error('An episodeId is required.')
+    const episode = await getEpisode(ctx.params.id)
+    if (!episode) {
+      throw new Error('No episode found with that id.')
+    }
+    if (!episode.transcript || episode.transcript.length === 0) {
+      throw new Error('No transcripts found for episode.')
+    }
+
+    let matchingTranscript: Transcript | undefined
+    if (ctx.params.language) {
+      matchingTranscript = episode.transcript.find(
+        (item: Transcript) => item.language && item.language === ctx.params.language
+      )
+    }
+
+    if (!matchingTranscript) {
+      matchingTranscript = episode.transcript.find(
+        (item: Transcript) => item.type && (item.type === 'application/json' || item.type === 'application/srt')
+      )
+      if (!matchingTranscript) {
+        matchingTranscript = episode.transcript[0]
+      }
+    }
+
+    const finalUrl = matchingTranscript?.url
+
+    if (!finalUrl) {
+      throw new Error('No transcript url found for episode.')
+    }
+
+    const body = await request(finalUrl)
+
+    ctx.body = {
+      url: matchingTranscript.url,
+      type: matchingTranscript.type,
+      rel: matchingTranscript.rel,
+      data: body
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+}
+
+router.get('/:id/proxy/transcript/:language', async (ctx) => {
+  return await transcriptHandler(ctx)
+})
+
+router.get('/:id/proxy/transcript', async (ctx) => {
+  return await transcriptHandler(ctx)
 })
 
 router.get('/:id/proxy/activity-pub', async (ctx) => {
