@@ -15,6 +15,9 @@ export class LiveItem {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column({ nullable: true })
+  chatIRCURL?: string
+
   @Column({
     type: 'date',
     nullable: true
