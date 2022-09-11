@@ -292,6 +292,8 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
     duration = Math.floor(duration)
     startTime = Math.floor(startTime)
 
+    const finalTitle = title !== episodeTitle && title !== podcastTitle ? title : ''
+
     if (duration <= 0) continue
     const endTime = startTime + duration
 
@@ -304,7 +306,7 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
     if (existingSoundBite) {
       existingSoundBite.startTime = startTime
       existingSoundBite.endTime = endTime
-      existingSoundBite.title = title !== episodeTitle && title !== podcastTitle ? title : ''
+      existingSoundBite.title = finalTitle
 
       await updateMediaRef(existingSoundBite, superUserId)
 
@@ -319,7 +321,8 @@ const updateSoundBites = async (episodeId, newSoundBites, episodeTitle, podcastT
         isPublic: true,
         startTime,
         endTime,
-        owner: superUserId
+        owner: superUserId,
+        title: finalTitle
       })
     }
   }
