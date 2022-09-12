@@ -33,6 +33,7 @@ interface ExtendedEpisode extends Episode {
 }
 
 interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
+  chat?: string
   image?: string
 }
 
@@ -185,6 +186,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       return {
         alternateEnclosures: liveItem.alternativeEnclosures ?? [],
         author: [liveItem.author],
+        // this is chatIRCURL in Podverse schema...probably a bad name since it could be any url :[
+        chat: liveItem.chat || '',
         chapters: null,
         contentLinks: liveItem.contentLinks ?? [],
         description: liveItem.description,
@@ -878,6 +881,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
     liveItem.end = parsedEpisode.liveItemEnd || null
     liveItem.start = parsedEpisode.liveItemStart
     liveItem.status = parsedEpisode.liveItemStatus
+    liveItem.chatIRCURL = parsedEpisode.chat
     episode.liveItem = liveItem
 
     // If a livestream has ended, set it to isPublic=false
