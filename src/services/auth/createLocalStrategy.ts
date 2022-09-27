@@ -17,6 +17,7 @@ export const createLocalStrategy = () =>
           'user.email',
           'user.emailVerified',
           'user.freeTrialExpiration',
+          'user.membershipExpiration',
           'user.name',
           'user.password',
           'user.subscribedPlaylistIds',
