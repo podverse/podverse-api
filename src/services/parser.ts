@@ -149,7 +149,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         owner: feed.owner,
         pubDate: feed.pubDate,
         subtitle: feed.subtitle,
-        summary: getLongerSummary(feed.content, feed.description),
+        summary: feed.summary,
         title: feed.title,
         type: feed.itunesType,
         value: feed.value ? [valueCompat(feed.value)] : []
