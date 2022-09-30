@@ -91,6 +91,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
 
   const cleanedSearchTitle = removeAllSpaces(searchTitle)
   if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
+  const escapedTitle = cleanedSearchTitle.replace(/%/g, "'")
 
   const safeSqlString = SqlString.format(
     `
@@ -101,7 +102,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
       LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
   `,
-    [cleanedSearchTitle, skip, take]
+    [escapedTitle, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)
