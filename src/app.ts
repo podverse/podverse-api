@@ -108,8 +108,6 @@ export const createApp = async (conn: Connection) => {
 
     app.use(mount(`${config.apiPrefix}${config.apiVersion}/public`, koaStatic(__dirname + '/public')))
 
-    app.use(mount(`/public`, koaStatic(__dirname + '/public/samples')))
-
     app.use(
       swagger({
         routePrefix: `${config.apiPrefix}${config.apiVersion}/swagger`,
