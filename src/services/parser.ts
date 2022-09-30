@@ -149,7 +149,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         owner: feed.owner,
         pubDate: feed.pubDate,
         subtitle: feed.subtitle,
-        summary: feed.summary,
+        summary: getLongerSummary(feed.content, feed.description),
         title: feed.title,
         type: feed.itunesType,
         value: feed.value ? [valueCompat(feed.value)] : []
@@ -163,7 +163,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         author: [episode.author],
         chapters: episode.podcastChapters,
         contentLinks: [],
-        description: episode.description,
+        description: episode.content || episode.description,
         duration: episode.duration,
         enclosure: episode.enclosure,
         explicit: episode.explicit,
@@ -175,7 +175,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         socialInteraction: episode.podcastSocialInteraction ?? [],
         soundbite: episode.podcastSoundbites ?? [],
         subtitle: episode.subtitle,
-        summary: episode.summary,
+        summary: getLongerSummary(episode.content, episode.description),
         title: episode.title,
         transcript: episode.podcastTranscripts ?? [],
         value: episode.value ? [valueCompat(episode.value)] : []
@@ -209,6 +209,15 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         transcript: [],
         value: liveItem.value ? [valueCompat(liveItem.value)] : []
       } as ParsedEpisode
+    }
+
+    // Whichever summary is longer we are assuming is the "full summary" and
+    // assigning to the summary column.
+    const getLongerSummary = (content?: string, description?: string) => {
+      const contentLength = content ? content.length : 0
+      const descriptionLength = description ? description.length : 0
+      const longerSummary = contentLength >= descriptionLength ? content : description
+      return longerSummary
     }
 
     const meta = feedCompat(parsedFeed)
