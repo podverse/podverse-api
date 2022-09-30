@@ -100,6 +100,7 @@ const getPodcastsFromSearchEngine = async (query) => {
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
   const cleanedSearchTitle = removeAllSpaces(searchTitle)
   if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
+  const escapedTitle = cleanedSearchTitle.replace(/%/g, '\\%')
 
   const safeSqlString = SqlString.format(
     `
@@ -109,7 +110,7 @@ const getPodcastsFromSearchEngine = async (query) => {
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ?,?;
   `,
-    [cleanedSearchTitle, skip, take]
+    [escapedTitle, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)
