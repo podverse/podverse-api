@@ -4,6 +4,8 @@
 /src/config/google/jwt.keys.json
 /src/config/parser/addFeedUrlsFile.json
 
+/src/public/samples
+
 /image_storage
 
 # API keys and secrets
