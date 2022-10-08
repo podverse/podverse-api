@@ -62,7 +62,7 @@ const connectionOptions: ConnectionOptions = {
   username: options.username,
   password: options.password,
   database: options.database,
-  synchronize: options.shouldSync,
+  synchronize: false,
   logging: false,
   entities,
   extra: {

@@ -8,7 +8,6 @@ export interface DbConfig {
   password: string
   database: string
   sslConnection: boolean
-  shouldSync: boolean
 }
 
 export interface Config {
@@ -57,7 +56,6 @@ export interface Config {
   socialRedditPageUrl: string
   socialTwitterImageUrl: string
   socialTwitterPageUrl: string
-  parserSupportedLanguages: any[]
   podcastIndexConfig: any
   matomoConfig: any
   legalName: string
@@ -143,9 +141,6 @@ const appStoreConfig = {
   sharedSecret: process.env.APP_STORE_API_SHARED_SECRET
 }
 
-let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || ('en' as any)
-parserSupportedLanguages = parserSupportedLanguages.split(',')
-
 const podcastIndexConfig = {
   authKey: podcastIndexAuthKey,
   secretKey: podcastIndexSecretKey,
@@ -183,8 +178,7 @@ const config: Config = {
     username: process.env.DB_USERNAME || '',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_DATABASE || '',
-    sslConnection: process.env.DB_SSL_CONNECTION === 'true',
-    shouldSync: process.env.DB_SHOULD_SYNC === 'true'
+    sslConnection: process.env.DB_SSL_CONNECTION === 'true'
   },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
@@ -229,7 +223,6 @@ const config: Config = {
   socialRedditPageUrl,
   socialTwitterImageUrl,
   socialTwitterPageUrl,
-  parserSupportedLanguages,
   podcastIndexConfig,
   legalName,
   legalAddress,
