@@ -5,6 +5,7 @@ Data API, database migration scripts, and backend services for the Podverse ecos
 ## Getting started
 
 ### Local Development and Deployment
+
 This repo contains steps for running podverse-api locally for development.
 
 For stage/prod deployment instructions, please refer to the
@@ -17,7 +18,7 @@ Before you can run podverse-api you will need a local Postgres version 11.5 data
 You can setup your own database, or go to the
 [podverse-ops repo](https://github.com/podverse/podverse-ops), add the podverse-db-local.env file as explained in the docs, then run this command:
 
-```
+```bash
 docker-compose -f docker-compose.local.yml up -d podverse_db
 ```
 
@@ -27,13 +28,13 @@ For local development, environment variables are provided by a local .env file. 
 
 ### Install node_modules
 
-```
+```bash
 npm install
 ```
 
 ### Start dev server
 
-```
+```bash
 npm run dev
 ```
 
@@ -41,7 +42,7 @@ npm run dev
 
 The [podverse-ops repo](https://github.com/podverse/podverse-ops) contains the qa-database.sql file to help you get started quickly with a development database. You can clone the podverse-ops repo, then run the following command after the Postgres database is running:
 
-```
+```bash
 psql -h 0.0.0.0 -p 5432 -U postgres -W -f ./sample-database/qa-database.sql
 ```
 
@@ -49,7 +50,7 @@ The password for the .sql file is: mysecretpw
 
 ### Add podcast categories to the database
 
-```
+```bash
 npm run dev:seeds:categories
 ```
 
@@ -64,7 +65,7 @@ You can pass multiple feed urls as a comma-delimited string parameter to the
 A list of sample podcast feed urls can be found in
 [podverse-api/docs/sampleFeedUrls.txt](https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
 
-```
+```bash
 npm run dev:scripts:addFeedUrls <feed urls>
 ```
 
@@ -72,13 +73,13 @@ npm run dev:scripts:addFeedUrls <feed urls>
 
 Orphan feed urls do not have a podcast associated with them.
 
-```
+```bash
 npm run dev:scripts:parseOrphanFeedUrls
 ```
 
 To parse all non-orphan and public feed urls, you can run:
 
-```
+```bash
 npm run dev:scripts:parsePublicFeedUrls
 ```
 
@@ -86,32 +87,32 @@ npm run dev:scripts:parsePublicFeedUrls
 
 This project uses AWS SQS for its remote queue.
 
-```
+```bash
 npm run dev:scripts:addAllOrphanFeedUrlsToPriorityQueue
 ```
 
 or:
 
-```
+```bash
 npm run dev:scripts:addAllPublicFeedUrlsToQueue
 ```
 
 or:
 
-```
+```bash
 npm run dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue
 ```
 
 or to add all recently updated (according to Podcast Index), public feeds to the priority queue:
 
-```
+```bash
 yarn dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue
 ```
 
 After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
-```
+```bash
 npm run dev:scripts:parseFeedUrlsFromQueue <restartTimeOut> <queueType>
 # restartTimeOut in milliseconds; queueType is optional and only acceptable value is "priority"
 ```
@@ -122,7 +123,7 @@ Below are sample commands for requesting unique pageview data from Google
 Analytics, which is used throughout the site for sorting by popularity (not a
 great/accurate system for popularity sorting...).
 
-```
+```bash
 npm run dev:scripts:queryUniquePageviews -- clips month
 npm run dev:scripts:queryUniquePageviews -- episodes week
 npm run dev:scripts:queryUniquePageviews -- podcasts allTime
