@@ -1,6 +1,5 @@
 .git
 
-/src/config/bitpay/api.key
 /src/config/google/jwt.keys.json
 /src/config/parser/addFeedUrlsFile.json
 
