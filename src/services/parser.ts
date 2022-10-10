@@ -44,7 +44,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   const abortController = new AbortController()
-  let abortTimeout
+  let abortTimeout = setTimeout(() => {
+    abortController.abort()
+  }, 180000) // abort if request takes longer than 3 minutes
 
   try {
     const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
@@ -90,14 +92,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             }, 180000) // abort if request takes longer than 3 minutes
             await podcastFetchAndParse()
           } else if (cacheBust) {
-            abortTimeout = setTimeout(() => {
-              abortController.abort()
-            }, 180000) // abort if request takes longer than 3 minutes
             throw new Error('nodeFetch retry attempt exceeded. ' + error)
           } else {
-            abortTimeout = setTimeout(() => {
-              abortController.abort()
-            }, 180000) // abort if request takes longer than 3 minutes
             throw new Error(error)
           }
         })

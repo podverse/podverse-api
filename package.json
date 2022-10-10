@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.6.13",
+  "version": "4.6.14",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -27,7 +27,6 @@
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
     "dev:scripts:hideDeadPodcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
-    "dev:scripts:migrations:0028_episodes_ids": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/migrations/0028_episodes_ids.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "dev:scripts:parseFeedUrlsByPodcastIndexIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIndexIds.ts",
     "dev:scripts:parseFeedUrlsFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsFromQueue.ts",
