@@ -187,6 +187,21 @@ export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string
   await parseFeedUrl(feedUrl)
 }
 
+export const addFeedsByPodcastIndexIdToQueue = async (client: any, ids: string[]) => {
+  for (const id of ids) {
+    try {
+      const podcastIndexItem = await getPodcastFromPodcastIndexById(id)
+      if (podcastIndexItem?.feed) {
+        await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexItem.feed)
+      }
+    } catch (error) {
+      console.log('addFeedsByPodcastIndexIdToQueue error', error)
+    }
+  }
+
+  await addFeedUrlsByPodcastIndexId(ids)
+}
+
 const getNewFeeds = async () => {
   const currentTime = new Date().getTime()
   const { podcastIndexNewFeedsSinceTime } = podcastIndexConfig
