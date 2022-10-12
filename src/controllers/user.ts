@@ -1,6 +1,6 @@
 import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
-import { getFeedUrlByUrlIgnoreProtocol } from '~/controllers/feedUrl'
+import { getFeedUrlByUrlIgnoreProtocolForPublicPodcast } from '~/controllers/feedUrl'
 import { getPlaylists } from '~/controllers/playlist'
 import { subscribeToPodcast } from '~/controllers/podcast'
 import { MediaRef, Playlist, User } from '~/entities'
@@ -592,7 +592,8 @@ const addByRSSPodcastFeedUrlAdd = async (url: string, loggedInUserId: string) =>
   }
 
   const skipNotFound = true
-  const existingFeedUrl = await getFeedUrlByUrlIgnoreProtocol(url, skipNotFound)
+  const existingFeedUrl = await getFeedUrlByUrlIgnoreProtocolForPublicPodcast(url, skipNotFound)
+
   const addByRSSPodcastFeedUrls = loggedInUser.addByRSSPodcastFeedUrls
 
   if (existingFeedUrl) {
