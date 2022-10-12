@@ -77,7 +77,7 @@ const getFeedUrlByUrl = async (url) => {
   return feedUrl
 }
 
-const getFeedUrlByUrlIgnoreProtocol = async (url, skipNotFound) => {
+const getFeedUrlByUrlIgnoreProtocolForPublicPodcast = async (url, skipNotFound) => {
   const repository = getRepository(FeedUrl)
   const feedUrlWithoutProtocol = removeProtocol(url)
 
@@ -87,6 +87,7 @@ const getFeedUrlByUrlIgnoreProtocol = async (url, skipNotFound) => {
     .addSelect('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
     .where('feedUrl.url LIKE :url', { url: `%${feedUrlWithoutProtocol}` })
+    .andWhere('podcast.isPublic = TRUE')
     .getOne()
 
   if (!feedUrl && !skipNotFound) {
@@ -183,7 +184,7 @@ export {
   getFeedUrl,
   getFeedUrlsByPodcastIndexIds,
   getFeedUrlByUrl,
-  getFeedUrlByUrlIgnoreProtocol,
+  getFeedUrlByUrlIgnoreProtocolForPublicPodcast,
   getFeedUrls,
   updateFeedUrl
 }
