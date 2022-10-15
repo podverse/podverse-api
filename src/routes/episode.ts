@@ -98,7 +98,12 @@ const transcriptHandler = async (ctx) => {
       matchingTranscript = episode.transcript.find(
         (item: Transcript) =>
           item.type &&
-          (item.type === 'application/json' || item.type === 'application/srt' || item.type === 'application/x-subrip')
+          (item.type === 'text/html' ||
+            item.type === 'application/json' ||
+            item.type === 'application/srt' ||
+            item.type === 'text/srt' ||
+            item.type === 'text/vtt' ||
+            item.type === 'application/x-subrip')
       )
       if (!matchingTranscript) {
         matchingTranscript = episode.transcript[0]
