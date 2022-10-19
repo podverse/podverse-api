@@ -120,18 +120,22 @@ const getFeedUrls = (query) => {
   })
 }
 
-export const getAuthorityFeedUrlByPodcastIndexId = async (podcastIndexId: string) => {
+export const getAuthorityFeedUrlByPodcastIndexId = async (podcastIndexId: string, allowNonPublic?: boolean) => {
   const repository = getRepository(FeedUrl)
 
-  const feedUrl = await repository
+  const qb = repository
     .createQueryBuilder('feedUrl')
     .select('feedUrl.id')
     .addSelect('feedUrl.url')
     .innerJoinAndSelect('feedUrl.podcast', 'podcast')
     .where('podcast."podcastIndexId')
     .where('podcast.podcastIndexId = :podcastIndexId', { podcastIndexId })
-    .andWhere('feedUrl.isAuthority = TRUE')
-    .getOne()
+
+  if (!allowNonPublic) {
+    qb.andWhere('feedUrl.isAuthority = TRUE')
+  }
+
+  const feedUrl = await qb.getOne()
 
   return feedUrl
 }

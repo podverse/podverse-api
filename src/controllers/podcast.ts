@@ -8,12 +8,12 @@ import { deleteNotification } from './notification'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
 
-const getPodcast = async (id, includeRelations = true) => {
+const getPodcast = async (id, includeRelations = true, allowNonPublic?: boolean) => {
   const repository = getRepository(Podcast)
   const podcast = await repository.findOne(
     {
       id,
-      isPublic: true
+      ...(!!allowNonPublic ? {} : { isPublic: true })
     },
     {
       relations: includeRelations ? ['authors', 'categories', 'feedUrls'] : []
@@ -27,12 +27,12 @@ const getPodcast = async (id, includeRelations = true) => {
   return podcast
 }
 
-const getPodcastByPodcastIndexId = async (podcastIndexId, includeRelations = true) => {
+const getPodcastByPodcastIndexId = async (podcastIndexId, includeRelations = true, allowNonPublic?: boolean) => {
   const repository = getRepository(Podcast)
   const podcast = await repository.findOne(
     {
       podcastIndexId,
-      isPublic: true
+      ...(!!allowNonPublic ? {} : { isPublic: true })
     },
     {
       relations: includeRelations ? ['authors', 'categories', 'feedUrls'] : []

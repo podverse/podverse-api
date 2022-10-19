@@ -40,7 +40,7 @@ interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = false) => {
+export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = false, allowNonPublic?: boolean) => {
   logPerformance('parseFeedUrl', _logStart, 'feedUrl.url ' + feedUrl.url)
 
   const abortController = new AbortController()
@@ -229,7 +229,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let podcast = new Podcast()
     if (feedUrl.podcast) {
       logPerformance('feedUrl.podcast getPodcast', _logStart)
-      const savedPodcast = await getPodcast(feedUrl.podcast.id, false)
+      const savedPodcast = await getPodcast(feedUrl.podcast.id, false, allowNonPublic)
       logPerformance('feedUrl.podcast getPodcast', _logEnd)
       if (!savedPodcast) throw Error('Invalid podcast id provided.')
       podcast = savedPodcast

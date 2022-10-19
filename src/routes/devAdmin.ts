@@ -29,8 +29,8 @@ router.get('/add-or-update-feed-from-podcast-index/:podcastIndexId', jwtAuth, is
     const { podcastIndexId } = ctx.params
     const connection = await getConnection()
     await addOrUpdatePodcastFromPodcastIndex(connection, podcastIndexId)
-
-    const podcast = await getPodcastByPodcastIndexId(podcastIndexId)
+    const allowNonPublic = true
+    const podcast = await getPodcastByPodcastIndexId(podcastIndexId, allowNonPublic)
 
     ctx.body = {
       message: 'Feed parsed successfully.',
