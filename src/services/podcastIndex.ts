@@ -182,9 +182,17 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
 
 export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
   const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
-  await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
-  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id)
-  await parseFeedUrl(feedUrl)
+  const allowNonPublic = true
+  await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed, allowNonPublic)
+  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id, allowNonPublic)
+
+  try {
+    const forceReparsing = true
+    const cacheBust = true
+    await parseFeedUrl(feedUrl, forceReparsing, cacheBust, allowNonPublic)
+  } catch (error) {
+    console.log('addOrUpdatePodcastFromPodcastIndex error', error)
+  }
 }
 
 export const addFeedsByPodcastIndexIdToQueue = async (client: any, ids: string[]) => {
@@ -292,7 +300,7 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
   }
 }
 
-async function createOrUpdatePodcastFromPodcastIndex(client, item) {
+async function createOrUpdatePodcastFromPodcastIndex(client, item, allowNonPublic?: boolean) {
   console.log('-----------------------------------')
   console.log('createOrUpdatePodcastFromPodcastIndex')
 
@@ -366,7 +374,7 @@ async function createOrUpdatePodcastFromPodcastIndex(client, item) {
     for (const existingFeedUrl of combinedExistingFeedUrls) {
       console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
 
-      const isMatchingFeedUrl = url === existingFeedUrl.url
+      const isMatchingFeedUrl = url === existingFeedUrl.url && !allowNonPublic
 
       await client.query(
         `
