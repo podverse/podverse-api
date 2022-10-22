@@ -73,6 +73,7 @@ export const createApp = async (conn: Connection) => {
 
       ctx.status = 503
       ctx.body = {
+        isInMaintenanceMode: true,
         expectedDowntimeRemaining
       }
     })
