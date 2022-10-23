@@ -1,5 +1,6 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { PassThrough } from 'stream'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import {
@@ -21,6 +22,7 @@ import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
 import { validateUserUpdate } from '~/middleware/queryValidation/update'
+const archiver = require('archiver')
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -86,7 +88,16 @@ const downloadUserLimiter = RateLimit.middleware({
 router.get('/download', downloadUserLimiter, jwtAuth, async (ctx) => {
   try {
     const userJSON = await getCompleteUserDataAsJSON(ctx.state.user.id, ctx.state.user.id)
-    ctx.body = userJSON
+
+    const passThrough = new PassThrough()
+    const archive = archiver.create('zip', {})
+
+    archive.pipe(passThrough)
+    archive.append(JSON.stringify(userJSON), { name: 'my-podverse-data.json' })
+    archive.finalize()
+
+    ctx.body = passThrough
+    ctx.type = 'zip'
   } catch (error) {
     emitRouterError(error, ctx)
   }

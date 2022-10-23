@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.6.20",
+  "version": "4.6.21",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -141,6 +141,7 @@
     "@types/jest": "26.0.3",
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
+    "archiver": "^5.3.1",
     "awesome-typescript-loader": "5.2.1",
     "aws-sdk": "2.814.0",
     "axios": "0.21.2",
