@@ -1,9 +1,10 @@
+import admZip from 'adm-zip'
 import { hash } from 'bcryptjs'
 import { getRepository } from 'typeorm'
 import { getFeedUrlByUrlIgnoreProtocolForPublicPodcast } from '~/controllers/feedUrl'
 import { getPlaylists } from '~/controllers/playlist'
 import { subscribeToPodcast } from '~/controllers/podcast'
-import { MediaRef, Playlist, User } from '~/entities'
+import { MediaRef, Playlist, User, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
 import { saltRounds } from '~/lib/constants'
 import { validateClassOrThrow } from '~/lib/errors'
 import { addOrderByToQuery, validatePassword } from '~/lib/utility'
@@ -537,8 +538,17 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
   if (id !== loggedInUserId) {
     throw new createError.Unauthorized(`Unauthorized error. Please check that you are logged in.`)
   }
-  const userRepository = getRepository(User)
 
+  const fullData: any = {
+    user: null,
+    mediaRefs: [],
+    playlists: [],
+    nowPlayingItem: null,
+    queueItems: [],
+    historyItems: []
+  }
+
+  const userRepository = getRepository(User)
   const user = await userRepository.findOne(
     {
       id: loggedInUserId
@@ -552,12 +562,89 @@ const getCompleteUserDataAsJSON = async (id, loggedInUserId) => {
         'subscribedPlaylistIds',
         'subscribedPodcastIds',
         'subscribedUserIds'
-      ],
-      relations: ['mediaRefs', 'playlists']
+      ]
     }
   )
+  fullData.user = user
 
-  return JSON.stringify(user)
+  const mediaRefsRepository = getRepository(MediaRef)
+  const mediaRefs = await mediaRefsRepository.find({
+    where: {
+      owner: loggedInUserId
+    },
+    relations: ['episode', 'episode.podcast', 'episode.podcast.feedUrls']
+  })
+  fullData.mediaRefs = mediaRefs
+
+  const playlistsRepository = getRepository(Playlist)
+  const playlists = await playlistsRepository.find({
+    where: {
+      owner: loggedInUserId
+    },
+    relations: [
+      'episodes',
+      'episodes.podcast',
+      'episodes.podcast.feedUrls',
+      'mediaRefs',
+      'mediaRefs.episode',
+      'mediaRefs.episode.podcast',
+      'mediaRefs.episode.podcast.feedUrls'
+    ]
+  })
+  fullData.playlists = playlists
+
+  const userNowPlayingItemRepository = getRepository(UserNowPlayingItem)
+  const nowPlayingItem = await userNowPlayingItemRepository.findOne({
+    where: {
+      owner: loggedInUserId
+    },
+    relations: [
+      'episode',
+      'episode.podcast',
+      'episode.podcast.feedUrls',
+      'mediaRef',
+      'mediaRef.episode',
+      'mediaRef.episode.podcast',
+      'mediaRef.episode.podcast.feedUrls'
+    ]
+  })
+  fullData.nowPlayingItem = nowPlayingItem || null
+
+  const useQueueItemRepository = getRepository(UserQueueItem)
+  const queueItems = await useQueueItemRepository.find({
+    where: {
+      owner: loggedInUserId
+    },
+    relations: [
+      'episode',
+      'episode.podcast',
+      'episode.podcast.feedUrls',
+      'mediaRef',
+      'mediaRef.episode',
+      'mediaRef.episode.podcast',
+      'mediaRef.episode.podcast.feedUrls'
+    ]
+  })
+  fullData.queueItems = queueItems
+
+  const userHistoryItemRepository = getRepository(UserHistoryItem)
+  const historyItems = await userHistoryItemRepository.find({
+    where: {
+      owner: loggedInUserId
+    },
+    relations: [
+      'episode',
+      'episode.podcast',
+      'episode.podcast.feedUrls',
+      'mediaRef',
+      'mediaRef.episode',
+      'mediaRef.episode.podcast',
+      'mediaRef.episode.podcast.feedUrls'
+    ]
+  })
+  fullData.historyItems = historyItems
+
+  return fullData
 }
 
 const addByRSSPodcastFeedUrlAddMany = async (urls: string[], loggedInUserId: string) => {
