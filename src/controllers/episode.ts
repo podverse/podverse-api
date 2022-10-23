@@ -4,7 +4,7 @@ import { Episode, EpisodeMostRecent, MediaRef } from '~/entities'
 import { request } from '~/lib/request'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
-import { searchApi } from '~/services/manticore'
+import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
@@ -188,7 +188,7 @@ const getEpisodesFromSearchEngine = async (query) => {
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
   const cleanedSearchTitle = removeAllSpaces(searchTitle)
   if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
-  const escapedTitle = cleanedSearchTitle.replace(/%/g, "'")
+  const titleWithWildcards = manticoreWildcardSpecialCharacters(cleanedSearchTitle)
 
   const safeSqlString = SqlString.format(
     `
@@ -199,7 +199,7 @@ const getEpisodesFromSearchEngine = async (query) => {
       LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
   `,
-    [escapedTitle, skip, take]
+    [titleWithWildcards, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)
