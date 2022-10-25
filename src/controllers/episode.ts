@@ -5,6 +5,7 @@ import { request } from '~/lib/request'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
+import { liveItemStatuses } from './liveItem'
 import { createMediaRef, updateMediaRef } from './mediaRef'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
@@ -107,7 +108,8 @@ const generateEpisodeSelects = (
   searchTitle = '',
   sincePubDate = '',
   hasVideo,
-  shouldUseEpisodesMostRecent
+  shouldUseEpisodesMostRecent,
+  liveItemStatus
 ) => {
   const table = shouldUseEpisodesMostRecent ? EpisodeMostRecent : Episode
   const qb = getRepository(table)
@@ -143,9 +145,13 @@ const generateEpisodeSelects = (
     .addSelect('episode.value')
     .addSelect('episode.createdAt')
 
+  if (liveItemStatus && !liveItemStatuses.includes(liveItemStatus)) {
+    throw new Error('Invalid liveItemStatus')
+  }
+
   qb[`${includePodcast ? 'leftJoinAndSelect' : 'leftJoin'}`]('episode.podcast', 'podcast')
 
-  if (!shouldUseEpisodesMostRecent) {
+  if (!shouldUseEpisodesMostRecent || liveItemStatus) {
     qb.leftJoinAndSelect('episode.liveItem', 'liveItem')
   }
 
@@ -167,7 +173,9 @@ const generateEpisodeSelects = (
     qb.andWhere(`episode."mediaType" LIKE 'video%'`)
   }
 
-  if (!shouldUseEpisodesMostRecent) {
+  if (liveItemStatus) {
+    qb.andWhere('"liveItem" IS NOT null AND "liveItem".status = :liveItemStatus', { liveItemStatus })
+  } else if (!shouldUseEpisodesMostRecent) {
     qb.andWhere('"liveItem" IS null')
   }
 
@@ -225,11 +233,18 @@ const getEpisodesFromSearchEngine = async (query) => {
 }
 
 const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
-  const { episodeId, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
+  const { episodeId, hasVideo, includePodcast, liveItemStatus, searchTitle, sincePubDate, skip, sort, take } = query
   const episodeIds = (episodeId && episodeId.split(',')) || []
 
   const shouldUseEpisodesMostRecent = false
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
+  const qb = generateEpisodeSelects(
+    includePodcast,
+    searchTitle,
+    sincePubDate,
+    hasVideo,
+    shouldUseEpisodesMostRecent,
+    liveItemStatus
+  )
   // const shouldLimit = true
   // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
   qb.andWhere('episode."isPublic" IS true')
@@ -251,11 +266,18 @@ const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
 }
 
 const getEpisodesByCategoryIds = async (query) => {
-  const { categories, hasVideo, includePodcast, searchTitle, sincePubDate, skip, sort, take } = query
+  const { categories, hasVideo, includePodcast, liveItemStatus, searchTitle, sincePubDate, skip, sort, take } = query
   const categoriesIds = (categories && categories.split(',')) || []
 
   const shouldUseEpisodesMostRecent = sort === 'most-recent'
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
+  const qb = generateEpisodeSelects(
+    includePodcast,
+    searchTitle,
+    sincePubDate,
+    hasVideo,
+    shouldUseEpisodesMostRecent,
+    liveItemStatus
+  )
 
   qb.innerJoin('podcast.categories', 'categories', 'categories.id IN (:...categoriesIds)', { categoriesIds })
 
@@ -279,11 +301,18 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
 }
 
 const getEpisodesByPodcastIds = async (query) => {
-  const { hasVideo, includePodcast, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
+  const { hasVideo, includePodcast, liveItemStatus, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
   const shouldUseEpisodesMostRecent = podcastIds.length > 1 && sort === 'most-recent'
-  const qb = generateEpisodeSelects(includePodcast, searchTitle, sincePubDate, hasVideo, shouldUseEpisodesMostRecent)
+  const qb = generateEpisodeSelects(
+    includePodcast,
+    searchTitle,
+    sincePubDate,
+    hasVideo,
+    shouldUseEpisodesMostRecent,
+    liveItemStatus
+  )
 
   if (podcastIds.length === 1) {
     return getEpisodesByPodcastId(query, qb, podcastIds)

@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -18,15 +19,18 @@ export class LiveItem {
   @Column({ nullable: true })
   chatIRCURL?: string
 
+  @Index()
   @Column({
     type: 'date',
     nullable: true
   })
   end: Date | null
 
+  @Index()
   @Column()
   start: Date
 
+  @Index()
   @Column()
   status: LiveItemStatus
 

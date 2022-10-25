@@ -1,4 +1,5 @@
 const Joi = require('joi')
+import { liveItemStatuses } from '~/controllers/liveItem'
 import { validateBaseQuery } from './base'
 
 const validateAuthorSearch = async (ctx, next) => {
@@ -56,6 +57,25 @@ const validateFeedUrlSearch = async (ctx, next) => {
     isAuthority: Joi.boolean(),
     podcastId: Joi.string(),
     url: Joi.string(),
+    page: Joi.number().integer().min(0),
+    skip: Joi.number().integer().min(0),
+    sort: Joi.string(),
+    take: Joi.number().integer().min(0)
+  })
+
+  await validateBaseQuery(schema, ctx, next)
+}
+
+const validateLiveItemSearch = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    liveItemStatus: Joi.string().valid(...liveItemStatuses),
+    hasVideo: Joi.boolean(),
+    includePodcast: Joi.boolean(),
+    maxResults: Joi.boolean(),
+    podcastId: Joi.string(),
+    searchTitle: Joi.string().min(2),
+    sincePubDate: Joi.date().iso(),
+    categories: Joi.string(),
     page: Joi.number().integer().min(0),
     skip: Joi.number().integer().min(0),
     sort: Joi.string(),
@@ -132,6 +152,7 @@ export {
   validateCategorySearch,
   validateEpisodeSearch,
   validateFeedUrlSearch,
+  validateLiveItemSearch,
   validateMediaRefSearch,
   validatePlaylistSearch,
   validatePodcastSearch,
