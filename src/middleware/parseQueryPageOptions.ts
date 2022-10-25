@@ -11,6 +11,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     includeCategories,
     includeEpisode,
     includePodcast,
+    liveItemStatus,
     maxResults,
     mediaRefId,
     name,
@@ -37,6 +38,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     ...(includeCategories ? { includeCategories: includeCategories === 'true' } : {}),
     ...(includeEpisode ? { includeEpisode: includeEpisode === 'true' } : {}),
     ...(includePodcast ? { includePodcast: includePodcast === 'true' } : {}),
+    ...(liveItemStatus ? { liveItemStatus } : {}),
     ...(maxResults ? { maxResults: true } : {}),
     ...(mediaRefId ? { mediaRefId } : {}),
     ...(playlistId ? { playlistId } : {}),
@@ -78,7 +80,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     options.take = config.queryAuthorsLimit
   } else if (type === 'categories') {
     options.take = config.queryCategoriesLimit
-  } else if (type === 'episodes') {
+  } else if (type === 'episodes' || type === 'liveItems') {
     options.take = config.queryEpisodesLimit
   } else if (type === 'mediaRefs') {
     options.take = config.queryMediaRefsLimit
