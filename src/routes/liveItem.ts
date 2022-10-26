@@ -27,7 +27,7 @@ router.get(
     try {
       const { query = {} } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
-
+      query.sort = 'live-item-latest'
       let episodes
 
       if (query.podcastId && query.searchTitle) {

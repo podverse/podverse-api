@@ -162,7 +162,12 @@ const generateEpisodeSelects = (
     searchTitle: `%${searchTitle?.toLowerCase().trim()}%`
   })
 
-  if (sincePubDate) {
+  if (liveItemStatus) {
+    const todayDate30DaysEarlier = new Date(new Date().setDate(new Date().getDate() - 30))
+    const todayDate30DaysLater = new Date(new Date().setDate(new Date().getDate() + 30))
+    qb.andWhere(`liveItem.start >= :todayDate30DaysEarlier`, { todayDate30DaysEarlier })
+    qb.andWhere(`liveItem.start <= :todayDate30DaysLater`, { todayDate30DaysLater })
+  } else if (sincePubDate) {
     qb.andWhere(`episode.createdAt >= :sincePubDate`, { sincePubDate })
     const sincePubDate7DaysEarlier = new Date(sincePubDate)
     sincePubDate7DaysEarlier.setDate(sincePubDate7DaysEarlier.getDate() - 7)
