@@ -136,7 +136,9 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
 
   if (!sort && isFromManticoreSearch) {
     // apply no sorting
-  } else if (sort === 'live-item-latest') {
+  } else if (sort === 'live-item-start-asc') {
+    qb.orderBy(`liveItem.start`, ascKey)
+  } else if (sort === 'live-item-start-desc') {
     qb.orderBy(`liveItem.start`, descKey)
   } else if (sort === 'top-past-hour') {
     qb.orderBy(`${type}.pastHourTotalUniquePageviews`, descKey)

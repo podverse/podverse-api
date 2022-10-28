@@ -162,11 +162,16 @@ const generateEpisodeSelects = (
     searchTitle: `%${searchTitle?.toLowerCase().trim()}%`
   })
 
-  if (liveItemStatus) {
-    const todayDate30DaysEarlier = new Date(new Date().setDate(new Date().getDate() - 30))
-    const todayDate30DaysLater = new Date(new Date().setDate(new Date().getDate() + 30))
-    qb.andWhere(`liveItem.start >= :todayDate30DaysEarlier`, { todayDate30DaysEarlier })
-    qb.andWhere(`liveItem.start <= :todayDate30DaysLater`, { todayDate30DaysLater })
+  if (liveItemStatus === 'live') {
+    // do nothing
+  } else if (liveItemStatus === 'pending') {
+    const todayDateEarlier = new Date(new Date().setDate(new Date().getDate() - 1))
+    const todayDateLater = new Date(new Date().setDate(new Date().getDate() + 30))
+    qb.andWhere(`liveItem.start >= :todayDateEarlier`, { todayDateEarlier })
+    qb.andWhere(`liveItem.start <= :todayDateLater`, { todayDateLater })
+  } else if (liveItemStatus === 'ended') {
+    const todayDateEarlier = new Date(new Date().setDate(new Date().getDate() - 30))
+    qb.andWhere(`liveItem.start >= :todayDateEarlier`, { todayDateEarlier })
   } else if (sincePubDate) {
     qb.andWhere(`episode.createdAt >= :sincePubDate`, { sincePubDate })
     const sincePubDate7DaysEarlier = new Date(sincePubDate)
