@@ -189,6 +189,8 @@ const generateEpisodeSelects = (
     qb.andWhere('"liveItem" IS null')
   }
 
+  qb.andWhere('podcast.isPublic IS true')
+
   return qb
 }
 
