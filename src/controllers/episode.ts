@@ -313,7 +313,18 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
 }
 
 const getEpisodesByPodcastIds = async (query) => {
-  const { hasVideo, includePodcast, liveItemStatus, podcastId, searchTitle, sincePubDate, skip, sort, take } = query
+  const {
+    hasVideo,
+    includePodcast,
+    liveItemStatus,
+    maxResults,
+    podcastId,
+    searchTitle,
+    sincePubDate,
+    skip,
+    sort,
+    take
+  } = query
   const podcastIds = (podcastId && podcastId.split(',')) || []
 
   const shouldUseEpisodesMostRecent = podcastIds.length > 1 && sort === 'most-recent'
@@ -335,7 +346,7 @@ const getEpisodesByPodcastIds = async (query) => {
 
   const allowRandom = true
   const shouldLimitCount = shouldUseEpisodesMostRecent
-  return handleGetEpisodesWithOrdering({ qb, skip, sort, take }, allowRandom, shouldLimitCount)
+  return handleGetEpisodesWithOrdering({ qb, skip, sort, take, maxResults }, allowRandom, shouldLimitCount)
 }
 
 const handleGetEpisodesWithOrdering = async (
