@@ -45,6 +45,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
   const abortController = new AbortController()
   let abortTimeout = setTimeout(() => {
+    console.log('abortController abortTimeout 1', feedUrl)
     abortController.abort()
   }, 180000) // abort if request takes longer than 3 minutes
 
@@ -88,6 +89,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             await delay(retryTime)
             retryCount++
             abortTimeout = setTimeout(() => {
+              console.log('abortController abortTimeout 2', feedUrl, cacheBust, retryCount, retryMax)
               abortController.abort()
             }, 180000) // abort if request takes longer than 3 minutes
             await podcastFetchAndParse()
@@ -100,6 +102,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     }
 
     await podcastFetchAndParse()
+
+    clearTimeout(abortTimeout)
 
     if (!parsedFeed) {
       throw new Error('parseFeedUrl invalid partytime parser response')
@@ -843,7 +847,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   /* TODO: podcast-partytime is missing type and funding on episode */
   // episode.episodeType = parsedEpisode.type
   // episode.funding = parsedEpisode.funding
-  episode.guid = parsedEpisode.guid
+  episode.guid = parsedEpisode.guid || parsedEpisode.enclosure.url
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
@@ -1016,23 +1020,24 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
 const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   const episodeRepo = getRepository(Episode)
 
-  // Parsed episodes are only valid if they have enclosure.url tags,
+  // Parsed episodes are only valid if they have enclosure.url and guid tags,
   // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
-    if (x.enclosure && x.enclosure.url && !x.liveItemStart) result.push(x)
+    if (x.enclosure && x.enclosure.url && x.guid && !x.liveItemStart) result.push(x)
     return result
   }, [])
-  // Create an array of only the episode media URLs from the parsed object
-  const parsedEpisodeMediaUrls = validParsedEpisodes.map((x) => x.enclosure.url)
+
+  // Create an array of only the episode guids from the parsed object
+  const parsedEpisodeGuids = validParsedEpisodes.map((x) => x.guid)
 
   // Find episodes in the database that have matching episode media URLs AND podcast ids to
   // those found in the parsed object, then store an array of just those URLs.
   let savedEpisodes = [] as any
-  if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
+  if (parsedEpisodeGuids && parsedEpisodeGuids.length > 0) {
     savedEpisodes = await episodeRepo.find({
       where: {
         podcast,
-        mediaUrl: In(parsedEpisodeMediaUrls)
+        guid: In(parsedEpisodeGuids)
       }
     })
 
@@ -1045,7 +1050,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       where: {
         podcast,
         isPublic: true,
-        mediaUrl: Not(In(parsedEpisodeMediaUrls))
+        guid: Not(In(parsedEpisodeGuids))
       }
     })
 
@@ -1056,11 +1061,11 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     await episodeRepo.save(updatedEpisodesToHide, { chunk: 400 })
   }
 
-  const savedEpisodeMediaUrls = savedEpisodes.map((x) => x.mediaUrl)
+  const savedEpisodeGuids = savedEpisodes.map((x) => x.guid)
 
   // Create an array of only the parsed episodes that do not have a match
   // already saved in the database.
-  const newParsedEpisodes = validParsedEpisodes.filter((x) => !savedEpisodeMediaUrls.includes(x.enclosure.url))
+  const newParsedEpisodes = validParsedEpisodes.filter((x) => !savedEpisodeGuids.includes(x.guid))
 
   const updatedSavedEpisodes = [] as any
   const newEpisodes = [] as any
@@ -1072,7 +1077,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
-    const parsedEpisode = validParsedEpisodes.find((x) => x.enclosure.url === existingEpisode.mediaUrl)
+    const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
     if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
@@ -1081,7 +1086,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       audioCount++
     }
 
-    if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
+    if (!updatedSavedEpisodes.some((x: any) => x.guid === existingEpisode.guid)) {
       updatedSavedEpisodes.push(existingEpisode)
     }
   }
@@ -1098,7 +1103,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       audioCount++
     }
 
-    if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
+    if (!newEpisodes.some((x: any) => x.guid === episode.guid)) {
       newEpisodes.push(episode)
     }
   }
