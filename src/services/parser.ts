@@ -49,6 +49,13 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
   }, 180000) // abort if request takes longer than 3 minutes
 
   try {
+    /* Temporary: Stop parsing papi.qingting.fm domain until mediaUrl/guid switch is completed */
+    const isQingTing = feedUrl.url.indexOf('qingting.fm') > -1
+    if (isQingTing) {
+      console.log('Temporary: Stop parsing papi.qingting.fm domain until mediaUrl/guid switch is completed')
+      return
+    }
+
     const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
     console.log('*** urlToParse', urlToParse)
 
