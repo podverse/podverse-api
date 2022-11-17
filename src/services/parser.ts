@@ -1037,6 +1037,15 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     savedEpisodes = await episodeRepo.find({
       where: {
         podcast,
+        /*
+          TODO: since duplicate GUIDs will exist in our system, we need to use
+          isPublic: true so that previously hidden/dead episodes do not re-surface.
+          If we remove all the duplicate GUID episodes in the database,
+          then we could remove the isPublic: true condition. This *might* be desirable
+          to handle edge cases, where episodes existed in a feed previously,
+          then for some reason were removed, and then were added back into the feed.
+        */
+        isPublic: true,
         guid: In(parsedEpisodeGuids)
       }
     })
