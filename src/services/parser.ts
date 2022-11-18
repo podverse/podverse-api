@@ -56,6 +56,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       return
     }
 
+    cacheBust = true
+
     const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
     console.log('*** urlToParse', urlToParse)
 
