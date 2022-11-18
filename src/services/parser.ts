@@ -10,7 +10,6 @@ import {
 } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
-import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
@@ -25,6 +24,10 @@ import {
   sendNewEpisodeDetectedNotification
 } from '~/lib/notifications/fcmGoogleApi'
 import { getPodcastValueTagForPodcastIndexId } from '~/services/podcastIndex'
+import {
+  getEpisodesWithLiveItemsWithMatchingGuids,
+  getEpisodesWithLiveItemsWithoutMatchingGuids
+} from '~/controllers/episode'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -55,6 +58,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       console.log('Temporary: Stop parsing papi.qingting.fm domain until mediaUrl/guid switch is completed')
       return
     }
+
+    // NOTE: Always setting cacheBust to true to try to prevent weird caching problems with RSS hosts.
+    cacheBust = true
 
     const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
     console.log('*** urlToParse', urlToParse)
@@ -890,19 +896,14 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   episode.podcast = podcast
 
   if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus && parsedEpisode.guid) {
-    let liveItem = await getLiveItemByGuid(parsedEpisode.guid, podcast.id)
-
-    if (!liveItem) {
-      liveItem = new LiveItem()
-    }
-
+    const liveItem = episode.liveItem || new LiveItem()
     liveItem.end = parsedEpisode.liveItemEnd || null
     liveItem.start = parsedEpisode.liveItemStart
     liveItem.status = parsedEpisode.liveItemStatus
     liveItem.chatIRCURL = parsedEpisode.chat
     episode.liveItem = liveItem
 
-    // If a livestream has ended, set it to isPublic=false
+    // If a livestream has ended, set its episode to isPublic=false
     // so it doesn't get returned in requests anymore.
     if (liveItem.status === 'ended') {
       episode.isPublic = false
@@ -938,12 +939,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   let savedLiveItems = [] as any
 
   if (parsedLiveItemGuids && parsedLiveItemGuids.length > 0) {
-    savedLiveItems = await episodeRepo.find({
-      where: {
-        podcast,
-        guid: In(parsedLiveItemGuids)
-      }
-    })
+    savedLiveItems = await getEpisodesWithLiveItemsWithMatchingGuids(podcast.id, parsedLiveItemGuids)
   }
 
   /*
@@ -951,13 +947,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
     but they aren't currently in the feed, then retrieve
     and set them to isPublic = false
   */
-  let liveItemsToHide = await episodeRepo.find({
-    where: {
-      podcast,
-      isPublic: true,
-      guid: Not(In(parsedLiveItemGuids))
-    }
-  })
+  let liveItemsToHide = await getEpisodesWithLiveItemsWithoutMatchingGuids(podcast.id, parsedLiveItemGuids)
 
   liveItemsToHide = liveItemsToHide.filter((x) => x.liveItem)
 
