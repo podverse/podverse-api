@@ -56,9 +56,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       return
     }
 
-    cacheBust = true
+    // NOTE: cacheBust should be renamed to "shouldRetry" because we are actually
+    // adding cacheBust as a URL parameter in all cases. The only reason we need the
+    // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
 
-    const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+    // const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+    const urlToParse = addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`)
     console.log('*** urlToParse', urlToParse)
 
     let xml
