@@ -84,7 +84,7 @@ const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
     .getManyAndCount()
 }
 
-const getPublicMediaRefsByEpisodeGuid = (episodeGuid) => {
+const getPublicMediaRefsByEpisodeGuid = (episodeGuid, podcastId) => {
   return getRepository(MediaRef)
     .createQueryBuilder('mediaRef')
     .select('mediaRef.id')
@@ -92,8 +92,10 @@ const getPublicMediaRefsByEpisodeGuid = (episodeGuid) => {
     .addSelect('mediaRef.endTime')
     .addSelect('mediaRef.title')
     .innerJoin('mediaRef.episode', 'episode')
+    .innerJoin('episode.podcast', 'podcast')
     .where('episode.guid = :episodeGuid', { episodeGuid })
     .andWhere('mediaRef.isPublic = TRUE')
+    .andWhere('podcast.id = :podcastId', { podcastId })
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
 }

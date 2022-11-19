@@ -28,8 +28,8 @@ router.get('/', parseNSFWHeader, json(), async (ctx) => {
 // Get public mediaRefs by episode guid
 router.get('/', parseNSFWHeader, json(), async (ctx) => {
   try {
-    const { episodeGuid } = ctx.query
-    const mediaRefsResult = await getPublicMediaRefsByEpisodeGuid(episodeGuid)
+    const { episodeGuid, podcastId } = ctx.query
+    const mediaRefsResult = await getPublicMediaRefsByEpisodeGuid(episodeGuid, podcastId)
     const mediaRefs = mediaRefsResult[0]
     const chaptersFile = convertToChaptersFile(mediaRefs)
     const prettyChaptersFileString = JSON.stringify(chaptersFile, null, 4)
