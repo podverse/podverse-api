@@ -211,12 +211,24 @@ router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
   }
 })
 
-// Get Episode by GUID
+// Get Episode by mediaUrl
 router.post('/get-by-media-url', parseNSFWHeader, async (ctx) => {
   try {
     const body: any = ctx.request.body
     const { episodeMediaUrl, podcastId } = body
     const results = await getEpisodeByPodcastIdAndMediaUrl(podcastId, episodeMediaUrl)
+    ctx.body = results
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Get Episode by guid
+router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const { episodeGuid, podcastId } = body
+    const results = await getEpisodeByPodcastIdAndGuid(podcastId, episodeGuid)
     ctx.body = results
   } catch (error) {
     emitRouterError(error, ctx)

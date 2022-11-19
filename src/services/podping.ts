@@ -14,7 +14,7 @@ export const pullPodpingImage = async () => {
     stdin: undefined
   }
 
-  await dockerCommand(`pull docker.io/podcastindexorg/podping-hivewriter:1.2.7`, options)
+  await dockerCommand(`pull docker.io/podcastindexorg/podping-hivewriter:1.2.9`, options)
 }
 
 export const sendPodpingLiveStatusUpdate = async (validatedUrl: string, status: string) => {
