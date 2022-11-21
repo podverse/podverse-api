@@ -433,15 +433,18 @@ const removeEpisodes = async (episodes: any[]) => {
   const episodes4 = episodes.slice(episodesSplit * 3)
 
   const removeEps = (eps: any[], jobNumber: number) => {
+    console.log(`removeEps starting for jobNumber ${jobNumber}`)
     return new Promise(async () => {
       for (const episode of eps) {
-        console.log(`
----
-remove episode
-job number: ${jobNumber}
-episode id: ${episode.id}`)
-        await new Promise((r) => setTimeout(r, 25))
-        await repository.remove(episode)
+        try {
+          await new Promise((r) => setTimeout(r, 20))
+          await repository.remove(episode)
+        } catch (error) {
+          console.log('***removeEps error***')
+          console.log(`jobNumber: ${jobNumber}`)
+          console.log(`episode.id: ${episode.id}`)
+          console.log(`episode.id: ${episode.id}`)
+        }
       }
     })
   }
