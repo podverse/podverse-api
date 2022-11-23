@@ -594,10 +594,6 @@ const getEpisodesWithLiveItemsWithMatchingGuids = async (podcastId: string, epis
   let qb = getRepository(Episode).createQueryBuilder('episode')
   qb = addSelectsToQueryBuilder(qb)
 
-  if (episodeGuids && episodeGuids.length === 0) {
-    return []
-  }
-
   const episodes = await qb
     .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)
     .addSelect('liveItem.id')
@@ -618,11 +614,7 @@ const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, e
   let qb = getRepository(Episode).createQueryBuilder('episode')
   qb = addSelectsToQueryBuilder(qb)
 
-  if (episodeGuids && episodeGuids.length === 0) {
-    return []
-  }
-
-  const episodes = await qb
+  qb = qb
     .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)
     .addSelect('liveItem.id')
     .addSelect('liveItem.end')
@@ -631,8 +623,12 @@ const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, e
     .addSelect('liveItem.chatIRCURL')
     .where(`episode.podcastId = :podcastId`, { podcastId })
     .andWhere(`episode.isPublic = true`)
-    .andWhere(`episode.guid NOT IN (:...episodeGuids)`, { episodeGuids })
-    .getMany()
+
+  if (episodeGuids && episodeGuids.length > 0) {
+    qb = qb.andWhere(`episode.guid NOT IN (:...episodeGuids)`, { episodeGuids })
+  }
+
+  const episodes = await qb.getMany()
 
   return episodes
 }
