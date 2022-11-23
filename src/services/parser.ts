@@ -964,6 +964,9 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
 
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
+  // Preserve the previouslySavedLiveItems state since we will need it later
+  // in the shouldSendLiveNotification check.
+  const previouslySavedLiveItems = JSON.parse(JSON.stringify(savedLiveItems))
   for (let existingLiveItem of savedLiveItems) {
     const parsedLiveItem = validParsedLiveItems.find((x) => x.guid === existingLiveItem.guid)
     existingLiveItem = await assignParsedEpisodeData(existingLiveItem, parsedLiveItem, podcast)
@@ -999,8 +1002,8 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   const liveItemNotificationsData: LiveItemNotification[] = []
 
   for (const parsedLiveItem of parsedLiveItems) {
-    const previouslyExistingLiveItem = savedLiveItems.find(
-      (savedLiveItem) => parsedLiveItem.guid === savedLiveItem.guid
+    const previouslyExistingLiveItem = previouslySavedLiveItems.find(
+      (previouslySavedLiveItem) => parsedLiveItem.guid === previouslySavedLiveItem.guid
     )
 
     const shouldSendLiveNotification =
