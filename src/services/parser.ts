@@ -10,7 +10,6 @@ import {
 } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
-import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
@@ -25,6 +24,10 @@ import {
   sendNewEpisodeDetectedNotification
 } from '~/lib/notifications/fcmGoogleApi'
 import { getPodcastValueTagForPodcastIndexId } from '~/services/podcastIndex'
+import {
+  getEpisodesWithLiveItemsWithMatchingGuids,
+  getEpisodesWithLiveItemsWithoutMatchingGuids
+} from '~/controllers/episode'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -35,6 +38,15 @@ interface ExtendedEpisode extends Episode {
 interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
   chat?: string
   image?: string
+}
+
+type LiveItemNotification = {
+  podcastId: string
+  podcastTitle: string
+  episodeTitle: string
+  podcastImageUrl?: string
+  episodeImageUrl?: string
+  episodeId: string
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
@@ -255,8 +267,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     const hasLiveItem = podcast.hasLiveItem || parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
-      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
+    const { liveItemLatestPubDate } = parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
     const { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
       getMostRecentEpisodeDataFromFeed(meta, parsedEpisodes)
@@ -269,9 +280,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         mostRecentEpisodePubDate &&
         new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate) &&
         previousLastEpisodeTitle !== mostRecentEpisodeTitle)
-
-    const previousLiveItemStatus = podcast.latestLiveItemStatus
-    const shouldSendLiveNotification = latestLiveItemStatus === 'live' && previousLiveItemStatus !== 'live'
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
@@ -336,8 +344,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
     let latestEpisodeId = ''
-    let latestLiveItemEpisodeId = ''
-    if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
+    let liveItemNotificationsData = [] as LiveItemNotification[]
+    if (
+      (parsedEpisodes && Array.isArray(parsedEpisodes) && parsedEpisodes.length > 0) ||
+      (parsedLiveItemEpisodes && Array.isArray(parsedLiveItemEpisodes) && parsedLiveItemEpisodes.length > 0)
+    ) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
@@ -358,6 +369,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       updatedSavedLiveItems = liveItemsResults.updatedSavedLiveItems
       newLiveItems = newLiveItems && newLiveItems.length > 0 ? newLiveItems : []
       updatedSavedLiveItems = updatedSavedLiveItems && updatedSavedLiveItems.length > 0 ? updatedSavedLiveItems : []
+
+      liveItemNotificationsData = liveItemsResults.liveItemNotificationsData
 
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
@@ -381,22 +394,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
       latestEpisodeId = latestEpisode.id
       latestEpisodeImageUrl = latestEpisode.imageUrl || ''
-
-      const latestNewLiveItem = newLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestSavedLiveItem = updatedSavedLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestLiveItem =
-        (!Array.isArray(latestNewLiveItem) && latestNewLiveItem) ||
-        ((!Array.isArray(latestSavedLiveItem) && latestSavedLiveItem) as any)
-
-      if (latestLiveItem) {
-        latestLiveItemEpisodeId = latestLiveItem.id
-      }
     } else {
       podcast.lastEpisodePubDate = undefined
       podcast.lastEpisodeTitle = ''
@@ -477,19 +474,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
-    if (shouldSendLiveNotification) {
-      logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
-      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = liveItemLatestImageUrl
-      await sendLiveItemLiveDetectedNotification(
-        podcast.id,
-        podcast.title,
-        liveItemLatestTitle,
-        finalPodcastImageUrl,
-        finalEpisodeImageUrl,
-        latestLiveItemEpisodeId
-      )
-      logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+    if (liveItemNotificationsData && liveItemNotificationsData.length > 0) {
+      for (const liveItemNotificationData of liveItemNotificationsData) {
+        logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
+        await sendLiveItemLiveDetectedNotification(
+          liveItemNotificationData.podcastId,
+          liveItemNotificationData.podcastTitle,
+          liveItemNotificationData.episodeTitle,
+          liveItemNotificationData.podcastImageUrl,
+          liveItemNotificationData.episodeImageUrl,
+          liveItemNotificationData.episodeId
+        )
+        logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+      }
     }
 
     logPerformance('updatedSavedEpisodes updateSoundBites', _logStart)
@@ -899,19 +896,14 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   episode.podcast = podcast
 
   if (parsedEpisode.liveItemStart && parsedEpisode.liveItemStatus && parsedEpisode.guid) {
-    let liveItem = await getLiveItemByGuid(parsedEpisode.guid, podcast.id)
-
-    if (!liveItem) {
-      liveItem = new LiveItem()
-    }
-
+    const liveItem = episode.liveItem || new LiveItem()
     liveItem.end = parsedEpisode.liveItemEnd || null
     liveItem.start = parsedEpisode.liveItemStart
     liveItem.status = parsedEpisode.liveItemStatus
     liveItem.chatIRCURL = parsedEpisode.chat
     episode.liveItem = liveItem
 
-    // If a livestream has ended, set it to isPublic=false
+    // If a livestream has ended, set its episode to isPublic=false
     // so it doesn't get returned in requests anymore.
     if (liveItem.status === 'ended') {
       episode.isPublic = false
@@ -922,13 +914,6 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
 
   return episode
 }
-
-/*
-  Livestreams will often use the same episode.enclosure.url every time,
-  so we need to handle the new/update episode/liveitem logic separately.
-  For liveItems, we rely on a guid instead of the enclosure.url.
-  Sorry...this whole parser should be rewritten from scratch.
-*/
 
 const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   const episodeRepo = getRepository(Episode)
@@ -947,12 +932,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   let savedLiveItems = [] as any
 
   if (parsedLiveItemGuids && parsedLiveItemGuids.length > 0) {
-    savedLiveItems = await episodeRepo.find({
-      where: {
-        podcast,
-        guid: In(parsedLiveItemGuids)
-      }
-    })
+    savedLiveItems = await getEpisodesWithLiveItemsWithMatchingGuids(podcast.id, parsedLiveItemGuids)
   }
 
   /*
@@ -960,13 +940,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
     but they aren't currently in the feed, then retrieve
     and set them to isPublic = false
   */
-  let liveItemsToHide = await episodeRepo.find({
-    where: {
-      podcast,
-      isPublic: true,
-      guid: Not(In(parsedLiveItemGuids))
-    }
-  })
+  let liveItemsToHide = await getEpisodesWithLiveItemsWithoutMatchingGuids(podcast.id, parsedLiveItemGuids)
 
   liveItemsToHide = liveItemsToHide.filter((x) => x.liveItem)
 
@@ -990,6 +964,9 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
 
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
+  // Preserve the previouslySavedLiveItems state since we will need it later
+  // in the shouldSendLiveNotification check.
+  const previouslySavedLiveItems = JSON.parse(JSON.stringify(savedLiveItems))
   for (let existingLiveItem of savedLiveItems) {
     const parsedLiveItem = validParsedLiveItems.find((x) => x.guid === existingLiveItem.guid)
     existingLiveItem = await assignParsedEpisodeData(existingLiveItem, parsedLiveItem, podcast)
@@ -1022,10 +999,40 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
     }
   }
 
+  const liveItemNotificationsData: LiveItemNotification[] = []
+
+  for (const parsedLiveItem of parsedLiveItems) {
+    const previouslyExistingLiveItem = previouslySavedLiveItems.find(
+      (previouslySavedLiveItem) => parsedLiveItem.guid === previouslySavedLiveItem.guid
+    )
+
+    const shouldSendLiveNotification =
+      parsedLiveItem.liveItemStatus === 'live' &&
+      (!previouslyExistingLiveItem || previouslyExistingLiveItem.liveItem?.status !== 'live')
+
+    const notificationLiveItem =
+      previouslyExistingLiveItem || newLiveItems.find((newLiveItem) => parsedLiveItem.guid === newLiveItem.guid)
+
+    if (shouldSendLiveNotification) {
+      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
+      const finalEpisodeImageUrl = parsedLiveItem.imageUrl
+
+      liveItemNotificationsData.push({
+        podcastId: podcast.id,
+        podcastTitle: podcast.title,
+        episodeTitle: parsedLiveItem.title,
+        podcastImageUrl: finalPodcastImageUrl,
+        episodeImageUrl: finalEpisodeImageUrl,
+        episodeId: notificationLiveItem.id
+      })
+    }
+  }
+
   return {
     newLiveItems,
     updatedSavedLiveItems,
-    hasVideo: videoCount > audioCount
+    hasVideo: videoCount > audioCount,
+    liveItemNotificationsData
   }
 }
 
