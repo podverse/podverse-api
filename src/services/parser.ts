@@ -37,6 +37,15 @@ interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
   image?: string
 }
 
+type LiveItemNotification = {
+  podcastId: string
+  podcastTitle: string
+  episodeTitle: string
+  podcastImageUrl?: string
+  episodeImageUrl?: string
+  episodeId: string
+}
+
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -255,8 +264,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     const hasLiveItem = podcast.hasLiveItem || parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
-      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
+    const { liveItemLatestPubDate } = parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
     const { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
       getMostRecentEpisodeDataFromFeed(meta, parsedEpisodes)
@@ -269,9 +277,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         mostRecentEpisodePubDate &&
         new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate) &&
         previousLastEpisodeTitle !== mostRecentEpisodeTitle)
-
-    const previousLiveItemStatus = podcast.latestLiveItemStatus
-    const shouldSendLiveNotification = latestLiveItemStatus === 'live' && previousLiveItemStatus !== 'live'
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
@@ -336,8 +341,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
     let latestEpisodeId = ''
-    let latestLiveItemEpisodeId = ''
-    if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
+    let liveItemNotificationsData = [] as LiveItemNotification[]
+    if (
+      (parsedEpisodes && Array.isArray(parsedEpisodes) && parsedEpisodes.length > 0) ||
+      (parsedLiveItemEpisodes && Array.isArray(parsedLiveItemEpisodes) && parsedLiveItemEpisodes.length > 0)
+    ) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
@@ -358,6 +366,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       updatedSavedLiveItems = liveItemsResults.updatedSavedLiveItems
       newLiveItems = newLiveItems && newLiveItems.length > 0 ? newLiveItems : []
       updatedSavedLiveItems = updatedSavedLiveItems && updatedSavedLiveItems.length > 0 ? updatedSavedLiveItems : []
+
+      liveItemNotificationsData = liveItemsResults.liveItemNotificationsData
 
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
@@ -381,22 +391,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
       latestEpisodeId = latestEpisode.id
       latestEpisodeImageUrl = latestEpisode.imageUrl || ''
-
-      const latestNewLiveItem = newLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestSavedLiveItem = updatedSavedLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestLiveItem =
-        (!Array.isArray(latestNewLiveItem) && latestNewLiveItem) ||
-        ((!Array.isArray(latestSavedLiveItem) && latestSavedLiveItem) as any)
-
-      if (latestLiveItem) {
-        latestLiveItemEpisodeId = latestLiveItem.id
-      }
     } else {
       podcast.lastEpisodePubDate = undefined
       podcast.lastEpisodeTitle = ''
@@ -477,19 +471,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
-    if (shouldSendLiveNotification) {
-      logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
-      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = liveItemLatestImageUrl
-      await sendLiveItemLiveDetectedNotification(
-        podcast.id,
-        podcast.title,
-        liveItemLatestTitle,
-        finalPodcastImageUrl,
-        finalEpisodeImageUrl,
-        latestLiveItemEpisodeId
-      )
-      logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+    if (liveItemNotificationsData && liveItemNotificationsData.length > 0) {
+      for (const liveItemNotificationData of liveItemNotificationsData) {
+        logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
+        await sendLiveItemLiveDetectedNotification(
+          liveItemNotificationData.podcastId,
+          liveItemNotificationData.podcastTitle,
+          liveItemNotificationData.episodeTitle,
+          liveItemNotificationData.podcastImageUrl,
+          liveItemNotificationData.episodeImageUrl,
+          liveItemNotificationData.episodeId
+        )
+        logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+      }
     }
 
     logPerformance('updatedSavedEpisodes updateSoundBites', _logStart)
@@ -923,13 +917,6 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   return episode
 }
 
-/*
-  Livestreams will often use the same episode.enclosure.url every time,
-  so we need to handle the new/update episode/liveitem logic separately.
-  For liveItems, we rely on a guid instead of the enclosure.url.
-  Sorry...this whole parser should be rewritten from scratch.
-*/
-
 const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   const episodeRepo = getRepository(Episode)
 
@@ -1022,10 +1009,40 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
     }
   }
 
+  const liveItemNotificationsData: LiveItemNotification[] = []
+
+  for (const parsedLiveItem of parsedLiveItems) {
+    const previouslyExistingLiveItem = savedLiveItems.find(
+      (savedLiveItem) => parsedLiveItem.guid === savedLiveItem.guid
+    )
+
+    const shouldSendLiveNotification =
+      parsedLiveItem.liveItemStatus === 'live' &&
+      (!previouslyExistingLiveItem || previouslyExistingLiveItem.liveItem.status !== 'live')
+
+    const finalLiveItem =
+      previouslyExistingLiveItem || newLiveItems.find((newLiveItem) => parsedLiveItem.guid === newLiveItem.guid)
+
+    if (shouldSendLiveNotification) {
+      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
+      const finalEpisodeImageUrl = parsedLiveItem.imageUrl
+
+      liveItemNotificationsData.push({
+        podcastId: podcast.id,
+        podcastTitle: podcast.title,
+        episodeTitle: parsedLiveItem.title,
+        podcastImageUrl: finalPodcastImageUrl,
+        episodeImageUrl: finalEpisodeImageUrl,
+        episodeId: finalLiveItem.id
+      })
+    }
+  }
+
   return {
     newLiveItems,
     updatedSavedLiveItems,
-    hasVideo: videoCount > audioCount
+    hasVideo: videoCount > audioCount,
+    liveItemNotificationsData
   }
 }
 
