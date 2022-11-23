@@ -594,6 +594,10 @@ const getEpisodesWithLiveItemsWithMatchingGuids = async (podcastId: string, epis
   let qb = getRepository(Episode).createQueryBuilder('episode')
   qb = addSelectsToQueryBuilder(qb)
 
+  if (episodeGuids && episodeGuids.length === 0) {
+    return []
+  }
+
   const episodes = await qb
     .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)
     .addSelect('liveItem.id')
@@ -613,6 +617,10 @@ const getEpisodesWithLiveItemsWithMatchingGuids = async (podcastId: string, epis
 const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, episodeGuids: string[]) => {
   let qb = getRepository(Episode).createQueryBuilder('episode')
   qb = addSelectsToQueryBuilder(qb)
+
+  if (episodeGuids && episodeGuids.length === 0) {
+    return []
+  }
 
   const episodes = await qb
     .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)

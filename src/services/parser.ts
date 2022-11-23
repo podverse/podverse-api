@@ -930,7 +930,6 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   // Find liveItems (episodes) in the database that have matching guids AND podcast ids to
   // those found in the parsed object, then store an array of just those guids.
   let savedLiveItems = [] as any
-
   if (parsedLiveItemGuids && parsedLiveItemGuids.length > 0) {
     savedLiveItems = await getEpisodesWithLiveItemsWithMatchingGuids(podcast.id, parsedLiveItemGuids)
   }
