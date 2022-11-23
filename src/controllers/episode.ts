@@ -103,17 +103,8 @@ const getEpisodeByPodcastIdAndMediaUrl = async (podcastId: string, mediaUrl: str
 //   return qb
 // }
 
-const generateEpisodeSelects = (
-  includePodcast,
-  searchTitle = '',
-  sincePubDate = '',
-  hasVideo,
-  shouldUseEpisodesMostRecent,
-  liveItemStatus
-) => {
-  const table = shouldUseEpisodesMostRecent ? EpisodeMostRecent : Episode
-  const qb = getRepository(table)
-    .createQueryBuilder('episode')
+const addSelectsToQueryBuilder = (qb) => {
+  return qb
     .select('episode.id')
     .addSelect('episode.alternateEnclosures')
     .addSelect('episode.chaptersUrl')
@@ -144,6 +135,20 @@ const generateEpisodeSelects = (
     .addSelect('episode.transcript')
     .addSelect('episode.value')
     .addSelect('episode.createdAt')
+}
+
+const generateEpisodeSelects = (
+  includePodcast,
+  searchTitle = '',
+  sincePubDate = '',
+  hasVideo,
+  shouldUseEpisodesMostRecent,
+  liveItemStatus
+) => {
+  const table = shouldUseEpisodesMostRecent ? EpisodeMostRecent : Episode
+
+  let qb = getRepository(table).createQueryBuilder('episode')
+  qb = addSelectsToQueryBuilder(qb)
 
   if (liveItemStatus && !liveItemStatuses.includes(liveItemStatus)) {
     throw new Error('Invalid liveItemStatus')
@@ -584,6 +589,46 @@ const refreshEpisodesMostRecentMaterializedView = async () => {
   await em.query('REFRESH MATERIALIZED VIEW CONCURRENTLY "episodes_most_recent"')
 }
 
+/* This is intended to only be used in our parser. */
+const getEpisodesWithLiveItemsWithMatchingGuids = async (podcastId: string, episodeGuids: string[]) => {
+  let qb = getRepository(Episode).createQueryBuilder('episode')
+  qb = addSelectsToQueryBuilder(qb)
+
+  const episodes = await qb
+    .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)
+    .addSelect('liveItem.id')
+    .addSelect('liveItem.end')
+    .addSelect('liveItem.start')
+    .addSelect('liveItem.status')
+    .addSelect('liveItem.chatIRCURL')
+    .where(`episode.podcastId = :podcastId`, { podcastId })
+    // not checking for isPublic = true in case we want to restore a hidden row to be public
+    .andWhere(`episode.guid IN (:...episodeGuids)`, { episodeGuids })
+    .getMany()
+
+  return episodes
+}
+
+/* This is intended to only be used in our parser. */
+const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, episodeGuids: string[]) => {
+  let qb = getRepository(Episode).createQueryBuilder('episode')
+  qb = addSelectsToQueryBuilder(qb)
+
+  const episodes = await qb
+    .innerJoin('episode.liveItem', 'liveItem', `liveItem.id IS NOT NULL`)
+    .addSelect('liveItem.id')
+    .addSelect('liveItem.end')
+    .addSelect('liveItem.start')
+    .addSelect('liveItem.status')
+    .addSelect('liveItem.chatIRCURL')
+    .where(`episode.podcastId = :podcastId`, { podcastId })
+    .andWhere(`episode.isPublic = true`)
+    .andWhere(`episode.guid NOT IN (:...episodeGuids)`, { episodeGuids })
+    .getMany()
+
+  return episodes
+}
+
 export {
   getEpisode,
   getEpisodeByPodcastIdAndGuid,
@@ -592,6 +637,8 @@ export {
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
   getEpisodesFromSearchEngine,
+  getEpisodesWithLiveItemsWithMatchingGuids,
+  getEpisodesWithLiveItemsWithoutMatchingGuids,
   refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
   retrieveLatestChapters
