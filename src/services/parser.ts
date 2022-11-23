@@ -1018,9 +1018,9 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
 
     const shouldSendLiveNotification =
       parsedLiveItem.liveItemStatus === 'live' &&
-      (!previouslyExistingLiveItem || previouslyExistingLiveItem.liveItem.status !== 'live')
+      (!previouslyExistingLiveItem || previouslyExistingLiveItem.liveItem?.status !== 'live')
 
-    const finalLiveItem =
+    const notificationLiveItem =
       previouslyExistingLiveItem || newLiveItems.find((newLiveItem) => parsedLiveItem.guid === newLiveItem.guid)
 
     if (shouldSendLiveNotification) {
@@ -1033,7 +1033,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
         episodeTitle: parsedLiveItem.title,
         podcastImageUrl: finalPodcastImageUrl,
         episodeImageUrl: finalEpisodeImageUrl,
-        episodeId: finalLiveItem.id
+        episodeId: notificationLiveItem.id
       })
     }
   }
