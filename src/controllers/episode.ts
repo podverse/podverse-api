@@ -405,6 +405,7 @@ const getDeadEpisodes = async () => {
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
     .where('episode."isPublic" = FALSE')
+    .limit(100000)
 
   const qb = repository
     .createQueryBuilder('episode')
@@ -420,7 +421,6 @@ const getDeadEpisodes = async () => {
 }
 
 const removeDeadEpisodes = async () => {
-  console.log('removeDeadEpisodes')
   const deadEpisodes = await getDeadEpisodes()
   await removeEpisodes(deadEpisodes)
   await new Promise((r) => setTimeout(r, 1000))
@@ -430,11 +430,36 @@ const removeDeadEpisodes = async () => {
 
 const removeEpisodes = async (episodes: any[]) => {
   const repository = getRepository(Episode)
-  for (const episode of episodes) {
-    console.log('removeEpisode', episode)
-    await new Promise((r) => setTimeout(r, 25))
-    await repository.remove(episode)
+  const episodesCount = episodes.length
+  const episodesSplit = Math.floor(episodesCount / 4)
+  const episodes1 = episodes.slice(0, episodesSplit)
+  const episodes2 = episodes.slice(episodesSplit, episodesSplit * 2)
+  const episodes3 = episodes.slice(episodesSplit * 2, episodesSplit * 3)
+  const episodes4 = episodes.slice(episodesSplit * 3)
+
+  const removeEps = (eps: any[], jobNumber: number) => {
+    console.log(`removeEps starting for jobNumber ${jobNumber}`)
+    return new Promise(async () => {
+      for (const episode of eps) {
+        try {
+          await new Promise((r) => setTimeout(r, 20))
+          await repository.remove(episode)
+        } catch (error) {
+          console.log('***removeEps error***')
+          console.log(`jobNumber: ${jobNumber}`)
+          console.log(`episode.id: ${episode.id}`)
+          console.log(`episode.id: ${episode.id}`)
+        }
+      }
+    })
   }
+
+  await Promise.all([
+    removeEps(episodes1, 1),
+    removeEps(episodes2, 2),
+    removeEps(episodes3, 3),
+    removeEps(episodes4, 4)
+  ])
 }
 
 const retrieveLatestChapters = async (id) => {

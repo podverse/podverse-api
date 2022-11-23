@@ -40,6 +40,15 @@ interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
   image?: string
 }
 
+type LiveItemNotification = {
+  podcastId: string
+  podcastTitle: string
+  episodeTitle: string
+  podcastImageUrl?: string
+  episodeImageUrl?: string
+  episodeId: string
+}
+
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,6 +57,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
   const abortController = new AbortController()
   let abortTimeout = setTimeout(() => {
+    console.log('abortController abortTimeout 1', feedUrl)
     abortController.abort()
   }, 180000) // abort if request takes longer than 3 minutes
 
@@ -59,10 +69,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       return
     }
 
-    // NOTE: Always setting cacheBust to true to try to prevent weird caching problems with RSS hosts.
-    cacheBust = true
+    // NOTE: cacheBust should be renamed to "shouldRetry" because we are actually
+    // adding cacheBust as a URL parameter in all cases. The only reason we need the
+    // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
 
-    const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+    // const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+    const urlToParse = addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`)
     console.log('*** urlToParse', urlToParse)
 
     let xml
@@ -101,6 +113,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             await delay(retryTime)
             retryCount++
             abortTimeout = setTimeout(() => {
+              console.log('abortController abortTimeout 2', feedUrl, cacheBust, retryCount, retryMax)
               abortController.abort()
             }, 180000) // abort if request takes longer than 3 minutes
             await podcastFetchAndParse()
@@ -113,6 +126,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     }
 
     await podcastFetchAndParse()
+
+    clearTimeout(abortTimeout)
 
     if (!parsedFeed) {
       throw new Error('parseFeedUrl invalid partytime parser response')
@@ -252,8 +267,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     const hasLiveItem = podcast.hasLiveItem || parsedLiveItemEpisodes.length > 0
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
-    const { liveItemLatestImageUrl, liveItemLatestPubDate, liveItemLatestTitle } =
-      parseLatestLiveItemInfo(parsedLiveItemEpisodes)
+    const { liveItemLatestPubDate } = parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
     const { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
       getMostRecentEpisodeDataFromFeed(meta, parsedEpisodes)
@@ -266,9 +280,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         mostRecentEpisodePubDate &&
         new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate) &&
         previousLastEpisodeTitle !== mostRecentEpisodeTitle)
-
-    const previousLiveItemStatus = podcast.latestLiveItemStatus
-    const shouldSendLiveNotification = latestLiveItemStatus === 'live' && previousLiveItemStatus !== 'live'
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (
@@ -333,8 +344,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
     let latestEpisodeId = ''
-    let latestLiveItemEpisodeId = ''
-    if (parsedEpisodes && Array.isArray(parsedEpisodes)) {
+    let liveItemNotificationsData = [] as LiveItemNotification[]
+    if (
+      (parsedEpisodes && Array.isArray(parsedEpisodes) && parsedEpisodes.length > 0) ||
+      (parsedLiveItemEpisodes && Array.isArray(parsedLiveItemEpisodes) && parsedLiveItemEpisodes.length > 0)
+    ) {
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
       const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
@@ -355,6 +369,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       updatedSavedLiveItems = liveItemsResults.updatedSavedLiveItems
       newLiveItems = newLiveItems && newLiveItems.length > 0 ? newLiveItems : []
       updatedSavedLiveItems = updatedSavedLiveItems && updatedSavedLiveItems.length > 0 ? updatedSavedLiveItems : []
+
+      liveItemNotificationsData = liveItemsResults.liveItemNotificationsData
 
       const latestNewEpisode = newEpisodes.reduce((r: any, a: any) => {
         return r.pubDate > a.pubDate ? r : a
@@ -378,22 +394,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
       latestEpisodeId = latestEpisode.id
       latestEpisodeImageUrl = latestEpisode.imageUrl || ''
-
-      const latestNewLiveItem = newLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestSavedLiveItem = updatedSavedLiveItems.reduce((r: any, a: any) => {
-        return r.pubDate > a.pubDate ? r : a
-      }, [])
-
-      const latestLiveItem =
-        (!Array.isArray(latestNewLiveItem) && latestNewLiveItem) ||
-        ((!Array.isArray(latestSavedLiveItem) && latestSavedLiveItem) as any)
-
-      if (latestLiveItem) {
-        latestLiveItemEpisodeId = latestLiveItem.id
-      }
     } else {
       podcast.lastEpisodePubDate = undefined
       podcast.lastEpisodeTitle = ''
@@ -474,19 +474,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
-    if (shouldSendLiveNotification) {
-      logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
-      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = liveItemLatestImageUrl
-      await sendLiveItemLiveDetectedNotification(
-        podcast.id,
-        podcast.title,
-        liveItemLatestTitle,
-        finalPodcastImageUrl,
-        finalEpisodeImageUrl,
-        latestLiveItemEpisodeId
-      )
-      logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+    if (liveItemNotificationsData && liveItemNotificationsData.length > 0) {
+      for (const liveItemNotificationData of liveItemNotificationsData) {
+        logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
+        await sendLiveItemLiveDetectedNotification(
+          liveItemNotificationData.podcastId,
+          liveItemNotificationData.podcastTitle,
+          liveItemNotificationData.episodeTitle,
+          liveItemNotificationData.podcastImageUrl,
+          liveItemNotificationData.episodeImageUrl,
+          liveItemNotificationData.episodeId
+        )
+        logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
+      }
     }
 
     logPerformance('updatedSavedEpisodes updateSoundBites', _logStart)
@@ -856,7 +856,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   /* TODO: podcast-partytime is missing type and funding on episode */
   // episode.episodeType = parsedEpisode.type
   // episode.funding = parsedEpisode.funding
-  episode.guid = parsedEpisode.guid
+  episode.guid = parsedEpisode.guid || parsedEpisode.enclosure.url
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
   episode.linkUrl = parsedEpisode.link
@@ -914,13 +914,6 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
 
   return episode
 }
-
-/*
-  Livestreams will often use the same episode.enclosure.url every time,
-  so we need to handle the new/update episode/liveitem logic separately.
-  For liveItems, we rely on a guid instead of the enclosure.url.
-  Sorry...this whole parser should be rewritten from scratch.
-*/
 
 const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   const episodeRepo = getRepository(Episode)
@@ -1003,33 +996,73 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
     }
   }
 
+  const liveItemNotificationsData: LiveItemNotification[] = []
+
+  for (const parsedLiveItem of parsedLiveItems) {
+    const previouslyExistingLiveItem = savedLiveItems.find(
+      (savedLiveItem) => parsedLiveItem.guid === savedLiveItem.guid
+    )
+
+    const shouldSendLiveNotification =
+      parsedLiveItem.liveItemStatus === 'live' &&
+      (!previouslyExistingLiveItem || previouslyExistingLiveItem.liveItem?.status !== 'live')
+
+    const notificationLiveItem =
+      previouslyExistingLiveItem || newLiveItems.find((newLiveItem) => parsedLiveItem.guid === newLiveItem.guid)
+
+    if (shouldSendLiveNotification) {
+      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
+      const finalEpisodeImageUrl = parsedLiveItem.imageUrl
+
+      liveItemNotificationsData.push({
+        podcastId: podcast.id,
+        podcastTitle: podcast.title,
+        episodeTitle: parsedLiveItem.title,
+        podcastImageUrl: finalPodcastImageUrl,
+        episodeImageUrl: finalEpisodeImageUrl,
+        episodeId: notificationLiveItem.id
+      })
+    }
+  }
+
   return {
     newLiveItems,
     updatedSavedLiveItems,
-    hasVideo: videoCount > audioCount
+    hasVideo: videoCount > audioCount,
+    liveItemNotificationsData
   }
 }
 
 const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   const episodeRepo = getRepository(Episode)
 
-  // Parsed episodes are only valid if they have enclosure.url tags,
+  // Parsed episodes are only valid if they have enclosure.url and guid tags,
   // so ignore all that do not.
   const validParsedEpisodes = parsedEpisodes.reduce((result, x) => {
-    if (x.enclosure && x.enclosure.url && !x.liveItemStart) result.push(x)
+    if (x.enclosure && x.enclosure.url && x.guid && !x.liveItemStart) result.push(x)
     return result
   }, [])
-  // Create an array of only the episode media URLs from the parsed object
-  const parsedEpisodeMediaUrls = validParsedEpisodes.map((x) => x.enclosure.url)
+
+  // Create an array of only the episode guids from the parsed object
+  const parsedEpisodeGuids = validParsedEpisodes.map((x) => x.guid)
 
   // Find episodes in the database that have matching episode media URLs AND podcast ids to
   // those found in the parsed object, then store an array of just those URLs.
   let savedEpisodes = [] as any
-  if (parsedEpisodeMediaUrls && parsedEpisodeMediaUrls.length > 0) {
+  if (parsedEpisodeGuids && parsedEpisodeGuids.length > 0) {
     savedEpisodes = await episodeRepo.find({
       where: {
         podcast,
-        mediaUrl: In(parsedEpisodeMediaUrls)
+        /*
+          TODO: since duplicate GUIDs will exist in our system, we need to use
+          isPublic: true so that previously hidden/dead episodes do not re-surface.
+          If we remove all the duplicate GUID episodes in the database,
+          then we could remove the isPublic: true condition. This *might* be desirable
+          to handle edge cases, where episodes existed in a feed previously,
+          then for some reason were removed, and then were added back into the feed.
+        */
+        isPublic: true,
+        guid: In(parsedEpisodeGuids)
       }
     })
 
@@ -1042,7 +1075,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       where: {
         podcast,
         isPublic: true,
-        mediaUrl: Not(In(parsedEpisodeMediaUrls))
+        guid: Not(In(parsedEpisodeGuids))
       }
     })
 
@@ -1053,11 +1086,11 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
     await episodeRepo.save(updatedEpisodesToHide, { chunk: 400 })
   }
 
-  const savedEpisodeMediaUrls = savedEpisodes.map((x) => x.mediaUrl)
+  const savedEpisodeGuids = savedEpisodes.map((x) => x.guid)
 
   // Create an array of only the parsed episodes that do not have a match
   // already saved in the database.
-  const newParsedEpisodes = validParsedEpisodes.filter((x) => !savedEpisodeMediaUrls.includes(x.enclosure.url))
+  const newParsedEpisodes = validParsedEpisodes.filter((x) => !savedEpisodeGuids.includes(x.guid))
 
   const updatedSavedEpisodes = [] as any
   const newEpisodes = [] as any
@@ -1069,7 +1102,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
-    const parsedEpisode = validParsedEpisodes.find((x) => x.enclosure.url === existingEpisode.mediaUrl)
+    const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
 
     if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
@@ -1078,7 +1111,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       audioCount++
     }
 
-    if (!updatedSavedEpisodes.some((x: any) => x.mediaUrl === existingEpisode.mediaUrl)) {
+    if (!updatedSavedEpisodes.some((x: any) => x.guid === existingEpisode.guid)) {
       updatedSavedEpisodes.push(existingEpisode)
     }
   }
@@ -1095,7 +1128,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
       audioCount++
     }
 
-    if (!newEpisodes.some((x: any) => x.mediaUrl === episode.mediaUrl)) {
+    if (!newEpisodes.some((x: any) => x.guid === episode.guid)) {
       newEpisodes.push(episode)
     }
   }
