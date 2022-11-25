@@ -82,7 +82,8 @@
     "test:w:integration:single": "./scripts/runWIntegrationTestSingle.sh",
     "test:w:restoreDatabase": "./scripts/restoreDatabaseWin.sh",
     "test:unit": "jest",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts"
+    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts",
+    "postinstall": "patch-package"
   },
   "lint-staged": {
     "src/**/*.{ts,js}": [
@@ -185,6 +186,7 @@
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "password-validator": "5.0.3",
+    "patch-package": "6.5.0",
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "8.7.3",
     "podcast-partytime": "4.5.1",
