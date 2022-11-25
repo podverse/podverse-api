@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.7.4",
+  "version": "4.7.5",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
