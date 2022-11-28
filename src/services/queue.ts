@@ -129,6 +129,8 @@ export const addFeedUrlsByFeedIdToQueue = async (feedUrlIds) => {
 
 export const addFeedUrlsByPodcastIndexId = async (podcastIndexIds: string[], queueType = 'priority') => {
   try {
+    console.log('addFeedUrlsByPodcastIndexId podcastIndexIds.length', podcastIndexIds.length)
+    console.log('addFeedUrlsByPodcastIndexId queueType', queueType)
     if (!podcastIndexIds || podcastIndexIds.length === 0) {
       throw new Error('No podcastIndexIds provided.')
     }
