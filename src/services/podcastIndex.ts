@@ -154,14 +154,16 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
       }
     }
 
-    const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 10000)
+    // TODO: THIS TAKES A VERY LONG TIME TO COMPLETE,
+    // AND IS ARBITRARILY LIMITED TO 10000...
+    // const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 10000)
 
-    console.log('unique recentlyUpdatedPodcastIndexIds count', uniquePodcastIndexIds.length)
+    // console.log('unique recentlyUpdatedPodcastIndexIds count', uniquePodcastIndexIds.length)
 
     // Send the feedUrls with matching podcastIndexIds found in our database to
     // the priority parsing queue for immediate parsing.
     if (recentlyUpdatedPodcastIndexIds.length > 0) {
-      await addFeedUrlsByPodcastIndexId(uniquePodcastIndexIds)
+      await addFeedUrlsByPodcastIndexId(recentlyUpdatedPodcastIndexIds)
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
