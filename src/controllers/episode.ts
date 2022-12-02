@@ -448,7 +448,7 @@ const removeEpisodes = async (episodes: any[]) => {
           console.log('***removeEps error***')
           console.log(`jobNumber: ${jobNumber}`)
           console.log(`episode.id: ${episode.id}`)
-          console.log(`episode.id: ${episode.id}`)
+          console.log(`error: ${error.message}`)
         }
       }
     })
