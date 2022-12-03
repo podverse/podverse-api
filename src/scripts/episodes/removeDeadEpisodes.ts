@@ -2,30 +2,18 @@ import { removeDeadEpisodes } from '~/controllers/episode'
 import { connectToDb } from '~/lib/db'
 ;(async function () {
   try {
-    if (process.argv.length < 2) {
-      console.log('The restartTimeout parameter is required.')
-      return
-    }
+    const customLimit = (process.argv.length > 2 ? process.argv[2] : 100000) as any
+    const customLimitInt = parseInt(customLimit, 10)
 
-    const restartTimeOut = process.argv.length > 2 ? parseInt(process.argv[2], 10) : 300000 // default is 5 minutes
-    if (!restartTimeOut || restartTimeOut < 60000) {
-      console.log('The restartTimeout must be >= 60000 (1 minute)')
+    if (!customLimitInt) {
+      console.log('customLimit parameter must be an integer.')
       return
     }
 
     await connectToDb()
-
-    const removeDeadEpisodesUntilFinished = async () => {
-      const shouldContinue = await removeDeadEpisodes()
-      if (shouldContinue) {
-        await removeDeadEpisodesUntilFinished()
-      }
-    }
-
-    await removeDeadEpisodesUntilFinished()
-
-    return
+    await removeDeadEpisodes(customLimitInt)
   } catch (error) {
     console.log(error)
   }
+  return
 })()
