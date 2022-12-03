@@ -398,14 +398,14 @@ const handleGetEpisodesWithOrdering = async (
   return [cleanedEpisodes, episodesCount]
 }
 
-const getDeadEpisodes = async () => {
+const getDeadEpisodes = async (customLimit?: number) => {
   const repository = getRepository(Episode)
 
   const subQueryEpisodesIsPublicFalse = repository
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
     .where('episode."isPublic" = FALSE')
-    .limit(100000)
+    .limit(customLimit || 100000)
 
   const qb = repository
     .createQueryBuilder('episode')
@@ -420,12 +420,9 @@ const getDeadEpisodes = async () => {
   return episodes
 }
 
-const removeDeadEpisodes = async () => {
-  const deadEpisodes = await getDeadEpisodes()
+const removeDeadEpisodes = async (customLimit?: number) => {
+  const deadEpisodes = await getDeadEpisodes(customLimit)
   await removeEpisodes(deadEpisodes)
-  await new Promise((r) => setTimeout(r, 1000))
-  // const shouldContinue = deadEpisodes.length === 100
-  return false
 }
 
 const removeEpisodes = async (episodes: any[]) => {

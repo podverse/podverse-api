@@ -2,7 +2,9 @@
 import { getConnection } from 'typeorm'
 import { connectToDb } from '~/lib/db'
 import { /* lastHour,*/ offsetDate } from '~/lib/utility'
+import { splitDateIntoEqualIntervals } from '~/lib/utility/date'
 import { queryMatomoData } from './matomo'
+const moment = require('moment')
 
 enum PagePaths {
   clips = 'clip',
@@ -48,17 +50,29 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
     return
   }
 
-  const startDate = timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset)
-  const endDate = offsetDate()
+  const startDate = new Date(timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset))
+  const endDate = new Date(offsetDate())
 
-  const response = await queryMatomoData(startDate, endDate, PagePaths[pagePath])
-  await savePageviewsToDatabase(pagePath, timeRange, response)
+  const numberOfIntervals = ['year', 'allTime'].includes(timeRange) ? 12 : 1
+  const dateIntervals = splitDateIntoEqualIntervals(startDate, endDate, numberOfIntervals)
+  let data: any[] = []
+
+  for (const dateInterval of dateIntervals) {
+    const response: any = await queryMatomoData(
+      moment(dateInterval.start).format('YYYY-MM-DD'),
+      moment(dateInterval.end).format('YYYY-MM-DD'),
+      PagePaths[pagePath]
+    )
+    data = data.concat(response.data)
+  }
+
+  await savePageviewsToDatabase(pagePath, timeRange, data)
 }
 
-const savePageviewsToDatabase = async (pagePath, timeRange, response) => {
+const savePageviewsToDatabase = async (pagePath, timeRange, data) => {
   await connectToDb()
 
-  const matomoDataRows = response.data
+  const matomoDataRows = data
   const tableName = TableNames[pagePath]
   console.log('savePageviewsToDatabase')
   console.log('pagePath', pagePath)
