@@ -398,7 +398,7 @@ const handleGetEpisodesWithOrdering = async (
   return [cleanedEpisodes, episodesCount]
 }
 
-const getDeadEpisodes = async (customLimit?: number) => {
+const getDeadEpisodes = async (customLimit?: number, customOffset?: number) => {
   const repository = getRepository(Episode)
 
   const subQueryEpisodesIsPublicFalse = repository
@@ -406,6 +406,7 @@ const getDeadEpisodes = async (customLimit?: number) => {
     .select('episode.id', 'id')
     .where('episode."isPublic" = FALSE')
     .limit(customLimit || 100000)
+    .offset(customOffset || 0)
 
   const qb = repository
     .createQueryBuilder('episode')
@@ -420,8 +421,8 @@ const getDeadEpisodes = async (customLimit?: number) => {
   return episodes
 }
 
-const removeDeadEpisodes = async (customLimit?: number) => {
-  const deadEpisodes = await getDeadEpisodes(customLimit)
+const removeDeadEpisodes = async (customLimit?: number, customOffset?: number) => {
+  const deadEpisodes = await getDeadEpisodes(customLimit, customOffset)
   await removeEpisodes(deadEpisodes)
 }
 
