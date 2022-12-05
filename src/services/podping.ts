@@ -1,5 +1,6 @@
 import { config } from '~/config'
 import { getFeedUrlByUrl } from '~/controllers/feedUrl'
+import { FeedUrl } from '~/entities'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { addFeedUrlsByPodcastIndexId } from './queue'
 const ws = require('ws')
@@ -89,20 +90,28 @@ export const runLiveItemListener = () => {
                 for (const url of p.p.iris) {
                   try {
                     if (url?.startsWith('http')) {
-                      let feedUrl = await getFeedUrlByUrl(url)
-
-                      if (!feedUrl) {
-                        if (url.startsWith('https:')) {
-                          const nextUrl = url.replace('https:', 'http:')
-                          feedUrl = await getFeedUrlByUrl(nextUrl)
-                        } else if (url.startsWith('http:')) {
-                          const nextUrl = url.replace('http:', 'https:')
-                          feedUrl = await getFeedUrlByUrl(nextUrl)
+                      let feedUrl: FeedUrl | null = null
+                      try {
+                        feedUrl = await getFeedUrlByUrl(url)
+                      } catch (error) {
+                        logPerformance(`p.p.iris error ${error}, connectionId: ${connectionId}`, _logStart)
+                        console.log('attempting http or https fallback...')
+                        if (!feedUrl) {
+                          if (url.startsWith('https:')) {
+                            const nextUrl = url.replace('https:', 'http:')
+                            feedUrl = await getFeedUrlByUrl(nextUrl)
+                          } else if (url.startsWith('http:')) {
+                            const nextUrl = url.replace('http:', 'https:')
+                            feedUrl = await getFeedUrlByUrl(nextUrl)
+                          }
                         }
                       }
-
-                      const { podcastIndexId } = feedUrl.podcast
-                      if (podcastIndexId) podcastIndexIds.push(podcastIndexId)
+                      if (feedUrl?.podcast) {
+                        const { podcastIndexId } = feedUrl.podcast
+                        if (podcastIndexId) podcastIndexIds.push(podcastIndexId)
+                      } else {
+                        console.log('feed url not found')
+                      }
                     }
                   } catch (err) {
                     logPerformance(`p.p.iris error ${err}, connectionId: ${connectionId}`, _logStart)
