@@ -25,9 +25,11 @@ import {
 } from '~/lib/notifications/fcmGoogleApi'
 import { getPodcastValueTagForPodcastIndexId } from '~/services/podcastIndex'
 import {
+  getEpisodeByPodcastIdAndGuid,
   getEpisodesWithLiveItemsWithMatchingGuids,
   getEpisodesWithLiveItemsWithoutMatchingGuids
 } from '~/controllers/episode'
+import { getLiveItemByGuid } from '~/controllers/liveItem'
 const { awsConfig, userAgent } = config
 const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
 
@@ -46,7 +48,7 @@ type LiveItemNotification = {
   episodeTitle: string
   podcastImageUrl?: string
   episodeImageUrl?: string
-  episodeId: string
+  episodeGuid: string
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
@@ -343,7 +345,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let newLiveItems = [] as any
     let updatedSavedLiveItems = [] as any
     let latestEpisodeImageUrl = ''
-    let latestEpisodeId = ''
+    let latestEpisodeGuid = ''
     let liveItemNotificationsData = [] as LiveItemNotification[]
     if (
       (parsedEpisodes && Array.isArray(parsedEpisodes) && parsedEpisodes.length > 0) ||
@@ -391,8 +393,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
       podcast.lastEpisodePubDate = isValidDate(lastEpisodePubDate) ? lastEpisodePubDate : undefined
       podcast.lastEpisodeTitle = latestEpisode.title
-
-      latestEpisodeId = latestEpisode.id
+      latestEpisodeGuid = latestEpisode.guid
       latestEpisodeImageUrl = latestEpisode.imageUrl || ''
     } else {
       podcast.lastEpisodePubDate = undefined
@@ -463,28 +464,43 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       logPerformance('sendNewEpisodeDetectedNotification', _logStart)
       const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
       const finalEpisodeImageUrl = latestEpisodeImageUrl
-      await sendNewEpisodeDetectedNotification(
-        podcast.id,
-        podcast.title,
-        podcast.lastEpisodeTitle,
-        finalPodcastImageUrl,
-        finalEpisodeImageUrl,
-        latestEpisodeId
-      )
+
+      // Retrieve the episode to make sure we have the episode.id
+      const latestEpisodeWithId = await getEpisodeByPodcastIdAndGuid(podcast.id, latestEpisodeGuid)
+
+      if (latestEpisodeWithId?.id) {
+        await sendNewEpisodeDetectedNotification(
+          podcast.id,
+          podcast.title,
+          podcast.lastEpisodeTitle,
+          finalPodcastImageUrl,
+          finalEpisodeImageUrl,
+          latestEpisodeWithId.id
+        )
+      }
+
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
     }
 
     if (liveItemNotificationsData && liveItemNotificationsData.length > 0) {
       for (const liveItemNotificationData of liveItemNotificationsData) {
         logPerformance('sendLiveItemLiveDetectedNotification', _logStart)
-        await sendLiveItemLiveDetectedNotification(
-          liveItemNotificationData.podcastId,
-          liveItemNotificationData.podcastTitle,
-          liveItemNotificationData.episodeTitle,
-          liveItemNotificationData.podcastImageUrl,
-          liveItemNotificationData.episodeImageUrl,
-          liveItemNotificationData.episodeId
-        )
+
+        // Retrieve the live item - episode to make sure we have the episode.id
+        const liveItemWithId = await getLiveItemByGuid(liveItemNotificationData.episodeGuid, podcast.id)
+
+        if (liveItemWithId?.episode?.id) {
+          await sendLiveItemLiveDetectedNotification(
+            liveItemNotificationData.podcastId,
+            liveItemNotificationData.podcastTitle,
+            liveItemNotificationData.episodeTitle,
+            liveItemNotificationData.podcastImageUrl,
+            liveItemNotificationData.episodeImageUrl,
+            liveItemWithId?.episode?.id
+          )
+        } else {
+          console.log('not found: liveItemWithId not found', liveItemNotificationData.episodeGuid, podcast.id)
+        }
         logPerformance('sendLiveItemLiveDetectedNotification', _logEnd)
       }
     }
@@ -1022,7 +1038,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
         episodeTitle: parsedLiveItem.title,
         podcastImageUrl: finalPodcastImageUrl,
         episodeImageUrl: finalEpisodeImageUrl,
-        episodeId: notificationLiveItem.id
+        episodeGuid: notificationLiveItem.guid
       })
     }
   }
