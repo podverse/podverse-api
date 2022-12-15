@@ -24,7 +24,7 @@ jobs:
         tags: latest,${{ steps.package-node-version.outputs.version }}
 
     - name: Tailscale
-      uses: tailscale/github-action@v1
+      uses: tailscale/github-action
       with:
         authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
