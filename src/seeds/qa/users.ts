@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { faker } from '@faker-js/faker'
 import { createUser } from '~/controllers/user'
+import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
 interface RowExportData {
   id: string
@@ -35,8 +36,17 @@ interface UserEnriched extends RowExportData {
 }
 
 const insecurePassword = 'Test!1Aa'
+export const userFreeTrialValidId = 'AQ7A6g7pG'
+export const userFreeTrialExpiredId = 'H27eMKgO0'
+export const userPremiumValidId = 'mit1MDPau'
+export const userPremiumExpiredId = 'TVrbwLe6y'
+export const userQAAdminId = 'JwaMg4upw'
+export const userPodpingAdminId = 'IE_G4AfI3'
+export const userClipbot9000Id = 'jISAEEgXa'
 
 export const generateQAUsers = async () => {
+  logPerformance('generateQAUsers', _logStart)
+
   const users = [
     enrichRowExportData(userFreeTrialValid),
     enrichRowExportData(userFreeTrialExpired),
@@ -50,6 +60,8 @@ export const generateQAUsers = async () => {
   for (const user of users) {
     await createUser(user)
   }
+
+  logPerformance('generateQAUsers', _logEnd)
 }
 
 const enrichRowExportData = (userLite: RowExportData) => {
@@ -71,7 +83,7 @@ const enrichRowExportData = (userLite: RowExportData) => {
 }
 
 const userFreeTrialValid: RowExportData = {
-  id: 'AQ7A6g7pG',
+  id: userFreeTrialValidId,
   email: 'freetrial@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:13:17.764',
   emailVerified: true,
@@ -98,7 +110,7 @@ const userFreeTrialValid: RowExportData = {
 }
 
 const userFreeTrialExpired: RowExportData = {
-  id: 'H27eMKgO0',
+  id: userFreeTrialExpiredId,
   email: 'freetrialexpired@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:13:38.999',
   emailVerified: true,
@@ -125,7 +137,7 @@ const userFreeTrialExpired: RowExportData = {
 }
 
 const userPremiumValid: RowExportData = {
-  id: 'mit1MDPau',
+  id: userPremiumValidId,
   email: 'premium@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:13:11.89',
   emailVerified: true,
@@ -152,7 +164,7 @@ const userPremiumValid: RowExportData = {
 }
 
 const userPremiumExpired: RowExportData = {
-  id: 'TVrbwLe6y',
+  id: userPremiumExpiredId,
   email: 'premiumexpired@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:13:30.447',
   emailVerified: true,
@@ -179,7 +191,7 @@ const userPremiumExpired: RowExportData = {
 }
 
 const userQAAdmin: RowExportData = {
-  id: 'JwaMg4upw',
+  id: userQAAdminId,
   email: 'admin@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:11:40.928',
   emailVerified: true,
@@ -206,7 +218,7 @@ const userQAAdmin: RowExportData = {
 }
 
 const userPodpingAdmin: RowExportData = {
-  id: 'IE_G4AfI3',
+  id: userPodpingAdminId,
   email: 'podpingadmin@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:11:56.23',
   emailVerified: true,
@@ -233,7 +245,7 @@ const userPodpingAdmin: RowExportData = {
 }
 
 const userClipbot9000: RowExportData = {
-  id: 'jISAEEgXa',
+  id: userClipbot9000Id,
   email: 'clipbot9000@qa.podverse.fm',
   emailVerificationTokenExpiration: '2023-10-10 22:12:41.631',
   emailVerified: true,

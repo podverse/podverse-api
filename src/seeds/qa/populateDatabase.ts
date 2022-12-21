@@ -1,13 +1,19 @@
 import { Connection } from 'typeorm'
-// import { validCategories } from '~/config/categories'
+import { validCategories } from '~/config/categories'
 import { connectToDb } from '~/lib/db'
-// import { generateCategories } from '~/seeds/categories'
+import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
+import { generateCategories } from '~/seeds/categories'
 import { parseQAFeeds } from '~/seeds/qa/feeds'
 import { generateQAUsers } from '~/seeds/qa/users'
+import { generateQAMediaRefs } from './mediaRefs'
+import { statsQAUpdatePageviews } from './stats'
 
 const populateDatabase = async (connection: Connection): Promise<any> => {
+  logPerformance('populateDatabase', _logStart)
+
   /* Categories */
-  // await generateCategories(connection, validCategories)
+  // This may be unnecessary as the categories are included in the schema-only.sql
+  await generateCategories(connection, validCategories)
 
   /* Users */
   await generateQAUsers()
@@ -29,7 +35,8 @@ const populateDatabase = async (connection: Connection): Promise<any> => {
 
   /* TODO: GooglePlayPurchases */
 
-  /* TODO: MediaRefs */
+  /* MediaRefs */
+  await generateQAMediaRefs()
 
   /* TODO: Notifications */
 
@@ -48,6 +55,11 @@ const populateDatabase = async (connection: Connection): Promise<any> => {
   /* TODO: UserNowPlayingItems */
 
   /* TODO: UserQueueItems */
+
+  /* Update pageview stats */
+  await statsQAUpdatePageviews()
+
+  logPerformance('populateDatabase', _logEnd)
 }
 
 connectToDb().then(async (connection) => {
