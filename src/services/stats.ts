@@ -66,7 +66,34 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
     data = data.concat(response.data)
   }
 
-  await savePageviewsToDatabase(pagePath, timeRange, data)
+  /*
+    Currently there are some invalid page values in our Matomo data
+    that get there because of custom RSS feeds. For those pages,
+    the url will look like
+    https://podverse.fm/podcast/https://some.podcast.com/something/audiofile.mp3
+    Since the id for podcast/episode/clip should be limited to 14 characters,
+    this code is duck-typing to filter out urls that have more than
+    14 characters in the path parameter.
+  */
+
+  const filterCustomFeedUrls = (data: any[], limit: number) => {
+    return data.filter((x) => x.url.length <= limit)
+  }
+
+  const podcastLimit = 42 // https://podverse.fm/podcast/12345678901234
+  const episodeLimit = 42 // https://podverse.fm/podcast/12345678901234
+  const clipLimit = 39 // https://podverse.fm/clip/12345678901234
+
+  let filteredData: any[] = []
+  if (pagePath === 'podcasts') {
+    filteredData = filterCustomFeedUrls(data, podcastLimit)
+  } else if (pagePath === 'episodes') {
+    filteredData = filterCustomFeedUrls(data, episodeLimit)
+  } else if (pagePath === 'clips') {
+    filteredData = filterCustomFeedUrls(data, clipLimit)
+  }
+
+  await savePageviewsToDatabase(pagePath, timeRange, filteredData)
 }
 
 const savePageviewsToDatabase = async (pagePath, timeRange, data) => {
