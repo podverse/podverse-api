@@ -8,7 +8,7 @@ import { generateQAUsers } from '~/seeds/qa/users'
 import { generateQAMediaRefs } from './mediaRefs'
 import { statsQAUpdatePageviews } from './stats'
 
-const populateDatabase = async (connection: Connection): Promise<any> => {
+const populateDatabase = async (connection: Connection, isQuickRun: boolean): Promise<any> => {
   logPerformance('populateDatabase', _logStart)
 
   /* Categories */
@@ -25,7 +25,7 @@ const populateDatabase = async (connection: Connection): Promise<any> => {
     LiveItems
     Authors 
   */
-  await parseQAFeeds(connection)
+  await parseQAFeeds(connection, isQuickRun)
 
   /* TODO: AccountClaimTokens */
 
@@ -64,6 +64,7 @@ const populateDatabase = async (connection: Connection): Promise<any> => {
 
 connectToDb().then(async (connection) => {
   if (connection) {
-    await populateDatabase(connection)
+    const isQuickRun = process.argv.length > 2 && process.argv[2] === 'quick'
+    await populateDatabase(connection, isQuickRun)
   }
 })
