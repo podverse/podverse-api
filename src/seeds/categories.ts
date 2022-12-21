@@ -4,7 +4,7 @@ import { deleteCategoryByTitle, getCategories } from '~/controllers/category'
 import { Category } from '~/entities'
 import { connectToDb } from '~/lib/db'
 
-const generateCategories = async (connection: Connection, data: any): Promise<any> => {
+export const generateCategories = async (connection: Connection, data: any): Promise<any> => {
   const existingCategoriesAndCount = await getCategories({})
   let existingCategories = existingCategoriesAndCount[0]
 
