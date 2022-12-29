@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { faker } from '@faker-js/faker'
+import { getRepository } from 'typeorm'
 import { createUser } from '~/controllers/user'
+import { User } from '~/entities'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
 interface RowExportData {
-  id: string
   email: string
   emailVerificationTokenExpiration: string
   emailVerified: boolean
@@ -36,13 +37,14 @@ interface UserEnriched extends RowExportData {
 }
 
 const insecurePassword = 'Test!1Aa'
-export const userFreeTrialValidId = 'AQ7A6g7pG'
-export const userFreeTrialExpiredId = 'H27eMKgO0'
-export const userPremiumValidId = 'mit1MDPau'
-export const userPremiumExpiredId = 'TVrbwLe6y'
-export const userQAAdminId = 'JwaMg4upw'
-export const userPodpingAdminId = 'IE_G4AfI3'
-export const userClipbot9000Id = 'jISAEEgXa'
+export const userFreeTrialValidEmail = 'freetrial@qa.podverse.fm'
+export const userFreeTrialExpiredEmail = 'freetrialexpired@qa.podverse.fm'
+export const userPremiumValidEmail = 'premium@qa.podverse.fm'
+export const userPremiumExpiredEmail = 'premiumexpired@qa.podverse.fm'
+export const userQAAdminEmail = 'admin@qa.podverse.fm'
+export const userPodpingAdminEmail = 'podpingadmin@qa.podverse.fm'
+export const userClipbot9000Email = 'clipbot9000@qa.podverse.fm'
+const userClipbot9000Id = 'jISAEEgXa'
 
 export const generateQAUsers = async () => {
   logPerformance('generateQAUsers', _logStart)
@@ -61,7 +63,22 @@ export const generateQAUsers = async () => {
     await createUser(user)
   }
 
+  // Force userClipbot9000Id to be jISAEEgXa
+  // https://github.com/podverse/podverse-api/issues/569
+  const clipBot9000User = await getQAUserByEmail(userClipbot9000Email)
+  if (clipBot9000User) {
+    const clipBot9000UserPreviousId = clipBot9000User.id
+    clipBot9000User.id = userClipbot9000Id
+    const userRepository = getRepository(User)
+    await userRepository.update(clipBot9000UserPreviousId, clipBot9000User)
+  }
+
   logPerformance('generateQAUsers', _logEnd)
+}
+
+export const getQAUserByEmail = async (email: string) => {
+  const userRepository = getRepository(User)
+  return await userRepository.findOne({ email })
 }
 
 const enrichRowExportData = (userLite: RowExportData) => {
@@ -83,8 +100,7 @@ const enrichRowExportData = (userLite: RowExportData) => {
 }
 
 const userFreeTrialValid: RowExportData = {
-  id: userFreeTrialValidId,
-  email: 'freetrial@qa.podverse.fm',
+  email: userFreeTrialValidEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:13:17.764',
   emailVerified: true,
   freeTrialExpiration: '3022-11-09 21:06:37.764',
@@ -110,8 +126,7 @@ const userFreeTrialValid: RowExportData = {
 }
 
 const userFreeTrialExpired: RowExportData = {
-  id: userFreeTrialExpiredId,
-  email: 'freetrialexpired@qa.podverse.fm',
+  email: userFreeTrialExpiredEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:13:38.999',
   emailVerified: true,
   freeTrialExpiration: '2021-11-09 21:06:58.999',
@@ -137,8 +152,7 @@ const userFreeTrialExpired: RowExportData = {
 }
 
 const userPremiumValid: RowExportData = {
-  id: userPremiumValidId,
-  email: 'premium@qa.podverse.fm',
+  email: userPremiumValidEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:13:11.89',
   emailVerified: true,
   freeTrialExpiration: '2022-11-09 21:06:31.89',
@@ -164,8 +178,7 @@ const userPremiumValid: RowExportData = {
 }
 
 const userPremiumExpired: RowExportData = {
-  id: userPremiumExpiredId,
-  email: 'premiumexpired@qa.podverse.fm',
+  email: userPremiumExpiredEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:13:30.447',
   emailVerified: true,
   freeTrialExpiration: '2022-11-09 21:06:50.448',
@@ -191,8 +204,7 @@ const userPremiumExpired: RowExportData = {
 }
 
 const userQAAdmin: RowExportData = {
-  id: userQAAdminId,
-  email: 'admin@qa.podverse.fm',
+  email: userQAAdminEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:11:40.928',
   emailVerified: true,
   freeTrialExpiration: '2022-11-09 21:05:00.93',
@@ -218,8 +230,7 @@ const userQAAdmin: RowExportData = {
 }
 
 const userPodpingAdmin: RowExportData = {
-  id: userPodpingAdminId,
-  email: 'podpingadmin@qa.podverse.fm',
+  email: userPodpingAdminEmail,
   emailVerificationTokenExpiration: '2023-10-10 22:11:56.23',
   emailVerified: true,
   freeTrialExpiration: '2022-11-09 21:05:16.23',
@@ -245,8 +256,7 @@ const userPodpingAdmin: RowExportData = {
 }
 
 const userClipbot9000: RowExportData = {
-  id: userClipbot9000Id,
-  email: 'clipbot9000@qa.podverse.fm',
+  email: userClipbot9000Email,
   emailVerificationTokenExpiration: '2023-10-10 22:12:41.631',
   emailVerified: true,
   freeTrialExpiration: '2022-11-09 21:06:01.631',

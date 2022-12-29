@@ -2,7 +2,13 @@ import { faker } from '@faker-js/faker'
 import { getRepository } from 'typeorm'
 import { createMediaRef } from '~/controllers/mediaRef'
 import { Episode } from '~/entities'
-import { userFreeTrialExpiredId, userFreeTrialValidId, userPremiumExpiredId, userPremiumValidId } from './users'
+import {
+  getQAUserByEmail,
+  userFreeTrialExpiredEmail,
+  userFreeTrialValidEmail,
+  userPremiumExpiredEmail,
+  userPremiumValidEmail
+} from './users'
 import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
 
 type MediaRefLite = {
@@ -20,10 +26,17 @@ type MediaRefLite = {
 export const generateQAMediaRefs = async () => {
   logPerformance('generateQAMediaRefs', _logStart)
 
-  await generateMediaRefsForUser(userFreeTrialValidId)
-  await generateMediaRefsForUser(userFreeTrialExpiredId)
-  await generateMediaRefsForUser(userPremiumValidId)
-  await generateMediaRefsForUser(userPremiumExpiredId)
+  const userFreeTrialValid = await getQAUserByEmail(userFreeTrialValidEmail)
+  const userFreeTrialExpired = await getQAUserByEmail(userFreeTrialExpiredEmail)
+  const userPremiumValid = await getQAUserByEmail(userPremiumValidEmail)
+  const userPremiumExpired = await getQAUserByEmail(userPremiumExpiredEmail)
+
+  if (userFreeTrialValid && userFreeTrialExpired && userPremiumValid && userPremiumExpired) {
+    await generateMediaRefsForUser(userFreeTrialValid.id)
+    await generateMediaRefsForUser(userFreeTrialExpired.id)
+    await generateMediaRefsForUser(userPremiumValid.id)
+    await generateMediaRefsForUser(userPremiumExpired.id)
+  }
 
   logPerformance('generateQAMediaRefs', _logEnd)
 }
