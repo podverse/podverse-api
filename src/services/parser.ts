@@ -31,7 +31,7 @@ import {
 } from '~/controllers/episode'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
 const { awsConfig, userAgent } = config
-const { queueUrls, s3ImageLimitUpdateDays } = awsConfig
+const { queueUrls /*, s3ImageLimitUpdateDays */ } = awsConfig
 
 interface ExtendedEpisode extends Episode {
   soundbite: any[]
@@ -424,12 +424,12 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     await podcastRepo.save(podcast)
     logPerformance('podcastRepo.save', _logEnd)
     // Limit podcast image PUTs to save on server costs
-    const { shrunkImageLastUpdated } = podcast
-    const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
-    const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
-      ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
-      : false
-    if (forceReparsing || hasNewImageUrl || !wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
+    // const { shrunkImageLastUpdated } = podcast
+    // const recentTimeRange = s3ImageLimitUpdateDays * 24 * 60 * 60 * 1000
+    // const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
+    //   ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
+    //   : false
+    if (forceReparsing || hasNewImageUrl /* || !wasUpdatedWithinRecentTimeRange */ || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
     }
 
