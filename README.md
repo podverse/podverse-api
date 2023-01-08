@@ -40,6 +40,7 @@ npm run dev
 
 ### Sample database data
 
+**TODO: Sample db instructions are out of date**
 The [podverse-ops repo](https://github.com/podverse/podverse-ops) contains the qa-database.sql file to help you get started quickly with a development database. You can clone the podverse-ops repo, then run the following command after the Postgres database is running:
 
 ```bash

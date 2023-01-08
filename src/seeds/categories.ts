@@ -1,10 +1,10 @@
 import { Connection } from 'typeorm'
-import { validCategories } from '~/config/categories'
 import { deleteCategoryByTitle, getCategories } from '~/controllers/category'
 import { Category } from '~/entities'
-import { connectToDb } from '~/lib/db'
+import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
-const generateCategories = async (connection: Connection, data: any): Promise<any> => {
+export const generateCategories = async (connection: Connection, data: any): Promise<any> => {
+  logPerformance('generateCategories', _logStart)
   const existingCategoriesAndCount = await getCategories({})
   let existingCategories = existingCategoriesAndCount[0]
 
@@ -24,7 +24,6 @@ const generateCategories = async (connection: Connection, data: any): Promise<an
     } else {
       title = category
     }
-    console.log(title, existingCategories.length)
 
     existingCategories = existingCategories.filter((x) => x.title !== title)
     const newCategory = generateCategory(category, title, parentId)
@@ -38,18 +37,15 @@ const generateCategories = async (connection: Connection, data: any): Promise<an
     await connection.manager.save(newCategory)
   }
 
-  console.log('remaining categories', existingCategories)
   const existingSubCategories = existingCategories.filter((x) => x.category)
   const existingParentCategories = existingCategories.filter((x) => !x.category)
   for (const category of existingSubCategories) {
-    console.log('deleting subCategory', category.title)
     await deleteCategoryByTitle(category.title)
   }
   for (const category of existingParentCategories) {
-    console.log('deleting category', category.title)
     await deleteCategoryByTitle(category.title)
   }
-  console.log('done')
+  logPerformance('generateCategories', _logEnd)
 }
 
 const generateCategory = (fullPath, title, parentId) => {
@@ -60,8 +56,8 @@ const generateCategory = (fullPath, title, parentId) => {
   return category
 }
 
-connectToDb().then(async (connection) => {
-  if (connection) {
-    await generateCategories(connection, validCategories)
-  }
-})
+// connectToDb().then(async (connection) => {
+//   if (connection) {
+//     await generateCategories(connection, validCategories)
+//   }
+// })

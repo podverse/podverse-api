@@ -330,6 +330,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     podcast.funding = meta.funding
     podcast.guid = meta.guid
 
+    const hasNewImageUrl = meta.imageURL && podcast.imageUrl !== meta.imageURL
     podcast.imageUrl = meta.imageURL
 
     podcast.isExplicit = meta.explicit
@@ -428,7 +429,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const wasUpdatedWithinRecentTimeRange = shrunkImageLastUpdated
       ? new Date(shrunkImageLastUpdated).getTime() + recentTimeRange >= new Date().getTime()
       : false
-    if (forceReparsing || !wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
+    if (forceReparsing || hasNewImageUrl || !wasUpdatedWithinRecentTimeRange || podcast.alwaysFullyParse) {
       await uploadImageToS3AndSaveToDatabase(podcast, podcastRepo)
     }
 
@@ -1030,7 +1031,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
 
     if (shouldSendLiveNotification) {
       const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = parsedLiveItem.imageUrl
+      const finalEpisodeImageUrl = parsedLiveItem.imageURL
 
       liveItemNotificationsData.push({
         podcastId: podcast.id,
