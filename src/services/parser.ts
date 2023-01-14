@@ -23,7 +23,10 @@ import {
   sendLiveItemLiveDetectedNotification,
   sendNewEpisodeDetectedNotification
 } from '~/lib/notifications/fcmGoogleApi'
-import { getPodcastValueTagForPodcastIndexId } from '~/services/podcastIndex'
+import {
+  getAllEpisodeValueTagsFromPodcastIndexById,
+  getPodcastValueTagForPodcastIndexId
+} from '~/services/podcastIndex'
 import {
   getEpisodeByPodcastIdAndGuid,
   getEpisodesWithLiveItemsWithMatchingGuids,
@@ -352,12 +355,29 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       (parsedEpisodes && Array.isArray(parsedEpisodes) && parsedEpisodes.length > 0) ||
       (parsedLiveItemEpisodes && Array.isArray(parsedLiveItemEpisodes) && parsedLiveItemEpisodes.length > 0)
     ) {
+      let pvEpisodesValueTagsByGuid = {}
+      if (podcast.hasPodcastIndexValueTag && podcast.podcastIndexId) {
+        try {
+          pvEpisodesValueTagsByGuid = await getAllEpisodeValueTagsFromPodcastIndexById(podcast.podcastIndexId)
+        } catch (error) {
+          console.log('pvEpisodesValueTagsByGuid error', error)
+        }
+      }
+
       logPerformance('findOrGenerateParsedEpisodes', _logStart)
-      const episodesResults = (await findOrGenerateParsedEpisodes(parsedEpisodes, podcast)) as any
+      const episodesResults = (await findOrGenerateParsedEpisodes(
+        parsedEpisodes,
+        podcast,
+        pvEpisodesValueTagsByGuid
+      )) as any
       logPerformance('findOrGenerateParsedEpisodes', _logEnd)
 
       logPerformance('findOrGenerateParsedLiveItems', _logStart)
-      const liveItemsResults = (await findOrGenerateParsedLiveItems(parsedLiveItemEpisodes, podcast)) as any
+      const liveItemsResults = (await findOrGenerateParsedLiveItems(
+        parsedLiveItemEpisodes,
+        podcast,
+        pvEpisodesValueTagsByGuid
+      )) as any
       logPerformance('findOrGenerateParsedLiveItems', _logEnd)
 
       podcast.hasLiveItem = hasLiveItem
@@ -860,7 +880,12 @@ const getMostRecentEpisodeDataFromFeed = (meta, episodes) => {
   return { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed }
 }
 
-const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: ParsedEpisode, podcast) => {
+const assignParsedEpisodeData = async (
+  episode: ExtendedEpisode,
+  parsedEpisode: ParsedEpisode,
+  podcast,
+  pvEpisodesValueTagsByGuid
+) => {
   episode.isPublic = true
 
   episode.alternateEnclosures = parsedEpisode.alternateEnclosures
@@ -894,7 +919,12 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   episode.subtitle = parsedEpisode.subtitle
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
-  episode.value = parsedEpisode.value
+  episode.value =
+    parsedEpisode.value?.length > 0
+      ? parsedEpisode.value
+      : pvEpisodesValueTagsByGuid && parsedEpisode.guid && pvEpisodesValueTagsByGuid[parsedEpisode.guid]?.length > 0
+      ? pvEpisodesValueTagsByGuid[parsedEpisode.guid]
+      : []
 
   // Since episode authors and categories aren't being used by the app,
   // skip saving this info to the episode.
@@ -932,7 +962,7 @@ const assignParsedEpisodeData = async (episode: ExtendedEpisode, parsedEpisode: 
   return episode
 }
 
-const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
+const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisodesValueTagsByGuid) => {
   const episodeRepo = getRepository(Episode)
 
   // Parsed episodes are only valid if they have enclosure.url, liveItemStart, and guid tags,
@@ -985,7 +1015,12 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   const previouslySavedLiveItems = JSON.parse(JSON.stringify(savedLiveItems))
   for (let existingLiveItem of savedLiveItems) {
     const parsedLiveItem = validParsedLiveItems.find((x) => x.guid === existingLiveItem.guid)
-    existingLiveItem = await assignParsedEpisodeData(existingLiveItem, parsedLiveItem, podcast)
+    existingLiveItem = await assignParsedEpisodeData(
+      existingLiveItem,
+      parsedLiveItem,
+      podcast,
+      pvEpisodesValueTagsByGuid
+    )
 
     if (parsedLiveItem.mediaType && parsedLiveItem.mediaType.indexOf('video') >= 0) {
       videoCount++
@@ -1002,7 +1037,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   // then create a new liveItem (episode).
   for (const newParsedLiveItem of newParsedLiveItems) {
     let episode = new Episode() as ExtendedEpisode
-    episode = await assignParsedEpisodeData(episode, newParsedLiveItem, podcast)
+    episode = await assignParsedEpisodeData(episode, newParsedLiveItem, podcast, pvEpisodesValueTagsByGuid)
 
     if (newParsedLiveItem.mediaType && newParsedLiveItem.mediaType.indexOf('video') >= 0) {
       videoCount++
@@ -1052,7 +1087,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast) => {
   }
 }
 
-const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
+const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesValueTagsByGuid) => {
   const episodeRepo = getRepository(Episode)
 
   // Parsed episodes are only valid if they have enclosure.url and guid tags,
@@ -1122,7 +1157,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
     const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
-    existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast)
+    existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
     if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
       videoCount++
@@ -1139,7 +1174,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast) => {
   // then create a new episode.
   for (const newParsedEpisode of newParsedEpisodes) {
     let episode = new Episode() as ExtendedEpisode
-    episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast)
+    episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
     if (newParsedEpisode.mediaType && newParsedEpisode.mediaType.indexOf('video') >= 0) {
       videoCount++
