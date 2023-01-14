@@ -182,6 +182,54 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
   return pvValueTagArray
 }
 
+export const getEpisodesFromPodcastIndexById = async (id: string) => {
+  const url = `${podcastIndexConfig.baseUrl}/episodes/byfeedid?id=${id}&max=1000`
+  const response = await axiosRequest(url)
+  return response && response.data
+}
+
+export const getAllEpisodesFromPodcastIndexById = async (id: string) => {
+  // TODO: AFAIK Podcast Index does not support recursively paginating beyond 1000 results
+  // https://podcastindex-org.github.io/docs-api/#get-/episodes/byfeedid
+  // const allEpisodes = []
+  // let recursionLimit = 0
+
+  // const getEpisodesRecursively = async (id: string) => {
+  //   try {
+  //     if (recursionLimit >= 50) return
+  //     const episodes = await getEpisodesFromPodcastIndexById(id)
+  //     if (episodes.length > 0) {
+  //       allEpisodes.concat(episodes)
+  //     }
+  //     if (episodes.length === 1000) {
+  //     }
+  //   } catch (error) {
+  //     console.log('getAllEpisodesFromPodcastIndexById error', id, error)
+  //   }
+  // }
+
+  // await getEpisodesRecursively(id)
+
+  const response = await getEpisodesFromPodcastIndexById(id)
+  const allEpisodes = response?.items
+
+  return allEpisodes
+}
+
+export const getAllEpisodeValueTagsFromPodcastIndexById = async (id: string) => {
+  const episodes = await getAllEpisodesFromPodcastIndexById(id)
+  const pvEpisodesValueTagsByGuid = {}
+  for (const episode of episodes) {
+    if (episode?.value && episode?.guid) {
+      const pvValueTagArray = convertPIValueTagToPVValueTagArray(episode.value)
+      if (pvValueTagArray?.length > 0) {
+        pvEpisodesValueTagsByGuid[episode.guid] = pvValueTagArray
+      }
+    }
+  }
+  return pvEpisodesValueTagsByGuid
+}
+
 export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
   const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
   const allowNonPublic = true
