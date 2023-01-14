@@ -39,9 +39,9 @@ const statsQAUpdatePodcasts = async () => {
 
   const podcastRepository = getRepository(Podcast)
 
-  const podcasts = await podcastRepository.createQueryBuilder('podcast').select('*').limit(1000).getRawMany()
+  const podcasts = await podcastRepository.createQueryBuilder('podcast').select('*').limit(1000).getMany()
 
-  const newPodcasts: Podcast[] = []
+  const newPodcasts: any[] = []
   for (const podcast of podcasts) {
     const newPodcast = {
       ...podcast,
@@ -65,9 +65,9 @@ const statsQAUpdateEpisodes = async () => {
     .select('*')
     .limit(1000)
     .orderBy('RANDOM()')
-    .getRawMany()
+    .getMany()
 
-  const newEpisodes: Episode[] = []
+  const newEpisodes: any[] = []
   for (const episode of episodes) {
     const newEpisode = {
       ...episode,
@@ -86,9 +86,9 @@ const statsQAUpdateMediaRefs = async () => {
 
   const mediaRefRepository = getRepository(MediaRef)
 
-  const mediaRefs = await mediaRefRepository.createQueryBuilder('mediaRef').select('*').limit(1000).getRawMany()
+  const mediaRefs = await mediaRefRepository.createQueryBuilder('mediaRef').select('*').limit(1000).getMany()
 
-  const newMediaRefs: MediaRef[] = []
+  const newMediaRefs: any[] = []
   for (const mediaRef of mediaRefs) {
     const newMediaRef = {
       ...mediaRef,
