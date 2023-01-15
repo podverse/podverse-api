@@ -2,29 +2,11 @@ import { addOrUpdateQueueItem } from '~/controllers/userQueueItem'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { getRandomEpisodeIds } from './episodes'
 import { getRandomMediaRefIds } from './mediaRefs'
-import {
-  getQAUserByEmail,
-  userFreeTrialExpiredEmail,
-  userFreeTrialValidEmail,
-  userPremiumExpiredEmail,
-  userPremiumValidEmail
-} from './users'
+import { generateQAItemsForUsers } from './utility'
 
 export const generateQAUserQueueItems = async () => {
   logPerformance('generateQAUserQueueItems', _logStart)
-
-  const userFreeTrialValid = await getQAUserByEmail(userFreeTrialValidEmail)
-  const userFreeTrialExpired = await getQAUserByEmail(userFreeTrialExpiredEmail)
-  const userPremiumValid = await getQAUserByEmail(userPremiumValidEmail)
-  const userPremiumExpired = await getQAUserByEmail(userPremiumExpiredEmail)
-
-  if (userFreeTrialValid && userFreeTrialExpired && userPremiumValid && userPremiumExpired) {
-    await generateUserQueueItemsForUser(userFreeTrialValid.id)
-    await generateUserQueueItemsForUser(userFreeTrialExpired.id)
-    await generateUserQueueItemsForUser(userPremiumValid.id)
-    await generateUserQueueItemsForUser(userPremiumExpired.id)
-  }
-
+  await generateQAItemsForUsers(generateUserQueueItemsForUser)
   logPerformance('generateQAUserQueueItems', _logEnd)
 }
 
