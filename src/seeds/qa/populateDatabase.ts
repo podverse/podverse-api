@@ -44,6 +44,7 @@ const populateDatabase = async (connection: Connection, isQuickRun: boolean): Pr
 
   /* TODO: PayPalOrders */
 
+  /* Playlists */
   await generateQAPlaylists()
 
   /* TODO: RecentEpisodesByCategory */
@@ -54,6 +55,7 @@ const populateDatabase = async (connection: Connection, isQuickRun: boolean): Pr
 
   /* TODO: UserNowPlayingItems */
 
+  /* UserQueueItems */
   await generateQAUserQueueItems()
 
   /* Update pageview stats */
