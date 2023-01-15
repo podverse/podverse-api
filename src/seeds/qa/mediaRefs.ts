@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { getRepository } from 'typeorm'
 import { createMediaRef } from '~/controllers/mediaRef'
-import { Episode } from '~/entities'
+import { Episode, MediaRef } from '~/entities'
 import {
   getQAUserByEmail,
   userFreeTrialExpiredEmail,
@@ -82,4 +82,17 @@ const getRandomEndTime = (startTime: number) => {
 const getRandomTitle = () => {
   const numberOfWords = faker.datatype.number({ min: 0, max: 20 })
   return faker.lorem.words(numberOfWords)
+}
+
+export const getRandomMediaRefIds = async () => {
+  const mediaRefRepository = getRepository(MediaRef)
+  const mediaRefs = await mediaRefRepository.find({
+    select: ['id'],
+    where: {
+      isPublic: true
+    },
+    take: 100
+  })
+
+  return mediaRefs.map((mediaRef) => mediaRef.id)
 }

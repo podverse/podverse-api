@@ -10,6 +10,8 @@ import {
 } from './users'
 import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist } from '~/controllers/playlist'
+import { getRandomMediaRefIds } from './mediaRefs'
+import { getRandomEpisodeIds } from './episodes'
 
 type PlaylistLite = {
   owner: string
@@ -37,28 +39,8 @@ export const generateQAPlaylists = async () => {
 }
 
 const generatePlaylistsForUser = async (userId: string) => {
-  const episodeRepository = getRepository(Episode)
-  const mediaRefRepository = getRepository(MediaRef)
-
-  const episodes = await episodeRepository
-    .createQueryBuilder('episode')
-    .select('episode.id')
-    .where('episode."isPublic" = TRUE')
-    .orderBy('RANDOM()')
-    .limit(100)
-    .getMany()
-
-  const episodeIdsFull = episodes.map((episode) => episode.id)
-
-  const mediaRefs = await mediaRefRepository.find({
-    select: ['id'],
-    where: {
-      isPublic: true
-    },
-    take: 100
-  })
-
-  const mediaRefIdsFull = mediaRefs.map((mediaRef) => mediaRef.id)
+  const episodeIdsFull = await getRandomEpisodeIds()
+  const mediaRefIdsFull = await getRandomMediaRefIds()
 
   for (let i = 0; i < 10; i++) {
     const playlistLite: PlaylistLite = {
