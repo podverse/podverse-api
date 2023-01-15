@@ -8,6 +8,7 @@ import { generateQAUsers } from '~/seeds/qa/users'
 import { generateQAMediaRefs } from '~/seeds/qa/mediaRefs'
 import { generateQAPlaylists } from '~/seeds/qa/playlists'
 import { statsQAUpdatePageviews } from '~/seeds/qa/stats'
+import { generateQAUserQueueItems } from './userQueueItems'
 
 const populateDatabase = async (connection: Connection, isQuickRun: boolean): Promise<any> => {
   logPerformance('populateDatabase', _logStart)
@@ -53,7 +54,7 @@ const populateDatabase = async (connection: Connection, isQuickRun: boolean): Pr
 
   /* TODO: UserNowPlayingItems */
 
-  /* TODO: UserQueueItems */
+  await generateQAUserQueueItems()
 
   /* Update pageview stats */
   await statsQAUpdatePageviews()

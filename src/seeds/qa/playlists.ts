@@ -1,6 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { getRepository } from 'typeorm'
-import { Episode, MediaRef } from '~/entities'
 import {
   getQAUserByEmail,
   userFreeTrialExpiredEmail,
@@ -12,6 +10,7 @@ import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
 import { addOrRemovePlaylistItem, createPlaylist } from '~/controllers/playlist'
 import { getRandomMediaRefIds } from './mediaRefs'
 import { getRandomEpisodeIds } from './episodes'
+import { getQABatchRange } from './utility'
 
 type PlaylistLite = {
   owner: string
@@ -51,11 +50,8 @@ const generatePlaylistsForUser = async (userId: string) => {
     }
 
     const playlist = await createPlaylist(playlistLite)
-
-    const rangeStart = i * 10
-    const rangeEnd = (i + 1) * 10
-    const episodeIds = episodeIdsFull.slice(rangeStart, rangeEnd)
-    const mediaRefIds = mediaRefIdsFull.slice(rangeStart, rangeEnd)
+    const episodeIds = getQABatchRange(episodeIdsFull, i)
+    const mediaRefIds = getQABatchRange(mediaRefIdsFull, i)
 
     for (let i = 0; i < 10; i++) {
       await addOrRemovePlaylistItem(playlist.id, '', episodeIds[i], userId)
