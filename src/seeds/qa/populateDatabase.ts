@@ -5,8 +5,9 @@ import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { generateCategories } from '~/seeds/categories'
 import { parseQAFeeds } from '~/seeds/qa/feeds'
 import { generateQAUsers } from '~/seeds/qa/users'
-import { generateQAMediaRefs } from './mediaRefs'
-import { statsQAUpdatePageviews } from './stats'
+import { generateQAMediaRefs } from '~/seeds/qa/mediaRefs'
+import { generateQAPlaylists } from '~/seeds/qa/playlists'
+import { statsQAUpdatePageviews } from '~/seeds/qa/stats'
 
 const populateDatabase = async (connection: Connection, isQuickRun: boolean): Promise<any> => {
   logPerformance('populateDatabase', _logStart)
@@ -42,9 +43,7 @@ const populateDatabase = async (connection: Connection, isQuickRun: boolean): Pr
 
   /* TODO: PayPalOrders */
 
-  /* TODO: Playlists */
-
-  /* TODO: Playlists with assigned Episodes and MediaRefs */
+  await generateQAPlaylists()
 
   /* TODO: RecentEpisodesByCategory */
 
