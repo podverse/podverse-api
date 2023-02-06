@@ -9,4 +9,4 @@ client.basePath = `${protocol}://${domain}:${port}`
 
 export const searchApi = new Manticoresearch.UtilsApi(client)
 
-export const manticoreWildcardSpecialCharacters = (str: string) => str.replace(/\?|-| |%|:|\//g, "'")
+export const manticoreWildcardSpecialCharacters = (str: string) => str.replace(/\?|-| |%|:|\(|\)|\//g, "'")
