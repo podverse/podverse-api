@@ -14,7 +14,15 @@ import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
 import type { Value } from '~/entities/podcast'
-import { _logEnd, _logStart, convertToSlug, convertToSortableTitle, isValidDate, logPerformance } from '~/lib/utility'
+import {
+  _logEnd,
+  _logStart,
+  convertToSlug,
+  convertToSortableTitle,
+  isValidDate,
+  logPerformance,
+  checkIfVideoMediaType
+} from '~/lib/utility'
 import { deleteMessage, receiveMessageFromQueue, sendMessageToQueue } from '~/services/queue'
 import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl'
 import { shrinkImage } from './imageShrinker'
@@ -904,11 +912,6 @@ const assignParsedEpisodeData = async (
   episode.linkUrl = parsedEpisode.link
 
   episode.mediaType = parsedEpisode.enclosure.type
-  const mediumVideoOverrides = ['video', 'film']
-  if (!episode.mediaType && mediumVideoOverrides.includes(podcast?.medium)) {
-    episode.mediaType = 'video/mp4'
-  }
-
   episode.mediaUrl = parsedEpisode.enclosure.url
 
   const pubDate = new Date(parsedEpisode.pubDate)
@@ -1022,7 +1025,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
       pvEpisodesValueTagsByGuid
     )
 
-    if (parsedLiveItem.mediaType && parsedLiveItem.mediaType.indexOf('video') >= 0) {
+    if (parsedLiveItem.mediaType && checkIfVideoMediaType(parsedLiveItem.mediaType)) {
       videoCount++
     } else {
       audioCount++
@@ -1039,7 +1042,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
     let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedLiveItem, podcast, pvEpisodesValueTagsByGuid)
 
-    if (newParsedLiveItem.mediaType && newParsedLiveItem.mediaType.indexOf('video') >= 0) {
+    if (newParsedLiveItem.mediaType && checkIfVideoMediaType(newParsedLiveItem.mediaType)) {
       videoCount++
     } else {
       audioCount++
@@ -1159,7 +1162,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
     const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
-    if (existingEpisode.mediaType && existingEpisode.mediaType.indexOf('video') >= 0) {
+    if (existingEpisode.mediaType && checkIfVideoMediaType(existingEpisode.mediaType)) {
       videoCount++
     } else {
       audioCount++
@@ -1176,7 +1179,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
     let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
-    if (newParsedEpisode.mediaType && newParsedEpisode.mediaType.indexOf('video') >= 0) {
+    if (newParsedEpisode.mediaType && checkIfVideoMediaType(newParsedEpisode.mediaType)) {
       videoCount++
     } else {
       audioCount++

@@ -260,3 +260,7 @@ export const removeAllSpaces = (str: string) => {
   str = str.replace(/\s/g, '')
   return str
 }
+
+export const checkIfVideoMediaType = (str: string) => {
+  return str && (str.toLowerCase().indexOf('video') >= 0 || str.toLowerCase().indexOf('application/x-mpegurl')) >= 0
+}
