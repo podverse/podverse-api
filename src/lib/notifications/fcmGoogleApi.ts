@@ -72,6 +72,8 @@ export const sendFCMGoogleApiNotification = async (
   episodeImage?: string,
   episodeId?: string
 ) => {
+  if (!fcmTokens || fcmTokens.length === 0) return
+
   const fcmTokenBatches: any[] = []
   const size = 1000
   for (let i = 0; i < fcmTokens.length; i += size) {
