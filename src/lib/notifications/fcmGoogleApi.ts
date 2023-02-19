@@ -72,60 +72,74 @@ export const sendFCMGoogleApiNotification = async (
   episodeImage?: string,
   episodeId?: string
 ) => {
-  if (fcmTokens?.length > 0) {
-    const imageUrl = episodeImage || podcastImage
+  if (!fcmTokens || fcmTokens.length === 0) return
 
-    request(fcmGoogleApiPath, {
-      method: 'POST',
-      headers: {
-        Authorization: `key=${fcmGoogleApiAuthToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: {
-        registration_ids: fcmTokens || [],
-        notification: {
-          body,
-          title,
-          podcastId,
-          episodeId,
-          podcastTitle: podcastTitle,
-          episodeTitle: episodeTitle,
-          notificationType,
-          timeSent: new Date(),
-          image: imageUrl
-        },
-        data: {
-          body,
-          title,
-          podcastId,
-          episodeId,
-          podcastTitle: podcastTitle,
-          episodeTitle: episodeTitle,
-          notificationType,
-          timeSent: new Date()
-        },
-        android: {
-          notification: {
-            imageUrl
-          }
-        },
-        apns: {
-          payload: {
-            aps: {
-              'mutable-content': 1
+  const fcmTokenBatches: any[] = []
+  const size = 1000
+  for (let i = 0; i < fcmTokens.length; i += size) {
+    fcmTokenBatches.push(fcmTokens.slice(i, i + size))
+  }
+
+  for (const fcmTokenBatch of fcmTokenBatches) {
+    if (fcmTokenBatch?.length > 0) {
+      const imageUrl = episodeImage || podcastImage
+
+      try {
+        await request(fcmGoogleApiPath, {
+          method: 'POST',
+          headers: {
+            Authorization: `key=${fcmGoogleApiAuthToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: {
+            registration_ids: fcmTokenBatch || [],
+            notification: {
+              body,
+              title,
+              podcastId,
+              episodeId,
+              podcastTitle: podcastTitle,
+              episodeTitle: episodeTitle,
+              notificationType,
+              timeSent: new Date(),
+              image: imageUrl
+            },
+            data: {
+              body,
+              title,
+              podcastId,
+              episodeId,
+              podcastTitle: podcastTitle,
+              episodeTitle: episodeTitle,
+              notificationType,
+              timeSent: new Date()
+            },
+            android: {
+              notification: {
+                imageUrl
+              }
+            },
+            apns: {
+              payload: {
+                aps: {
+                  'mutable-content': 1
+                }
+              },
+              fcm_options: {
+                image: imageUrl
+              }
+            },
+            webpush: {
+              headers: {
+                image: imageUrl
+              }
             }
           },
-          fcm_options: {
-            image: imageUrl
-          }
-        },
-        webpush: {
-          headers: {
-            image: imageUrl
-          }
-        }
-      },
-      json: true
-    })
+          json: true
+        })
+      } catch (error) {
+        console.log('sendFCMGoogleApiNotification error', error)
+      }
+    }
   }
 }
