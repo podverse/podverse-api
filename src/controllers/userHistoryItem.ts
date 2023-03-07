@@ -15,6 +15,7 @@ export const cleanUserItemResult = (result) => {
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration || null,
       episodeFunding: parseProp(result, 'clipEpisodeFunding', []),
+      episodeGuid: result.clipEpisodeGuid,
       episodeId: result.clipEpisodeId,
       episodeImageUrl: result.clipEpisodeImageUrl,
       episodeMediaType: result.clipEpisodeMediaType,
@@ -51,6 +52,7 @@ export const cleanUserItemResult = (result) => {
       episodeDescription: result.episodeDescription,
       episodeDuration: result.mediaFileDuration || result.episodeDuration || null,
       episodeFunding: parseProp(result, 'episodeFunding', []),
+      episodeGuid: result.episodeGuid,
       episodeId: result.episodeId,
       episodeImageUrl: result.episodeImageUrl,
       episodeMediaType: result.episodeMediaType,
@@ -112,6 +114,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('episode.description', 'episodeDescription')
     .addSelect('episode.duration', 'episodeDuration')
     .addSelect('episode.funding', 'episodeFunding')
+    .addSelect('episode.guid', 'episodeGuid')
     .addSelect('episode.imageUrl', 'episodeImageUrl')
     .addSelect('episode.mediaType', 'episodeMediaType')
     .addSelect('episode.mediaUrl', 'episodeMediaUrl')
@@ -135,6 +138,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipEpisode.description', 'clipEpisodeDescription')
     .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
     .addSelect('clipEpisode.funding', 'clipEpisodeFunding')
+    .addSelect('clipEpisode.guid', 'clipEpisodeGuid')
     .addSelect('clipEpisode.imageUrl', 'clipEpisodeImageUrl')
     .addSelect('clipEpisode.mediaType', 'clipEpisodeMediaType')
     .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
