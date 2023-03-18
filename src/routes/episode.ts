@@ -87,30 +87,46 @@ const transcriptHandler = async (ctx) => {
       throw new Error('No transcripts found for episode.')
     }
 
-    let matchingTranscript: Transcript | undefined
+    const matchValidTranscripts = (type: string) =>
+      type === 'text/html' ||
+      type === 'application/json' ||
+      type === 'application/srt' ||
+      type === 'text/srt' ||
+      type === 'text/vtt' ||
+      type === 'application/x-subrip'
+
+    const getPriorityTranscript = (matchingTranscripts: Transcript[]) => {
+      let priorityTranscript: Transcript | undefined = matchingTranscripts.find(
+        (item) => item.type === 'application/json'
+      )
+      if (!priorityTranscript) priorityTranscript = matchingTranscripts.find((item) => item.type === 'application/srt')
+      if (!priorityTranscript)
+        priorityTranscript = matchingTranscripts.find((item) => item.type === 'application/x-subrip')
+      if (!priorityTranscript) priorityTranscript = matchingTranscripts.find((item) => item.type === 'text/srt')
+      if (!priorityTranscript) priorityTranscript = matchingTranscripts.find((item) => item.type === 'text/vtt')
+      if (!priorityTranscript) priorityTranscript = matchingTranscripts.find((item) => item.type === 'text/html')
+      if (!priorityTranscript) priorityTranscript = matchingTranscripts[0]
+      return priorityTranscript
+    }
+
+    let matchingTranscripts: Transcript[] = []
     if (ctx.params.language) {
-      matchingTranscript = episode.transcript.find(
-        (item: Transcript) => item.language && item.language === ctx.params.language
+      matchingTranscripts = episode.transcript.filter(
+        (item: Transcript) => item.language && item.language === ctx.params.language && matchValidTranscripts(item.type)
+      )
+    } else {
+      matchingTranscripts = episode.transcript.filter(
+        (item: Transcript) => item.type && matchValidTranscripts(item.type)
       )
     }
 
-    if (!matchingTranscript) {
-      matchingTranscript = episode.transcript.find(
-        (item: Transcript) =>
-          item.type &&
-          (item.type === 'text/html' ||
-            item.type === 'application/json' ||
-            item.type === 'application/srt' ||
-            item.type === 'text/srt' ||
-            item.type === 'text/vtt' ||
-            item.type === 'application/x-subrip')
-      )
-      if (!matchingTranscript) {
-        matchingTranscript = episode.transcript[0]
-      }
+    if (!matchingTranscripts || matchingTranscripts?.length === 0) {
+      matchingTranscripts = episode.transcript
     }
 
-    const finalUrl = matchingTranscript?.url
+    const priorityTranscript = getPriorityTranscript(matchingTranscripts)
+
+    const finalUrl = priorityTranscript?.url
 
     if (!finalUrl) {
       throw new Error('No transcript url found for episode.')
@@ -119,9 +135,9 @@ const transcriptHandler = async (ctx) => {
     const body = await request(finalUrl)
 
     ctx.body = {
-      url: matchingTranscript.url,
-      type: matchingTranscript.type,
-      rel: matchingTranscript.rel,
+      url: priorityTranscript.url,
+      type: priorityTranscript.type,
+      rel: priorityTranscript.rel,
       data: body
     }
   } catch (error) {
