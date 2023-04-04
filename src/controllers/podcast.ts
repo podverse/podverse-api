@@ -106,7 +106,7 @@ const getPodcastsFromSearchEngine = async (query) => {
     `
       SELECT *
       FROM idx_podcast
-      WHERE match(?)
+      WHERE match(?~3)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ?,?;
   `,
