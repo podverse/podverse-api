@@ -113,7 +113,7 @@ const getMediaRefsFromSearchEngine = async (query) => {
     `
       SELECT *
       FROM idx_media_ref
-      WHERE match(?)
+      WHERE match(?~3)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ?,?
       OPTION ranker=expr('sum(lcs*user_weight)');
