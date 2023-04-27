@@ -33,15 +33,26 @@ const axiosRequest = async (url) => {
   })
 }
 
-export const getValueTagEnabledPodcastIdsFromPI = async () => {
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/bytag?podcast-value`
+const getValueTagEnabledPodcastIdsFromPIRecursively = async (accumulatedPodcastIndexIds: number[], startAt = 1) => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/bytag?podcast-value=true&max=5000&start_at=${startAt}`
   const response = await axiosRequest(url)
   const { data } = response
 
-  const podcastIndexIds: string[] = []
   for (const feed of data.feeds) {
-    podcastIndexIds.push(feed.id)
+    accumulatedPodcastIndexIds.push(feed.id)
   }
+
+  if (data.nextStartAt) {
+    return await getValueTagEnabledPodcastIdsFromPIRecursively(accumulatedPodcastIndexIds, data.nextStartAt)
+  }
+
+  return accumulatedPodcastIndexIds
+}
+
+export const getValueTagEnabledPodcastIdsFromPI = async () => {
+  const accumulatedPodcastIndexIds = []
+  const nextStartAt = 1
+  const podcastIndexIds = await getValueTagEnabledPodcastIdsFromPIRecursively(accumulatedPodcastIndexIds, nextStartAt)
 
   return podcastIndexIds
 }
