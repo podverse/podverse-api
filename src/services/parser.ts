@@ -82,21 +82,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       return
     }
 
-    // NOTE: cacheBust should be renamed to "shouldRetry" because we are actually
-    // adding cacheBust as a URL parameter in all cases. The only reason we need the
-    // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
-
-    // const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
-    const urlToParse = addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`)
-    console.log('*** urlToParse', urlToParse)
-
     let xml
     let parsedFeed
     let retryCount = 1
     const retryMax = 5 // retry up to 5 times
     const retryTime = 60000 // retry every 1 minute
 
-    const podcastFetchAndParse = async () => {
+    const podcastFetchAndParse = async (cacheBust = true) => {
+      // adding cacheBust by default as a URL parameter in all cases. The main reason we need the
+      // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
+      // Sometimes adding any URL param leads to 404s however (especially for self-hosted RSS feeds),
+      // so after the first request fails, we retry one time without the cacheBust URL param.
+
+      const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
       logPerformance(`podcastFetchAndParse attempt ${retryCount}`, _logStart)
       return nodeFetch(urlToParse, {
         headers: { 'User-Agent': userAgent },
@@ -116,24 +114,20 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         })
         .catch(async (error) => {
           console.log('nodeFetch error:', error)
-
-          // Only retrying when cacheBust is true to handle the special case of Podping livestream updates.
-          // When cacheBust is false, it means we are parsing based on updates from Podcast Index API,
-          // and we already will attempt to reparse PI API feeds every 15 minutes with the redundancy
-          // in our current PI API syncing setup.
-          if (cacheBust && retryCount < retryMax) {
+          let hasTriedWithoutCacheBust = false
+          if (retryCount < retryMax) {
             clearTimeout(abortTimeout)
             await delay(retryTime)
             retryCount++
+            const retryCacheBust = hasTriedWithoutCacheBust ? cacheBust : false
+            hasTriedWithoutCacheBust = true
             abortTimeout = setTimeout(() => {
-              console.log('abortController abortTimeout 2', feedUrl, cacheBust, retryCount, retryMax)
+              console.log('abortController abortTimeout 2', feedUrl, retryCacheBust, retryCount, retryMax)
               abortController.abort()
-            }, 180000) // abort if request takes longer than 3 minutes
-            await podcastFetchAndParse()
-          } else if (cacheBust) {
-            throw new Error('nodeFetch retry attempt exceeded. ' + error)
+            }, 30000) // abort if request takes longer than 30 seconds
+            await podcastFetchAndParse(retryCacheBust)
           } else {
-            throw new Error(error)
+            throw new Error('nodeFetch retry attempt exceeded. ' + error)
           }
         })
     }
