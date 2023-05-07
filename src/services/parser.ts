@@ -88,14 +88,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const retryMax = 5 // retry up to 5 times
     const retryTime = 60000 // retry every 1 minute
 
-    const podcastFetchAndParse = async (cacheBust = true) => {
-      // adding cacheBust by default as a URL parameter in all cases. The main reason we need the
-      // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
-      // Sometimes adding any URL param leads to 404s however (especially for self-hosted RSS feeds),
-      // so after the first request fails, we retry one time without the cacheBust URL param.
+    // adding cacheBust by default as a URL parameter in all cases. The main reason we need the
+    // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
+    // Sometimes adding any URL param leads to 404s however (especially for self-hosted RSS feeds),
+    // so after the first request fails, we retry one time without the cacheBust URL param.
+    let hasTriedWithoutCacheBust = false
 
+    const podcastFetchAndParse = async (cacheBust = true) => {
       const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
-      let hasTriedWithoutCacheBust = false
       logPerformance(`podcastFetchAndParse attempt ${retryCount}`, _logStart)
       return nodeFetch(urlToParse, {
         headers: { 'User-Agent': userAgent },
@@ -119,7 +119,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             clearTimeout(abortTimeout)
             await delay(retryTime)
             retryCount++
-            const retryCacheBust = hasTriedWithoutCacheBust ? cacheBust : false
+            const retryCacheBust = hasTriedWithoutCacheBust
             hasTriedWithoutCacheBust = true
             abortTimeout = setTimeout(() => {
               console.log('abortController abortTimeout 2', feedUrl, retryCacheBust, retryCount, retryMax)
@@ -132,7 +132,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         })
     }
 
-    await podcastFetchAndParse()
+    const cacheBust = true
+    await podcastFetchAndParse(cacheBust)
 
     clearTimeout(abortTimeout)
 
