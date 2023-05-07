@@ -95,6 +95,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       // so after the first request fails, we retry one time without the cacheBust URL param.
 
       const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
+      let hasTriedWithoutCacheBust = false
       logPerformance(`podcastFetchAndParse attempt ${retryCount}`, _logStart)
       return nodeFetch(urlToParse, {
         headers: { 'User-Agent': userAgent },
@@ -114,7 +115,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         })
         .catch(async (error) => {
           console.log('nodeFetch error:', error)
-          let hasTriedWithoutCacheBust = false
           if (retryCount < retryMax) {
             clearTimeout(abortTimeout)
             await delay(retryTime)
