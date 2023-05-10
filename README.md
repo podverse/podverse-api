@@ -118,6 +118,17 @@ npm run dev:scripts:parseFeedUrlsFromQueue <restartTimeOut> <queueType>
 # restartTimeOut in milliseconds; queueType is optional and only acceptable value is "priority"
 ```
 
+We also have a self-managed parsing queue, where we manually mark podcasts to be added to a separate queue for parsing at a regular cadence. The property is `Podcast.parsingPriority` and the `parsingPriority` is a value between 0-5. 0 is the default, and means the podcast should not be added to the self-managed queue. 1 is the most frequent, and 5 is the least frequent parsing.
+
+At the time of writing this, 3 is the value we are using the most, which adds the feeds to the queue every 30 minutes.
+
+The `offset` value is optional, and probably not needed.
+
+```bash
+npm run dev:scripts:addFeedsToQueueByPriority <parsingPriority> <offset>
+```
+
+
 ### Request Google Analytics pageview data and save to database
 
 Below are sample commands for requesting unique pageview data from Google

@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.12.11",
+  "version": "4.12.12",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -20,6 +20,7 @@
     "dev:scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
     "dev:scripts:addAndParseFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
     "dev:scripts:addFeedsByPodcastIndexIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addFeedsByPodcastIndexIdToQueue.ts",
+    "dev:scripts:addFeedsToQueueByPriority": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedsToQueueByPriority.ts",
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "dev:scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "dev:scripts:addNewFeedsFromPodcastIndex": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",
@@ -51,6 +52,7 @@
     "scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
     "scripts:addAndParseFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
     "scripts:addFeedsByPodcastIndexIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addFeedsByPodcastIndexIdToQueue.ts",
+    "scripts:addFeedsToQueueByPriority": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedsToQueueByPriority.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
     "scripts:addNewFeedsFromPodcastIndex": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addNewFeedsFromPodcastIndex.ts",

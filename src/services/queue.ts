@@ -65,6 +65,45 @@ export const addAllPublicFeedUrlsToQueue = async (offset: number) => {
   }
 }
 
+export const addFeedsToQueueByPriority = async (parsingPriority: number, offset = 0) => {
+  await connectToDb()
+
+  try {
+    const feedUrlRepo = getRepository(FeedUrl)
+
+    const recursivelySendFeedUrls = async (i: number) => {
+      console.log('parsing:', i * 1000)
+
+      const feedUrls = await feedUrlRepo
+        .createQueryBuilder('feedUrl')
+        .select('feedUrl.id')
+        .addSelect('feedUrl.url')
+        .innerJoinAndSelect(
+          'feedUrl.podcast',
+          'podcast',
+          'podcast.isPublic = :isPublic AND podcast."parsingPriority" >= :parsingPriority',
+          { isPublic: true, parsingPriority }
+        )
+        .where('feedUrl.isAuthority = true AND feedUrl.podcast IS NOT NULL')
+        .offset(i * 1000)
+        .limit(1000)
+        .getMany()
+
+      const forceReparsing = true
+      const cacheBust = false
+      await sendFeedUrlsToQueue(feedUrls, queueUrls.selfManagedFeedsToParse.queueUrl, forceReparsing, cacheBust)
+
+      if (feedUrls.length === 1000) {
+        recursivelySendFeedUrls(i + 1)
+      }
+    }
+
+    await recursivelySendFeedUrls(offset)
+  } catch (error) {
+    console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
+  }
+}
+
 export const addAllUntitledPodcastFeedUrlsToQueue = async () => {
   await connectToDb()
 
