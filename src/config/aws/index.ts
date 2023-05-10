@@ -5,6 +5,10 @@ export default {
       priorityQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_PRIORITY_URL,
       queueUrl: process.env.AWS_QUEUE_FEED_PARSER_URL,
       errorsQueueUrl: process.env.AWS_QUEUE_FEED_PARSER_ERRORS_URL
+    },
+    selfManagedFeedsToParse: {
+      queueUrl: process.env.AWS_QUEUE_SELF_MANAGED_FEED_PARSER_URL,
+      errorsQueueUrl: process.env.AWS_QUEUE_SELF_MANAGED_FEED_PARSER_ERRORS_URL
     }
   },
   region: process.env.AWS_REGION,

@@ -20,6 +20,8 @@ const { awsConfig } = config
         queueUrl = awsConfig.queueUrls.feedsToParse.priorityQueueUrl
       } else if (queueOverride === 'live') {
         queueUrl = awsConfig.queueUrls.feedsToParse.liveQueueUrl
+      } else if (queueOverride === 'selfManaged') {
+        queueUrl = awsConfig.queueUrls.selfManagedFeedsToParse.queueUrl
       }
 
       console.log('should connect')
