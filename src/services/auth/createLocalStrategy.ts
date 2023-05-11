@@ -30,7 +30,7 @@ export const createLocalStrategy = () =>
         .leftJoin('user.notifications', 'notifications')
         .leftJoin('notifications.podcast', 'podcast')
         .leftJoinAndSelect('user.playlists', 'playlists')
-        .where('user.email = :email', { email })
+        .where('user.email ILIKE :email', { email })
 
       const user = await qb.getOne()
 
