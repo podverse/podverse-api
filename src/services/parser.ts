@@ -86,8 +86,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     // adding cacheBust as a URL parameter in all cases. The only reason we need the
     // parseFeedUrl cacheBust parameter is to use in the retry handler for liveItems.
 
-    // const urlToParse = cacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
-    const urlToParse = addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`)
+    const excludeCacheBust = feedUrl?.podcast?.excludeCacheBust
+    const urlToParse = !excludeCacheBust ? addParameterToURL(feedUrl.url, `cacheBust=${Date.now()}`) : feedUrl.url
     console.log('*** urlToParse', urlToParse)
 
     let xml

@@ -128,6 +128,11 @@ The `offset` value is optional, and probably not needed.
 npm run dev:scripts:addFeedsToQueueByPriority <parsingPriority> <offset>
 ```
 
+Then to parse from the self-managed queue call:
+
+```bash
+npm run dev:scripts:parseFeedUrlsFromQueue 
+```
 
 ### Request Google Analytics pageview data and save to database
 

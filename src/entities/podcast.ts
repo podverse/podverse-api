@@ -81,6 +81,9 @@ export class Podcast {
   embedApprovedMediaUrlPaths?: string
 
   @Column({ default: false })
+  excludeCacheBust?: boolean
+
+  @Column({ default: false })
   feedLastParseFailed?: boolean
 
   @Index()
@@ -150,6 +153,9 @@ export class Podcast {
     default: 'podcast'
   })
   medium: PodcastMedium
+
+  @Column({ default: false })
+  parsingPriority?: boolean
 
   @Index()
   @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
