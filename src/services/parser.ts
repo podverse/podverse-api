@@ -63,6 +63,7 @@ type LiveItemNotification = {
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms))
+const abortTimeLimit = 60000 // abort if request takes longer than 1 minute
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = false, allowNonPublic?: boolean) => {
@@ -72,7 +73,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
   let abortTimeout = setTimeout(() => {
     console.log('abortController abortTimeout 1', feedUrl)
     abortController.abort()
-  }, 180000) // abort if request takes longer than 3 minutes
+  }, abortTimeLimit)
 
   try {
     /* Temporary: Stop parsing papi.qingting.fm domain until mediaUrl/guid switch is completed */
@@ -93,8 +94,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     let xml
     let parsedFeed
     let retryCount = 1
-    const retryMax = 5 // retry up to 5 times
-    const retryTime = 60000 // retry every 1 minute
+    const retryMax = 3 // retry up to 3 times
+    const retryTime = 30000 // retry every 30 seconds
 
     const podcastFetchAndParse = async () => {
       logPerformance(`podcastFetchAndParse attempt ${retryCount}`, _logStart)
@@ -128,7 +129,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             abortTimeout = setTimeout(() => {
               console.log('abortController abortTimeout 2', feedUrl, cacheBust, retryCount, retryMax)
               abortController.abort()
-            }, 180000) // abort if request takes longer than 3 minutes
+            }, abortTimeLimit) // abort if request takes longer than 1 minute
             await podcastFetchAndParse()
           } else if (cacheBust) {
             throw new Error('nodeFetch retry attempt exceeded. ' + error)
