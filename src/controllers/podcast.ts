@@ -3,7 +3,8 @@ import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
-import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
+// import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
+import { searchApi } from '~/services/manticore'
 import { deleteNotification } from './notification'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
@@ -100,7 +101,7 @@ const getPodcastsFromSearchEngine = async (query) => {
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
   const cleanedSearchTitle = removeAllSpaces(searchTitle)
   if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
-  const titleWithWildcards = manticoreWildcardSpecialCharacters(cleanedSearchTitle)
+  //const titleWithWildcards = manticoreWildcardSpecialCharacters(cleanedSearchTitle)
 
   const safeSqlString = SqlString.format(
     `
@@ -108,9 +109,10 @@ const getPodcastsFromSearchEngine = async (query) => {
       FROM idx_podcast
       WHERE match(?)
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
-      LIMIT ?,?;
+      LIMIT ?,?
+      OPTION ranker='sph04';
   `,
-    [titleWithWildcards, skip, take]
+    [searchTitle, skip, take]
   )
 
   const result = await searchApi.sql(safeSqlString)
