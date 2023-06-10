@@ -331,10 +331,13 @@ const getUserPlaylists = async (query, ownerId) => {
 
 const getUserByEmail = async (email) => {
   const repository = getRepository(User)
-  const user = await repository.findOne({
-    where: { email },
-    select: ['emailVerified', 'id', 'name']
-  })
+
+  const qb = repository
+    .createQueryBuilder('user')
+    .select(['user.id', 'user.emailVerified', 'user.name'])
+    .where('user.email ILIKE :email', { email })
+
+  const user = await qb.getOne()
 
   if (!user) {
     throw new createError.NotFound('User not found.')
