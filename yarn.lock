@@ -3355,9 +3355,9 @@ dotenv@^8.2.0:
   integrity sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==
 
 dottie@^2.0.0:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/dottie/-/dottie-2.0.2.tgz#cc91c0726ce3a054ebf11c55fbc92a7f266dd154"
-  integrity sha512-fmrwR04lsniq/uSr8yikThDTrM7epXHBAAjH9TbeH3rEA8tdCO7mRzB9hdmdGyJCxF8KERo9CITcm3kGuoyMhg==
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/dottie/-/dottie-2.0.4.tgz#9ce42965f45e577a6fa7d988d47852fac70c4e82"
+  integrity sha512-iz64WUOmp/ECQhWMJjTWFzJN/wQ7RJ5v/a6A2OiCwjaGCpNo66WGIjlSf+IULO9DQd0b4cFawLOTbiKSrpKodw==
 
 duplexer3@^0.1.4:
   version "0.1.5"
@@ -8050,10 +8050,10 @@ podcast-partytime@4.5.5:
     ramda "^0.27.1"
     tiny-invariant "^1.2.0"
 
-podverse-shared@^4.6.12:
-  version "4.6.12"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.6.12.tgz#60739413f23b28c67606435098a53cc8783fc262"
-  integrity sha512-rThXBk+LLyYLoyq7P9AA4qhHMSaHYCcokD9NrDgGHCiww9udMnoxValiy2rTvj9BCcL0qnMeDjeYuOuWB7FqjQ==
+podverse-shared@^4.12.0:
+  version "4.12.8"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.12.8.tgz#21e7ff943170c5bbe5c724a2025bdd3a06b409f7"
+  integrity sha512-lmJF/5tpsL15gB922jfmfAvSokypn5Gx+fM4ZJ73wQkVrX3crfLz9fWOAVftDPUIx+FLKdJS4WqZJFYbqMoxGw==
   dependencies:
     he "^1.2.0"
     html-entities "^2.3.2"
