@@ -41,6 +41,7 @@ import {
   getEpisodesWithLiveItemsWithoutMatchingGuids
 } from '~/controllers/episode'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
+import { PhasePendingChat } from 'podcast-partytime/dist/parser/phase/phase-pending'
 const { awsConfig, userAgent } = config
 const { queueUrls /*, s3ImageLimitUpdateDays */ } = awsConfig
 
@@ -49,8 +50,13 @@ interface ExtendedEpisode extends Episode {
 }
 
 interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
-  chat?: string
+  chat?: PhasePendingChat
   image?: string
+}
+
+interface ExtendedChat extends Omit<PhasePendingChat, 'phase'> {
+  phase?: 'pending' | '4'
+  url?: string
 }
 
 type LiveItemNotification = {
@@ -227,11 +233,22 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     }
 
     const liveItemCompatToParsedEpisode = (liveItem: ExtendedPhase4PodcastLiveItem) => {
+      const getChatEmbedUrlValue = (chat?: ExtendedChat) => {
+        if (chat?.phase === 'pending' && chat.embedUrl) {
+          return chat.embedUrl
+        }
+        // deprecated embed value
+        else if (chat?.phase === '4' && chat.url) {
+          return chat.url
+        }
+        return ''
+      }
+
       return {
         alternateEnclosures: liveItem.alternativeEnclosures ?? [],
         author: [liveItem.author],
         // this is chatIRCURL in Podverse schema...probably a bad name since it could be any url :[
-        chat: liveItem.chat || '',
+        chat: getChatEmbedUrlValue(liveItem.chat),
         chapters: null,
         contentLinks: liveItem.contentLinks ?? [],
         description: liveItem.description,
