@@ -8037,10 +8037,10 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-podcast-partytime@4.5.5:
-  version "4.5.5"
-  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.5.5.tgz#9f955191f994a1625c477b8ee9840d6516c76989"
-  integrity sha512-L7PcN2zmx7jaBfj9csgePgo4mD28/ygHpdPqZDeXRJ0PvhEaQgPrqLUnF8w0wFSlJuFbT0LTGRWksv8sVUisHA==
+podcast-partytime@4.6.0-beta.3:
+  version "4.6.0-beta.3"
+  resolved "https://registry.yarnpkg.com/podcast-partytime/-/podcast-partytime-4.6.0-beta.3.tgz#b911804a801d998ca19d80c49922f56e3d745593"
+  integrity sha512-beW5I9EjgIqEozN7n6cb5iv9h3eyhY0hKV9+MRbNq1Ijb4ZL1AR/aXhfsdkKp7vIRE9sKL22HV6GwW1pkz8JEQ==
   dependencies:
     dotenv "^10.0.0"
     fast-xml-parser "^3.18.0"
@@ -8050,10 +8050,10 @@ podcast-partytime@4.5.5:
     ramda "^0.27.1"
     tiny-invariant "^1.2.0"
 
-podverse-shared@^4.6.12:
-  version "4.6.12"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.6.12.tgz#60739413f23b28c67606435098a53cc8783fc262"
-  integrity sha512-rThXBk+LLyYLoyq7P9AA4qhHMSaHYCcokD9NrDgGHCiww9udMnoxValiy2rTvj9BCcL0qnMeDjeYuOuWB7FqjQ==
+podverse-shared@^4.12.0:
+  version "4.12.8"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.12.8.tgz#21e7ff943170c5bbe5c724a2025bdd3a06b409f7"
+  integrity sha512-lmJF/5tpsL15gB922jfmfAvSokypn5Gx+fM4ZJ73wQkVrX3crfLz9fWOAVftDPUIx+FLKdJS4WqZJFYbqMoxGw==
   dependencies:
     he "^1.2.0"
     html-entities "^2.3.2"
