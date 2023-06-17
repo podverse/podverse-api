@@ -19,7 +19,7 @@ import { connectToDb } from '~/lib/db'
           try {
             await addOrUpdatePodcastFromPodcastIndex(connection, podcastIndexId)
           } catch (error) {
-            console.log('error')
+            console.log('error', error)
           }
         }
       } else {
