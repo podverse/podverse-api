@@ -357,7 +357,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     podcast.feedLastUpdated = isValidDate(feedLastUpdated) ? feedLastUpdated : new Date()
 
     podcast.funding = meta.funding
+
+    // guid is deprecated
     podcast.guid = meta.guid
+    // podcastGuid is the column we want to use going forward
+    podcast.podcastGuid = meta.guid
 
     const hasNewImageUrl = meta.imageURL && podcast.imageUrl !== meta.imageURL
     podcast.imageUrl = meta.imageURL
