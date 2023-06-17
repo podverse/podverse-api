@@ -64,6 +64,15 @@ export class Podcast {
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
+  // This replaces the podcast.guid column, with a unique constraint.
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  podcastGuid?: string
+
+  // deprecated: use podcastGuid instead
+  @Column({ nullable: true })
+  guid?: string
+
   @Index()
   @Column({ nullable: true, unique: true })
   authorityId?: string
@@ -92,9 +101,6 @@ export class Podcast {
 
   @Column('simple-json', { nullable: true })
   funding: Funding[]
-
-  @Column({ nullable: true })
-  guid?: string
 
   @Column({ default: false })
   hasLiveItem: boolean
