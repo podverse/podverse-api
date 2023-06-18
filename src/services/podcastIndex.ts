@@ -193,13 +193,13 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
   return pvValueTagArray
 }
 
-export const getEpisodesFromPodcastIndexById = async (id: string) => {
-  const url = `${podcastIndexConfig.baseUrl}/episodes/byfeedid?id=${id}&max=1000`
+export const getEpisodesFromPodcastIndexById = async (podcastIndexId: string) => {
+  const url = `${podcastIndexConfig.baseUrl}/episodes/byfeedid?id=${podcastIndexId}&max=1000`
   const response = await axiosRequest(url)
   return response && response.data
 }
 
-export const getAllEpisodesFromPodcastIndexById = async (id: string) => {
+export const getAllEpisodesFromPodcastIndexById = async (podcastIndexId: string) => {
   // TODO: AFAIK Podcast Index does not support recursively paginating beyond 1000 results
   // https://podcastindex-org.github.io/docs-api/#get-/episodes/byfeedid
   // const allEpisodes = []
@@ -221,14 +221,14 @@ export const getAllEpisodesFromPodcastIndexById = async (id: string) => {
 
   // await getEpisodesRecursively(id)
 
-  const response = await getEpisodesFromPodcastIndexById(id)
+  const response = await getEpisodesFromPodcastIndexById(podcastIndexId)
   const allEpisodes = response?.items
 
   return allEpisodes
 }
 
-export const getAllEpisodeValueTagsFromPodcastIndexById = async (id: string) => {
-  const episodes = await getAllEpisodesFromPodcastIndexById(id)
+export const getAllEpisodeValueTagsFromPodcastIndexById = async (podcastIndexId: string) => {
+  const episodes = await getAllEpisodesFromPodcastIndexById(podcastIndexId)
   const pvEpisodesValueTagsByGuid = {}
   for (const episode of episodes) {
     if (episode?.value && episode?.guid) {
@@ -241,11 +241,11 @@ export const getAllEpisodeValueTagsFromPodcastIndexById = async (id: string) => 
   return pvEpisodesValueTagsByGuid
 }
 
-export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string) => {
-  const podcastIndexPodcast = await getPodcastFromPodcastIndexById(id)
+export const addOrUpdatePodcastFromPodcastIndex = async (client: any, podcastIndexId: string) => {
+  const podcastIndexPodcast = await getPodcastFromPodcastIndexById(podcastIndexId)
   const allowNonPublic = true
   await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
-  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(id, allowNonPublic)
+  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexId, allowNonPublic)
 
   try {
     const forceReparsing = true
@@ -256,10 +256,10 @@ export const addOrUpdatePodcastFromPodcastIndex = async (client: any, id: string
   }
 }
 
-export const addFeedsByPodcastIndexIdToQueue = async (client: any, ids: string[]) => {
-  for (const id of ids) {
+export const addFeedsByPodcastIndexIdToQueue = async (client: any, podcastIndexIds: string[]) => {
+  for (const podcastIndexId of podcastIndexIds) {
     try {
-      const podcastIndexItem = await getPodcastFromPodcastIndexById(id)
+      const podcastIndexItem = await getPodcastFromPodcastIndexById(podcastIndexId)
       if (podcastIndexItem?.feed) {
         await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexItem.feed)
       }
@@ -268,7 +268,7 @@ export const addFeedsByPodcastIndexIdToQueue = async (client: any, ids: string[]
     }
   }
 
-  await addFeedUrlsByPodcastIndexId(ids)
+  await addFeedUrlsByPodcastIndexId(podcastIndexIds)
 }
 
 const getNewFeeds = async () => {
