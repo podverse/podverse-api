@@ -18,6 +18,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
+import { Phase6ValueTimeSplit } from 'podcast-partytime/dist/parser/phase/phase-6'
 
 type Funding = {
   url: string
@@ -29,6 +30,7 @@ export type Value = {
   suggested?: string
   type: string
   recipients: ValueRecipient[]
+  valueTimeSplits?: Phase6ValueTimeSplit[]
 }
 
 type ValueRecipient = {
@@ -64,6 +66,15 @@ export class Podcast {
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
+  // This replaces the podcast.guid column
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  podcastGuid?: string
+
+  // deprecated: use podcastGuid instead
+  @Column({ nullable: true })
+  guid?: string
+
   @Index()
   @Column({ nullable: true, unique: true })
   authorityId?: string
@@ -92,9 +103,6 @@ export class Podcast {
 
   @Column('simple-json', { nullable: true })
   funding: Funding[]
-
-  @Column({ nullable: true })
-  guid?: string
 
   @Column({ default: false })
   hasLiveItem: boolean

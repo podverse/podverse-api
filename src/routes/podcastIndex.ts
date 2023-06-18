@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { getPodcastFromPodcastIndexById } from '~/services/podcastIndex'
+import { getPodcastFromPodcastIndexById, getValueTagForItemFromPodcastIndexByGuids } from '~/services/podcastIndex'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -18,6 +18,16 @@ const podcastByIdLimiter = RateLimit.middleware({
 router.get('/podcast/by-id/:id', podcastByIdLimiter, async (ctx) => {
   try {
     const data = await getPodcastFromPodcastIndexById(ctx.params.id)
+    ctx.body = data
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Get value tags from Podcast Index by feed and item guids.
+router.get('/value/podcast-guid/:podcastGuid/episode-guid/:episodeGuid', async (ctx) => {
+  try {
+    const data = await getValueTagForItemFromPodcastIndexByGuids(ctx.params.podcastGuid, ctx.params.episodeGuid)
     ctx.body = data
   } catch (error) {
     emitRouterError(error, ctx)
