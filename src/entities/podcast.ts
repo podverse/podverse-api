@@ -66,7 +66,7 @@ export class Podcast {
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
-  // This replaces the podcast.guid column, with a unique constraint.
+  // This replaces the podcast.guid column
   @Index()
   @Column({ type: 'uuid', nullable: true })
   podcastGuid?: string
