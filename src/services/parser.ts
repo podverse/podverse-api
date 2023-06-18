@@ -175,7 +175,8 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
             customKey: r.customKey,
             customValue: r.customValue
           }
-        })
+        }),
+        valueTimeSplits: val.valueTimeSplits
       }
     }
 
