@@ -1,3 +1,5 @@
+import { Phase6ValueTimeSplit } from 'podcast-partytime/dist/parser/phase/phase-6'
+
 export const convertToChaptersFile = (mediaRefs) => {
   const chapters = [] as any
 
@@ -37,6 +39,7 @@ type PIValueDestination = {
 type PIValueTag = {
   model: PIValueModel
   destinations: PIValueDestination[]
+  valueTimeSplits: Phase6ValueTimeSplit[]
 }
 
 export const convertPIValueTagToPVValueTagArray = (piValueTag: PIValueTag) => {
@@ -55,7 +58,8 @@ export const convertPIValueTagToPVValueTagArray = (piValueTag: PIValueTag) => {
           split: destination.split || 0,
           type: destination.type || ''
         }
-      })
+      }),
+      valueTimeSplits: piValueTag.valueTimeSplits
     }
   ] as any[]
 }
