@@ -18,6 +18,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
+import { Phase6ValueTimeSplit } from 'podcast-partytime/dist/parser/phase/phase-6'
 
 type Funding = {
   url: string
@@ -29,6 +30,7 @@ export type Value = {
   suggested?: string
   type: string
   recipients: ValueRecipient[]
+  valueTimeSplits?: Phase6ValueTimeSplit[]
 }
 
 type ValueRecipient = {
