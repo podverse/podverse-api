@@ -14,6 +14,7 @@ const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
 const csv = require('csvtojson')
+const createError = require('http-errors')
 const { podcastIndexConfig, userAgent } = config
 
 const axiosRequest = async (url) => {
@@ -194,14 +195,44 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
   return pvValueTagArray
 }
 
+export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: string) => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/byguid?guid=${podcastGuid}`
+  let podcastValueTag: ValueTag[] | null = null
+
+  try {
+    const response = await axiosRequest(url)
+    const data = response.data
+    if (data?.feed?.value) {
+      podcastValueTag = convertPIValueTagToPVValueTagArray(data.feed.value)
+    }
+  } catch (error) {
+    // assume a 404
+  }
+
+  if (!podcastValueTag || podcastValueTag?.length === 0) {
+    throw new createError.NotFound('Value tags not found')
+  }
+
+  return podcastValueTag
+}
+
 export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: string, episodeGuid: string) => {
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?podcastguid=${podcastGuid}&guid=${episodeGuid}`
-  const response = await axiosRequest(url)
-  const data = response.data
-
   let episodeValueTag: ValueTag[] | null = null
-  if (data?.episode?.value) {
-    episodeValueTag = convertPIValueTagToPVValueTagArray(data.episode.value)
+
+  try {
+    const response = await axiosRequest(url)
+    const data = response.data
+
+    if (data?.episode?.value) {
+      episodeValueTag = convertPIValueTagToPVValueTagArray(data.episode.value)
+    }
+  } catch (error) {
+    // assume a 404
+  }
+
+  if (!episodeValueTag || episodeValueTag?.length === 0) {
+    throw new createError.NotFound('Value tags not found')
   }
 
   return episodeValueTag

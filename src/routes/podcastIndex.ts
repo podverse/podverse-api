@@ -1,7 +1,11 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { getPodcastFromPodcastIndexById, getValueTagForItemFromPodcastIndexByGuids } from '~/services/podcastIndex'
+import {
+  getPodcastFromPodcastIndexById,
+  getValueTagForChannelFromPodcastIndexByGuids,
+  getValueTagForItemFromPodcastIndexByGuids
+} from '~/services/podcastIndex'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 
@@ -25,12 +29,25 @@ router.get('/podcast/by-id/:id', podcastByIdLimiter, async (ctx) => {
 })
 
 // Get value tags from Podcast Index by feed and item guids.
-router.get('/value/podcast-guid/:podcastGuid/episode-guid/:episodeGuid', async (ctx) => {
-  try {
-    const data = await getValueTagForItemFromPodcastIndexByGuids(ctx.params.podcastGuid, ctx.params.episodeGuid)
-    ctx.body = data
-  } catch (error) {
-    emitRouterError(error, ctx)
+router.get('/value/by-guids', async (ctx) => {
+  const podcastGuid = ctx.query.podcastGuid as string
+  const episodeGuid = ctx.query.episodeGuid as string
+
+  if (podcastGuid && episodeGuid) {
+    try {
+      const data = await getValueTagForItemFromPodcastIndexByGuids(podcastGuid, episodeGuid)
+      ctx.body = data
+    } catch (error) {
+      console.log('error', error)
+      emitRouterError(error, ctx)
+    }
+  } else if (podcastGuid) {
+    try {
+      const data = await getValueTagForChannelFromPodcastIndexByGuids(ctx.params.podcastGuid)
+      ctx.body = data
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   }
 })
 
