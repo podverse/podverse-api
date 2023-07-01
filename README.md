@@ -2,6 +2,19 @@
 
 Data API, database migration scripts, and backend services for the Podverse ecosystem
 
+- [Getting started](#getting-started)
+  * [NPM or Yarn](#npm-or-yarn)
+  * [Setup environment variables](#setup-environment-variables)
+  * [Install node_modules](#install-node-modules)
+  * [Start dev server](#start-dev-server)
+  * [Populate database](#populate-database)
+  * [Add podcast categories to the database](#add-podcast-categories-to-the-database)
+  * [Sync podcast data with Podcast Index API](#sync-podcast-data-with-podcast-index-api)
+  * [Matomo page tracking and analytics](#matomo-page-tracking-and-analytics)
+  * [More info](#more-info)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>generated with markdown-toc</a></i></small>
+
 ## Getting started
 
 If you are looking to run this app or contribute to Podverse for the first time, please read the sections that are relevant for you in our [CONTRIBUTE.md](https://github.com/podverse/podverse-ops/blob/master/CONTRIBUTING.md) file in the podverse-ops repo. Among other things, that file contains instructions for running a local instance of the Podverse database.
