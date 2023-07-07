@@ -2966,10 +2966,10 @@ crypto-browserify@^3.11.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
-crypto-js@~3.1.9-1:
-  version "3.1.9-1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
-  integrity sha512-W93aKztssqf29OvUlqfikzGyYbD1rpkXvGP9IQ1JchLY3bxaLXZSWYbwrtib2vk8DobrDzX7PIXcDWHp0B6Ymw==
+crypto-js@~3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.2.1.tgz#9408ed6695905ae97e05e8a6ca11937819b216a7"
+  integrity sha512-fIEXOyiXnmPbPk2+q8t97VYDSo8naqvI+2v0AJeLraQzhuL/GZ2qgcRpEadVQ7r8pXwBOHVjwOdyAXYYb3DWiQ==
 
 crypto-random-string@^1.0.0:
   version "1.0.0"
@@ -3355,9 +3355,9 @@ dotenv@^8.2.0:
   integrity sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==
 
 dottie@^2.0.0:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/dottie/-/dottie-2.0.2.tgz#cc91c0726ce3a054ebf11c55fbc92a7f266dd154"
-  integrity sha512-fmrwR04lsniq/uSr8yikThDTrM7epXHBAAjH9TbeH3rEA8tdCO7mRzB9hdmdGyJCxF8KERo9CITcm3kGuoyMhg==
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/dottie/-/dottie-2.0.6.tgz#34564ebfc6ec5e5772272d466424ad5b696484d4"
+  integrity sha512-iGCHkfUc5kFekGiqhe8B/mdaurD+lakO9txNnTvKtA6PISrw86LgqHvRzWYPyoE2Ph5aMIrCw9/uko6XHTKCwA==
 
 duplexer3@^0.1.4:
   version "0.1.5"

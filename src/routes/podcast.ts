@@ -4,6 +4,8 @@ import {
   findPodcastsByFeedUrls,
   getMetadata,
   getPodcast,
+  getPodcastByFeedUrl,
+  getPodcastByPodcastGuid,
   getPodcastByPodcastIndexId,
   getPodcasts,
   getPodcastsFromSearchEngine,
@@ -105,6 +107,42 @@ router.get('/podcastindex/data/:id', parseNSFWHeader, async (ctx) => {
 router.get('/podcastindex/:id', parseNSFWHeader, async (ctx) => {
   try {
     const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
+
+    if (podcast.id) {
+      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+    } else {
+      ctx.status = 404
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Redirect to Podcast web page by <podcast:guid>
+router.get('/by-podcast-guid/:podcastGuid', parseNSFWHeader, async (ctx) => {
+  try {
+    const podcast = await getPodcastByPodcastGuid(ctx.params.podcastGuid)
+
+    if (podcast.id) {
+      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+    } else {
+      ctx.status = 404
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Redirect to Podcast web page by feedUrl
+router.get('/by-feed-url', parseNSFWHeader, async (ctx) => {
+  try {
+    const feedUrl = ctx.query.feedUrl ? (ctx.query.feedUrl as string) : ''
+    if (!feedUrl) {
+      ctx.status = 404
+      return
+    }
+
+    const podcast = await getPodcastByFeedUrl(feedUrl)
 
     if (podcast.id) {
       ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
