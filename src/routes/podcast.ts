@@ -137,12 +137,13 @@ router.get('/by-podcast-guid/:podcastGuid', parseNSFWHeader, async (ctx) => {
 router.get('/by-feed-url', parseNSFWHeader, async (ctx) => {
   try {
     const feedUrl = ctx.query.feedUrl ? (ctx.query.feedUrl as string) : ''
-    if (!feedUrl) {
+    const decodedFeedUrl = decodeURIComponent(feedUrl)
+    if (!decodedFeedUrl) {
       ctx.status = 404
       return
     }
 
-    const podcast = await getPodcastByFeedUrl(feedUrl)
+    const podcast = await getPodcastByFeedUrl(decodedFeedUrl)
 
     if (podcast.id) {
       ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
