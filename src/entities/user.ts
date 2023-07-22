@@ -23,6 +23,7 @@ import {
   Notification,
   PayPalOrder,
   Playlist,
+  UPDevice,
   UserHistoryItem,
   UserQueueItem
 } from '~/entities'
@@ -183,6 +184,9 @@ export class User {
 
   @OneToMany((type) => Playlist, (playlist) => playlist.owner)
   playlists: Playlist[]
+
+  @OneToMany((type) => UPDevice, (upDevice) => upDevice.user)
+  upDevices: UPDevice[]
 
   @OneToMany((type) => UserHistoryItem, (userHistoryItem) => userHistoryItem.owner)
   userHistoryItems: UserHistoryItem[]
