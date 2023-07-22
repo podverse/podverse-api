@@ -1186,7 +1186,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "key=AAAAyEpy3n8:APA91bG0snSeK1qYvDnYSzMjOxRngfyg-wLgV4uVbLcv98CVr_HItq08_gX8vy3qtYHa2hTFPtA9VYMnFE6rJXaPCM_VhepF-Jr5anASMB-Fs3R-wgo5wj5tfi5Kf3zj_t8jx643qwNc",
+						"value": "key=some-private-key-here",
 						"type": "text"
 					},
 					{
