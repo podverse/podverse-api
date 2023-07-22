@@ -1186,7 +1186,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "key=some-private-key-here",
+						"value": "key={{FCM_GOOGLE_API_AUTH_TOKEN}}",
 						"type": "text"
 					},
 					{
@@ -1197,7 +1197,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"to\" : \"f6GFBdYrFEo_gewUShy0ID:APA91bHjU57aCoHrm3pzKu8XsJnppmvwXIe0H4OHLpRpI_qYyFMUITsDZ1mmNROsaxxhojXT8818gDVUdMkd-w89P9_Yu9RVoJzOetzdhtMQCVCFWakVmM7OPTBbvr_f_Pv_W3i4XouY\",\n    \"notification\": {\n      \"body\": \"Podverse - Livestream Test\",\n      \"title\": \"LIVE: Podverse - Test Feed - Livestream Solo\",\n      \"podcastId\": \"x6tZlp8gL5Y\",\n      \"episodeId\": \"M_tYcPb7b\",\n      \"podcastTitle\": \"Podverse - Test Feed - Livestream Solo\",\n      \"episodeTitle\": \"Podverse - Livestream Test\",\n      \"notificationType\": \"live\",\n      \"timeSent\": \"2022-12-12T03:06:42.615Z\",\n      \"image\": \"https://images.podverse.fm/podcast-images/x6tZlp8gL5Y/podversetestfeedlivestreamsolo-14.jpg\"\n    },\n    \"data\": {\n      \"body\": \"Podverse - Livestream Test\",\n      \"title\": \"LIVE: Podverse - Test Feed - Livestream Solo\",\n      \"podcastId\": \"x6tZlp8gL5Y\",\n      \"episodeId\": \"M_tYcPb7b\",\n      \"podcastTitle\": \"Podverse - Test Feed - Livestream Solo\",\n      \"episodeTitle\": \"Podverse - Livestream Test\",\n      \"notificationType\": \"new-episode\",\n      \"timeSent\": \"2022-12-12T03:06:42.615Z\"\n    }\n}"
+					"raw": "{\n    \"to\" : \"\",\n    \"notification\": {\n      \"body\": \"Podverse - Livestream Test\",\n      \"title\": \"LIVE: Podverse - Test Feed - Livestream Solo\",\n      \"podcastId\": \"x6tZlp8gL5Y\",\n      \"episodeId\": \"M_tYcPb7b\",\n      \"podcastTitle\": \"Podverse - Test Feed - Livestream Solo\",\n      \"episodeTitle\": \"Podverse - Livestream Test\",\n      \"notificationType\": \"live\",\n      \"timeSent\": \"2022-12-12T03:06:42.615Z\",\n      \"image\": \"https://images.podverse.fm/podcast-images/x6tZlp8gL5Y/podversetestfeedlivestreamsolo-14.jpg\"\n    },\n    \"data\": {\n      \"body\": \"Podverse - Livestream Test\",\n      \"title\": \"LIVE: Podverse - Test Feed - Livestream Solo\",\n      \"podcastId\": \"x6tZlp8gL5Y\",\n      \"episodeId\": \"M_tYcPb7b\",\n      \"podcastTitle\": \"Podverse - Test Feed - Livestream Solo\",\n      \"episodeTitle\": \"Podverse - Livestream Test\",\n      \"notificationType\": \"new-episode\",\n      \"timeSent\": \"2022-12-12T03:06:42.615Z\"\n    }\n}"
 				},
 				"url": {
 					"raw": "https://fcm.googleapis.com/fcm/send",
