@@ -28,8 +28,8 @@ import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 import {
-  sendLiveItemLiveDetectedNotification,
-  sendNewEpisodeDetectedNotification
+  sendFcmLiveItemLiveDetectedNotification,
+  sendFcmNewEpisodeDetectedNotification
 } from '~/lib/notifications/fcmGoogleApi'
 import {
   getAllEpisodeValueTagsFromPodcastIndexById,
@@ -42,6 +42,7 @@ import {
 } from '~/controllers/episode'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { PhasePendingChat } from 'podcast-partytime/dist/parser/phase/phase-pending'
+import { sendLiveItemLiveDetectedNotification, sendNewEpisodeDetectedNotification } from '~/lib/notifications/notifications'
 const { awsConfig, userAgent } = config
 const { queueUrls /*, s3ImageLimitUpdateDays */ } = awsConfig
 
@@ -521,14 +522,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       const latestEpisodeWithId = await getEpisodeByPodcastIdAndGuid(podcast.id, latestEpisodeGuid)
 
       if (latestEpisodeWithId?.id) {
-        await sendNewEpisodeDetectedNotification(
-          podcast.id,
-          podcast.title,
-          podcast.lastEpisodeTitle,
-          finalPodcastImageUrl,
-          finalEpisodeImageUrl,
-          latestEpisodeWithId.id
-        )
+        await sendNewEpisodeDetectedNotification({
+          podcastId: podcast.id,
+          podcastTitle: podcast.title,
+          episodeTitle: podcast.lastEpisodeTitle,
+          podcastImage: finalPodcastImageUrl,
+          episodeImage: finalEpisodeImageUrl,
+          episodeId: latestEpisodeWithId.id
+        })
       }
 
       logPerformance('sendNewEpisodeDetectedNotification', _logEnd)
@@ -542,14 +543,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         const liveItemWithId = await getLiveItemByGuid(liveItemNotificationData.episodeGuid, podcast.id)
 
         if (liveItemWithId?.episode?.id) {
-          await sendLiveItemLiveDetectedNotification(
-            liveItemNotificationData.podcastId,
-            liveItemNotificationData.podcastTitle,
-            liveItemNotificationData.episodeTitle,
-            liveItemNotificationData.podcastImageUrl,
-            liveItemNotificationData.episodeImageUrl,
-            liveItemWithId?.episode?.id
-          )
+          await sendLiveItemLiveDetectedNotification({
+            podcastId: liveItemNotificationData.podcastId,
+            podcastTitle: liveItemNotificationData.podcastTitle,
+            episodeTitle: liveItemNotificationData.episodeTitle,
+            podcastImage: liveItemNotificationData.podcastImageUrl,
+            episodeImage: liveItemNotificationData.episodeImageUrl,
+            episodeId: liveItemWithId?.episode?.id
+          })
         } else {
           console.log('not found: liveItemWithId not found', liveItemNotificationData.episodeGuid, podcast.id)
         }

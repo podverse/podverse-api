@@ -2,21 +2,18 @@
 import { request } from '../request'
 import { config } from '~/config'
 import { getFCMTokensForPodcastId } from '~/controllers/fcmDevice'
+import { SendNotificationOptions } from './sendNotificationOptions'
 const { fcmGoogleApiAuthToken } = config
 
 const fcmGoogleApiPath = 'https://fcm.googleapis.com/fcm/send'
 
-export const sendNewEpisodeDetectedNotification = async (
-  podcastId: string,
-  podcastTitle?: string,
-  episodeTitle?: string,
-  podcastImage?: string,
-  episodeImage?: string,
-  episodeId?: string
+export const sendFcmNewEpisodeDetectedNotification = async (
+  options: SendNotificationOptions
 ) => {
+  const { podcastId, podcastImage, episodeImage, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  podcastTitle = podcastTitle || 'Untitled Podcast'
-  episodeTitle = episodeTitle || 'Untitled Episode'
+  const podcastTitle = options.podcastTitle || 'Untitled Podcast'
+  const episodeTitle = options.episodeTitle || 'Untitled Episode'
   const title = podcastTitle
   const body = episodeTitle
   return sendFCMGoogleApiNotification(
@@ -33,17 +30,13 @@ export const sendNewEpisodeDetectedNotification = async (
   )
 }
 
-export const sendLiveItemLiveDetectedNotification = async (
-  podcastId: string,
-  podcastTitle?: string,
-  episodeTitle?: string,
-  podcastImage?: string,
-  episodeImage?: string,
-  episodeId?: string
+export const sendFcmLiveItemLiveDetectedNotification = async (
+  options: SendNotificationOptions
 ) => {
+  const { podcastId, podcastImage, episodeImage, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  podcastTitle = podcastTitle || 'Untitled Podcast'
-  episodeTitle = episodeTitle || 'Livestream starting'
+  const podcastTitle = options.podcastTitle || 'Untitled Podcast'
+  const episodeTitle = options.episodeTitle || 'Livestream starting'
   const title = `LIVE: ${podcastTitle}`
   const body = episodeTitle
   return sendFCMGoogleApiNotification(

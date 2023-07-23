@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm'
 import { UPDevice, Notification } from '~/entities'
 import { getLoggedInUser } from './user'
+import { UPEndpointData } from '~/entities/upDevice'
 const createError = require('http-errors')
 
 export const createUPDevice = async ({
@@ -157,4 +158,22 @@ export const getUPEndpointsForPodcastId = async (podcastId: string) => {
   const upEndpoints = notifications.map((upDevice: UPDevice) => upDevice.upEndpoint)
 
   return upEndpoints
+}
+
+export const getUPDevicesForPodcastId = async (
+  podcastId: string
+  ): Promise<UPEndpointData[]> => {
+  if (!podcastId) {
+    throw new createError.BadRequest('A podcastId but be provided.')
+  }
+
+  const repository = getRepository(Notification)
+  return await repository
+    .createQueryBuilder('notifications')
+    .select(
+      '"upDevices"."upEndpoint" AS "upEndpoint", "upDevices"."upPublicKey" AS "upPublicKey", "upDevices"."upAuthKey" AS "upAuthKey"',
+    )
+    .innerJoin(UPDevice, 'fcmDevices', 'notifications."userId" = "upDevices"."userId"')
+    .where('notifications."podcastId" = :podcastId', { podcastId })
+    .getRawMany()
 }
