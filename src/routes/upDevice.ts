@@ -78,7 +78,6 @@ const deleteUPDeviceLimiter = RateLimit.middleware({
 // Delete an UPDevice for a logged-in user
 router.post('/delete', deleteUPDeviceLimiter, jwtAuth, validateUPDeviceDelete, async (ctx) => {
   try {
-    console.log('wtffffff')
     const { upEndpoint } = ctx.request.body as any
     await deleteUPDevice(upEndpoint, ctx.state.user.id)
     ctx.status = 200
