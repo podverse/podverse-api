@@ -41,6 +41,6 @@
         "node_modules"
     ],
     "files": [
-        "global.d.ts"
+        "global.d.ts", "src/lib/notifications/sendNotificationOptions.ts"
     ]
 }
