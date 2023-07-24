@@ -7,9 +7,7 @@ const { fcmGoogleApiAuthToken } = config
 
 const fcmGoogleApiPath = 'https://fcm.googleapis.com/fcm/send'
 
-export const sendFcmNewEpisodeDetectedNotification = async (
-  options: SendNotificationOptions
-) => {
+export const sendFcmNewEpisodeDetectedNotification = async (options: SendNotificationOptions) => {
   const { podcastId, podcastImage, episodeImage, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
@@ -30,9 +28,7 @@ export const sendFcmNewEpisodeDetectedNotification = async (
   )
 }
 
-export const sendFcmLiveItemLiveDetectedNotification = async (
-  options: SendNotificationOptions
-) => {
+export const sendFcmLiveItemLiveDetectedNotification = async (options: SendNotificationOptions) => {
   const { podcastId, podcastImage, episodeImage, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
