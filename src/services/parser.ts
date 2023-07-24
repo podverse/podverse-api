@@ -28,10 +28,6 @@ import { getFeedUrls, getFeedUrlsByPodcastIndexIds } from '~/controllers/feedUrl
 import { shrinkImage } from './imageShrinker'
 import { Phase4PodcastLiveItem } from 'podcast-partytime/dist/parser/phase/phase-4'
 import {
-  sendFcmLiveItemLiveDetectedNotification,
-  sendFcmNewEpisodeDetectedNotification
-} from '~/lib/notifications/fcmGoogleApi'
-import {
   getAllEpisodeValueTagsFromPodcastIndexById,
   getPodcastValueTagForPodcastIndexId
 } from '~/services/podcastIndex'
@@ -42,7 +38,10 @@ import {
 } from '~/controllers/episode'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { PhasePendingChat } from 'podcast-partytime/dist/parser/phase/phase-pending'
-import { sendLiveItemLiveDetectedNotification, sendNewEpisodeDetectedNotification } from '~/lib/notifications/notifications'
+import {
+  sendLiveItemLiveDetectedNotification,
+  sendNewEpisodeDetectedNotification
+} from '~/lib/notifications/notifications'
 const { awsConfig, userAgent } = config
 const { queueUrls /*, s3ImageLimitUpdateDays */ } = awsConfig
 
@@ -302,17 +301,19 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const latestLiveItemStatus = parseLatestLiveItemStatus(parsedLiveItemEpisodes)
     const { liveItemLatestPubDate } = parseLatestLiveItemInfo(parsedLiveItemEpisodes)
 
-    const { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
+    const { /* mostRecentEpisodeTitle, */ mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed } =
       getMostRecentEpisodeDataFromFeed(meta, parsedEpisodes)
     const previousLastEpisodePubDate = podcast.lastEpisodePubDate
-    const previousLastEpisodeTitle = podcast.lastEpisodeTitle
+    // const previousLastEpisodeTitle = podcast.lastEpisodeTitle
 
     const shouldSendNewEpisodeNotification =
       (!previousLastEpisodePubDate && mostRecentEpisodePubDate) ||
       (previousLastEpisodePubDate &&
         mostRecentEpisodePubDate &&
-        new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate) &&
-        previousLastEpisodeTitle !== mostRecentEpisodeTitle)
+        new Date(previousLastEpisodePubDate) < new Date(mostRecentEpisodePubDate))
+      // NOTE: I disabled this condition because it seems unnecessary...
+      // but I must have added it for a reason at some point...
+      // && previousLastEpisodeTitle !== mostRecentEpisodeTitle
 
     // Stop parsing if the feed has not been updated since it was last parsed.
     if (

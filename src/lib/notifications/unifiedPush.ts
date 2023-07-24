@@ -2,12 +2,11 @@
 import { SendNotificationOptions } from './sendNotificationOptions'
 import { getUPDevicesForPodcastId } from '~/controllers/upDevice'
 import { UPEndpointData } from '~/entities/upDevice'
-import webpush from 'web-push'
+import { promiseAllSkippingErrors } from '~/lib/utility/promise'
 
+const webpush = require('web-push')
 
-export const sendUpNewEpisodeDetectedNotification = async (
-  options: SendNotificationOptions
-) => {
+export const sendUpNewEpisodeDetectedNotification = async (options: SendNotificationOptions) => {
   const { podcastId, podcastImage, episodeImage, episodeId } = options
   const upDevices = await getUPDevicesForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
@@ -28,9 +27,7 @@ export const sendUpNewEpisodeDetectedNotification = async (
   )
 }
 
-export const sendUpLiveItemLiveDetectedNotification = async (
-  options: SendNotificationOptions
-) => {
+export const sendUpLiveItemLiveDetectedNotification = async (options: SendNotificationOptions) => {
   const { podcastId, podcastImage, episodeImage, episodeId } = options
   const upDevices = await getUPDevicesForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
@@ -79,25 +76,28 @@ export const sendUPNotification = async (
     podcastTitle: podcastTitle,
     episodeTitle: episodeTitle,
     notificationType,
-    timeSent: (new Date()).toISOString(),
+    timeSent: new Date().toISOString(),
     image: episodeImage || podcastImage
   }
   const jsonPayload = JSON.stringify(data)
-  
 
   for (const upDeviceBatch of upDeviceBatches) {
     if (upDeviceBatch?.length > 0) {
       try {
-        await Promise.all(upDeviceBatch.map((upd: UPEndpointData) => webpush.sendNotification(
-          {
-            endpoint: upd.upEndpoint,
-            keys: {
-              auth: upd.upAuthKey,
-              p256dh: upd.upPublicKey
-            }
-          },
-          jsonPayload
-        )))
+        await promiseAllSkippingErrors(
+          upDeviceBatch.map((upd: UPEndpointData) =>
+            webpush.sendNotification(
+              {
+                endpoint: upd.upEndpoint,
+                keys: {
+                  auth: upd.upAuthKey,
+                  p256dh: upd.upPublicKey
+                }
+              },
+              jsonPayload
+            )
+          )
+        )
       } catch (error) {
         console.log('sendUPNotification error', error)
       }

@@ -160,9 +160,7 @@ export const getUPEndpointsForPodcastId = async (podcastId: string) => {
   return upEndpoints
 }
 
-export const getUPDevicesForPodcastId = async (
-  podcastId: string
-  ): Promise<UPEndpointData[]> => {
+export const getUPDevicesForPodcastId = async (podcastId: string): Promise<UPEndpointData[]> => {
   if (!podcastId) {
     throw new createError.BadRequest('A podcastId but be provided.')
   }
@@ -171,9 +169,9 @@ export const getUPDevicesForPodcastId = async (
   return await repository
     .createQueryBuilder('notifications')
     .select(
-      '"upDevices"."upEndpoint" AS "upEndpoint", "upDevices"."upPublicKey" AS "upPublicKey", "upDevices"."upAuthKey" AS "upAuthKey"',
+      '"upDevices"."upEndpoint" AS "upEndpoint", "upDevices"."upPublicKey" AS "upPublicKey", "upDevices"."upAuthKey" AS "upAuthKey"'
     )
-    .innerJoin(UPDevice, 'fcmDevices', 'notifications."userId" = "upDevices"."userId"')
+    .innerJoin(UPDevice, 'upDevices', 'notifications."userId" = "upDevices"."userId"')
     .where('notifications."podcastId" = :podcastId', { podcastId })
     .getRawMany()
 }
