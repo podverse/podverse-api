@@ -7,12 +7,18 @@ import { promiseAllSkippingErrors } from '~/lib/utility/promise'
 const webpush = require('web-push')
 
 export const sendUpNewEpisodeDetectedNotification = async (options: SendNotificationOptions) => {
-  const { podcastId, podcastImage, episodeImage, episodeId } = options
+  const { podcastId, podcastShrunkImageUrl, episodeId } = options
   const upDevices = await getUPDevicesForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Untitled Episode'
   const title = podcastTitle
   const body = episodeTitle
+
+  // NOTE: Only allow shrunk image urls to be used, in case large image sizes
+  // cause issues with UnifiedPush distributors.
+  const finalPodcastImageUrl = podcastShrunkImageUrl
+  const finalEpisodeImageUrl = ''
+
   return sendUPNotification(
     upDevices,
     title,
@@ -21,19 +27,25 @@ export const sendUpNewEpisodeDetectedNotification = async (options: SendNotifica
     'new-episode',
     podcastTitle,
     episodeTitle,
-    podcastImage,
-    episodeImage,
+    finalPodcastImageUrl,
+    finalEpisodeImageUrl,
     episodeId
   )
 }
 
 export const sendUpLiveItemLiveDetectedNotification = async (options: SendNotificationOptions) => {
-  const { podcastId, podcastImage, episodeImage, episodeId } = options
+  const { podcastId, podcastShrunkImageUrl, episodeId } = options
   const upDevices = await getUPDevicesForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Livestream starting'
   const title = `LIVE: ${podcastTitle}`
   const body = episodeTitle
+
+  // NOTE: Only allow shrunk image urls to be used, in case large image sizes
+  // cause issues with UnifiedPush distributors.
+  const finalPodcastImageUrl = podcastShrunkImageUrl
+  const finalEpisodeImageUrl = ''
+
   return sendUPNotification(
     upDevices,
     title,
@@ -42,8 +54,8 @@ export const sendUpLiveItemLiveDetectedNotification = async (options: SendNotifi
     'live',
     podcastTitle,
     episodeTitle,
-    podcastImage,
-    episodeImage,
+    finalPodcastImageUrl,
+    finalEpisodeImageUrl,
     episodeId
   )
 }

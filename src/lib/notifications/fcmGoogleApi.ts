@@ -8,12 +8,16 @@ const { fcmGoogleApiAuthToken } = config
 const fcmGoogleApiPath = 'https://fcm.googleapis.com/fcm/send'
 
 export const sendFcmNewEpisodeDetectedNotification = async (options: SendNotificationOptions) => {
-  const { podcastId, podcastImage, episodeImage, episodeId } = options
+  const { podcastId, podcastShrunkImageUrl, podcastFullImageUrl, episodeFullImageUrl, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Untitled Episode'
   const title = podcastTitle
   const body = episodeTitle
+
+  const finalPodcastImageUrl = podcastShrunkImageUrl || podcastFullImageUrl
+  const finalEpisodeImageUrl = episodeFullImageUrl
+
   return sendFCMGoogleApiNotification(
     fcmTokens,
     title,
@@ -22,19 +26,23 @@ export const sendFcmNewEpisodeDetectedNotification = async (options: SendNotific
     'new-episode',
     podcastTitle,
     episodeTitle,
-    podcastImage,
-    episodeImage,
+    finalPodcastImageUrl,
+    finalEpisodeImageUrl,
     episodeId
   )
 }
 
 export const sendFcmLiveItemLiveDetectedNotification = async (options: SendNotificationOptions) => {
-  const { podcastId, podcastImage, episodeImage, episodeId } = options
+  const { podcastId, podcastShrunkImageUrl, podcastFullImageUrl, episodeFullImageUrl, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Livestream starting'
   const title = `LIVE: ${podcastTitle}`
   const body = episodeTitle
+
+  const finalPodcastImageUrl = podcastShrunkImageUrl || podcastFullImageUrl
+  const finalEpisodeImageUrl = episodeFullImageUrl
+
   return sendFCMGoogleApiNotification(
     fcmTokens,
     title,
@@ -43,8 +51,8 @@ export const sendFcmLiveItemLiveDetectedNotification = async (options: SendNotif
     'live',
     podcastTitle,
     episodeTitle,
-    podcastImage,
-    episodeImage,
+    finalPodcastImageUrl,
+    finalEpisodeImageUrl,
     episodeId
   )
 }
