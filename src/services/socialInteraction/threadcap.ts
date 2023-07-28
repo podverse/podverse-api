@@ -21,7 +21,7 @@ const fetcher = makeRateLimitedFetcher(fetcherWithTimeout)
 let cacheTimeToLive = new Date().toISOString()
 setInterval(() => {
   cacheTimeToLive = new Date().toISOString()
-}, 43200000) // 12 hours
+}, 300000) // 5 minutes
 
 export const getThreadcap = async (url: string, protocol: Protocol, bearerToken?: string) => {
   // initialize the threadcap

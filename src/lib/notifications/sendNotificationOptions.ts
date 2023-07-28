@@ -2,7 +2,8 @@ export interface SendNotificationOptions {
   podcastId: string
   podcastTitle?: string
   episodeTitle?: string
-  podcastImage?: string
-  episodeImage?: string
+  podcastShrunkImageUrl?: string
+  podcastFullImageUrl?: string
+  episodeFullImageUrl?: string
   episodeId?: string
 }

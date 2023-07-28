@@ -63,6 +63,7 @@ type LiveItemNotification = {
   podcastId: string
   podcastTitle: string
   episodeTitle: string
+  podcastShrunkImageUrl?: string
   podcastImageUrl?: string
   episodeImageUrl?: string
   episodeGuid: string
@@ -516,8 +517,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     if (shouldSendNewEpisodeNotification) {
       logPerformance('sendNewEpisodeDetectedNotification', _logStart)
-      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = latestEpisodeImageUrl
+      const podcastShrunkImageUrl = podcast.shrunkImageUrl
+      const podcastFullImageUrl = podcast.imageUrl
+      const episodeFullImageUrl = latestEpisodeImageUrl
 
       // Retrieve the episode to make sure we have the episode.id
       const latestEpisodeWithId = await getEpisodeByPodcastIdAndGuid(podcast.id, latestEpisodeGuid)
@@ -527,8 +529,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
           podcastId: podcast.id,
           podcastTitle: podcast.title,
           episodeTitle: podcast.lastEpisodeTitle,
-          podcastImage: finalPodcastImageUrl,
-          episodeImage: finalEpisodeImageUrl,
+          podcastShrunkImageUrl,
+          podcastFullImageUrl,
+          episodeFullImageUrl,
           episodeId: latestEpisodeWithId.id
         })
       }
@@ -543,13 +546,18 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         // Retrieve the live item - episode to make sure we have the episode.id
         const liveItemWithId = await getLiveItemByGuid(liveItemNotificationData.episodeGuid, podcast.id)
 
+        const podcastShrunkImageUrl = liveItemNotificationData.podcastShrunkImageUrl
+        const podcastFullImageUrl = liveItemNotificationData.podcastImageUrl
+        const episodeFullImageUrl = liveItemNotificationData.episodeImageUrl
+
         if (liveItemWithId?.episode?.id) {
           await sendLiveItemLiveDetectedNotification({
             podcastId: liveItemNotificationData.podcastId,
             podcastTitle: liveItemNotificationData.podcastTitle,
             episodeTitle: liveItemNotificationData.episodeTitle,
-            podcastImage: liveItemNotificationData.podcastImageUrl,
-            episodeImage: liveItemNotificationData.episodeImageUrl,
+            podcastShrunkImageUrl,
+            podcastFullImageUrl,
+            episodeFullImageUrl,
             episodeId: liveItemWithId?.episode?.id
           })
         } else {
@@ -1093,15 +1101,13 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
       previouslyExistingLiveItem || newLiveItems.find((newLiveItem) => parsedLiveItem.guid === newLiveItem.guid)
 
     if (shouldSendLiveNotification) {
-      const finalPodcastImageUrl = podcast.shrunkImageUrl || podcast.imageUrl
-      const finalEpisodeImageUrl = parsedLiveItem.imageURL
-
       liveItemNotificationsData.push({
         podcastId: podcast.id,
         podcastTitle: podcast.title,
         episodeTitle: parsedLiveItem.title,
-        podcastImageUrl: finalPodcastImageUrl,
-        episodeImageUrl: finalEpisodeImageUrl,
+        podcastShrunkImageUrl: podcast.shrunkImageUrl,
+        podcastImageUrl: podcast.imageUrl,
+        episodeImageUrl: parsedLiveItem.imageURL,
         episodeGuid: notificationLiveItem.guid
       })
     }
