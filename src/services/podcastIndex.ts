@@ -567,7 +567,7 @@ export const hideDeadPodcasts = async () => {
                   console.log('error hiding podcast json', json)
                   console.log('error hiding podcast json error message:', error)
                 } else {
-                  console.log('feed already hidden', json.field1, json.field2)
+                  // console.log('feed already hidden', json.field1, json.field2)
                 }
               }
             }
