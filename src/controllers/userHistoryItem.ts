@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm'
-import { UserHistoryItem } from '~/entities'
+import { Episode, UserHistoryItem } from '~/entities'
 import { parseProp } from '~/lib/utility'
 const createError = require('http-errors')
 
@@ -263,23 +263,78 @@ export const getUserHistoryItemsMetadataMini = async (loggedInUserId) => {
   return cleanMetaMiniResults(results)
 }
 
-export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
-  const { completed, episodeId, forceUpdateOrderDate, liveItem, mediaFileDuration, mediaRefId, userPlaybackPosition } =
-    query
+export const addOrUpdateAllHistoryItemsForPodcast = async (loggedInUserId, podcastId) => {
+  const episodeRepository = getRepository(Episode)
+  const episodeIdsAndDurations = await episodeRepository
+    .createQueryBuilder('episode')
+    .select('episode.id', 'id')
+    .addSelect('episode.duration', 'duration')
+    .where('podcastId = :pId', { podcastId })
+    .getRawMany()
 
-  if (!episodeId && !mediaRefId) {
+  const episodeIdToDurationMap = new Map()
+  episodeIdsAndDurations.forEach((item) => episodeIdToDurationMap.set(item.id, item.duration))
+  const keys = episodeIdToDurationMap.keys()
+
+  const historyItemRepository = getRepository(UserHistoryItem)
+  const historyItems = await historyItemRepository
+    .createQueryBuilder('userHistoryItem')
+    .leftJoin('userHistoryItem.owner', 'owner')
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .andWhere('userHistoryItem.id IN (:episodes)', { keys })
+    .getMany()
+
+  for (const item of historyItems) {
+    const userHistoryItem = item
+    userHistoryItem.completed = true
+    await historyItemRepository.save(userHistoryItem)
+    episodeIdToDurationMap.delete(userHistoryItem.episode)
+  }
+
+  for (const item of episodeIdToDurationMap.entries()) {
+    const userHistoryItem = new UserHistoryItem()
+    userHistoryItem.mediaFileDuration = item[1]
+    userHistoryItem.userPlaybackPosition = 0
+    userHistoryItem.completed = true
+    userHistoryItem.episode = item[0]
+    userHistoryItem.owner = loggedInUserId
+    userHistoryItem.orderChangedDate = new Date()
+
+    await historyItemRepository.save(userHistoryItem)
+  }
+}
+
+export const addOfUpdateMultipleUserHistoryItems = async (loggetInUserId, query) => {
+  const { items } = query
+  for (const item of items) {
+    if ((!item['episodeId'] && !item['mediaRefId']) || (item['episodeId'] && item['mediaRefId'])) {
+      continue
+    }
+    await addOrUpdateDBHistoryItem(loggetInUserId, item)
+  }
+}
+
+export const addOrUpdateHistoryItem = async (loggedInUserId, query) => {
+  if (!query['episodeId'] && !query['mediaRefId']) {
     throw new createError.NotFound('An episodeId or mediaRefId must be provided.')
   }
 
-  if (episodeId && mediaRefId) {
+  if (query['episodeId'] && query['mediaRefId']) {
     throw new createError.NotFound(
       'Either an episodeId or mediaRefId must be provided, but not both. Set null for the value that should not be included.'
     )
   }
 
-  if (!userPlaybackPosition && userPlaybackPosition !== 0) {
+  if (!query['userPlaybackPosition'] && query['userPlaybackPosition'] !== 0) {
     throw new createError.NotFound('A userPlaybackPosition must be provided.')
   }
+
+  await addOrUpdateDBHistoryItem(loggedInUserId, query)
+}
+
+const addOrUpdateDBHistoryItem = async (loggedInUserId, props) => {
+  const { completed, episodeId, forceUpdateOrderDate, liveItem, mediaFileDuration, mediaRefId, userPlaybackPosition } =
+    props
 
   const repository = getRepository(UserHistoryItem)
 
