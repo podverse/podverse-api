@@ -4,7 +4,7 @@ import { config } from '~/config'
 import {
   addOrUpdateAllHistoryItemsForPodcast,
   addOrUpdateHistoryItem,
-  addOfUpdateMultipleUserHistoryItems,
+  addOrUpdateMultipleUserHistoryItems,
   getUserHistoryItems,
   getUserHistoryItemsMetadata,
   getUserHistoryItemsMetadataMini,
@@ -89,10 +89,14 @@ router.patch('/', jwtAuth, validateAddOrUpdateUserHistoryItem, hasValidMembershi
   }
 })
 
+type AddOrUpdateMultipleUserHistoryItems = {
+  episodeIds: string[]
+}
 // Add or update multiple userHistoryItems
 router.patch('/multiple', jwtAuth, validateAddOrUpdateMultipleUserHistoryItems, hasValidMembership, async (ctx) => {
   try {
-    await addOfUpdateMultipleUserHistoryItems(ctx.state.user.id, ctx.request.body)
+    const { episodeIds } = ctx.request.body as AddOrUpdateMultipleUserHistoryItems
+    await addOrUpdateMultipleUserHistoryItems(ctx.state.user.id, episodeIds)
     ctx.status = 200
     ctx.body = { message: 'Updated user history items.' }
   } catch (error) {

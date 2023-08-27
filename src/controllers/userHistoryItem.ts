@@ -292,8 +292,7 @@ export const addOrUpdateAllHistoryItemsForPodcast = async (loggedInUserId, podca
     .andWhere('userHistoryItem.episodeId IN (:...episodeIds)', { episodeIds })
     .getRawMany()
 
-  for (const item of historyItems) {
-    const userHistoryItem = item
+  for (const userHistoryItem of historyItems) {
     userHistoryItem.completed = true
     await historyItemRepository.save(userHistoryItem)
     episodeIdToDurationMap.delete(userHistoryItem.episodeId)
@@ -301,10 +300,7 @@ export const addOrUpdateAllHistoryItemsForPodcast = async (loggedInUserId, podca
 
   for (const item of episodeIdToDurationMap.entries()) {
     const episodeId = item[0]
-    const mediaFileDuration = item[1]
     const userHistoryItem = new UserHistoryItem()
-    userHistoryItem.mediaFileDuration = mediaFileDuration
-    userHistoryItem.userPlaybackPosition = 0
     userHistoryItem.completed = true
     userHistoryItem.episode = episodeId
     userHistoryItem.owner = loggedInUserId
@@ -314,13 +310,37 @@ export const addOrUpdateAllHistoryItemsForPodcast = async (loggedInUserId, podca
   }
 }
 
-export const addOfUpdateMultipleUserHistoryItems = async (loggetInUserId, query) => {
-  const { items } = query
-  for (const item of items) {
-    if ((!item['episodeId'] && !item['mediaRefId']) || (item['episodeId'] && item['mediaRefId'])) {
-      continue
-    }
-    await addOrUpdateDBHistoryItem(loggetInUserId, item)
+export const addOrUpdateMultipleUserHistoryItems = async (loggedInUserId, episodeIds) => {
+  const historyItemRepository = getRepository(UserHistoryItem)
+  const historyItems = await historyItemRepository
+    .createQueryBuilder('userHistoryItem')
+    .select('userHistoryItem.id', 'id')
+    .addSelect('userHistoryItem.completed', 'completed')
+    .addSelect('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
+    .addSelect('userHistoryItem.orderChangedDate', 'orderChangedDate')
+    .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+    .addSelect('episode.id', 'episodeId')
+    .addSelect('owner.id', 'ownerId')
+    .leftJoin('userHistoryItem.owner', 'owner')
+    .leftJoin('userHistoryItem.episode', 'episode')
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+    .andWhere('userHistoryItem.episodeId IN (:...episodeIds)', { episodeIds })
+    .getRawMany()
+
+  for (const userHistoryItem of historyItems) {
+    userHistoryItem.completed = true
+    await historyItemRepository.save(userHistoryItem)
+    episodeIds = episodeIds.filter((id) => id !== userHistoryItem.episodeId)
+  }
+
+  for (const episodeId of episodeIds) {
+    const userHistoryItem = new UserHistoryItem()
+    userHistoryItem.completed = true
+    userHistoryItem.episode = episodeId
+    userHistoryItem.owner = loggedInUserId
+    userHistoryItem.orderChangedDate = new Date()
+
+    await historyItemRepository.save(userHistoryItem)
   }
 }
 

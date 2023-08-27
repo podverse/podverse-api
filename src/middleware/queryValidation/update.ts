@@ -86,17 +86,9 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
 }
 
 const validateAddOrUpdateMultipleUserHistoryItems = async (ctx, next) => {
-  const schema = Joi.array().items(
-    Joi.object().keys({
-      completed: Joi.boolean(),
-      episodeId: Joi.string().allow(null),
-      forceUpdateOrderDate: Joi.boolean(),
-      liveItem: Joi.object().allow(null),
-      mediaFileDuration: Joi.number().integer().min(0),
-      mediaRefId: Joi.string().allow(null),
-      userPlaybackPosition: Joi.number().integer().min(0).required()
-    })
-  )
+  const schema = Joi.object().keys({
+    episodeIds: Joi.array().items(Joi.string())
+  })
 
   await validateBaseBody(schema, ctx, next)
 }
