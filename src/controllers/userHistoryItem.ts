@@ -269,34 +269,44 @@ export const addOrUpdateAllHistoryItemsForPodcast = async (loggedInUserId, podca
     .createQueryBuilder('episode')
     .select('episode.id', 'id')
     .addSelect('episode.duration', 'duration')
-    .where('podcastId = :pId', { podcastId })
+    .where('"podcastId" = :podcastId', { podcastId })
     .getRawMany()
 
   const episodeIdToDurationMap = new Map()
   episodeIdsAndDurations.forEach((item) => episodeIdToDurationMap.set(item.id, item.duration))
-  const keys = episodeIdToDurationMap.keys()
+  const episodeIds = Array.from(episodeIdToDurationMap.keys())
 
   const historyItemRepository = getRepository(UserHistoryItem)
   const historyItems = await historyItemRepository
     .createQueryBuilder('userHistoryItem')
+    .select('userHistoryItem.id', 'id')
+    .addSelect('userHistoryItem.completed', 'completed')
+    .addSelect('userHistoryItem.mediaFileDuration', 'mediaFileDuration')
+    .addSelect('userHistoryItem.orderChangedDate', 'orderChangedDate')
+    .addSelect('userHistoryItem.userPlaybackPosition', 'userPlaybackPosition')
+    .addSelect('episode.id', 'episodeId')
+    .addSelect('owner.id', 'ownerId')
     .leftJoin('userHistoryItem.owner', 'owner')
+    .leftJoin('userHistoryItem.episode', 'episode')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
-    .andWhere('userHistoryItem.id IN (:episodes)', { keys })
-    .getMany()
+    .andWhere('userHistoryItem.episodeId IN (:...episodeIds)', { episodeIds })
+    .getRawMany()
 
   for (const item of historyItems) {
     const userHistoryItem = item
     userHistoryItem.completed = true
     await historyItemRepository.save(userHistoryItem)
-    episodeIdToDurationMap.delete(userHistoryItem.episode)
+    episodeIdToDurationMap.delete(userHistoryItem.episodeId)
   }
 
   for (const item of episodeIdToDurationMap.entries()) {
+    const episodeId = item[0]
+    const mediaFileDuration = item[1]
     const userHistoryItem = new UserHistoryItem()
-    userHistoryItem.mediaFileDuration = item[1]
+    userHistoryItem.mediaFileDuration = mediaFileDuration
     userHistoryItem.userPlaybackPosition = 0
     userHistoryItem.completed = true
-    userHistoryItem.episode = item[0]
+    userHistoryItem.episode = episodeId
     userHistoryItem.owner = loggedInUserId
     userHistoryItem.orderChangedDate = new Date()
 
