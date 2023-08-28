@@ -85,6 +85,14 @@ const validateAddOrUpdateUserHistoryItem = async (ctx, next) => {
   await validateBaseBody(schema, ctx, next)
 }
 
+const validateAddOrUpdateMultipleUserHistoryItems = async (ctx, next) => {
+  const schema = Joi.object().keys({
+    episodeIds: Joi.array().items(Joi.string())
+  })
+
+  await validateBaseBody(schema, ctx, next)
+}
+
 const validateAddOrUpdateUserQueueItem = async (ctx, next) => {
   const schema = Joi.object().keys({
     episodeId: Joi.string().allow(null),
@@ -124,6 +132,7 @@ export {
   validatePayPalOrderUpdate,
   validatePlaylistUpdate,
   validateAddOrUpdateUserHistoryItem,
+  validateAddOrUpdateMultipleUserHistoryItems,
   validateAddOrUpdateUserQueueItem,
   validateUserHistoryItemRemove,
   validateUserMembershipUpdate,
