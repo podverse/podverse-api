@@ -2,7 +2,9 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import {
+  addOrUpdateAllHistoryItemsForPodcast,
   addOrUpdateHistoryItem,
+  addOrUpdateMultipleUserHistoryItems,
   getUserHistoryItems,
   getUserHistoryItemsMetadata,
   getUserHistoryItemsMetadataMini,
@@ -14,7 +16,10 @@ import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
-import { validateAddOrUpdateUserHistoryItem } from '~/middleware/queryValidation/update'
+import {
+  validateAddOrUpdateUserHistoryItem,
+  validateAddOrUpdateMultipleUserHistoryItems
+} from '~/middleware/queryValidation/update'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user-history-item` })
 router.use(bodyParser())
@@ -79,6 +84,32 @@ router.patch('/', jwtAuth, validateAddOrUpdateUserHistoryItem, hasValidMembershi
     await addOrUpdateHistoryItem(ctx.state.user.id, ctx.request.body)
     ctx.status = 200
     ctx.body = { message: 'Updated user history item.' }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+type AddOrUpdateMultipleUserHistoryItems = {
+  episodeIds: string[]
+}
+// Add or update multiple userHistoryItems
+router.patch('/multiple', jwtAuth, validateAddOrUpdateMultipleUserHistoryItems, hasValidMembership, async (ctx) => {
+  try {
+    const { episodeIds } = ctx.request.body as AddOrUpdateMultipleUserHistoryItems
+    await addOrUpdateMultipleUserHistoryItems(ctx.state.user.id, episodeIds)
+    ctx.status = 200
+    ctx.body = { message: 'Updated user history items.' }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Add or update multiple userHistoryItems
+router.patch('/podcast/:podcastId', jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    await addOrUpdateAllHistoryItemsForPodcast(ctx.state.user.id, ctx.params.podcastId)
+    ctx.status = 200
+    ctx.body = { message: 'Updated user history items.' }
   } catch (error) {
     emitRouterError(error, ctx)
   }
