@@ -222,6 +222,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         // funding: Array.isArray(episode.podcastFunding) ? episode.podcastFunding?.map((f) => fundingCompat(f)) : [],
         guid: episode.guid,
         imageURL: episode.image,
+        itunesEpisode: episode.itunesEpisode,
+        itunesEpisodeType: episode.itunesEpisodeType,
+        itunesSeason: episode.itunesSeason,
         link: episode.link,
         pubDate: episode.pubDate,
         socialInteraction: episode.podcastSocialInteraction ?? [],
@@ -942,6 +945,11 @@ const assignParsedEpisodeData = async (
   episode.guid = parsedEpisode.guid || parsedEpisode.enclosure.url
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
+
+  episode.itunesEpisode = parsedEpisode.itunesEpisode
+  episode.itunesEpisodeType = parsedEpisode.itunesEpisodeType
+  episode.itunesSeason = parsedEpisode.itunesSeason
+
   episode.linkUrl = parsedEpisode.link
 
   episode.mediaType = parsedEpisode.enclosure.type
