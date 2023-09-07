@@ -539,6 +539,8 @@ const getExistingPodcast = async (client, podcastIndexId) => {
 export const hideDeadPodcasts = async (fileUrl?: string) => {
   console.log('hideDeadPodcasts')
   const url = fileUrl ? fileUrl : 'https://public.podcastindex.org/podcastindex_dead_feeds.csv'
+  console.log('url', url)
+
   const response = await request(url, {
     headers: {
       'Content-Type': 'text/csv'
