@@ -194,6 +194,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .createQueryBuilder('podcast')
     .select('podcast.id')
     .addSelect('podcast.podcastIndexId')
+    .addSelect('podcast.podcastGuid')
     .addSelect('podcast.credentialsRequired')
     .addSelect('podcast.description')
     .addSelect('podcast.feedLastUpdated')
