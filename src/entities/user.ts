@@ -207,6 +207,7 @@ export class User {
   @BeforeInsert()
   beforeInsert() {
     this.id = generateShortId()
+    this.email = this.email.toLowerCase()
 
     this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
@@ -216,6 +217,8 @@ export class User {
 
   @BeforeUpdate()
   beforeUpdate() {
+    this.email = this.email.toLowerCase()
+
     this.addByRSSPodcastFeedUrls = this.addByRSSPodcastFeedUrls || []
     this.subscribedPlaylistIds = this.subscribedPlaylistIds || []
     this.subscribedPodcastIds = this.subscribedPodcastIds || []

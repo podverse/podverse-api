@@ -1,4 +1,5 @@
 export { authenticate } from '~/middleware/auth/authenticate'
+export { emailToLowerCase } from '~/middleware/auth/emailToLowercase'
 export { jwtAuth, optionalJwtAuth } from '~/middleware/auth/jwtAuth'
 export { logOut } from '~/middleware/auth/logOut'
 export { localAuth } from '~/middleware/auth/localAuth'

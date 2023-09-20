@@ -38,7 +38,7 @@ export const signUpUser = async (ctx, next) => {
 
   const user = {
     addByRSSPodcastFeedUrls: ctx.request.body.addByRSSPodcastFeedUrls || [],
-    email: ctx.request.body.email,
+    email: ctx.state.email,
     emailVerified: false,
     emailVerificationToken,
     emailVerificationTokenExpiration: emailVerificationExpiration,
