@@ -13,6 +13,7 @@ import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
+import { podcastItunesTypeDefaultValue } from '~/entities/podcast'
 import type { Value } from '~/entities/podcast'
 import {
   _logEnd,
@@ -193,6 +194,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         generator: feed.generator,
         guid: feed.guid,
         imageURL: feed.itunesImage || feed.image?.url,
+        itunesType: feed.itunesType || podcastItunesTypeDefaultValue,
         language: feed.language,
         lastBuildDate: feed.lastBuildDate,
         link: feed.link,
@@ -375,6 +377,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     podcast.isExplicit = meta.explicit
     podcast.isPublic = true
+    podcast.itunesFeedType = meta.itunesType
     podcast.language = meta.language
 
     /*

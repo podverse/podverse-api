@@ -204,6 +204,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .addSelect('podcast.hideDynamicAdsWarning')
     .addSelect('podcast.imageUrl')
     .addSelect('podcast.isExplicit')
+    .addSelect('podcast.itunesFeedType')
     .addSelect('podcast.lastEpisodePubDate')
     .addSelect('podcast.lastEpisodeTitle')
     .addSelect('podcast.lastFoundInPodcastIndex')

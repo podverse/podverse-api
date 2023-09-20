@@ -43,6 +43,8 @@ type ValueRecipient = {
   type: string
 }
 
+export const podcastItunesTypeDefaultValue = 'episodic'
+
 @Index(['hasVideo', 'pastAllTimeTotalUniquePageviews'])
 @Index(['hasVideo', 'pastHourTotalUniquePageviews'])
 @Index(['hasVideo', 'pastDayTotalUniquePageviews'])
@@ -127,6 +129,9 @@ export class Podcast {
   @Index()
   @Column({ default: false })
   isPublic: boolean
+
+  @Column({ default: podcastItunesTypeDefaultValue })
+  itunesFeedType: string
 
   @Column({ nullable: true })
   language?: string
