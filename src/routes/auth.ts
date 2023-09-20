@@ -4,6 +4,7 @@ import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import {
   emailNotExists,
+  emailToLowerCase,
   localAuth,
   logOut,
   optionalJwtAuth,
@@ -70,7 +71,7 @@ const loginLimiter = RateLimit.middleware({
   prefixKey: 'post/login'
 })
 
-router.post('/login', loginLimiter, validateAuthLogin, localAuth)
+router.post('/login', loginLimiter, validateAuthLogin, emailToLowerCase, localAuth)
 
 router.post('/logout', logOut)
 
@@ -81,7 +82,7 @@ const resetPasswordLimiter = RateLimit.middleware({
   prefixKey: 'post/reset-password'
 })
 
-router.post('/reset-password', resetPasswordLimiter, validateAuthResetPassword, resetPassword)
+router.post('/reset-password', resetPasswordLimiter, validateAuthResetPassword, emailToLowerCase, resetPassword)
 
 const sendResetPasswordLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
@@ -90,7 +91,13 @@ const sendResetPasswordLimiter = RateLimit.middleware({
   prefixKey: 'post/reset-password'
 })
 
-router.post('/send-reset-password', sendResetPasswordLimiter, validateAuthSendResetPassword, sendResetPassword)
+router.post(
+  '/send-reset-password',
+  sendResetPasswordLimiter,
+  validateAuthSendResetPassword,
+  emailToLowerCase,
+  sendResetPassword
+)
 
 const sendVerificationLimiter = RateLimit.middleware({
   interval: 5 * 60 * 1000,
@@ -99,15 +106,20 @@ const sendVerificationLimiter = RateLimit.middleware({
   prefixKey: 'post/reset-password'
 })
 
-router.post('/send-verification', sendVerificationLimiter, validateAuthSendVerification, async (ctx) => {
-  try {
-    const body = ctx.request.body as any
-    const email = body.email
-    await sendVerification(ctx, email)
-  } catch (error) {
-    emitRouterError(error, ctx)
+router.post(
+  '/send-verification',
+  sendVerificationLimiter,
+  validateAuthSendVerification,
+  emailToLowerCase,
+  async (ctx) => {
+    try {
+      const email = ctx.state.email
+      await sendVerification(ctx, email)
+    } catch (error) {
+      emitRouterError(error, ctx)
+    }
   }
-})
+)
 
 const signUpLimiter = RateLimit.middleware({
   interval: 2 * 60 * 1000,
@@ -116,7 +128,7 @@ const signUpLimiter = RateLimit.middleware({
   prefixKey: 'post/reset-password'
 })
 
-router.post('/sign-up', signUpLimiter, validateAuthSignUp, validEmail, emailNotExists, signUpUser)
+router.post('/sign-up', signUpLimiter, validateAuthSignUp, validEmail, emailNotExists, emailToLowerCase, signUpUser)
 
 const verifyEmailLimiter = RateLimit.middleware({
   interval: 2 * 60 * 1000,
