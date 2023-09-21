@@ -7,6 +7,7 @@ import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { liveItemStatuses } from './liveItem'
 import { createMediaRef, updateMediaRef } from './mediaRef'
+import { getPodcast } from './podcast'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
 const { superUserId } = config
@@ -20,6 +21,8 @@ const relations = [
   'podcast.authors',
   'podcast.categories'
 ]
+
+const maxResultsEpisodes = 5000
 
 const getEpisode = async (id) => {
   const repository = getRepository(Episode)
@@ -320,6 +323,47 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
   return handleGetEpisodesWithOrdering({ maxResults, qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
+// When a podcast has seasons, we always return all the episodes,
+// and in the order the podcaster intended.
+// If the podcast has serial type, then return in chronological order
+// instead of the default most-recent order.
+const getEpisodesByPodcastIdWithSeasons = async ({
+  searchTitle,
+  sincePubDate,
+  hasVideo,
+  itunesFeedType,
+  podcastId
+}) => {
+  const includePodcast = false
+  const shouldUseEpisodesMostRecent = false
+  const liveItemStatus = null
+  const qb = generateEpisodeSelects(
+    includePodcast,
+    searchTitle,
+    sincePubDate,
+    hasVideo,
+    shouldUseEpisodesMostRecent,
+    liveItemStatus
+  )
+
+  const isSerial = itunesFeedType === 'serial'
+  const sort = isSerial ? 'oldest' : 'most-recent'
+  const seasonsQuery = {
+    podcastId,
+    maxResults: maxResultsEpisodes,
+    searchTitle,
+    sort
+  }
+
+  const resultsArray = await getEpisodesByPodcastId(seasonsQuery, qb, [podcastId])
+  resultsArray.push({
+    hasSeasons: true,
+    isSerial
+  })
+
+  return resultsArray
+}
+
 const getEpisodesByPodcastIds = async (query) => {
   const {
     hasVideo,
@@ -346,7 +390,19 @@ const getEpisodesByPodcastIds = async (query) => {
   )
 
   if (podcastIds.length === 1) {
-    return getEpisodesByPodcastId(query, qb, podcastIds)
+    const id = podcastIds[0]
+    const podcast = await getPodcast(id)
+    if (podcast?.hasSeasons) {
+      return getEpisodesByPodcastIdWithSeasons({
+        searchTitle,
+        sincePubDate,
+        hasVideo,
+        itunesFeedType: podcast.itunesFeedType,
+        podcastId
+      })
+    } else {
+      return getEpisodesByPodcastId(query, qb, podcastIds)
+    }
   }
 
   qb.andWhere('episode.podcastId IN(:...podcastIds)', { podcastIds })
@@ -366,7 +422,7 @@ const handleGetEpisodesWithOrdering = async (
   totalOverride?
 ) => {
   const { maxResults, skip, sort, take } = obj
-  const finalTake = maxResults ? 5000 : take
+  const finalTake = maxResults ? maxResultsEpisodes : take
 
   let { qb } = obj
   qb.offset(skip)
