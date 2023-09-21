@@ -1216,7 +1216,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
     const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
-    if (existingEpisode.hasSeasons) {
+    if (existingEpisode.itunesSeason) {
       hasSeasons = true
     }
 
@@ -1237,7 +1237,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
     let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
-    if (newParsedEpisode.hasSeasons) {
+    if (newParsedEpisode.itunesSeason) {
       hasSeasons = true
     }
 
