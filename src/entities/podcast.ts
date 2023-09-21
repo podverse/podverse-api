@@ -113,6 +113,9 @@ export class Podcast {
   hasPodcastIndexValueTag?: boolean
 
   @Column({ default: false })
+  hasSeasons: boolean
+
+  @Column({ default: false })
   hasVideo: boolean
 
   @Column({ default: false })

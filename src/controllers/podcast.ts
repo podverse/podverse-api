@@ -200,6 +200,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     .addSelect('podcast.feedLastUpdated')
     .addSelect('podcast.funding')
     .addSelect('podcast.hasLiveItem')
+    .addSelect('podcast.hasSeasons')
     .addSelect('podcast.hasVideo')
     .addSelect('podcast.hideDynamicAdsWarning')
     .addSelect('podcast.imageUrl')

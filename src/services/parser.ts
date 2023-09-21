@@ -421,6 +421,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       logPerformance('findOrGenerateParsedLiveItems', _logEnd)
 
       podcast.hasLiveItem = hasLiveItem
+      podcast.hasSeasons = episodesResults.hasSeasons || liveItemsResults.hasSeasons
       podcast.hasVideo = episodesResults.hasVideo || liveItemsResults.hasVideo
 
       newEpisodes = episodesResults.newEpisodes
@@ -1054,6 +1055,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
   /* If a feed has more video episodes than audio episodes, mark it as a hasVideo podcast. */
   let videoCount = 0
   let audioCount = 0
+  let hasSeasons = false
 
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
@@ -1068,6 +1070,10 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
       podcast,
       pvEpisodesValueTagsByGuid
     )
+
+    if (parsedLiveItem.itunesSeason) {
+      hasSeasons = true
+    }
 
     if (parsedLiveItem.mediaType && checkIfVideoMediaType(parsedLiveItem.mediaType)) {
       videoCount++
@@ -1085,6 +1091,10 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
   for (const newParsedLiveItem of newParsedLiveItems) {
     let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedLiveItem, podcast, pvEpisodesValueTagsByGuid)
+
+    if (newParsedLiveItem.itunesSeason) {
+      hasSeasons = true
+    }
 
     if (newParsedLiveItem.mediaType && checkIfVideoMediaType(newParsedLiveItem.mediaType)) {
       videoCount++
@@ -1127,6 +1137,7 @@ const findOrGenerateParsedLiveItems = async (parsedLiveItems, podcast, pvEpisode
   return {
     newLiveItems,
     updatedSavedLiveItems,
+    hasSeasons,
     hasVideo: videoCount > audioCount,
     liveItemNotificationsData
   }
@@ -1197,12 +1208,17 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
   /* If a feed has more video episodes than audio episodes, mark it as a hasVideo podcast. */
   let videoCount = 0
   let audioCount = 0
+  let hasSeasons = false
 
   // If episode is already saved, then merge the matching episode found in
   // the parsed object with what is already saved.
   for (let existingEpisode of savedEpisodes) {
     const parsedEpisode = validParsedEpisodes.find((x) => x.guid === existingEpisode.guid)
     existingEpisode = await assignParsedEpisodeData(existingEpisode, parsedEpisode, podcast, pvEpisodesValueTagsByGuid)
+
+    if (existingEpisode.hasSeasons) {
+      hasSeasons = true
+    }
 
     if (existingEpisode.mediaType && checkIfVideoMediaType(existingEpisode.mediaType)) {
       videoCount++
@@ -1221,6 +1237,10 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
     let episode = new Episode() as ExtendedEpisode
     episode = await assignParsedEpisodeData(episode, newParsedEpisode, podcast, pvEpisodesValueTagsByGuid)
 
+    if (newParsedEpisode.hasSeasons) {
+      hasSeasons = true
+    }
+
     if (newParsedEpisode.mediaType && checkIfVideoMediaType(newParsedEpisode.mediaType)) {
       videoCount++
     } else {
@@ -1235,6 +1255,7 @@ const findOrGenerateParsedEpisodes = async (parsedEpisodes, podcast, pvEpisodesV
   return {
     newEpisodes,
     updatedSavedEpisodes,
+    hasSeasons,
     hasVideo: videoCount > audioCount
   }
 }
