@@ -82,7 +82,7 @@ const resetPasswordLimiter = RateLimit.middleware({
   prefixKey: 'post/reset-password'
 })
 
-router.post('/reset-password', resetPasswordLimiter, validateAuthResetPassword, emailToLowerCase, resetPassword)
+router.post('/reset-password', resetPasswordLimiter, validateAuthResetPassword, resetPassword)
 
 const sendResetPasswordLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
