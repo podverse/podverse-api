@@ -107,6 +107,18 @@ export class Episode {
   @Column({ default: false })
   isPublic: boolean
 
+  @Index()
+  @Column({ nullable: true })
+  itunesEpisode?: number
+
+  @Index()
+  @Column({ nullable: true })
+  itunesEpisodeType?: string
+
+  @Index()
+  @Column({ nullable: true })
+  itunesSeason?: number
+
   @ValidateIf((a) => a.linkUrl != null)
   @IsUrl()
   @Column({ nullable: true })
