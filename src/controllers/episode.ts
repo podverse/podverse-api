@@ -646,6 +646,44 @@ const refreshEpisodesMostRecentMaterializedView = async () => {
   await em.query('REFRESH MATERIALIZED VIEW CONCURRENTLY "episodes_most_recent"')
 }
 
+const dropAndRecreateEpisodesMostRecentMaterializedView = async () => {
+  const em = await getConnection().createEntityManager()
+
+  try {
+    console.log('dropping materialized view')
+    await em.query(`DROP MATERIALIZED VIEW "episodes_most_recent"`)
+  } catch (error) {
+    // If the materialized view was already dropped, it will throw an error,
+    // but we still want to continue to create the view.
+    console.log('dropAndRecreateEpisodesMostRecentMaterializedView error')
+    console.log(error)
+  }
+
+  console.log('creating materialized view')
+  await em.query(`
+    CREATE MATERIALIZED VIEW "episodes_most_recent" AS
+    SELECT e.*
+    FROM
+        "episodes" e
+    WHERE e."isPublic" = true
+      AND e."pubDate" > (NOW() - interval '14 days')
+        AND e."pubDate" < (NOW() + interval '1 days')
+  `)
+
+  console.log('creating index on unique id')
+  await em.query(`
+    CREATE UNIQUE INDEX CONCURRENTLY "IDX_episodes_most_recent_id"
+    ON "episodes_most_recent" (id)
+  `)
+
+  console.log('creating compound index on podcastId, isPublic, and pubDate')
+  await em.query(`
+    CREATE INDEX CONCURRENTLY "IDX_episodes_most_recent_podcastId_isPublic_pubDate"
+    ON public."episodes_most_recent"
+    USING btree ("podcastId", "isPublic", "pubDate")
+  `)
+}
+
 /* This is intended to only be used in our parser. */
 const getEpisodesWithLiveItemsWithMatchingGuids = async (podcastId: string, episodeGuids: string[]) => {
   let qb = getRepository(Episode).createQueryBuilder('episode')
@@ -691,6 +729,7 @@ const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, e
 }
 
 export {
+  dropAndRecreateEpisodesMostRecentMaterializedView,
   getEpisode,
   getEpisodeByPodcastIdAndGuid,
   getEpisodeByPodcastIdAndMediaUrl,
