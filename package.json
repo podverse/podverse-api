@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.14.1",
+  "version": "4.14.2",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -28,6 +28,7 @@
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "dev:scripts:dropAndRecreateEpisodesMostRecentMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/dropAndRecreateEpisodesMostRecentMaterializedView.ts",
     "dev:scripts:hideDeadPodcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "dev:scripts:parseFeedUrlsByPodcastIndexIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIndexIds.ts",
@@ -60,6 +61,7 @@
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "scripts:dropAndRecreateEpisodesMostRecentMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/dropAndRecreateEpisodesMostRecentMaterializedView.ts",
     "scripts:hideDeadPodcasts": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
     "scripts:parseFeedUrlsByPodcastIndexIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIndexIds.ts",

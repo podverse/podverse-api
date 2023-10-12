@@ -37,15 +37,6 @@ export class EpisodeMostRecent {
   credentialsRequired?: boolean
 
   @ViewColumn()
-  itunesEpisode?: number
-
-  @ViewColumn()
-  itunesEpisodeType?: string
-
-  @ViewColumn()
-  itunesSeason?: number
-
-  @ViewColumn()
   duration?: number
 
   @ViewColumn()
@@ -65,6 +56,15 @@ export class EpisodeMostRecent {
 
   @ViewColumn()
   isPublic: boolean
+
+  @ViewColumn()
+  itunesEpisode?: number
+
+  @ViewColumn()
+  itunesEpisodeType?: string
+
+  @ViewColumn()
+  itunesSeason?: number
 
   @ViewColumn()
   linkUrl?: string
