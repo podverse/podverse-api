@@ -90,9 +90,6 @@ export class Podcast {
   @Column({ nullable: true })
   description?: string
 
-  @Column({ default: false })
-  disableSeasons?: boolean
-
   @Column({ nullable: true })
   embedApprovedMediaUrlPaths?: string
 
