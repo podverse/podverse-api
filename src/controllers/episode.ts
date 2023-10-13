@@ -323,7 +323,7 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
   return handleGetEpisodesWithOrdering({ maxResults, qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
 }
 
-// When a podcast has seasons, we always return all the episodes,
+// When a podcast has seasons AND serial, we always return all the episodes,
 // and in the order the podcaster intended.
 // If the podcast has serial type, then return in chronological order
 // instead of the default most-recent order.
@@ -392,7 +392,7 @@ const getEpisodesByPodcastIds = async (query) => {
   if (podcastIds.length === 1) {
     const id = podcastIds[0]
     const podcast = await getPodcast(id)
-    if (podcast?.hasSeasons) {
+    if (podcast?.hasSeasons && podcast?.itunesFeedType === 'serial') {
       return getEpisodesByPodcastIdWithSeasons({
         searchTitle,
         sincePubDate,
