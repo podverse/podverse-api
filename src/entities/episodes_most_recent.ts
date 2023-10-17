@@ -37,6 +37,9 @@ export class EpisodeMostRecent {
   credentialsRequired?: boolean
 
   @ViewColumn()
+  description?: string
+
+  @ViewColumn()
   duration?: number
 
   @ViewColumn()
