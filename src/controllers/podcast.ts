@@ -1,4 +1,5 @@
 import { getRepository, In } from 'typeorm'
+import { config } from '~/config'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
@@ -448,6 +449,27 @@ const updateHasPodcastIndexValueTags = async (podcastIndexIds: string[]) => {
   console.log('newPodcastsToUpdate finished')
 }
 
+type GetPodcastWebUrl = {
+  podcastGuid?: string
+  podcastIndexId?: string
+}
+
+const getPodcastWebUrl = async ({ podcastGuid, podcastIndexId }: GetPodcastWebUrl) => {
+  if (podcastGuid) {
+    const podcast = await getPodcastByPodcastGuid(podcastGuid)
+    return {
+      webUrl: `${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`
+    }
+  } else if (podcastIndexId) {
+    const podcast = await getPodcastByPodcastIndexId(podcastIndexId)
+    return {
+      webUrl: `${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`
+    }
+  } else {
+    throw new createError.NotFound('Podcast not found')
+  }
+}
+
 export {
   findPodcastsByFeedUrls,
   getPodcast,
@@ -460,5 +482,6 @@ export {
   getSubscribedPodcasts,
   subscribeToPodcast,
   toggleSubscribeToPodcast,
-  updateHasPodcastIndexValueTags
+  updateHasPodcastIndexValueTags,
+  getPodcastWebUrl
 }
