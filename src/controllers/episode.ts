@@ -728,6 +728,52 @@ const getEpisodesWithLiveItemsWithoutMatchingGuids = async (podcastId: string, e
   return episodes
 }
 
+type GetEpisodeWebUrl = {
+  podcastGuid?: string
+  podcastIndexId?: string
+  episodeGuid?: string
+}
+
+const getEpisodeWebUrl = async ({ podcastGuid, podcastIndexId, episodeGuid }: GetEpisodeWebUrl) => {
+  if (episodeGuid && podcastGuid) {
+    const episode = await getRepository(Episode)
+      .createQueryBuilder('episode')
+      .innerJoin('episode.podcast', 'podcast')
+      .addSelect('episode.id')
+      .where(`podcast.podcastGuid = :podcastGuid`, { podcastGuid })
+      .andWhere('episode.guid = :episodeGuid', { episodeGuid })
+      .andWhere('episode.isPublic IS true')
+      .getOne()
+
+    if (!episode) {
+      throw new createError.NotFound('Episode not found')
+    }
+
+    return {
+      webUrl: `${config.websiteProtocol}://${config.websiteDomain}/episode/${episode.id}`
+    }
+  } else if (episodeGuid && podcastIndexId) {
+    const episode = await getRepository(Episode)
+      .createQueryBuilder('episode')
+      .innerJoin('episode.podcast', 'podcast')
+      .addSelect('episode.id')
+      .where(`podcast.podcastIndexId = :podcastIndexId`, { podcastIndexId })
+      .andWhere('episode.guid = :episodeGuid', { episodeGuid })
+      .andWhere('episode.isPublic IS true')
+      .getOne()
+
+    if (!episode) {
+      throw new createError.NotFound('Episode not found')
+    }
+
+    return {
+      webUrl: `${config.websiteProtocol}://${config.websiteDomain}/episode/${episode.id}`
+    }
+  } else {
+    throw new createError.NotFound('Episode not found')
+  }
+}
+
 export {
   dropAndRecreateEpisodesMostRecentMaterializedView,
   getEpisode,
@@ -741,5 +787,6 @@ export {
   getEpisodesWithLiveItemsWithoutMatchingGuids,
   refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
-  retrieveLatestChapters
+  retrieveLatestChapters,
+  getEpisodeWebUrl
 }
