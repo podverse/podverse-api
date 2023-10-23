@@ -62,6 +62,17 @@ export const processAppStorePurchases = async (transactions: any[] = [], loggedI
   return processedTransactionIds
 }
 
+export const processAppStorePurchases2 = async (transactions: any[] = [], loggedInUserId: string) => {
+  const processedPurchases = [] as any
+  for (const transaction of transactions) {
+    const appStorePurchase = await processAppStorePurchase(transaction, loggedInUserId)
+    if (appStorePurchase) {
+      processedPurchases.push(appStorePurchase)
+    }
+  }
+  return processedPurchases
+}
+
 const processAppStorePurchase = async (transaction: any, loggedInUserId: string) => {
   const newAppStorePurchase = await createOrUpdateAppStorePurchase(transaction, loggedInUserId)
   return newAppStorePurchase
