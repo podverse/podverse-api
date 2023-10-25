@@ -20,7 +20,7 @@ jobs:
       with:
         room_id: ${{ secrets.MATRIX_ALERTS_ROOM_ID }}
         access_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
-        message: "Deploying podverse-api ${{ steps.package-node-version.outputs.version }} to prod... \n https://github.com/podverse/podverse-api/actions/runs/${{ github.run.id }}"
+        message: "Deploying podverse-api ${{ steps.package-node-version.outputs.version }} to prod... \n https://github.com/podverse/podverse-api/actions/runs/${{ github.run_id }}"
         server: ${{ secrets.MATRIX_SERVER }}
     
     - name: build and push docker image
