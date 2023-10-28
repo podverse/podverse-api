@@ -547,7 +547,7 @@ const retrieveLatestChapters = async (id) => {
         const response = await request(chaptersUrl)
         const trimmedResponse = (response && response.trim()) || {}
         const parsedResponse = JSON.parse(trimmedResponse)
-        const { chapters: newChapters } = parsedResponse
+        let { chapters: newChapters } = parsedResponse
 
         if (newChapters) {
           const qb = mediaRefRepository
@@ -577,6 +577,14 @@ const retrieveLatestChapters = async (id) => {
               superUserId
             )
           }
+
+          // NOTE: we are temporarily removing `toc: false` chapters until we add
+          // proper UX support in our client-side applications.
+          // chapters with `toc: false` are not considered part of the "table of contents",
+          // but our client-side apps currently expect chapters to behave as a table of contents.
+          newChapters = newChapters.filter((chapter) => {
+            return chapter.toc !== false
+          })
 
           for (const newChapter of newChapters) {
             try {
