@@ -562,16 +562,12 @@ const retrieveLatestChapters = async (id) => {
             })
           const existingChapters = await qb.getRawMany()
 
-          // If existing chapter with current chapter's startTime does not exist,
-          // then set the existingChapter to isPublic = false.
-          const deadChapters = existingChapters.filter((x) => {
-            return newChapters.every((y) => y.startTime !== x.startTime)
-          })
-
-          for (const deadChapter of deadChapters) {
+          // Temporarily hide all existing chapters,
+          // then display the new valid ones at the end.
+          for (const existingChapter of existingChapters) {
             await updateMediaRef(
               {
-                ...deadChapter,
+                ...existingChapter,
                 isPublic: false
               },
               superUserId
