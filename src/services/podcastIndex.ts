@@ -195,6 +195,13 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
   return pvValueTagArray
 }
 
+// These getValueTagFor* services were intended for getting "value tag" info from Podcast Index,
+// but at this point they more broadly is for retrieving the "remote item" data
+// our client side apps need. The most common use case involves needing value tags
+// for value time splits (VTS), but we also return additional data as the
+// second item in the response data array, which gets handled as a "chapter"
+// in the client side apps, to display to the listener which value time split track
+// (usually a song) is playing right now.
 export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: string) => {
   const url = `${podcastIndexConfig.baseUrl}/podcasts/byguid?guid=${podcastGuid}`
   let podcastValueTag: ValueTag[] | null = null
@@ -216,6 +223,7 @@ export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: 
   return podcastValueTag
 }
 
+// see note above
 export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: string, episodeGuid: string) => {
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?podcastguid=${podcastGuid}&guid=${episodeGuid}`
   let episodeValueTag: ValueTag[] | null = null
