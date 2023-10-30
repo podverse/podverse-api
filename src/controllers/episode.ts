@@ -547,14 +547,14 @@ const retrieveLatestChapters = async (id) => {
         const response = await request(chaptersUrl)
         const trimmedResponse = (response && response.trim()) || {}
         const parsedResponse = JSON.parse(trimmedResponse)
-        let { chapters: newChapters } = parsedResponse
+        const { chapters: newChapters } = parsedResponse
 
         if (newChapters) {
           const qb = mediaRefRepository
             .createQueryBuilder('mediaRef')
             .select('mediaRef.id', 'id')
             .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
-            .addSelect('mediaRef.startTime', 'startTime')
+            .addSelect('mediaRef.chaptersIndex', 'chaptersIndex')
             .where({
               isOfficialChapter: true,
               episode: episode.id,
@@ -564,6 +564,7 @@ const retrieveLatestChapters = async (id) => {
 
           // Temporarily hide all existing chapters,
           // then display the new valid ones at the end.
+          // TODO: can we remove / improve this?
           for (const existingChapter of existingChapters) {
             await updateMediaRef(
               {
@@ -574,44 +575,42 @@ const retrieveLatestChapters = async (id) => {
             )
           }
 
-          // NOTE: we are temporarily removing `toc: false` chapters until we add
-          // proper UX support in our client-side applications.
-          // chapters with `toc: false` are not considered part of the "table of contents",
-          // but our client-side apps currently expect chapters to behave as a table of contents.
-          newChapters = newChapters.filter((chapter) => {
-            return chapter.toc !== false
-          })
-
-          for (const newChapter of newChapters) {
+          for (let i = 0; i < newChapters.length; i++) {
             try {
-              const startTime = Math.round(newChapter.startTime)
-              // If a chapter with that startTime already exists, then update it.
+              const newChapter = newChapters[i]
+              // If a chapter with that chaptersIndex already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
-              const existingChapter = existingChapters.find((x) => x.startTime === startTime)
+              const existingChapter = existingChapters.find((x) => x.chaptersIndex === i)
               if (existingChapter && existingChapter.id) {
                 await updateMediaRef(
                   {
+                    endTime: newChapter.endTime || null,
                     id: existingChapter.id,
                     imageUrl: newChapter.img || null,
                     isOfficialChapter: true,
                     isPublic: true,
                     linkUrl: newChapter.url || null,
-                    startTime,
+                    startTime: newChapter.startTime,
                     title: newChapter.title,
-                    episodeId: id
+                    episodeId: id,
+                    isChapterToc: newChapter.toc || null,
+                    chaptersIndex: i
                   },
                   superUserId
                 )
               } else {
                 await createMediaRef({
+                  endTime: newChapter.endTime || null,
                   imageUrl: newChapter.img || null,
                   isOfficialChapter: true,
                   isPublic: true,
                   linkUrl: newChapter.url || null,
-                  startTime,
+                  startTime: newChapter.startTime,
                   title: newChapter.title,
                   owner: superUserId,
-                  episodeId: id
+                  episodeId: id,
+                  isChapterToc: newChapter.toc || null,
+                  chaptersIndex: i
                 })
               }
             } catch (error) {
@@ -634,6 +633,8 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.linkUrl')
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.title')
+    .addSelect('mediaRef.isChapterToc')
+    .addSelect('mediaRef.chaptersIndex', 'chaptersIndex')
     .where({
       isOfficialChapter: true,
       episode: id,
