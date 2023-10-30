@@ -925,6 +925,8 @@ const getMostRecentEpisodeDataFromFeed = (meta, episodes) => {
     }
   }
 
+  // TODO: call retrieve chapters once
+
   return { mostRecentEpisodeTitle, mostRecentEpisodePubDate, mostRecentUpdateDateFromFeed }
 }
 
