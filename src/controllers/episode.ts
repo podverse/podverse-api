@@ -554,8 +554,9 @@ const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
 
     const vtsChapters: any[] = []
     if (valueTimeSplits && valueTimeSplits.length > 0) {
-      for (const valueTimeSplit of valueTimeSplits) {
+      for (let i = 0; i <= valueTimeSplits.length; i++) {
         try {
+          const valueTimeSplit = valueTimeSplits[i]
           if (checkIfValidVTSRemoteItem(valueTimeSplit)) {
             const startTime = Math.floor(valueTimeSplit.startTime)
             const duration = Math.floor(valueTimeSplit.duration)
@@ -611,6 +612,7 @@ const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
             linkUrl = episode?.linkUrl || podcast?.linkUrl || ''
 
             const vtsChapter = {
+              id: `vts-${i}`,
               endTime,
               imageUrl,
               isChapterToc: false,
