@@ -211,7 +211,7 @@
     "tsconfig-paths": "3.9.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
     "typeorm": "0.2.45",
-    "uuid": "3.3.3",
+    "uuid": "^9.0.1",
     "valid-url": "1.0.9",
     "validator": "13.7.0",
     "web-push": "^3.6.3",
