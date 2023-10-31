@@ -11,6 +11,7 @@ import {
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
   getEpisodesFromSearchEngine,
+  getVTSAsChapters,
   retrieveLatestChapters
 } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -18,6 +19,7 @@ import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { getThreadcap } from '~/services/socialInteraction/threadcap'
 import { request } from '~/lib/request'
+// import { MediaRef } from '~/entities'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
@@ -69,7 +71,17 @@ router.get('/:id', parseNSFWHeader, async (ctx) => {
 router.get('/:id/retrieve-latest-chapters', async (ctx) => {
   try {
     if (!ctx.params.id) throw new Error('An episodeId is required.')
-    const latestChapters = await retrieveLatestChapters(ctx.params.id)
+    const includeNonToc = ctx.query?.includeNonToc === 'true'
+    const latestChapters = await retrieveLatestChapters(ctx.params.id, includeNonToc)
+
+    /* VTS = value time splits */
+    // let vtsChapters: MediaRef[] = []
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // let vtsChapters: any[] = []
+    if (!!ctx.query.includeVTS) {
+      await getVTSAsChapters(ctx.params.id)
+    }
+
     ctx.body = latestChapters
   } catch (error) {
     emitRouterError(error, ctx)

@@ -519,7 +519,32 @@ const removeEpisodes = async (episodes: any[]) => {
   ])
 }
 
-const retrieveLatestChapters = async (id) => {
+const getVTSAsChapters = async (episodeId: string) => {
+  console.log('getVTSAsChapters', episodeId)
+  try {
+    const episodeRepository = getRepository(Episode)
+    const episode = (await episodeRepository
+      .createQueryBuilder('episode')
+      .select('episode.id', 'id')
+      .select('episode.value')
+      .where('episode.id = :id', { id: episodeId })
+      .getRawOne()) as Episode
+
+    console.log('episode', episode)
+
+    const episodeValueTags = episode?.value
+    if (episodeValueTags?.length > 0) {
+      return [{ some: 'chapters' }]
+    }
+  } catch (error) {
+    console.log('getVTSAsChapters error', error)
+  }
+
+  return []
+}
+
+// TOC = Table of Contents chapters
+const retrieveLatestChapters = async (id, includeNonToc = true) => {
   const episodeRepository = getRepository(Episode)
   const mediaRefRepository = getRepository(MediaRef)
 
@@ -538,10 +563,10 @@ const retrieveLatestChapters = async (id) => {
   ;(async function () {
     // Update the latest chapters only once every 1 hour for an episode.
     // If less than 1 hours, then just return the latest chapters from the database.
-    const halfDay = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
+    const oneHour = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
     const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
 
-    if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
+    if (chaptersUrl && (!chaptersUrlLastParsed || oneHour > chaptersUrlLastParsedDate)) {
       try {
         await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
         const response = await request(chaptersUrl)
@@ -578,6 +603,9 @@ const retrieveLatestChapters = async (id) => {
           for (let i = 0; i < newChapters.length; i++) {
             try {
               const newChapter = newChapters[i]
+              const roundedStartTime = Math.floor(newChapter.startTime)
+              const isChapterToc = newChapter.toc === false ? false : newChapter.toc
+
               // If a chapter with that chaptersIndex already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
               const existingChapter = existingChapters.find((x) => x.chaptersIndex === i)
@@ -590,10 +618,10 @@ const retrieveLatestChapters = async (id) => {
                     isOfficialChapter: true,
                     isPublic: true,
                     linkUrl: newChapter.url || null,
-                    startTime: newChapter.startTime,
+                    startTime: roundedStartTime,
                     title: newChapter.title,
                     episodeId: id,
-                    isChapterToc: newChapter.toc || null,
+                    isChapterToc,
                     chaptersIndex: i
                   },
                   superUserId
@@ -605,11 +633,11 @@ const retrieveLatestChapters = async (id) => {
                   isOfficialChapter: true,
                   isPublic: true,
                   linkUrl: newChapter.url || null,
-                  startTime: newChapter.startTime,
+                  startTime: roundedStartTime,
                   title: newChapter.title,
                   owner: superUserId,
                   episodeId: id,
-                  isChapterToc: newChapter.toc || null,
+                  isChapterToc,
                   chaptersIndex: i
                 })
               }
@@ -624,7 +652,7 @@ const retrieveLatestChapters = async (id) => {
     }
   })()
 
-  const officialChaptersForEpisode = await mediaRefRepository
+  const qbOfficialChaptersForEpisode = mediaRefRepository
     .createQueryBuilder('mediaRef')
     .select('mediaRef.id')
     .addSelect('mediaRef.endTime')
@@ -634,12 +662,18 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.title')
     .addSelect('mediaRef.isChapterToc')
-    .addSelect('mediaRef.chaptersIndex', 'chaptersIndex')
+    .addSelect('mediaRef.chaptersIndex')
     .where({
       isOfficialChapter: true,
       episode: id,
       isPublic: true
     })
+
+  if (!includeNonToc) {
+    qbOfficialChaptersForEpisode.andWhere('mediaRef.isChapterToc IS NOT FALSE')
+  }
+
+  const officialChaptersForEpisode = await qbOfficialChaptersForEpisode
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
 
@@ -790,6 +824,7 @@ export {
   getEpisodesFromSearchEngine,
   getEpisodesWithLiveItemsWithMatchingGuids,
   getEpisodesWithLiveItemsWithoutMatchingGuids,
+  getVTSAsChapters,
   refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
   retrieveLatestChapters,
