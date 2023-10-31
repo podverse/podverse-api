@@ -11,7 +11,7 @@ import {
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
   getEpisodesFromSearchEngine,
-  getVTSAsChapters,
+  getLightningKeysendVTSAsChapters,
   retrieveLatestChapters
 } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -78,8 +78,8 @@ router.get('/:id/retrieve-latest-chapters', async (ctx) => {
     // let vtsChapters: MediaRef[] = []
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // let vtsChapters: any[] = []
-    if (!!ctx.query.includeVTS) {
-      await getVTSAsChapters(ctx.params.id)
+    if (!!ctx.query.includeLightningKeysendVTS) {
+      await getLightningKeysendVTSAsChapters(ctx.params.id)
     }
 
     ctx.body = latestChapters
