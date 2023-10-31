@@ -35,7 +35,8 @@ import {
 import {
   getEpisodeByPodcastIdAndGuid,
   getEpisodesWithLiveItemsWithMatchingGuids,
-  getEpisodesWithLiveItemsWithoutMatchingGuids
+  getEpisodesWithLiveItemsWithoutMatchingGuids,
+  retrieveLatestChapters
 } from '~/controllers/episode'
 import { getLiveItemByGuid } from '~/controllers/liveItem'
 import { PhasePendingChat } from 'podcast-partytime/dist/parser/phase/phase-pending'
@@ -522,14 +523,14 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     await feedUrlRepo.update(feedUrl.id, cleanedFeedUrl)
     logPerformance('feedUrlRepo.update', _logEnd)
 
+    // Retrieve the episode to make sure we have the episode.id
+    const latestEpisodeWithId = await getEpisodeByPodcastIdAndGuid(podcast.id, latestEpisodeGuid)
+
     if (shouldSendNewEpisodeNotification) {
       logPerformance('sendNewEpisodeDetectedNotification', _logStart)
       const podcastShrunkImageUrl = podcast.shrunkImageUrl
       const podcastFullImageUrl = podcast.imageUrl
       const episodeFullImageUrl = latestEpisodeImageUrl
-
-      // Retrieve the episode to make sure we have the episode.id
-      const latestEpisodeWithId = await getEpisodeByPodcastIdAndGuid(podcast.id, latestEpisodeGuid)
 
       if (latestEpisodeWithId?.id) {
         await sendNewEpisodeDetectedNotification({
@@ -596,6 +597,15 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       }
     }
     logPerformance('newEpisodes updateSoundBites', _logEnd)
+
+    logPerformance('retrieveLatestChapters', _logStart)
+    // Run retrieveLatestChapters only for the latest episode to make sure
+    // chapters are pre-populated in our database. Otherwise the first person
+    // who plays the episode will not see chapters.
+    if (latestEpisodeWithId?.id) {
+      await retrieveLatestChapters(latestEpisodeWithId.id)
+    }
+    logPerformance('retrieveLatestChapters', _logEnd)
   } catch (error) {
     throw error
   } finally {
