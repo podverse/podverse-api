@@ -74,10 +74,6 @@ router.get('/:id/retrieve-latest-chapters', async (ctx) => {
     const includeNonToc = ctx.query?.includeNonToc === 'true'
     const latestChapters = await retrieveLatestChapters(ctx.params.id, includeNonToc)
 
-    /* VTS = value time splits */
-    // let vtsChapters: MediaRef[] = []
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // let vtsChapters: any[] = []
     if (!!ctx.query.includeLightningKeysendVTS) {
       await getLightningKeysendVTSAsChapters(ctx.params.id)
     }
