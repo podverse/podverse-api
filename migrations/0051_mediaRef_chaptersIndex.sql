@@ -1,11 +1,11 @@
 ALTER TABLE ONLY public."mediaRefs"
-    ADD COLUMN "chaptersIndex" integer DEFAULT NULL;
+    ADD COLUMN "chapterHash" uuid DEFAULT NULL;
 
--- Create a unique index that allows NULL for the chaptersIndex column
-CREATE UNIQUE INDEX chaptersIndex_3col_unique_idx
-    ON public."mediaRefs" ("episodeId", "isOfficialChapter", "chaptersIndex")
+-- Create a unique index that allows NULL for the chapterHash column
+CREATE UNIQUE INDEX chapterHash_3col_unique_idx
+    ON public."mediaRefs" ("episodeId", "isOfficialChapter", "chapterHash")
     WHERE "mediaRefs"."isOfficialChapter" IS TRUE
-    AND "mediaRefs"."chaptersIndex" IS NOT NULL;
+    AND "mediaRefs"."chapterHash" IS NOT NULL;
 
 -- Drop the deprecated index
 ALTER TABLE public."mediaRefs"
