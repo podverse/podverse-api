@@ -973,6 +973,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.119.tgz#be847e5f4bc3e35e46d041c394ead8b603ad8b39"
   integrity sha512-Z3TNyBL8Vd/M9D9Ms2S3LmFq2sSMzahodD6rCS9V2N44HUMINb75jNkSuwAx7eo2ufqTdfOdtGQpNbieUjPQmw==
 
+"@types/lodash@4.14.172":
+  version "4.14.172"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
+  integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
+
 "@types/mime@*":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.1.tgz#5f8f2bca0a5863cb69bc0b0acd88c96cb1d4ae10"
@@ -6712,7 +6717,7 @@ lodash.union@^4.6.0:
   resolved "https://registry.yarnpkg.com/lodash.union/-/lodash.union-4.6.0.tgz#48bb5088409f16f1821666641c44dd1aaae3cd88"
   integrity sha512-c4pB2CdGrGdjMKYLA+XiRDO7Y0PRQbm/Gzg8qMj+QH+pFVAoTp5sBpO0odL3FjoPCGjK96p6qsP+yQoiLoOBcw==
 
-lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.3, lodash@^4.17.5, lodash@^4.7.0:
+lodash@4.17.21, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.3, lodash@^4.17.5, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -8079,13 +8084,15 @@ podcast-partytime@4.6.2:
     ramda "^0.27.1"
     tiny-invariant "^1.2.0"
 
-podverse-shared@^4.13.14:
-  version "4.13.14"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.13.14.tgz#7ef2ce8597d4e42374f10d3432ba2aa1ef7e8688"
-  integrity sha512-1ZW0ooZIz98tMSwtavgU7Kig5z9soaMkDbni/nPilfgJ5rcqIkyi1O9OIwcb1xRExBMO2U2vrQqANpAjbt0l0Q==
+podverse-shared@^4.14.9:
+  version "4.14.9"
+  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.14.9.tgz#19e3823cbe9f18fcb43daa93e56ca92b9be2797d"
+  integrity sha512-AZplb5KhkM41Y4+fSHeLvKu24T2TMcUgA0eFT3p7cVfPODGYiAkUgJPo4UXydMKJ5oOI/WOzyrYvWdw+0iHDnQ==
   dependencies:
+    "@types/lodash" "4.14.172"
     he "^1.2.0"
     html-entities "^2.3.2"
+    lodash "4.17.21"
     striptags "^3.2.0"
     typescript "3.9.7"
 
