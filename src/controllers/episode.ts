@@ -1,15 +1,18 @@
 import { getConnection, getRepository } from 'typeorm'
 import { config } from '~/config'
-import { Episode, EpisodeMostRecent, MediaRef } from '~/entities'
+import { Episode, EpisodeMostRecent, MediaRef, Podcast } from '~/entities'
 import { request } from '~/lib/request'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { liveItemStatuses } from './liveItem'
 import { createMediaRef, updateMediaRef } from './mediaRef'
-import { getPodcast } from './podcast'
+import { getPodcast, getPodcastByPodcastGuid } from './podcast'
+import { getLightningKeysendValueItem } from 'podverse-shared'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
+import { v5 as uuidv5, NIL as uuidNIL } from 'uuid'
+
 const { superUserId } = config
 
 const relations = [
@@ -519,23 +522,116 @@ const removeEpisodes = async (episodes: any[]) => {
   ])
 }
 
-const getVTSAsChapters = async (episodeId: string) => {
-  console.log('getVTSAsChapters', episodeId)
+const checkIfValidVTSRemoteItem = (valueTimeSplit: any) => {
+  return (
+    valueTimeSplit &&
+    valueTimeSplit.type === 'remoteItem' &&
+    valueTimeSplit.startTime !== null &&
+    valueTimeSplit.startTime >= 0 &&
+    valueTimeSplit.duration !== null &&
+    valueTimeSplit.duration >= 0
+  )
+}
+
+const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
   try {
     const episodeRepository = getRepository(Episode)
     const episode = (await episodeRepository
       .createQueryBuilder('episode')
       .select('episode.id', 'id')
-      .select('episode.value')
+      .select('episode.value', 'value')
       .where('episode.id = :id', { id: episodeId })
       .getRawOne()) as Episode
 
-    console.log('episode', episode)
+    let valueTags = episode?.value || []
 
-    const episodeValueTags = episode?.value
-    if (episodeValueTags?.length > 0) {
-      return [{ some: 'chapters' }]
+    if (typeof valueTags === 'string') {
+      valueTags = JSON.parse(valueTags)
     }
+
+    const lightningKeysendValueTags = getLightningKeysendValueItem(valueTags)
+    const valueTimeSplits = lightningKeysendValueTags?.valueTimeSplits as any[]
+
+    const vtsChapters: any[] = []
+    if (valueTimeSplits && valueTimeSplits.length > 0) {
+      for (const valueTimeSplit of valueTimeSplits) {
+        try {
+          if (checkIfValidVTSRemoteItem(valueTimeSplit)) {
+            const startTime = Math.floor(valueTimeSplit.startTime)
+            const duration = Math.floor(valueTimeSplit.duration)
+            const endTime = startTime + duration
+            let title = ''
+            let imageUrl = ''
+            let linkUrl = ''
+            let remoteEpisodeId = ''
+            let remotePodcastId = ''
+
+            let episode: Episode | null = null
+            let podcast: Podcast | null = null
+
+            // TODO: is remoteItem missing from the partytime type?
+            const remoteItemGuid = valueTimeSplit.remoteItem?.itemGuid
+            const remoteFeedGuid = valueTimeSplit.remoteItem?.feedGuid
+
+            const includeRelations = true
+            podcast = await getPodcastByPodcastGuid(remoteFeedGuid, includeRelations)
+            remotePodcastId = podcast.id
+            if (podcast?.id && remoteItemGuid && remoteFeedGuid) {
+              try {
+                episode = await getEpisodeByPodcastIdAndGuid(podcast.id, remoteItemGuid)
+                remoteEpisodeId = episode?.id || ''
+              } catch (error) {
+                // probably a 404
+                // console.log('ep error', error)
+              }
+            }
+            const podcastAuthors = podcast?.authors
+            const episodeAuthors = episode?.authors
+
+            let authorsTitle = ''
+            if (episodeAuthors && episodeAuthors.length > 0) {
+              for (const episodeAuthor of episodeAuthors) {
+                authorsTitle += `${episodeAuthor.name || ''},`
+              }
+            } else if (podcastAuthors && podcastAuthors.length > 0) {
+              for (const podcastAuthor of podcastAuthors) {
+                authorsTitle += `${podcastAuthor.name || ''},`
+              }
+            }
+            authorsTitle = authorsTitle.slice(0, -1)
+
+            if (authorsTitle && episode?.title) {
+              title = `${authorsTitle} – ${episode.title}`
+            } else if (episode?.title) {
+              title = `${episode.title}`
+            }
+
+            imageUrl = episode?.imageUrl || podcast?.imageUrl || podcast?.shrunkImageUrl || ''
+
+            linkUrl = episode?.linkUrl || podcast?.linkUrl || ''
+
+            const vtsChapter = {
+              endTime,
+              imageUrl,
+              isChapterToc: false,
+              isChapterVts: true,
+              linkUrl,
+              startTime,
+              title,
+              remoteEpisodeId,
+              remotePodcastId
+            }
+
+            vtsChapters.push(vtsChapter)
+          }
+        } catch (error) {
+          // probably a 404
+          // console.log('podcast error', error)
+        }
+      }
+    }
+
+    return vtsChapters
   } catch (error) {
     console.log('getVTSAsChapters error', error)
   }
@@ -579,7 +675,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
             .createQueryBuilder('mediaRef')
             .select('mediaRef.id', 'id')
             .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
-            .addSelect('mediaRef.chaptersIndex', 'chaptersIndex')
+            .addSelect('mediaRef.chapterHash', 'chapterHash')
             .where({
               isOfficialChapter: true,
               episode: episode.id,
@@ -605,10 +701,11 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
               const newChapter = newChapters[i]
               const roundedStartTime = Math.floor(newChapter.startTime)
               const isChapterToc = newChapter.toc === false ? false : newChapter.toc
+              const chapterHash = uuidv5(JSON.stringify(newChapter), uuidNIL)
 
-              // If a chapter with that chaptersIndex already exists, then update it.
+              // If a chapter with that chapterHash already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
-              const existingChapter = existingChapters.find((x) => x.chaptersIndex === i)
+              const existingChapter = existingChapters.find((x) => x.chapterHash === chapterHash)
               if (existingChapter && existingChapter.id) {
                 await updateMediaRef(
                   {
@@ -622,7 +719,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
                     title: newChapter.title,
                     episodeId: id,
                     isChapterToc,
-                    chaptersIndex: i
+                    chapterHash
                   },
                   superUserId
                 )
@@ -638,7 +735,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
                   owner: superUserId,
                   episodeId: id,
                   isChapterToc,
-                  chaptersIndex: i
+                  chapterHash
                 })
               }
             } catch (error) {
@@ -662,7 +759,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.title')
     .addSelect('mediaRef.isChapterToc')
-    .addSelect('mediaRef.chaptersIndex')
+    .addSelect('mediaRef.chapterHash')
     .where({
       isOfficialChapter: true,
       episode: id,
@@ -824,7 +921,7 @@ export {
   getEpisodesFromSearchEngine,
   getEpisodesWithLiveItemsWithMatchingGuids,
   getEpisodesWithLiveItemsWithoutMatchingGuids,
-  getVTSAsChapters,
+  getLightningKeysendVTSAsChapters,
   refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
   retrieveLatestChapters,

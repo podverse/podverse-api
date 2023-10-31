@@ -20,7 +20,7 @@ import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { getThreadcap } from '~/services/socialInteraction/threadcap'
 import { request } from '~/lib/request'
 // import { MediaRef } from '~/entities'
-
+const lodash = require('lodash')
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
 const delimitKeys = ['authors', 'mediaRefs']
@@ -75,9 +75,12 @@ router.get('/:id/retrieve-latest-chapters', async (ctx) => {
     const latestChapters = await retrieveLatestChapters(ctx.params.id, includeNonToc)
 
     if (!!ctx.query.includeLightningKeysendVTS) {
-      await getLightningKeysendVTSAsChapters(ctx.params.id)
+      const vtsChapters = await getLightningKeysendVTSAsChapters(ctx.params.id)
+      latestChapters[0] = latestChapters[0]?.concat(vtsChapters)
+      latestChapters[1] = latestChapters[0]?.length
     }
 
+    latestChapters[0] = lodash.orderBy(latestChapters[0], ['startTime'], 'asc')
     ctx.body = latestChapters
   } catch (error) {
     emitRouterError(error, ctx)
