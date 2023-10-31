@@ -23,8 +23,8 @@ import { generateShortId } from '~/lib/utility'
 @Entity('mediaRefs')
 // Deprecated: we no longer ensure uniqueness with startTime as it was too buggy
 // @Unique('mediaRef_index_episode_isOfficialChapter_startTime', ['episode', 'isOfficialChapter', 'startTime'])
-// Instead, we ensure uniqueness with a compound index on chaptersIndex column
-@Unique('chaptersIndex_3col_unique_idx', ['episode', 'isOfficialChapter', 'chaptersIndex'])
+// Instead, we ensure uniqueness with a compound index on chapterHash column
+@Unique('chapterHash_3col_unique_idx', ['episode', 'isOfficialChapter', 'chapterHash'])
 export class MediaRef {
   @PrimaryColumn('varchar', {
     default: generateShortId(),
@@ -38,14 +38,12 @@ export class MediaRef {
   int_id: number
 
   // If chapters should update, we overwrite the existing chapter
-  // at that chaptersIndex. This is just to prevent us from creating an
+  // at that chapterHash. This is just to prevent us from creating an
   // endless amount of chapter rows in our database whenever we
   // reparse a chapters file.
-  @ValidateIf((a) => a.chaptersIndex != null)
-  @IsInt()
-  @Min(0)
-  @Column({ nullable: true })
-  chaptersIndex: number
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  chapterHash: string
 
   @ValidateIf((a) => a.endTime != null)
   @IsInt()
