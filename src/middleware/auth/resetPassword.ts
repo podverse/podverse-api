@@ -1,4 +1,5 @@
 import { addSeconds } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
 import { config } from '~/config'
 import {
   getUserByEmail,
@@ -8,7 +9,6 @@ import {
 } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendResetPasswordEmail } from '~/services/auth/sendResetPasswordEmail'
-const uuidv4 = require('uuid/v4')
 
 export const resetPassword = async (ctx) => {
   const { password, resetPasswordToken } = ctx.request.body

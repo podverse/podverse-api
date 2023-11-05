@@ -11,6 +11,7 @@ import {
   getEpisodesByCategoryIds,
   getEpisodesByPodcastIds,
   getEpisodesFromSearchEngine,
+  getLightningKeysendVTSAsChapters,
   retrieveLatestChapters
 } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
@@ -18,7 +19,8 @@ import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { getThreadcap } from '~/services/socialInteraction/threadcap'
 import { request } from '~/lib/request'
-
+// import { MediaRef } from '~/entities'
+const lodash = require('lodash')
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/episode` })
 
 const delimitKeys = ['authors', 'mediaRefs']
@@ -69,7 +71,16 @@ router.get('/:id', parseNSFWHeader, async (ctx) => {
 router.get('/:id/retrieve-latest-chapters', async (ctx) => {
   try {
     if (!ctx.params.id) throw new Error('An episodeId is required.')
-    const latestChapters = await retrieveLatestChapters(ctx.params.id)
+    const includeNonToc = ctx.query?.includeNonToc === 'true'
+    const latestChapters = await retrieveLatestChapters(ctx.params.id, includeNonToc)
+
+    if (!!ctx.query.includeLightningKeysendVTS) {
+      const vtsChapters = await getLightningKeysendVTSAsChapters(ctx.params.id)
+      latestChapters[0] = latestChapters[0]?.concat(vtsChapters)
+      latestChapters[1] = latestChapters[0]?.length
+    }
+
+    latestChapters[0] = lodash.orderBy(latestChapters[0], ['startTime'], 'asc')
     ctx.body = latestChapters
   } catch (error) {
     emitRouterError(error, ctx)

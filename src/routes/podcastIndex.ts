@@ -29,6 +29,8 @@ router.get('/podcast/by-id/:id', podcastByIdLimiter, async (ctx) => {
 })
 
 // Get value tags from Podcast Index by feed and item guids.
+// NOTE: this is more accurately "get remote item data" at this point,
+// as value tags are not strictly required for "remote items" to be useful.
 router.get('/value/by-guids', async (ctx) => {
   const podcastGuid = ctx.query.podcastGuid as string
   const episodeGuid = ctx.query.episodeGuid as string
@@ -38,7 +40,6 @@ router.get('/value/by-guids', async (ctx) => {
       const data = await getValueTagForItemFromPodcastIndexByGuids(podcastGuid, episodeGuid)
       ctx.body = data
     } catch (error) {
-      console.log('error', error)
       emitRouterError(error, ctx)
     }
   } else if (podcastGuid) {

@@ -1,15 +1,18 @@
 import { getConnection, getRepository } from 'typeorm'
 import { config } from '~/config'
-import { Episode, EpisodeMostRecent, MediaRef } from '~/entities'
+import { Episode, EpisodeMostRecent, MediaRef, Podcast } from '~/entities'
 import { request } from '~/lib/request'
 import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { liveItemStatuses } from './liveItem'
 import { createMediaRef, updateMediaRef } from './mediaRef'
-import { getPodcast } from './podcast'
+import { getPodcast, getPodcastByPodcastGuid } from './podcast'
+import { getLightningKeysendValueItem } from 'podverse-shared'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
+import { v5 as uuidv5, NIL as uuidNIL } from 'uuid'
+
 const { superUserId } = config
 
 const relations = [
@@ -519,7 +522,127 @@ const removeEpisodes = async (episodes: any[]) => {
   ])
 }
 
-const retrieveLatestChapters = async (id) => {
+const checkIfValidVTSRemoteItem = (valueTimeSplit: any) => {
+  return (
+    valueTimeSplit &&
+    valueTimeSplit.type === 'remoteItem' &&
+    valueTimeSplit.startTime !== null &&
+    valueTimeSplit.startTime >= 0 &&
+    valueTimeSplit.duration !== null &&
+    valueTimeSplit.duration >= 0
+  )
+}
+
+const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
+  try {
+    const episodeRepository = getRepository(Episode)
+    const episode = (await episodeRepository
+      .createQueryBuilder('episode')
+      .select('episode.id', 'id')
+      .select('episode.value', 'value')
+      .where('episode.id = :id', { id: episodeId })
+      .getRawOne()) as Episode
+
+    let valueTags = episode?.value || []
+
+    if (typeof valueTags === 'string') {
+      valueTags = JSON.parse(valueTags)
+    }
+
+    const lightningKeysendValueTags = getLightningKeysendValueItem(valueTags)
+    const valueTimeSplits = lightningKeysendValueTags?.valueTimeSplits as any[]
+
+    const vtsChapters: any[] = []
+    if (valueTimeSplits && valueTimeSplits.length > 0) {
+      for (let i = 0; i <= valueTimeSplits.length; i++) {
+        try {
+          const valueTimeSplit = valueTimeSplits[i]
+          if (checkIfValidVTSRemoteItem(valueTimeSplit)) {
+            const startTime = Math.floor(valueTimeSplit.startTime)
+            const duration = Math.floor(valueTimeSplit.duration)
+            const endTime = startTime + duration
+            let title = ''
+            let imageUrl = ''
+            let linkUrl = ''
+            let remoteEpisodeId = ''
+            let remotePodcastId = ''
+
+            let episode: Episode | null = null
+            let podcast: Podcast | null = null
+
+            // TODO: is remoteItem missing from the partytime type?
+            const remoteItemGuid = valueTimeSplit.remoteItem?.itemGuid
+            const remoteFeedGuid = valueTimeSplit.remoteItem?.feedGuid
+
+            const includeRelations = true
+            podcast = await getPodcastByPodcastGuid(remoteFeedGuid, includeRelations)
+            remotePodcastId = podcast.id
+            if (podcast?.id && remoteItemGuid && remoteFeedGuid) {
+              try {
+                episode = await getEpisodeByPodcastIdAndGuid(podcast.id, remoteItemGuid)
+                remoteEpisodeId = episode?.id || ''
+              } catch (error) {
+                // probably a 404
+                // console.log('ep error', error)
+              }
+            }
+            const podcastAuthors = podcast?.authors
+            const episodeAuthors = episode?.authors
+
+            let authorsTitle = ''
+            if (episodeAuthors && episodeAuthors.length > 0) {
+              for (const episodeAuthor of episodeAuthors) {
+                authorsTitle += `${episodeAuthor.name || ''},`
+              }
+            } else if (podcastAuthors && podcastAuthors.length > 0) {
+              for (const podcastAuthor of podcastAuthors) {
+                authorsTitle += `${podcastAuthor.name || ''},`
+              }
+            }
+            authorsTitle = authorsTitle.slice(0, -1)
+
+            if (authorsTitle && episode?.title) {
+              title = `${authorsTitle} – ${episode.title}`
+            } else if (episode?.title) {
+              title = `${episode.title}`
+            }
+
+            imageUrl = episode?.imageUrl || podcast?.imageUrl || podcast?.shrunkImageUrl || ''
+
+            linkUrl = episode?.linkUrl || podcast?.linkUrl || ''
+
+            const vtsChapter = {
+              id: `vts-${i}`,
+              endTime,
+              imageUrl,
+              isChapterToc: false,
+              isChapterVts: true,
+              linkUrl,
+              startTime,
+              title,
+              remoteEpisodeId,
+              remotePodcastId
+            }
+
+            vtsChapters.push(vtsChapter)
+          }
+        } catch (error) {
+          // probably a 404
+          // console.log('podcast error', error)
+        }
+      }
+    }
+
+    return vtsChapters
+  } catch (error) {
+    console.log('getVTSAsChapters error', error)
+  }
+
+  return []
+}
+
+// TOC = Table of Contents chapters
+const retrieveLatestChapters = async (id, includeNonToc = true) => {
   const episodeRepository = getRepository(Episode)
   const mediaRefRepository = getRepository(MediaRef)
 
@@ -538,23 +661,23 @@ const retrieveLatestChapters = async (id) => {
   ;(async function () {
     // Update the latest chapters only once every 1 hour for an episode.
     // If less than 1 hours, then just return the latest chapters from the database.
-    const halfDay = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
+    const oneHour = new Date().getTime() - 1 * 1 * 60 * 60 * 1000 // days hours minutes seconds milliseconds
     const chaptersUrlLastParsedDate = new Date(chaptersUrlLastParsed).getTime()
 
-    if (chaptersUrl && (!chaptersUrlLastParsed || halfDay > chaptersUrlLastParsedDate)) {
+    if (chaptersUrl && (!chaptersUrlLastParsed || oneHour > chaptersUrlLastParsedDate)) {
       try {
         await episodeRepository.update(episode.id, { chaptersUrlLastParsed: new Date() })
         const response = await request(chaptersUrl)
         const trimmedResponse = (response && response.trim()) || {}
         const parsedResponse = JSON.parse(trimmedResponse)
-        let { chapters: newChapters } = parsedResponse
+        const { chapters: newChapters } = parsedResponse
 
         if (newChapters) {
           const qb = mediaRefRepository
             .createQueryBuilder('mediaRef')
             .select('mediaRef.id', 'id')
             .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
-            .addSelect('mediaRef.startTime', 'startTime')
+            .addSelect('mediaRef.chapterHash', 'chapterHash')
             .where({
               isOfficialChapter: true,
               episode: episode.id,
@@ -564,6 +687,7 @@ const retrieveLatestChapters = async (id) => {
 
           // Temporarily hide all existing chapters,
           // then display the new valid ones at the end.
+          // TODO: can we remove / improve this?
           for (const existingChapter of existingChapters) {
             await updateMediaRef(
               {
@@ -574,44 +698,46 @@ const retrieveLatestChapters = async (id) => {
             )
           }
 
-          // NOTE: we are temporarily removing `toc: false` chapters until we add
-          // proper UX support in our client-side applications.
-          // chapters with `toc: false` are not considered part of the "table of contents",
-          // but our client-side apps currently expect chapters to behave as a table of contents.
-          newChapters = newChapters.filter((chapter) => {
-            return chapter.toc !== false
-          })
-
-          for (const newChapter of newChapters) {
+          for (let i = 0; i < newChapters.length; i++) {
             try {
-              const startTime = Math.round(newChapter.startTime)
-              // If a chapter with that startTime already exists, then update it.
+              const newChapter = newChapters[i]
+              const roundedStartTime = Math.floor(newChapter.startTime)
+              const isChapterToc = newChapter.toc === false ? false : newChapter.toc
+              const chapterHash = uuidv5(JSON.stringify(newChapter), uuidNIL)
+
+              // If a chapter with that chapterHash already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
-              const existingChapter = existingChapters.find((x) => x.startTime === startTime)
+              const existingChapter = existingChapters.find((x) => x.chapterHash === chapterHash)
               if (existingChapter && existingChapter.id) {
                 await updateMediaRef(
                   {
+                    endTime: newChapter.endTime || null,
                     id: existingChapter.id,
                     imageUrl: newChapter.img || null,
                     isOfficialChapter: true,
                     isPublic: true,
                     linkUrl: newChapter.url || null,
-                    startTime,
+                    startTime: roundedStartTime,
                     title: newChapter.title,
-                    episodeId: id
+                    episodeId: id,
+                    isChapterToc,
+                    chapterHash
                   },
                   superUserId
                 )
               } else {
                 await createMediaRef({
+                  endTime: newChapter.endTime || null,
                   imageUrl: newChapter.img || null,
                   isOfficialChapter: true,
                   isPublic: true,
                   linkUrl: newChapter.url || null,
-                  startTime,
+                  startTime: roundedStartTime,
                   title: newChapter.title,
                   owner: superUserId,
-                  episodeId: id
+                  episodeId: id,
+                  isChapterToc,
+                  chapterHash
                 })
               }
             } catch (error) {
@@ -625,7 +751,7 @@ const retrieveLatestChapters = async (id) => {
     }
   })()
 
-  const officialChaptersForEpisode = await mediaRefRepository
+  const qbOfficialChaptersForEpisode = mediaRefRepository
     .createQueryBuilder('mediaRef')
     .select('mediaRef.id')
     .addSelect('mediaRef.endTime')
@@ -634,11 +760,19 @@ const retrieveLatestChapters = async (id) => {
     .addSelect('mediaRef.linkUrl')
     .addSelect('mediaRef.startTime')
     .addSelect('mediaRef.title')
+    .addSelect('mediaRef.isChapterToc')
+    .addSelect('mediaRef.chapterHash')
     .where({
       isOfficialChapter: true,
       episode: id,
       isPublic: true
     })
+
+  if (!includeNonToc) {
+    qbOfficialChaptersForEpisode.andWhere('mediaRef.isChapterToc IS NOT FALSE')
+  }
+
+  const officialChaptersForEpisode = await qbOfficialChaptersForEpisode
     .orderBy('mediaRef.startTime', 'ASC')
     .getManyAndCount()
 
@@ -789,6 +923,7 @@ export {
   getEpisodesFromSearchEngine,
   getEpisodesWithLiveItemsWithMatchingGuids,
   getEpisodesWithLiveItemsWithoutMatchingGuids,
+  getLightningKeysendVTSAsChapters,
   refreshEpisodesMostRecentMaterializedView,
   removeDeadEpisodes,
   retrieveLatestChapters,

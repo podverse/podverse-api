@@ -1,12 +1,12 @@
 import { addSeconds } from 'date-fns'
 import { Connection } from 'typeorm'
+import { v4 as uuidv4 } from 'uuid'
 import isEmail from 'validator/lib/isEmail'
 import { config } from '~/config'
 import { User } from '~/entities'
 import { CustomStatusError, emitRouterError } from '~/lib/errors'
 import { createUser } from '~/controllers/user'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
-const uuidv4 = require('uuid/v4')
 
 const emailExists = async (conn: Connection, email) => {
   const user = await conn.getRepository(User).findOne({ email })

@@ -21,7 +21,10 @@ import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem, U
 import { generateShortId } from '~/lib/utility'
 
 @Entity('mediaRefs')
-@Unique('mediaRef_index_episode_isOfficialChapter_startTime', ['episode', 'isOfficialChapter', 'startTime'])
+// Deprecated: we no longer ensure uniqueness with startTime as it was too buggy
+// @Unique('mediaRef_index_episode_isOfficialChapter_startTime', ['episode', 'isOfficialChapter', 'startTime'])
+// Instead, we ensure uniqueness with a compound index on chapterHash column
+@Unique('chapterHash_3col_unique_idx', ['episode', 'isOfficialChapter', 'chapterHash'])
 export class MediaRef {
   @PrimaryColumn('varchar', {
     default: generateShortId(),
@@ -34,6 +37,14 @@ export class MediaRef {
   @Generated('increment')
   int_id: number
 
+  // If chapters should update, we overwrite the existing chapter
+  // at that chapterHash. This is just to prevent us from creating an
+  // endless amount of chapter rows in our database whenever we
+  // reparse a chapters file.
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  chapterHash: string
+
   @ValidateIf((a) => a.endTime != null)
   @IsInt()
   @Min(1)
@@ -44,6 +55,13 @@ export class MediaRef {
   @IsUrl()
   @Column({ nullable: true })
   imageUrl?: string
+
+  // If a chapter has true or null set for toc, then it should be handled as part of
+  // the "table of contents" in the app UX. If it is set to false, then it should not.
+  // podcasting 2.0 spec: https://github.com/Podcastindex-org/podcast-namespace/blob/main/chapters/jsonChapters.md#optional-attributes-1
+  @Index()
+  @Column({ default: null, nullable: true })
+  isChapterToc: boolean
 
   @Index()
   @Column({ default: null, nullable: true })

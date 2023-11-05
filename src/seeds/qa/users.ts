@@ -78,7 +78,10 @@ export const generateQAUsers = async () => {
 
 export const getQAUserByEmail = async (email: string) => {
   const userRepository = getRepository(User)
-  return await userRepository.findOne({ email })
+  return await userRepository.findOne({
+    where: { email },
+    select: ['id', 'email']
+  })
 }
 
 const enrichRowExportData = (userLite: RowExportData) => {
