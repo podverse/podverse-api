@@ -16,6 +16,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
+import { PodcastMedium } from 'podverse-shared'
 
 @Entity('playlists')
 export class Playlist {
@@ -42,6 +43,14 @@ export class Playlist {
 
   @Column('varchar', { array: true })
   itemsOrder: string[]
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: ['podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'music-video', 'mixed'],
+    default: 'mixed'
+  })
+  medium: PodcastMedium
 
   @Index()
   @Column({ nullable: true })

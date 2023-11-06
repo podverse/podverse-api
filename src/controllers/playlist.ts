@@ -83,6 +83,7 @@ const getPlaylists = async (query) => {
     .addSelect('playlist.isPublic')
     .addSelect('playlist.itemCount')
     .addSelect('playlist.itemsOrder')
+    .addSelect('playlist.medium')
     .addSelect('playlist.title')
     .addSelect('playlist.createdAt')
     .addSelect('playlist.updatedAt')

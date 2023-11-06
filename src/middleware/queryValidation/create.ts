@@ -62,6 +62,7 @@ const validatePlaylistCreate = async (ctx, next) => {
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
+    medium: Joi.string().allow(null).allow(''),
     title: Joi.string().allow(null).allow('')
   })
 
