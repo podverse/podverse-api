@@ -21,6 +21,8 @@ const addYearsToUserMembershipExpiration = async (id: string, years: number) => 
 
     if (!membershipExpiration) {
       membershipExpiration = currentDate
+    } else if (membershipExpiration && membershipExpiration < currentDate) {
+      membershipExpiration = currentDate
     }
 
     if (freeTrialExpiration) {
