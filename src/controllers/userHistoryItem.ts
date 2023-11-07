@@ -28,10 +28,11 @@ export const cleanUserItemResult = (result) => {
       episodeValue: parseProp(result, 'clipEpisodeValue', []),
       id: result.id,
       podcastFunding: parseProp(result, 'clipPodcastFunding', []),
+      podcastGuid: result.clipPodcastGuid,
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastIndexPodcastId: result.clipPodcastIndexId,
-      podcastGuid: result.clipPodcastGuid,
+      podcastMedium: result.clipPodcastMedium,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
       podcastValue: parseProp(result, 'clipPodcastValue', []),
@@ -67,10 +68,11 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       ...(liveItem ? { liveItem } : {}),
       podcastFunding: parseProp(result, 'podcastFunding', []),
+      podcastGuid: result.podcastGuid,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
       podcastIndexPodcastId: result.podcastPodcastIndexId,
-      podcastGuid: result.podcastGuid,
+      podcastMedium: result.podcastMedium,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
       podcastValue: parseProp(result, 'podcastValue', []),
@@ -92,7 +94,7 @@ export const cleanUserItemResults = (results) => {
   return cleanedResults
 }
 
-export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
+export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUserId) => {
   const qb = getRepository(table).createQueryBuilder(`${tableName}`).select(`${tableName}.id`, 'id')
 
   if (tableName === 'userHistoryItem') {
@@ -104,8 +106,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
 
-  return qb
-    .addSelect('mediaRef.id', 'clipId')
+  qb.addSelect('mediaRef.id', 'clipId')
     .addSelect('mediaRef.title', 'clipTitle')
     .addSelect('mediaRef.startTime', 'clipStartTime')
     .addSelect('mediaRef.endTime', 'clipEndTime')
@@ -176,13 +177,20 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .leftJoin('mediaRef.episode', 'clipEpisode')
     .leftJoin('clipEpisode.podcast', 'clipPodcast')
     .leftJoin(`${tableName}.owner`, 'owner')
-    .where('owner.id = :loggedInUserId', { loggedInUserId }) as any
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+
+  if (tableName === 'userQueueItem') {
+    qb.andWhere(`${tableName}.medium = :medium`, { medium })
+  }
+
+  return qb as any
 }
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
 
-  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId)
+  const medium = null
+  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', medium, loggedInUserId)
     .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .offset(skip)
     .limit(take)

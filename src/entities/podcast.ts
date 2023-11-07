@@ -162,6 +162,9 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
+  // TODO: the Podcast.medium enum is currently missing the "mixed" value.
+  // It is also missing Medium Lists values (podcastL, musicL, etc.),
+  // but I don't know how those would fit into our UX yet.
   @Index()
   @Column({
     type: 'enum',
