@@ -137,6 +137,7 @@ export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUser
     .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
     .addSelect('podcast.podcastGuid', 'podcastGuid')
     .addSelect('podcast.itunesFeedType', 'podcastItunesFeedType')
+    .addSelect('podcast.medium', 'podcastMedium')
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('podcast.value', 'podcastValue')
@@ -165,6 +166,7 @@ export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUser
     .addSelect('clipPodcast.hasSeasons', 'clipPodcastHasSeasons')
     .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
     .addSelect('clipPodcast.itunesFeedType', 'clipPodcastItunesFeedType')
+    .addSelect('clipPodcast.medium', 'clipPodcastMedium')
     .addSelect('clipPodcast.podcastGuid', 'clipPodcastGuid')
     .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
@@ -179,8 +181,10 @@ export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUser
     .leftJoin(`${tableName}.owner`, 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
 
-  if (tableName === 'userQueueItem') {
+  if (tableName === 'userQueueItem' && medium) {
     qb.andWhere(`${tableName}.medium = :medium`, { medium })
+  } else if (tableName === 'userQueueItem') {
+    qb.andWhere(`${tableName}.medium = :medium`, { medium: 'mixed' })
   }
 
   return qb as any

@@ -121,12 +121,12 @@ router.delete(`${mediumPath}/remove-all`, jwtAuth, hasValidMembership, requireAn
 
 /* /user-queue-item has been replaced with /user-queue-item/medium as of Podverse mobile v4.14.0 */
 
-const mediumNull = null
+const mediumQueueDefault = 'mixed'
 
 // Get userQueueItems
 router.get('/', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    const results = await getCleanedUserQueueItems(ctx.state.user.id, mediumNull)
+    const results = await getCleanedUserQueueItems(ctx.state.user.id, mediumQueueDefault)
     ctx.body = results
     ctx.status = 200
   } catch (error) {
@@ -137,7 +137,7 @@ router.get('/', jwtAuth, hasValidMembership, async (ctx) => {
 // Add or update userQueueItem
 router.patch('/', jwtAuth, validateAddOrUpdateUserQueueItem, hasValidMembership, async (ctx) => {
   try {
-    const results = await addOrUpdateQueueItem(ctx.state.user.id, ctx.request.body, mediumNull)
+    const results = await addOrUpdateQueueItem(ctx.state.user.id, ctx.request.body, mediumQueueDefault)
     ctx.status = 200
     ctx.body = results
   } catch (error) {
@@ -148,7 +148,7 @@ router.patch('/', jwtAuth, validateAddOrUpdateUserQueueItem, hasValidMembership,
 // Pop next user queue item
 router.get('/pop-next', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    const results = await popNextFromQueue(ctx.state.user.id, mediumNull)
+    const results = await popNextFromQueue(ctx.state.user.id, mediumQueueDefault)
     ctx.body = results
     ctx.status = 200
   } catch (error) {
@@ -159,7 +159,11 @@ router.get('/pop-next', jwtAuth, hasValidMembership, async (ctx) => {
 // Remove UserQueueItem by episodeId
 router.delete('/episode/:episodeId', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    const userQueueItems = await removeUserQueueItemByEpisodeId(ctx.state.user.id, ctx.params.episodeId, mediumNull)
+    const userQueueItems = await removeUserQueueItemByEpisodeId(
+      ctx.state.user.id,
+      ctx.params.episodeId,
+      mediumQueueDefault
+    )
     ctx.body = userQueueItems
     ctx.status = 200
   } catch (error) {
@@ -170,7 +174,11 @@ router.delete('/episode/:episodeId', jwtAuth, hasValidMembership, async (ctx) =>
 // Remove UserQueueItem by mediaRefId
 router.delete('/mediaRef/:mediaRefId', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    const userQueueItems = await removeUserQueueItemByMediaRefId(ctx.state.user.id, ctx.params.mediaRefId, mediumNull)
+    const userQueueItems = await removeUserQueueItemByMediaRefId(
+      ctx.state.user.id,
+      ctx.params.mediaRefId,
+      mediumQueueDefault
+    )
     ctx.body = userQueueItems
     ctx.status = 200
   } catch (error) {
@@ -181,7 +189,7 @@ router.delete('/mediaRef/:mediaRefId', jwtAuth, hasValidMembership, async (ctx) 
 // Remove all UserQueueItem for logged-in user
 router.delete('/remove-all', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    await removeAllUserQueueItems(ctx.state.user.id, mediumNull)
+    await removeAllUserQueueItems(ctx.state.user.id, mediumQueueDefault)
     ctx.body = { message: 'All UserQueueItems removed.' }
     ctx.status = 200
   } catch (error) {
