@@ -6,6 +6,7 @@ const createError = require('http-errors')
 export const getUserQueueItems = async (loggedInUserId, medium) => {
   return generateGetUserItemsQuery(UserQueueItem, 'userQueueItem', medium, loggedInUserId)
     .orderBy({ 'userQueueItem.queuePosition': 'ASC' })
+    .where('medium = :medium', { medium })
     .getRawMany()
 }
 
