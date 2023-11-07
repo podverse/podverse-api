@@ -54,6 +54,7 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query, medium) => {
   userQueueItem = userQueueItem || new UserQueueItem()
   userQueueItem.episode = episodeId || null
   userQueueItem.mediaRef = mediaRefId || null
+  userQueueItem.medium = medium || 'mixed'
   userQueueItem.owner = loggedInUserId
   userQueueItem.queuePosition = queuePosition
   queueItems.push(userQueueItem)
@@ -159,6 +160,7 @@ const getRawQueueItems = async (loggedInUserId, medium) => {
   return repository
     .createQueryBuilder('userQueueItem')
     .select('userQueueItem.id', 'id')
+    .addSelect('userQueueItem.medium', 'medium')
     .leftJoin(`userQueueItem.owner`, 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
     .andWhere('userQueueItem.medium = :medium', { medium })
