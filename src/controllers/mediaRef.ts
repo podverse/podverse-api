@@ -150,7 +150,7 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
   const episodeIds = (query.episodeId && query.episodeId.split(',')) || []
   const categoriesIds = (query.categories && query.categories.split(',')) || []
-  const { hasVideo, includeEpisode, includePodcast, skip, take } = query
+  const { hasVideo, includeEpisode, includePodcast, isMusic, skip, take } = query
   const repositoryName = hasVideo ? MediaRefVideos : MediaRef
 
   const repository = getRepository(repositoryName)
@@ -207,6 +207,10 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
 
   if (mediaRefIds?.length) {
     qb.andWhere('mediaRef.id IN (:...mediaRefIds)', { mediaRefIds })
+  }
+
+  if (isMusic) {
+    qb.andWhere(`podcast.medium = 'music'`)
   }
 
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0

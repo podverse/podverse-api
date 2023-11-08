@@ -182,6 +182,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     hasVideo,
     includeAuthors,
     includeCategories,
+    isMusic,
     maxResults,
     podcastId,
     searchAuthor,
@@ -252,6 +253,10 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   qb.andWhere('"isPublic" = true')
   if (hasVideo) {
     qb.andWhere('podcast."hasVideo" IS true')
+  }
+
+  if (isMusic) {
+    qb.andWhere(`podcast.medium = 'music'`)
   }
 
   const allowRandom = !!podcastIds
