@@ -51,6 +51,8 @@ export const podcastItunesTypeDefaultValue = 'episodic'
 @Index(['hasVideo', 'pastWeekTotalUniquePageviews'])
 @Index(['hasVideo', 'pastMonthTotalUniquePageviews'])
 @Index(['hasVideo', 'pastYearTotalUniquePageviews'])
+// TODO: add medium index?
+// TODO: add medium + popularity index?
 @Entity('podcasts')
 export class Podcast {
   @PrimaryColumn('varchar', {
