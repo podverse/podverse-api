@@ -153,7 +153,7 @@
     "archiver": "^5.3.1",
     "awesome-typescript-loader": "5.2.1",
     "aws-sdk": "2.814.0",
-    "axios": "0.21.2",
+    "axios": "1.6.0",
     "bcryptjs": "2.4.3",
     "chai": "4.2.0",
     "chai-http": "4.3.0",
