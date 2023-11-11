@@ -3,20 +3,19 @@ import { cleanUserItemResult, cleanUserItemResults, generateGetUserItemsQuery } 
 import { UserQueueItem } from '~/entities'
 const createError = require('http-errors')
 
-export const getUserQueueItems = async (loggedInUserId, medium) => {
-  return generateGetUserItemsQuery(UserQueueItem, 'userQueueItem', medium, loggedInUserId)
+export const getUserQueueItems = async (loggedInUserId) => {
+  return generateGetUserItemsQuery(UserQueueItem, 'userQueueItem', loggedInUserId)
     .orderBy({ 'userQueueItem.queuePosition': 'ASC' })
-    .where('userQueueItem.medium = :medium', { medium })
     .getRawMany()
 }
 
-export const getCleanedUserQueueItems = async (loggedInUserId, medium) => {
-  const results = await getUserQueueItems(loggedInUserId, medium)
+export const getCleanedUserQueueItems = async (loggedInUserId) => {
+  const results = await getUserQueueItems(loggedInUserId)
   const userQueueItems = cleanUserItemResults(results)
   return { userQueueItems }
 }
 
-export const addOrUpdateQueueItem = async (loggedInUserId, query, medium) => {
+export const addOrUpdateQueueItem = async (loggedInUserId, query) => {
   const { episodeId, mediaRefId, queuePosition } = query
 
   if (!episodeId && !mediaRefId) {
@@ -33,7 +32,7 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query, medium) => {
     throw new createError.NotFound('A queuePosition must be provided.')
   }
 
-  const queueItems = await getUserQueueItems(loggedInUserId, medium)
+  const queueItems = await getUserQueueItems(loggedInUserId)
   const existingIndex = queueItems.findIndex((x: any) => {
     if (x.clipId && mediaRefId) {
       return x.clipId === mediaRefId
@@ -54,7 +53,6 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query, medium) => {
   userQueueItem = userQueueItem || new UserQueueItem()
   userQueueItem.episode = episodeId || null
   userQueueItem.mediaRef = mediaRefId || null
-  userQueueItem.medium = medium || 'mixed'
   userQueueItem.owner = loggedInUserId
   userQueueItem.queuePosition = queuePosition
   queueItems.push(userQueueItem)
@@ -62,16 +60,16 @@ export const addOrUpdateQueueItem = async (loggedInUserId, query, medium) => {
   const sortedQueueItems = queueItems.sort((a, b) => a.queuePosition - b.queuePosition)
 
   await updateQueueItemsPositions(sortedQueueItems)
-  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId, medium)
+  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId)
   return newQueueItems
 }
 
-const updateQueueItemsPositions = async (queueItemsWithMedium) => {
+const updateQueueItemsPositions = async (queueItems) => {
   const newSortedUserQueueItems = [] as any
   const queuePositionInterval = 1000
 
-  for (let i = 0; i < queueItemsWithMedium.length; i++) {
-    const item = queueItemsWithMedium[i]
+  for (let i = 0; i < queueItems.length; i++) {
+    const item = queueItems[i]
     item.queuePosition = (i + 1) * queuePositionInterval
     newSortedUserQueueItems.push(item)
   }
@@ -80,8 +78,8 @@ const updateQueueItemsPositions = async (queueItemsWithMedium) => {
   await repository.save(newSortedUserQueueItems)
 }
 
-export const popNextFromQueue = async (loggedInUserId, medium) => {
-  const queueItems = await getUserQueueItems(loggedInUserId, medium)
+export const popNextFromQueue = async (loggedInUserId) => {
+  const queueItems = await getUserQueueItems(loggedInUserId)
   let nextItem = queueItems.shift()
 
   if (!nextItem) {
@@ -91,14 +89,14 @@ export const popNextFromQueue = async (loggedInUserId, medium) => {
     }
   } else if (nextItem.clipId) {
     nextItem = cleanUserItemResult(nextItem)
-    const newQueueItems = await removeUserQueueItemByMediaRefId(loggedInUserId, nextItem.clipId, medium)
+    const newQueueItems = await removeUserQueueItemByMediaRefId(loggedInUserId, nextItem.clipId)
     return {
       nextItem,
       userQueueItems: newQueueItems.userQueueItems
     }
   } else {
     nextItem = cleanUserItemResult(nextItem)
-    const newQueueItems = await removeUserQueueItemByEpisodeId(loggedInUserId, nextItem.episodeId, medium)
+    const newQueueItems = await removeUserQueueItemByEpisodeId(loggedInUserId, nextItem.episodeId)
     return {
       nextItem,
       userQueueItems: newQueueItems.userQueueItems
@@ -106,8 +104,8 @@ export const popNextFromQueue = async (loggedInUserId, medium) => {
   }
 }
 
-export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId, medium) => {
-  const queueItems = await getUserQueueItems(loggedInUserId, medium)
+export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId) => {
+  const queueItems = await getUserQueueItems(loggedInUserId)
 
   const queueItem = queueItems.find((x) => x.episodeId === episodeId)
   if (!queueItem) {
@@ -117,15 +115,15 @@ export const removeUserQueueItemByEpisodeId = async (loggedInUserId, episodeId, 
   const repository = getRepository(UserQueueItem)
   await repository.remove(queueItem)
 
-  const remainingQueueItems = await getRawQueueItems(loggedInUserId, medium)
+  const remainingQueueItems = await getRawQueueItems(loggedInUserId)
   await updateQueueItemsPositions(remainingQueueItems)
 
-  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId, medium)
+  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId)
   return newQueueItems
 }
 
-export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId, medium) => {
-  const queueItems = await getUserQueueItems(loggedInUserId, medium)
+export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId) => {
+  const queueItems = await getUserQueueItems(loggedInUserId)
 
   const queueItem = queueItems.find((x) => x.clipId === mediaRefId)
   if (!queueItem) {
@@ -135,35 +133,32 @@ export const removeUserQueueItemByMediaRefId = async (loggedInUserId, mediaRefId
   const repository = getRepository(UserQueueItem)
   await repository.remove(queueItem)
 
-  const remainingQueueItems = await getRawQueueItems(loggedInUserId, medium)
+  const remainingQueueItems = await getRawQueueItems(loggedInUserId)
   await updateQueueItemsPositions(remainingQueueItems)
 
-  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId, medium)
+  const newQueueItems = await getCleanedUserQueueItems(loggedInUserId)
   return newQueueItems
 }
 
-export const removeAllUserQueueItems = async (loggedInUserId, medium) => {
+export const removeAllUserQueueItems = async (loggedInUserId) => {
   const repository = getRepository(UserQueueItem)
 
   const userQueueItems = await repository.find({
     where: {
-      owner: loggedInUserId,
-      medium
+      owner: loggedInUserId
     }
   })
 
   return repository.remove(userQueueItems)
 }
 
-const getRawQueueItems = async (loggedInUserId, medium) => {
+const getRawQueueItems = async (loggedInUserId) => {
   const repository = getRepository(UserQueueItem)
   return repository
     .createQueryBuilder('userQueueItem')
     .select('userQueueItem.id', 'id')
-    .addSelect('userQueueItem.medium', 'medium')
     .leftJoin(`userQueueItem.owner`, 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
-    .andWhere('userQueueItem.medium = :medium', { medium })
     .orderBy('userQueueItem.queuePosition', 'ASC')
     .getRawMany() as any
 }

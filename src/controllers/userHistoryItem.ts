@@ -94,7 +94,7 @@ export const cleanUserItemResults = (results) => {
   return cleanedResults
 }
 
-export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUserId) => {
+export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
   const qb = getRepository(table).createQueryBuilder(`${tableName}`).select(`${tableName}.id`, 'id')
 
   if (tableName === 'userHistoryItem') {
@@ -181,20 +181,13 @@ export const generateGetUserItemsQuery = (table, tableName, medium, loggedInUser
     .leftJoin(`${tableName}.owner`, 'owner')
     .where('owner.id = :loggedInUserId', { loggedInUserId })
 
-  if (tableName === 'userQueueItem' && medium) {
-    qb.andWhere(`${tableName}.medium = :medium`, { medium })
-  } else if (tableName === 'userQueueItem') {
-    qb.andWhere(`${tableName}.medium = :medium`, { medium: 'mixed' })
-  }
-
   return qb as any
 }
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {
   const { skip, take } = query
 
-  const medium = null
-  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', medium, loggedInUserId)
+  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId)
     .orderBy('userHistoryItem.orderChangedDate', 'DESC')
     .offset(skip)
     .limit(take)
