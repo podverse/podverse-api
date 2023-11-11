@@ -15,23 +15,15 @@ const generateUserQueueItemsForUser = async (userId: string) => {
   const mediaRefIds = await getRandomMediaRefIds()
 
   for (let i = 0; i < 10; i++) {
-    await addOrUpdateQueueItem(
-      userId,
-      {
-        episodeId: episodeIds[i],
-        mediaRefId: '',
-        queuePosition: 0
-      },
-      'mixed'
-    )
-    await addOrUpdateQueueItem(
-      userId,
-      {
-        episodeId: '',
-        mediaRefId: mediaRefIds[i],
-        queuePosition: 0
-      },
-      'mixed'
-    )
+    await addOrUpdateQueueItem(userId, {
+      episodeId: episodeIds[i],
+      mediaRefId: '',
+      queuePosition: 0
+    })
+    await addOrUpdateQueueItem(userId, {
+      episodeId: '',
+      mediaRefId: mediaRefIds[i],
+      queuePosition: 0
+    })
   }
 }
