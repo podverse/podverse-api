@@ -128,6 +128,7 @@ const validatePodcastSearch = async (ctx, next) => {
     isMusic: Joi.boolean(),
     maxResults: Joi.boolean(),
     podcastId: Joi.string(),
+    podcastsOnly: Joi.boolean(),
     searchAuthor: Joi.string().min(2),
     searchTitle: Joi.string().min(2),
     page: Joi.number().integer().min(0),

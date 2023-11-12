@@ -153,7 +153,8 @@ const generateEpisodeSelects = (
   hasVideo,
   shouldUseEpisodesMostRecent,
   liveItemStatus,
-  isMusic
+  isMusic,
+  podcastsOnly
 ) => {
   const table = shouldUseEpisodesMostRecent ? EpisodeMostRecent : Episode
 
@@ -200,6 +201,10 @@ const generateEpisodeSelects = (
 
   if (isMusic) {
     qb.andWhere(`podcast.medium = 'music'`)
+  }
+
+  if (podcastsOnly) {
+    qb.andWhere(`podcast.medium = 'podcast'`)
   }
 
   if (liveItemStatus) {
@@ -264,8 +269,19 @@ const getEpisodesFromSearchEngine = async (query) => {
 }
 
 const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
-  const { episodeId, hasVideo, includePodcast, isMusic, liveItemStatus, searchTitle, sincePubDate, skip, sort, take } =
-    query
+  const {
+    episodeId,
+    hasVideo,
+    includePodcast,
+    isMusic,
+    liveItemStatus,
+    podcastsOnly,
+    searchTitle,
+    sincePubDate,
+    skip,
+    sort,
+    take
+  } = query
   const episodeIds = (episodeId && episodeId.split(',')) || []
 
   const shouldUseEpisodesMostRecent = false
@@ -276,7 +292,8 @@ const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
     hasVideo,
     shouldUseEpisodesMostRecent,
     liveItemStatus,
-    isMusic
+    isMusic,
+    podcastsOnly
   )
   // const shouldLimit = true
   // qb = limitEpisodesQuerySize(qb, shouldLimit, sort)
@@ -299,8 +316,19 @@ const getEpisodes = async (query, isFromManticoreSearch?, totalOverride?) => {
 }
 
 const getEpisodesByCategoryIds = async (query) => {
-  const { categories, hasVideo, includePodcast, isMusic, liveItemStatus, searchTitle, sincePubDate, skip, sort, take } =
-    query
+  const {
+    categories,
+    hasVideo,
+    includePodcast,
+    isMusic,
+    liveItemStatus,
+    podcastsOnly,
+    searchTitle,
+    sincePubDate,
+    skip,
+    sort,
+    take
+  } = query
   const categoriesIds = (categories && categories.split(',')) || []
 
   const shouldUseEpisodesMostRecent = sort === 'most-recent'
@@ -311,7 +339,8 @@ const getEpisodesByCategoryIds = async (query) => {
     hasVideo,
     shouldUseEpisodesMostRecent,
     liveItemStatus,
-    isMusic
+    isMusic,
+    podcastsOnly
   )
 
   qb.innerJoin('podcast.categories', 'categories', 'categories.id IN (:...categoriesIds)', { categoriesIds })
@@ -345,7 +374,8 @@ const getEpisodesByPodcastIdWithSeasons = async ({
   hasVideo,
   itunesFeedType,
   podcastId,
-  isMusic
+  isMusic,
+  podcastsOnly
 }) => {
   const includePodcast = false
   const shouldUseEpisodesMostRecent = false
@@ -357,7 +387,8 @@ const getEpisodesByPodcastIdWithSeasons = async ({
     hasVideo,
     shouldUseEpisodesMostRecent,
     liveItemStatus,
-    isMusic
+    isMusic,
+    podcastsOnly
   )
 
   const isSerial = itunesFeedType === 'serial'
@@ -386,6 +417,7 @@ const getEpisodesByPodcastIds = async (query) => {
     liveItemStatus,
     maxResults,
     podcastId,
+    podcastsOnly,
     searchTitle,
     sincePubDate,
     skip,
@@ -402,7 +434,8 @@ const getEpisodesByPodcastIds = async (query) => {
     hasVideo,
     shouldUseEpisodesMostRecent,
     liveItemStatus,
-    isMusic
+    isMusic,
+    podcastsOnly
   )
 
   if (podcastIds.length === 1) {
@@ -415,7 +448,8 @@ const getEpisodesByPodcastIds = async (query) => {
         hasVideo,
         itunesFeedType: podcast.itunesFeedType,
         podcastId,
-        isMusic
+        isMusic,
+        podcastsOnly
       })
     } else {
       return getEpisodesByPodcastId(query, qb, podcastIds)
