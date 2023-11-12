@@ -135,18 +135,28 @@ const getSubscribedPodcasts = async (query, loggedInUserId) => {
 }
 
 const getPodcastsFromSearchEngine = async (query) => {
-  const { searchTitle, skip, sort, take } = query
+  const { hasVideo, isMusic, podcastsOnly, searchTitle, skip, sort, take } = query
 
   const { orderByColumnName, orderByDirection } = getManticoreOrderByColumnName(sort)
   const cleanedSearchTitle = removeAllSpaces(searchTitle)
   if (!cleanedSearchTitle) throw new Error('Must provide a searchTitle.')
   const titleWithWildcards = manticoreWildcardSpecialCharacters(cleanedSearchTitle)
 
+  let extraQuery = ``
+  if (hasVideo) {
+    extraQuery = `AND hasvideo = 1`
+  } else if (isMusic) {
+    extraQuery = `AND medium = 'music'`
+  } else if (podcastsOnly) {
+    extraQuery = `AND medium = 'podcast'`
+  }
+
   const safeSqlString = SqlString.format(
     `
       SELECT *
       FROM idx_podcast
       WHERE match(?)
+      ${extraQuery}
       ORDER BY weight() DESC, ${orderByColumnName} ${orderByDirection}
       LIMIT ?,?;
   `,
@@ -185,6 +195,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
     isMusic,
     maxResults,
     podcastId,
+    podcastsOnly,
     searchAuthor,
     skip,
     sort,
@@ -257,6 +268,10 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
 
   if (isMusic) {
     qb.andWhere(`podcast.medium = 'music'`)
+  }
+
+  if (podcastsOnly) {
+    qb.andWhere(`podcast.medium = 'podcast'`)
   }
 
   const allowRandom = !!podcastIds
@@ -333,7 +348,7 @@ const getMetadata = async (query) => {
     .andWhere('"isPublic" = true')
 
   try {
-    const podcasts = await qb.take(500).getManyAndCount()
+    const podcasts = await qb.take(1000).getManyAndCount()
 
     return podcasts
   } catch (error) {
