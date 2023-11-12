@@ -15,4 +15,4 @@ export const podcastIndexIdsWithLiveItems = [
   288180, 955598, 6524027
 ]
 
-export const podcastIndexIdsWithLiveItemsQuick = [4935828, 5495489, 162612, 5461087]
+export const podcastIndexIdsWithLiveItemsQuick = [4935828, 5495489, 162612, 5461087, 6524027]
