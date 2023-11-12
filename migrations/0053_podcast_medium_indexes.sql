@@ -21,3 +21,7 @@ CREATE INDEX CONCURRENTLY "podcasts_medium_pastYearTotalUniquePageviews_index" O
 -- 
 
 CREATE INDEX CONCURRENTLY "playlists_medium_index" ON "playlists" ("medium");
+
+--
+
+ALTER TYPE podcasts_medium_enum ADD VALUE 'mixed';
