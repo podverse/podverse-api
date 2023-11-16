@@ -1,8 +1,31 @@
 import { getRepository } from 'typeorm'
-import { Episode, Playlist, MediaRef, User } from '~/entities'
+import { Playlist, User } from '~/entities'
 import { validateClassOrThrow } from '~/lib/errors'
 import { getUserSubscribedPlaylistIds } from './user'
+import { getMediaRef } from './mediaRef'
+import { getEpisode } from './episode'
 const createError = require('http-errors')
+
+// medium = podcast are always be put in the general "mixed" category for playlists
+const getPlaylistMedium = (medium) => {
+  if (!medium || medium === 'podcast') {
+    medium = 'mixed'
+  }
+
+  return medium
+}
+
+const playlistDefaultTitles = {
+  // 'podcast': 'Favorites',
+  music: 'Favorite Music',
+  video: 'Favorite Videos',
+  film: 'Favorite Films',
+  audiobook: 'Favorite Audiobooks',
+  newsletter: 'Favorite Newsletters',
+  blog: 'Favorite Blogs',
+  'music-video': 'Favorite Music Videos',
+  mixed: 'Favorites'
+}
 
 const createPlaylist = async (obj) => {
   const repository = getRepository(Playlist)
@@ -80,9 +103,11 @@ const getPlaylists = async (query) => {
     .createQueryBuilder('playlist')
     .select('playlist.id')
     .addSelect('playlist.description')
+    .addSelect('playlist.isDefault')
     .addSelect('playlist.isPublic')
     .addSelect('playlist.itemCount')
     .addSelect('playlist.itemsOrder')
+    .addSelect('playlist.medium')
     .addSelect('playlist.title')
     .addSelect('playlist.createdAt')
     .addSelect('playlist.updatedAt')
@@ -97,6 +122,7 @@ const getPlaylists = async (query) => {
 }
 
 const updatePlaylist = async (obj, loggedInUserId) => {
+  // Make sure medium and isDefault is preserved after update
   const relations = [
     'episodes',
     'episodes.podcast',
@@ -129,6 +155,74 @@ const updatePlaylist = async (obj, loggedInUserId) => {
   await repository.save(newPlaylist)
 
   return newPlaylist
+}
+
+const getOrCreateDefaultPlaylist = async (medium, loggedInUserId) => {
+  const filteredMedium = getPlaylistMedium(medium)
+  let playlist = await getDefaultPlaylist(filteredMedium, loggedInUserId)
+
+  if (!playlist) {
+    const newDefaultPlaylistData = {
+      owner: loggedInUserId,
+      description: '',
+      isPublic: false,
+      itemsOrder: [],
+      medium: filteredMedium,
+      title: playlistDefaultTitles[filteredMedium]
+    }
+    playlist = await createPlaylist(newDefaultPlaylistData)
+  }
+
+  if (!playlist) {
+    throw new createError.NotFound('Default playlist not created')
+  }
+
+  return playlist
+}
+
+const getDefaultPlaylist = async (filteredMedium, loggedInUserId) => {
+  const repository = getRepository(Playlist)
+  const playlist = await repository.findOne({
+    where: {
+      owner: loggedInUserId,
+      isDefault: true,
+      medium: filteredMedium
+    }
+  })
+
+  return playlist
+}
+
+const addOrRemovePlaylistItemToDefaultPlaylist = async (mediaRefId, episodeId, loggedInUserId) => {
+  if (mediaRefId) {
+    const mediaRef = await getMediaRef(mediaRefId)
+
+    if (!mediaRef) {
+      throw new createError.NotFound('MediaRef not found')
+    }
+
+    const filteredMedium = getPlaylistMedium(mediaRef.episode.podcast.medium)
+    const defaultPlaylist = await getOrCreateDefaultPlaylist(filteredMedium, loggedInUserId)
+
+    const playlistId = defaultPlaylist.id
+    const episodeId = null
+    return await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, loggedInUserId)
+  } else if (episodeId) {
+    const episode = await getEpisode(episodeId)
+
+    if (!episode) {
+      throw new createError.NotFound('Episode not found')
+    }
+
+    const filteredMedium = getPlaylistMedium(episode.podcast.medium)
+    const defaultPlaylist = await getOrCreateDefaultPlaylist(filteredMedium, loggedInUserId)
+
+    const playlistId = defaultPlaylist.id
+    const mediaRefId = null
+    return await addOrRemovePlaylistItem(playlistId, mediaRefId, episodeId, loggedInUserId)
+  }
+
+  throw new createError.NotFound('Could not update default playlist')
 }
 
 const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, loggedInUserId) => {
@@ -165,9 +259,14 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     const filteredMediaRefs = playlist.mediaRefs.filter((x) => x.id !== mediaRefId)
 
     if (filteredMediaRefs.length === playlist.mediaRefs.length) {
-      const mediaRefRepository = getRepository(MediaRef)
-      const mediaRef = await mediaRefRepository.findOne({ id: mediaRefId })
+      const mediaRef = await getMediaRef(mediaRefId)
+
       if (mediaRef) {
+        const filteredMedium = getPlaylistMedium(mediaRef.episode.podcast.medium)
+        if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
+          throw new createError.NotFound('Item can not be added to this type of playlist')
+        }
+
         playlist.mediaRefs.push(mediaRef)
         actionTaken = 'added'
       } else {
@@ -184,9 +283,14 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     const filteredEpisodes = playlist.episodes.filter((x) => x.id !== episodeId)
 
     if (filteredEpisodes.length === playlist.episodes.length) {
-      const episodeRepository = getRepository(Episode)
-      const episode = await episodeRepository.findOne({ id: episodeId })
+      const episode = await getEpisode(episodeId)
+
       if (episode) {
+        const filteredMedium = getPlaylistMedium(episode.podcast.medium)
+        if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
+          throw new createError.NotFound('Item can not be added to this type of playlist')
+        }
+
         playlist.episodes.push(episode)
         actionTaken = 'added'
       } else {
@@ -249,6 +353,7 @@ const toggleSubscribeToPlaylist = async (playlistId, loggedInUserId) => {
 
 export {
   addOrRemovePlaylistItem,
+  addOrRemovePlaylistItemToDefaultPlaylist,
   createPlaylist,
   deletePlaylist,
   getPlaylist,

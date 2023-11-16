@@ -28,10 +28,11 @@ export const cleanUserItemResult = (result) => {
       episodeValue: parseProp(result, 'clipEpisodeValue', []),
       id: result.id,
       podcastFunding: parseProp(result, 'clipPodcastFunding', []),
+      podcastGuid: result.clipPodcastGuid,
       podcastId: result.clipPodcastId,
       podcastImageUrl: result.clipPodcastImageUrl,
       podcastIndexPodcastId: result.clipPodcastIndexId,
-      podcastGuid: result.clipPodcastGuid,
+      podcastMedium: result.clipPodcastMedium,
       podcastShrunkImageUrl: result.clipPodcastShrunkImageUrl,
       podcastTitle: result.clipPodcastTitle,
       podcastValue: parseProp(result, 'clipPodcastValue', []),
@@ -67,10 +68,11 @@ export const cleanUserItemResult = (result) => {
       id: result.id,
       ...(liveItem ? { liveItem } : {}),
       podcastFunding: parseProp(result, 'podcastFunding', []),
+      podcastGuid: result.podcastGuid,
       podcastId: result.podcastId,
       podcastImageUrl: result.podcastImageUrl,
       podcastIndexPodcastId: result.podcastPodcastIndexId,
-      podcastGuid: result.podcastGuid,
+      podcastMedium: result.podcastMedium,
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
       podcastValue: parseProp(result, 'podcastValue', []),
@@ -104,8 +106,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
   }
 
-  return qb
-    .addSelect('mediaRef.id', 'clipId')
+  qb.addSelect('mediaRef.id', 'clipId')
     .addSelect('mediaRef.title', 'clipTitle')
     .addSelect('mediaRef.startTime', 'clipStartTime')
     .addSelect('mediaRef.endTime', 'clipEndTime')
@@ -136,6 +137,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
     .addSelect('podcast.podcastGuid', 'podcastGuid')
     .addSelect('podcast.itunesFeedType', 'podcastItunesFeedType')
+    .addSelect('podcast.medium', 'podcastMedium')
     .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
     .addSelect('podcast.title', 'podcastTitle')
     .addSelect('podcast.value', 'podcastValue')
@@ -164,6 +166,7 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .addSelect('clipPodcast.hasSeasons', 'clipPodcastHasSeasons')
     .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
     .addSelect('clipPodcast.itunesFeedType', 'clipPodcastItunesFeedType')
+    .addSelect('clipPodcast.medium', 'clipPodcastMedium')
     .addSelect('clipPodcast.podcastGuid', 'clipPodcastGuid')
     .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
     .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
@@ -176,7 +179,9 @@ export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
     .leftJoin('mediaRef.episode', 'clipEpisode')
     .leftJoin('clipEpisode.podcast', 'clipPodcast')
     .leftJoin(`${tableName}.owner`, 'owner')
-    .where('owner.id = :loggedInUserId', { loggedInUserId }) as any
+    .where('owner.id = :loggedInUserId', { loggedInUserId })
+
+  return qb as any
 }
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {

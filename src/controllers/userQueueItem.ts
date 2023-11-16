@@ -144,7 +144,9 @@ export const removeAllUserQueueItems = async (loggedInUserId) => {
   const repository = getRepository(UserQueueItem)
 
   const userQueueItems = await repository.find({
-    where: { owner: loggedInUserId }
+    where: {
+      owner: loggedInUserId
+    }
   })
 
   return repository.remove(userQueueItems)

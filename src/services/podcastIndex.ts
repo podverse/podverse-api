@@ -195,6 +195,23 @@ export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
   return pvValueTagArray
 }
 
+export const getPodcastFromPodcastIndexByGuid = async (podcastGuid: string) => {
+  const url = `${podcastIndexConfig.baseUrl}/podcasts/byguid?guid=${podcastGuid}`
+  let podcastIndexPodcast: any = null
+  try {
+    const response = await axiosRequest(url)
+    podcastIndexPodcast = response.data
+  } catch (error) {
+    // assume a 404
+  }
+
+  if (!podcastIndexPodcast) {
+    throw new createError.NotFound('Podcast not found in Podcast Index')
+  }
+
+  return podcastIndexPodcast
+}
+
 // These getValueTagFor* services were intended for getting "value tag" info from Podcast Index,
 // but at this point they more broadly is for retrieving the "remote item" data
 // our client side apps need. The most common use case involves needing value tags

@@ -11,13 +11,16 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     includeCategories,
     includeEpisode,
     includePodcast,
+    isMusic,
     liveItemStatus,
     maxResults,
     mediaRefId,
+    medium,
     name,
     page,
     playlistId,
     podcastId,
+    podcastsOnly,
     searchAuthor,
     searchTitle,
     sincePubDate,
@@ -34,44 +37,30 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     ...(categories ? { categories } : {}),
     ...(episodeId ? { episodeId } : {}),
     ...(hasVideo ? { hasVideo } : {}),
+    ...(id ? { id } : {}),
     ...(includeAuthors ? { includeAuthors: includeAuthors === 'true' } : {}),
     ...(includeCategories ? { includeCategories: includeCategories === 'true' } : {}),
     ...(includeEpisode ? { includeEpisode: includeEpisode === 'true' } : {}),
     ...(includePodcast ? { includePodcast: includePodcast === 'true' } : {}),
+    ...(isMusic ? { isMusic } : {}),
     ...(liveItemStatus ? { liveItemStatus } : {}),
     ...(maxResults ? { maxResults: true } : {}),
     ...(mediaRefId ? { mediaRefId } : {}),
+    ...(medium ? { medium } : {}),
+    ...(name ? { name } : {}),
     ...(playlistId ? { playlistId } : {}),
     ...(podcastId ? { podcastId } : {}),
+    ...(podcastsOnly ? { podcastsOnly } : {}),
     ...(searchTitle ? { searchTitle } : {}),
     ...(searchAuthor ? { searchAuthor } : {}),
     ...(searchTitle ? { searchTitle } : {}),
     ...(sincePubDate ? { sincePubDate } : {}),
+    ...(slug ? { slug } : {}),
+    ...(sort ? { sort } : {}),
+    ...(title ? { title } : {}),
     ...(topLevelCategories ? { topLevelCategories: topLevelCategories === 'true' } : {}),
     ...(userIds ? { userIds } : {})
   } as any
-
-  // NOTE: for some reason when I use more than ~8 spread operators, the src/server.ts
-  // takes forever to start :( I'd like to understand why this is happening...
-  if (id) {
-    options.id = id
-  }
-
-  if (name) {
-    options.name = name
-  }
-
-  if (slug) {
-    options.slug = slug
-  }
-
-  if (title) {
-    options.title = title
-  }
-
-  if (sort) {
-    options.sort = sort
-  }
 
   if (sincePubDate) {
     // Use a larger than normal limit for sincePubDate requests

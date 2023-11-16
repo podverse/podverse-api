@@ -30,6 +30,7 @@ import {
   podcastRouter,
   podcastIndexRouter,
   podpingRouter,
+  secondaryQueueRouter,
   upDeviceRouter,
   urlResolverRouter,
   userHistoryItemRouter,
@@ -196,6 +197,9 @@ export const createApp = async (conn: Connection) => {
 
     app.use(podpingRouter.routes())
     app.use(podpingRouter.allowedMethods())
+
+    app.use(secondaryQueueRouter.routes())
+    app.use(secondaryQueueRouter.allowedMethods())
 
     app.use(toolsRouter.routes())
     app.use(toolsRouter.allowedMethods())
