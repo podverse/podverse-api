@@ -9,7 +9,11 @@ const moment = require('moment')
 enum PagePaths {
   clips = 'clip',
   episodes = 'episode',
-  podcasts = 'podcast'
+  podcasts = 'podcast',
+  albums = 'albums',
+  tracks = 'tracks',
+  channels = 'channels',
+  videos = 'videos'
 }
 
 enum StartDateOffset {
@@ -35,12 +39,12 @@ enum TimeRanges {
   allTime = 'pastAllTimeTotalUniquePageviews'
 }
 
-export const queryUniquePageviews = async (pagePath, timeRange) => {
+export const queryUniquePageviews = async (pagePath: PagePaths, timeRange) => {
   const startDateOffset = parseInt(StartDateOffset[timeRange], 10)
 
   if (!Object.keys(PagePaths).includes(pagePath)) {
     console.log('A valid pagePath must be provided in the first parameter.')
-    console.log('Valid options are: podcasts, episodes, clips')
+    console.log('Valid options are: podcasts, episodes, clips, albums, tracks, channels, videos')
     return
   }
 
@@ -81,31 +85,57 @@ export const queryUniquePageviews = async (pagePath, timeRange) => {
   }
 
   const podcastLimit = 42 // https://podverse.fm/podcast/12345678901234
-  const episodeLimit = 42 // https://podverse.fm/podcast/12345678901234
+  const episodeLimit = 42 // https://podverse.fm/episode/12345678901234
   const clipLimit = 39 // https://podverse.fm/clip/12345678901234
+  const albumLimit = 40 // https://podverse.fm/album/12345678901234
+  const trackLimit = 40 // https://podverse.fm/track/12345678901234
+  const channelLimit = 42 // https://podverse.fm/channel/12345678901234
+  const videoLimit = 40 // https://podverse.fm/video/12345678901234
 
   let filteredData: any[] = []
-  if (pagePath === 'podcasts') {
+  if (pagePath === PagePaths.podcasts) {
     filteredData = filterCustomFeedUrls(data, podcastLimit)
-  } else if (pagePath === 'episodes') {
+  } else if (pagePath === PagePaths.episodes) {
     filteredData = filterCustomFeedUrls(data, episodeLimit)
-  } else if (pagePath === 'clips') {
+  } else if (pagePath === PagePaths.clips) {
     filteredData = filterCustomFeedUrls(data, clipLimit)
+  } else if (pagePath === PagePaths.albums) {
+    filteredData = filterCustomFeedUrls(data, albumLimit)
+  } else if (pagePath === PagePaths.tracks) {
+    filteredData = filterCustomFeedUrls(data, trackLimit)
+  } else if (pagePath === PagePaths.channels) {
+    filteredData = filterCustomFeedUrls(data, channelLimit)
+  } else if (pagePath === PagePaths.videos) {
+    filteredData = filterCustomFeedUrls(data, videoLimit)
   }
 
   await savePageviewsToDatabase(pagePath, timeRange, filteredData)
 }
 
-const savePageviewsToDatabase = async (pagePath, timeRange, data) => {
+const getTableName = (pagePath: PagePaths) => {
+  let tableName = TableNames[pagePath]
+  if (pagePath === PagePaths.albums) {
+    tableName = TableNames['podcasts']
+  } else if (pagePath === PagePaths.tracks) {
+    tableName = TableNames['episodes']
+  } else if (pagePath === PagePaths.channels) {
+    tableName = TableNames['podcasts']
+  } else if (pagePath === PagePaths.videos) {
+    tableName = TableNames['episodes']
+  }
+  return tableName
+}
+
+const savePageviewsToDatabase = async (pagePath: PagePaths, timeRange, data) => {
   await connectToDb()
 
   const matomoDataRows = data
-  const tableName = TableNames[pagePath]
+  const tableName = getTableName(pagePath)
   console.log('savePageviewsToDatabase')
   console.log('pagePath', pagePath)
+  console.log('tableName', tableName)
   console.log('timeRange', timeRange)
   console.log('matomoDataRows.length', matomoDataRows.length)
-  console.log('tableName', tableName)
   console.log('TimeRange', TimeRanges[timeRange])
 
   /*
