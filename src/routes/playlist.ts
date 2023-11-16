@@ -5,6 +5,7 @@ import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import {
   addOrRemovePlaylistItem,
+  addOrRemovePlaylistItemToDefaultPlaylist,
   createPlaylist,
   deletePlaylist,
   getPlaylist,
@@ -128,7 +129,6 @@ router.delete('/:id', jwtAuth, async (ctx) => {
   }
 })
 
-// Add/remove mediaRef/episode to/from playlist
 const addOrRemovePlaylistLimiter = RateLimit.middleware({
   interval: 1 * 60 * 1000,
   max: rateLimiterMaxOverride || 30,
@@ -136,6 +136,26 @@ const addOrRemovePlaylistLimiter = RateLimit.middleware({
   prefixKey: 'patch/add-or-remove'
 })
 
+// Add/remove mediaRef/episode to/from default playlist
+router.patch('/default/add-or-remove', addOrRemovePlaylistLimiter, jwtAuth, hasValidMembership, async (ctx) => {
+  try {
+    const body: any = ctx.request.body
+    const { episodeId, mediaRefId } = body
+
+    const results = await addOrRemovePlaylistItemToDefaultPlaylist(mediaRefId, episodeId, ctx.state.user.id)
+    const updatedPlaylist = results[0] as any
+    const actionTaken = results[1]
+    ctx.body = {
+      playlistId: updatedPlaylist.id,
+      playlistItemCount: updatedPlaylist.itemCount,
+      actionTaken
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
+// Add/remove mediaRef/episode to/from playlist
 router.patch('/add-or-remove', addOrRemovePlaylistLimiter, jwtAuth, hasValidMembership, async (ctx) => {
   try {
     const body: any = ctx.request.body

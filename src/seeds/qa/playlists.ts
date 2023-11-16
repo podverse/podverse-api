@@ -1,6 +1,10 @@
 import { faker } from '@faker-js/faker'
 import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
-import { addOrRemovePlaylistItem, createPlaylist } from '~/controllers/playlist'
+import {
+  addOrRemovePlaylistItem,
+  addOrRemovePlaylistItemToDefaultPlaylist,
+  createPlaylist
+} from '~/controllers/playlist'
 import { getRandomMediaRefIds } from './mediaRefs'
 import { getRandomEpisodeIds } from './episodes'
 import { generateQAItemsForUsers, getQABatchRange } from './utility'
@@ -37,6 +41,16 @@ const generatePlaylistsForUser = async (userId: string) => {
     for (let i = 0; i < 5; i++) {
       await addOrRemovePlaylistItem(playlist.id, '', episodeIds[i], userId)
       await addOrRemovePlaylistItem(playlist.id, mediaRefIds[i], '', userId)
+    }
+  }
+
+  for (let j = 5; j < 10; j++) {
+    const episodeIds = getQABatchRange(episodeIdsFull, j)
+    const mediaRefIds = getQABatchRange(mediaRefIdsFull, j)
+
+    for (let j = 5; j < 10; j++) {
+      await addOrRemovePlaylistItemToDefaultPlaylist('', episodeIds[j], userId)
+      await addOrRemovePlaylistItemToDefaultPlaylist(mediaRefIds[j], '', userId)
     }
   }
 }

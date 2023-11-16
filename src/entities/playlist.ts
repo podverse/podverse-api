@@ -17,6 +17,7 @@ import {
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
 import { PodcastMedium } from 'podverse-shared'
+import { podcastMediumAllowedValues } from '~/lib/constants'
 
 @Entity('playlists')
 export class Playlist {
@@ -34,6 +35,9 @@ export class Playlist {
   @Column({ nullable: true })
   description?: string
 
+  @Column({ default: false })
+  isDefault: boolean
+
   @Index()
   @Column({ default: false })
   isPublic: boolean
@@ -44,10 +48,9 @@ export class Playlist {
   @Column('varchar', { array: true })
   itemsOrder: string[]
 
-  @Index()
   @Column({
     type: 'enum',
-    enum: ['podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'music-video', 'mixed'],
+    enum: podcastMediumAllowedValues,
     default: 'mixed'
   })
   medium: PodcastMedium

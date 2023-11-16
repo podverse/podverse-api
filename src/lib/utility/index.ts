@@ -162,6 +162,8 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.orderBy(`${type}.startTime`, ascKey)
   } else if (sort === 'createdAt') {
     qb.orderBy(`${type}.createdAt`, descKey)
+  } else if (sort === 'episode-number-asc') {
+    qb.orderBy(`${type}.itunesEpisode`, ascKey)
   } else {
     // sort = top-past-week
     qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)

@@ -51,6 +51,12 @@ export const podcastItunesTypeDefaultValue = 'episodic'
 @Index(['hasVideo', 'pastWeekTotalUniquePageviews'])
 @Index(['hasVideo', 'pastMonthTotalUniquePageviews'])
 @Index(['hasVideo', 'pastYearTotalUniquePageviews'])
+@Index(['medium', 'pastAllTimeTotalUniquePageviews'])
+@Index(['medium', 'pastHourTotalUniquePageviews'])
+@Index(['medium', 'pastDayTotalUniquePageviews'])
+@Index(['medium', 'pastWeekTotalUniquePageviews'])
+@Index(['medium', 'pastMonthTotalUniquePageviews'])
+@Index(['medium', 'pastYearTotalUniquePageviews'])
 @Entity('podcasts')
 export class Podcast {
   @PrimaryColumn('varchar', {
@@ -162,6 +168,9 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
+  // TODO: the Podcast.medium enum is currently missing the "mixed" value.
+  // It is also missing Medium Lists values (podcastL, musicL, etc.),
+  // but I don't know how those would fit into our UX yet.
   @Index()
   @Column({
     type: 'enum',

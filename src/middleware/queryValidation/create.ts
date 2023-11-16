@@ -1,4 +1,5 @@
 const Joi = require('joi')
+import { podcastMediumAllowedValues } from '~/lib/constants'
 import { validateBaseBody } from './base'
 
 const validateAppStorePurchaseCreate = async (ctx, next) => {
@@ -62,7 +63,7 @@ const validatePlaylistCreate = async (ctx, next) => {
     isPublic: Joi.boolean(),
     itemsOrder: Joi.array().items(Joi.string()),
     mediaRefs: Joi.array().items(Joi.string()),
-    medium: Joi.string().allow(null).allow(''),
+    medium: Joi.string().allow(null).allow('').valid(podcastMediumAllowedValues),
     title: Joi.string().allow(null).allow('')
   })
 
