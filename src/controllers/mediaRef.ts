@@ -214,7 +214,7 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
   }
 
   if (podcastsOnly) {
-    qb.andWhere(`podcast.medium = 'podcast'`)
+    qb.andWhere(`podcast.medium = 'podcast' OR podcast."hasVideo" IS true`)
   }
 
   const allowRandom = podcastIds.length > 0 || episodeIds.length > 0

@@ -148,7 +148,7 @@ const getPodcastsFromSearchEngine = async (query) => {
   } else if (isMusic) {
     extraQuery = `AND medium = 'music'`
   } else if (podcastsOnly) {
-    extraQuery = `AND medium = 'podcast'`
+    extraQuery = `AND medium = 'podcast' OR hasvideo = 1`
   }
 
   const safeSqlString = SqlString.format(
@@ -271,7 +271,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   }
 
   if (podcastsOnly) {
-    qb.andWhere(`podcast.medium = 'podcast'`)
+    qb.andWhere(`podcast.medium = 'podcast' OR podcast."hasVideo" IS true`)
   }
 
   const allowRandom = !!podcastIds
