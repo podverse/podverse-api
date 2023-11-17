@@ -962,9 +962,15 @@ const assignParsedEpisodeData = async (
   episode.imageUrl = parsedEpisode.imageURL
   episode.isExplicit = parsedEpisode.explicit
 
-  episode.itunesEpisode = parsedEpisode && Math.floor(parsedEpisode.itunesEpisode)
+  if (typeof parsedEpisode?.itunesEpisode === 'number') {
+    episode.itunesEpisode = Math.floor(parsedEpisode.itunesEpisode)
+  }
+
   episode.itunesEpisodeType = parsedEpisode.itunesEpisodeType
-  episode.itunesSeason = parsedEpisode.itunesSeason
+
+  if (typeof parsedEpisode?.itunesSeason === 'number') {
+    episode.itunesSeason = Math.floor(parsedEpisode.itunesSeason)
+  }
 
   episode.linkUrl = parsedEpisode.link
 
