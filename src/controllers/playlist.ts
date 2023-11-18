@@ -4,6 +4,7 @@ import { validateClassOrThrow } from '~/lib/errors'
 import { getUserSubscribedPlaylistIds } from './user'
 import { getMediaRef } from './mediaRef'
 import { getEpisode } from './episode'
+import { combineAndSortPlaylistItems } from 'podverse-shared'
 const createError = require('http-errors')
 
 // medium = podcast are always be put in the general "mixed" category for playlists
@@ -250,57 +251,72 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
     throw new createError.Unauthorized('Log in to delete this playlist')
   }
 
-  const itemsOrder = playlist.itemsOrder
-  let actionTaken = 'removed'
+  const { episodes, itemsOrder: previousItemsOrder, mediaRefs } = playlist
+
+  /*
+    Prior to 4.15.6, the itemsOrder property was not getting set properly.
+    As a result the itemsOrder may have fallen out-of-sync with the saved
+    episodes and mediaRefs. Whenever the itemsOrder.length does not match
+    the combinedItems length, then fully update the itemsOrder.
+  */
+
+  let newItemsOrder = previousItemsOrder
+  const combinedItemsTotal = episodes.length + mediaRefs.length
+  if (combinedItemsTotal !== previousItemsOrder.length) {
+    const combinedAndSortedItems = combineAndSortPlaylistItems(
+      episodes as any,
+      mediaRefs as any,
+      previousItemsOrder as any
+    )
+    newItemsOrder = combinedAndSortedItems.map((item: any) => item.id)
+  }
+
+  let actionTaken = ''
 
   if (mediaRefId) {
-    // If no mediaRefs match filter, add the playlist item.
-    // Else, remove the playlist item.
-    const filteredMediaRefs = playlist.mediaRefs.filter((x) => x.id !== mediaRefId)
-
-    if (filteredMediaRefs.length === playlist.mediaRefs.length) {
+    // If no mediaRefs match filter, add the playlist item. Else, remove the playlist item.
+    const filteredMediaRefs = mediaRefs.filter((x) => x.id !== mediaRefId)
+    const mediaRefWasRemoved = filteredMediaRefs.length === mediaRefs.length
+    if (mediaRefWasRemoved) {
+      actionTaken = 'removed'
+      playlist.mediaRefs = filteredMediaRefs
+      playlist.itemsOrder = newItemsOrder.filter((x) => x !== mediaRefId)
+    } else {
       const mediaRef = await getMediaRef(mediaRefId)
-
-      if (mediaRef) {
+      if (!mediaRef) {
+        throw new createError.NotFound('MediaRef not found')
+      } else {
+        actionTaken = 'added'
         const filteredMedium = getPlaylistMedium(mediaRef.episode.podcast.medium)
         if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
           throw new createError.NotFound('Item can not be added to this type of playlist')
         }
-
         playlist.mediaRefs.push(mediaRef)
-        actionTaken = 'added'
-      } else {
-        throw new createError.NotFound('MediaRef not found')
+        playlist.itemsOrder.push(mediaRef.id)
       }
-    } else {
-      playlist.mediaRefs = filteredMediaRefs
     }
-
-    playlist.itemsOrder = itemsOrder.filter((x) => x !== mediaRefId)
   } else if (episodeId) {
-    // If no episodes match filter, add the playlist item.
-    // Else, remove the playlist item.
-    const filteredEpisodes = playlist.episodes.filter((x) => x.id !== episodeId)
-
-    if (filteredEpisodes.length === playlist.episodes.length) {
+    // If no episodes match filter, add the playlist item. Else, remove the playlist item.
+    const filteredEpisodes = episodes.filter((x) => x.id !== episodeId)
+    const episodeWasRemoved = filteredEpisodes.length === episodes.length
+    if (episodeWasRemoved) {
+      actionTaken = 'removed'
+      playlist.episodes = filteredEpisodes
+      playlist.itemsOrder = newItemsOrder.filter((x) => x !== episodeId)
+    } else {
       const episode = await getEpisode(episodeId)
-
-      if (episode) {
+      if (!episode) {
+        throw new createError.NotFound('Episode not found')
+      } else {
+        actionTaken = 'added'
         const filteredMedium = getPlaylistMedium(episode.podcast.medium)
         if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
           throw new createError.NotFound('Item can not be added to this type of playlist')
         }
-
         playlist.episodes.push(episode)
-        actionTaken = 'added'
-      } else {
-        throw new createError.NotFound('Episode not found')
+        playlist.itemsOrder.push(episode.id)
       }
-    } else {
-      playlist.episodes = filteredEpisodes
     }
-
-    playlist.itemsOrder = itemsOrder.filter((x) => x !== episodeId)
   } else {
     throw new createError.NotFound('Must provide a MediaRef or Episode id')
   }
