@@ -35,7 +35,7 @@ export const getSecondaryQueueEpisodesForPodcastId = async (
   }
 
   const { itunesEpisode, pubDate } = currentEpisode
-  const take = currentEpisode.podcast.medium === 'music' ? 50 : 5
+  const take = currentEpisode.podcast.medium === 'music' ? 50 : 10
 
   const previousEpisodesAndWhere =
     currentEpisode.podcast.medium === 'music'
