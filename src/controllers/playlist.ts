@@ -276,7 +276,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
   if (mediaRefId) {
     // If no mediaRefs match filter, add the playlist item. Else, remove the playlist item.
     const filteredMediaRefs = mediaRefs.filter((x) => x.id !== mediaRefId)
-    const mediaRefWasRemoved = filteredMediaRefs.length === mediaRefs.length
+    const mediaRefWasRemoved = filteredMediaRefs.length !== mediaRefs.length
     if (mediaRefWasRemoved) {
       actionTaken = 'removed'
       playlist.mediaRefs = filteredMediaRefs
@@ -298,7 +298,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
   } else if (episodeId) {
     // If no episodes match filter, add the playlist item. Else, remove the playlist item.
     const filteredEpisodes = episodes.filter((x) => x.id !== episodeId)
-    const episodeWasRemoved = filteredEpisodes.length === episodes.length
+    const episodeWasRemoved = filteredEpisodes.length !== episodes.length
     if (episodeWasRemoved) {
       actionTaken = 'removed'
       playlist.episodes = filteredEpisodes
