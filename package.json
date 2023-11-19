@@ -204,7 +204,7 @@
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
     "request-promise-native": "1.0.8",
-    "sharp": "0.30.5",
+    "sharp": "0.32.6",
     "shortid": "2.2.15",
     "sqlstring": "2.3.3",
     "threadcap": "0.1.8",
