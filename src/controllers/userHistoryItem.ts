@@ -91,7 +91,7 @@ export const cleanUserItemResult = (result) => {
       ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
     }
   } else if (result.mediaRef) {
-  /* 
+    /* 
      The next 2 if conditions use getMany instead of getRawMany.
      getMany is useful here for getting the authors relationship.
      I shouldn't have used getRawMany in the first place...   
