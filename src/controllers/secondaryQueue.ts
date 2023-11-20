@@ -52,7 +52,8 @@ export const getSecondaryQueueEpisodesForPodcastId = async (
     order: {
       [previousEpisodesOrder[0]]: previousEpisodesOrder[1]
     },
-    take
+    take,
+    relations: ['authors', 'podcast', 'podcast.authors']
   })
 
   const nextEpisodesAndWhere =
@@ -69,7 +70,8 @@ export const getSecondaryQueueEpisodesForPodcastId = async (
     order: {
       [nextEpisodesOrder[0]]: nextEpisodesOrder[1]
     },
-    take
+    take,
+    relations: ['authors', 'podcast', 'podcast.authors']
   })
 
   return { previousEpisodes, nextEpisodes, inheritedPodcast }
