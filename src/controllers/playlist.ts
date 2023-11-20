@@ -64,9 +64,11 @@ const getPlaylist = async (id) => {
   const relations = [
     'episodes',
     'episodes.podcast',
+    'episodes.podcast.authors',
     'mediaRefs',
     'mediaRefs.episode',
     'mediaRefs.episode.podcast',
+    'mediaRefs.episode.podcast.authors',
     'owner'
   ]
   const repository = getRepository(Playlist)
