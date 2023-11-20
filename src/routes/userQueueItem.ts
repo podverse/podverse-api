@@ -20,7 +20,8 @@ router.use(bodyParser())
 // Get userQueueItems
 router.get('/', jwtAuth, hasValidMembership, async (ctx) => {
   try {
-    const results = await getCleanedUserQueueItems(ctx.state.user.id)
+    const { useGetMany } = ctx.query
+    const results = await getCleanedUserQueueItems(ctx.state.user.id, !!useGetMany)
     ctx.body = results
     ctx.status = 200
   } catch (error) {

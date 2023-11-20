@@ -4,6 +4,8 @@ import { parseProp } from '~/lib/utility'
 const createError = require('http-errors')
 
 export const cleanUserItemResult = (result) => {
+  // NOTE: These first 2 if conditions are deprecated as of 4.15.8 API, and the 4.15.0 Mobile app.
+  // Deprecated condition:
   if (result.clipId) {
     return {
       clipEndTime: result.clipEndTime,
@@ -11,6 +13,7 @@ export const cleanUserItemResult = (result) => {
       clipStartTime: result.clipStartTime,
       clipTitle: result.clipTitle,
       completed: result.completed,
+      episodeAuthors: [], // authors was not supported before useGetMany
       episodeChaptersUrl: result.clipEpisodeChaptersUrl,
       episodeDescription: result.clipEpisodeDescription,
       episodeDuration: result.mediaFileDuration || result.clipEpisodeDuration || null,
@@ -27,6 +30,7 @@ export const cleanUserItemResult = (result) => {
       episodeTranscript: parseProp(result, 'clipEpisodeTranscript', []),
       episodeValue: parseProp(result, 'clipEpisodeValue', []),
       id: result.id,
+      podcastAuthors: [], // authors was not supported before useGetMany
       podcastFunding: parseProp(result, 'clipPodcastFunding', []),
       podcastGuid: result.clipPodcastGuid,
       podcastId: result.clipPodcastId,
@@ -39,7 +43,9 @@ export const cleanUserItemResult = (result) => {
       ...(result.completed ? { completed: true } : {}),
       ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
     }
-  } else {
+  }
+  // Deprecated condition:
+  else if (result.episodeId) {
     let liveItem: any = null
     if (result.liveItem_id) {
       liveItem = {
@@ -50,6 +56,7 @@ export const cleanUserItemResult = (result) => {
     }
 
     return {
+      episodeAuthors: [], // authors was not supported before useGetMany
       episodeChaptersUrl: result.episodeChaptersUrl,
       episodeDescription: result.episodeDescription,
       episodeDuration: result.mediaFileDuration || result.episodeDuration || null,
@@ -67,6 +74,7 @@ export const cleanUserItemResult = (result) => {
       episodeValue: parseProp(result, 'episodeValue', []),
       id: result.id,
       ...(liveItem ? { liveItem } : {}),
+      podcastAuthors: [], // authors was not supported before useGetMany
       podcastFunding: parseProp(result, 'podcastFunding', []),
       podcastGuid: result.podcastGuid,
       podcastId: result.podcastId,
@@ -76,6 +84,91 @@ export const cleanUserItemResult = (result) => {
       podcastShrunkImageUrl: result.podcastShrunkImageUrl,
       podcastTitle: result.podcastTitle,
       podcastValue: parseProp(result, 'podcastValue', []),
+      ...(result.completed ? { completed: true } : {}),
+      ...(result.userPlaybackPosition || result.userPlaybackPosition === 0
+        ? { userPlaybackPosition: result.userPlaybackPosition }
+        : {}),
+      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
+    }
+  } else if (result.mediaRef) {
+  /* 
+     The next 2 if conditions use getMany instead of getRawMany.
+     getMany is useful here for getting the authors relationship.
+     I shouldn't have used getRawMany in the first place...   
+  */
+    const mediaRef = result.mediaRef
+    const episode = mediaRef.episode
+    const podcast = episode.podcast
+    return {
+      clipEndTime: mediaRef.endTime,
+      clipId: mediaRef.id,
+      clipStartTime: mediaRef.startTime,
+      clipTitle: mediaRef.title,
+      completed: result.completed,
+      episodeAuthors: episode.authors,
+      episodeChaptersUrl: episode.chaptersUrl,
+      episodeDescription: episode.description,
+      episodeDuration: result.mediaFileDuration || episode.duration || null,
+      episodeFunding: episode.funding || [],
+      episodeGuid: episode.guid,
+      episodeId: episode.id,
+      episodeImageUrl: episode.imageUrl,
+      episodeMediaType: episode.mediaType,
+      episodeMediaUrl: episode.mediaUrl,
+      episodePubDate: episode.pubDate,
+      episodeSocialInteraction: episode.socialInteraction || [],
+      episodeSubtitle: episode.subtitle,
+      episodeTitle: episode.title,
+      episodeTranscript: episode.transcript || [],
+      episodeValue: episode.value || [],
+      id: result.id,
+      podcastAuthors: podcast.authors,
+      podcastFunding: podcast.funding || [],
+      podcastGuid: podcast.podcastGuid,
+      podcastId: podcast.id,
+      podcastImageUrl: podcast.imageUrl,
+      podcastIndexPodcastId: podcast.podcastIndexId,
+      podcastMedium: podcast.medium,
+      podcastShrunkImageUrl: podcast.shrunkImageUrl,
+      podcastTitle: podcast.title,
+      podcastValue: podcast.value || [],
+      ...(result.completed ? { completed: true } : {}),
+      ...(result.queuePosition || result.queuePosition === 0 ? { queuePosition: result.queuePosition } : {})
+    }
+  } else {
+    const episode = result.episode
+    const liveItem = episode.liveItem
+    const podcast = episode.podcast
+
+    return {
+      episodeAuthors: episode.authors,
+      episodeChaptersUrl: episode.chaptersUrl,
+      episodeDescription: episode.description,
+      episodeDuration: result.mediaFileDuration || episode.duration || null,
+      episodeFunding: episode.funding || [],
+      episodeGuid: episode.guid,
+      episodeId: episode.id,
+      episodeImageUrl: episode.imageUrl,
+      episodeMediaType: episode.mediaType,
+      episodeMediaUrl: episode.mediaUrl,
+      episodePubDate: episode.pubDate,
+      episodeSocialInteraction: episode.socialInteraction || [],
+      episodeSubtitle: episode.subtitle,
+      episodeTitle: episode.title,
+      episodeTranscript: episode.transcript || [],
+      episodeValue: episode.value || [],
+      id: result.id,
+      ...(liveItem ? { liveItem } : {}),
+      podcastAuthors: podcast.authors,
+      podcastFunding: podcast.funding || [],
+      podcastGuid: podcast.guid,
+      podcastId: podcast.id,
+      podcastImageUrl: podcast.imageUrl,
+      podcastIndexPodcastId: podcast.podcastIndexId,
+      podcastMedium: podcast.medium,
+      podcastShrunkImageUrl: podcast.shrunkImageUrl,
+      podcastTitle: podcast.title,
+      podcastValue: podcast.value || [],
       ...(result.completed ? { completed: true } : {}),
       ...(result.userPlaybackPosition || result.userPlaybackPosition === 0
         ? { userPlaybackPosition: result.userPlaybackPosition }
@@ -94,104 +187,140 @@ export const cleanUserItemResults = (results) => {
   return cleanedResults
 }
 
-export const generateGetUserItemsQuery = (table, tableName, loggedInUserId) => {
-  const qb = getRepository(table).createQueryBuilder(`${tableName}`).select(`${tableName}.id`, 'id')
+// See NOTE for cleanUserItemResult for an explanation of this useGetMany kludge...
+// It might actually be ok to remove useGetMany and the deprecated handling completely,
+// but I didn't want to risk it yet.
+export const generateGetUserItemsQuery = (table, tableName, loggedInUserId, skip, take, useGetMany: boolean) => {
+  const orderByParam1 = tableName === 'userHistoryItem' ? `${tableName}.orderChangedDate` : `${tableName}.queuePosition`
 
-  if (tableName === 'userHistoryItem') {
-    qb.addSelect(`${tableName}.completed`, 'completed')
-      .addSelect(`${tableName}.mediaFileDuration`, 'mediaFileDuration')
-      .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
-      .addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
-  } else if (tableName === 'userQueueItem') {
-    qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
+  const orderByParam2 = tableName === 'userQueueItem' ? 'DESC' : 'ASC'
+
+  if (useGetMany) {
+    return getRepository(table)
+      .createQueryBuilder(tableName)
+      .leftJoin(`${tableName}.owner`, 'owner')
+      .leftJoinAndSelect(`${tableName}.episode`, 'episode')
+      .leftJoinAndSelect(`episode.liveItem`, 'liveItem')
+      .leftJoinAndSelect('episode.authors', 'episodeAuthors')
+      .leftJoinAndSelect('episode.podcast', 'podcast')
+      .leftJoinAndSelect('podcast.authors', 'podcastAuthors')
+      .leftJoinAndSelect(`${tableName}.mediaRef`, 'mediaRef')
+      .leftJoinAndSelect('mediaRef.episode', 'clipEpisode')
+      .leftJoinAndSelect('clipEpisode.authors', 'clipEpisodeAuthors')
+      .leftJoinAndSelect('clipEpisode.podcast', 'clipPodcast')
+      .leftJoinAndSelect('clipPodcast.authors', 'clipPodcastAuthors')
+      .offset(skip)
+      .limit(take)
+      .orderBy(orderByParam1, orderByParam2)
+      .where('owner.id = :loggedInUserId', { loggedInUserId })
+      .getMany()
+  } else {
+    const qb = getRepository(table).createQueryBuilder(`${tableName}`).select(`${tableName}.id`, 'id')
+
+    if (tableName === 'userHistoryItem') {
+      qb.addSelect(`${tableName}.completed`, 'completed')
+        .addSelect(`${tableName}.mediaFileDuration`, 'mediaFileDuration')
+        .addSelect(`${tableName}.orderChangedDate`, 'orderChangedDate')
+        .addSelect(`${tableName}.userPlaybackPosition`, 'userPlaybackPosition')
+    } else if (tableName === 'userQueueItem') {
+      qb.addSelect(`${tableName}.queuePosition`, 'queuePosition')
+    }
+
+    return (
+      qb
+        .addSelect('mediaRef.id', 'clipId')
+        .addSelect('mediaRef.title', 'clipTitle')
+        .addSelect('mediaRef.startTime', 'clipStartTime')
+        .addSelect('mediaRef.endTime', 'clipEndTime')
+        .addSelect('episode.id', 'episodeId')
+        .addSelect('episode.alternateEnclosures', 'episodeAlternateEnclosures')
+        .addSelect('episode.chaptersUrl', 'episodeChaptersUrl')
+        .addSelect('episode.contentLinks', 'episodeContentLinks')
+        .addSelect('episode.description', 'episodeDescription')
+        .addSelect('episode.duration', 'episodeDuration')
+        .addSelect('episode.funding', 'episodeFunding')
+        .addSelect('episode.guid', 'episodeGuid')
+        .addSelect('episode.imageUrl', 'episodeImageUrl')
+        .addSelect('episode.itunesEpisode', 'episodeItunesEpisode')
+        .addSelect('episode.itunesEpisodeType', 'episodeItunesEpisodeType')
+        .addSelect('episode.itunesSeason', 'episodeItunesSeason')
+        .addSelect('episode.mediaType', 'episodeMediaType')
+        .addSelect('episode.mediaUrl', 'episodeMediaUrl')
+        .addSelect('episode.pubDate', 'episodePubDate')
+        .addSelect('episode.socialInteraction', 'episodeSocialInteraction')
+        .addSelect('episode.subtitle', 'episodeSubtitle')
+        .addSelect('episode.title', 'episodeTitle')
+        .addSelect('episode.transcript', 'episodeTranscript')
+        .addSelect('episode.value', 'episodeValue')
+        .addSelect('podcast.funding', 'podcastFunding')
+        .addSelect('podcast.hasSeasons', 'podcastHasSeasons')
+        .addSelect('podcast.id', 'podcastId')
+        .addSelect('podcast.imageUrl', 'podcastImageUrl')
+        .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
+        .addSelect('podcast.podcastGuid', 'podcastGuid')
+        .addSelect('podcast.itunesFeedType', 'podcastItunesFeedType')
+        .addSelect('podcast.medium', 'podcastMedium')
+        .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
+        .addSelect('podcast.title', 'podcastTitle')
+        .addSelect('podcast.value', 'podcastValue')
+        .addSelect('clipEpisode.id', 'clipEpisodeId')
+        .addSelect('clipEpisode.alternateEnclosures', 'clipEpisodeAlternateEnclosures')
+        .addSelect('clipEpisode.chaptersUrl', 'clipEpisodeChaptersUrl')
+        .addSelect('clipEpisode.contentLinks', 'clipEpisodeContentLinks')
+        .addSelect('clipEpisode.description', 'clipEpisodeDescription')
+        .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
+        .addSelect('clipEpisode.funding', 'clipEpisodeFunding')
+        .addSelect('clipEpisode.guid', 'clipEpisodeGuid')
+        .addSelect('clipEpisode.imageUrl', 'clipEpisodeImageUrl')
+        .addSelect('clipEpisode.itunesEpisode', 'clipEpisodeItunesEpisode')
+        .addSelect('clipEpisode.itunesEpisodeType', 'clipEpisodeItunesEpisodeType')
+        .addSelect('clipEpisode.itunesSeason', 'clipEpisodeItunesSeason')
+        .addSelect('clipEpisode.mediaType', 'clipEpisodeMediaType')
+        .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
+        .addSelect('clipEpisode.pubDate', 'clipEpisodePubDate')
+        .addSelect('clipEpisode.socialInteraction', 'clipEpisodeSocialInteraction')
+        .addSelect('clipEpisode.subtitle', 'clipEpisodeSubtitle')
+        .addSelect('clipEpisode.title', 'clipEpisodeTitle')
+        .addSelect('clipEpisode.transcript', 'clipEpisodeTranscript')
+        .addSelect('clipEpisode.value', 'clipEpisodeValue')
+        .addSelect('clipPodcast.id', 'clipPodcastId')
+        .addSelect('clipPodcast.funding', 'clipPodcastFunding')
+        .addSelect('clipPodcast.hasSeasons', 'clipPodcastHasSeasons')
+        .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
+        .addSelect('clipPodcast.itunesFeedType', 'clipPodcastItunesFeedType')
+        .addSelect('clipPodcast.medium', 'clipPodcastMedium')
+        .addSelect('clipPodcast.podcastGuid', 'clipPodcastGuid')
+        .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
+        .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
+        .addSelect('clipPodcast.title', 'clipPodcastTitle')
+        .addSelect('clipPodcast.value', 'clipPodcastValue')
+        .leftJoin(`${tableName}.episode`, 'episode')
+        .leftJoinAndSelect(`episode.liveItem`, 'liveItem')
+        .leftJoin('episode.podcast', 'podcast')
+        .leftJoin(`${tableName}.mediaRef`, 'mediaRef')
+        .leftJoin('mediaRef.episode', 'clipEpisode')
+        .leftJoin('clipEpisode.podcast', 'clipPodcast')
+        .leftJoin(`${tableName}.owner`, 'owner')
+        .where('owner.id = :loggedInUserId', { loggedInUserId })
+        // .orderBy(orderByParam1, orderByParam2)
+        .offset(skip)
+        .limit(take)
+        .getRawMany() as any
+    )
   }
-
-  qb.addSelect('mediaRef.id', 'clipId')
-    .addSelect('mediaRef.title', 'clipTitle')
-    .addSelect('mediaRef.startTime', 'clipStartTime')
-    .addSelect('mediaRef.endTime', 'clipEndTime')
-    .addSelect('episode.id', 'episodeId')
-    .addSelect('episode.alternateEnclosures', 'episodeAlternateEnclosures')
-    .addSelect('episode.chaptersUrl', 'episodeChaptersUrl')
-    .addSelect('episode.contentLinks', 'episodeContentLinks')
-    .addSelect('episode.description', 'episodeDescription')
-    .addSelect('episode.duration', 'episodeDuration')
-    .addSelect('episode.funding', 'episodeFunding')
-    .addSelect('episode.guid', 'episodeGuid')
-    .addSelect('episode.imageUrl', 'episodeImageUrl')
-    .addSelect('episode.itunesEpisode', 'episodeItunesEpisode')
-    .addSelect('episode.itunesEpisodeType', 'episodeItunesEpisodeType')
-    .addSelect('episode.itunesSeason', 'episodeItunesSeason')
-    .addSelect('episode.mediaType', 'episodeMediaType')
-    .addSelect('episode.mediaUrl', 'episodeMediaUrl')
-    .addSelect('episode.pubDate', 'episodePubDate')
-    .addSelect('episode.socialInteraction', 'episodeSocialInteraction')
-    .addSelect('episode.subtitle', 'episodeSubtitle')
-    .addSelect('episode.title', 'episodeTitle')
-    .addSelect('episode.transcript', 'episodeTranscript')
-    .addSelect('episode.value', 'episodeValue')
-    .addSelect('podcast.funding', 'podcastFunding')
-    .addSelect('podcast.hasSeasons', 'podcastHasSeasons')
-    .addSelect('podcast.id', 'podcastId')
-    .addSelect('podcast.imageUrl', 'podcastImageUrl')
-    .addSelect('podcast.podcastIndexId', 'podcastPodcastIndexId')
-    .addSelect('podcast.podcastGuid', 'podcastGuid')
-    .addSelect('podcast.itunesFeedType', 'podcastItunesFeedType')
-    .addSelect('podcast.medium', 'podcastMedium')
-    .addSelect('podcast.shrunkImageUrl', 'podcastShrunkImageUrl')
-    .addSelect('podcast.title', 'podcastTitle')
-    .addSelect('podcast.value', 'podcastValue')
-    .addSelect('clipEpisode.id', 'clipEpisodeId')
-    .addSelect('clipEpisode.alternateEnclosures', 'clipEpisodeAlternateEnclosures')
-    .addSelect('clipEpisode.chaptersUrl', 'clipEpisodeChaptersUrl')
-    .addSelect('clipEpisode.contentLinks', 'clipEpisodeContentLinks')
-    .addSelect('clipEpisode.description', 'clipEpisodeDescription')
-    .addSelect('clipEpisode.duration', 'clipEpisodeDuration')
-    .addSelect('clipEpisode.funding', 'clipEpisodeFunding')
-    .addSelect('clipEpisode.guid', 'clipEpisodeGuid')
-    .addSelect('clipEpisode.imageUrl', 'clipEpisodeImageUrl')
-    .addSelect('clipEpisode.itunesEpisode', 'clipEpisodeItunesEpisode')
-    .addSelect('clipEpisode.itunesEpisodeType', 'clipEpisodeItunesEpisodeType')
-    .addSelect('clipEpisode.itunesSeason', 'clipEpisodeItunesSeason')
-    .addSelect('clipEpisode.mediaType', 'clipEpisodeMediaType')
-    .addSelect('clipEpisode.mediaUrl', 'clipEpisodeMediaUrl')
-    .addSelect('clipEpisode.pubDate', 'clipEpisodePubDate')
-    .addSelect('clipEpisode.socialInteraction', 'clipEpisodeSocialInteraction')
-    .addSelect('clipEpisode.subtitle', 'clipEpisodeSubtitle')
-    .addSelect('clipEpisode.title', 'clipEpisodeTitle')
-    .addSelect('clipEpisode.transcript', 'clipEpisodeTranscript')
-    .addSelect('clipEpisode.value', 'clipEpisodeValue')
-    .addSelect('clipPodcast.id', 'clipPodcastId')
-    .addSelect('clipPodcast.funding', 'clipPodcastFunding')
-    .addSelect('clipPodcast.hasSeasons', 'clipPodcastHasSeasons')
-    .addSelect('clipPodcast.imageUrl', 'clipPodcastImageUrl')
-    .addSelect('clipPodcast.itunesFeedType', 'clipPodcastItunesFeedType')
-    .addSelect('clipPodcast.medium', 'clipPodcastMedium')
-    .addSelect('clipPodcast.podcastGuid', 'clipPodcastGuid')
-    .addSelect('clipPodcast.podcastIndexId', 'clipPodcastIndexId')
-    .addSelect('clipPodcast.shrunkImageUrl', 'clipPodcastShrunkImageUrl')
-    .addSelect('clipPodcast.title', 'clipPodcastTitle')
-    .addSelect('clipPodcast.value', 'clipPodcastValue')
-    .leftJoin(`${tableName}.episode`, 'episode')
-    .leftJoinAndSelect(`episode.liveItem`, 'liveItem')
-    .leftJoin('episode.podcast', 'podcast')
-    .leftJoin(`${tableName}.mediaRef`, 'mediaRef')
-    .leftJoin('mediaRef.episode', 'clipEpisode')
-    .leftJoin('clipEpisode.podcast', 'clipPodcast')
-    .leftJoin(`${tableName}.owner`, 'owner')
-    .where('owner.id = :loggedInUserId', { loggedInUserId })
-
-  return qb as any
 }
 
 export const getUserHistoryItems = async (loggedInUserId, query) => {
-  const { skip, take } = query
+  const { skip, take, useGetMany } = query
 
-  const results = await generateGetUserItemsQuery(UserHistoryItem, 'userHistoryItem', loggedInUserId)
-    .orderBy('userHistoryItem.orderChangedDate', 'DESC')
-    .offset(skip)
-    .limit(take)
-    .getRawMany()
+  const results = await generateGetUserItemsQuery(
+    UserHistoryItem,
+    'userHistoryItem',
+    loggedInUserId,
+    skip,
+    take,
+    !!useGetMany
+  )
 
   const count = await getRepository(UserHistoryItem)
     .createQueryBuilder('userHistoryItem')

@@ -28,6 +28,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     sort,
     title,
     topLevelCategories,
+    useGetMany,
     userIds
   } = query
 
@@ -59,6 +60,7 @@ export const parseQueryPageOptions = async (ctx, next, type = '') => {
     ...(sort ? { sort } : {}),
     ...(title ? { title } : {}),
     ...(topLevelCategories ? { topLevelCategories: topLevelCategories === 'true' } : {}),
+    ...(useGetMany ? { useGetMany } : {}),
     ...(userIds ? { userIds } : {})
   } as any
 
