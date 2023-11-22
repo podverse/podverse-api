@@ -625,6 +625,8 @@ const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
             const includeRelations = true
             podcast = await getPodcastByPodcastGuid(remoteFeedGuid, includeRelations)
             remotePodcastId = podcast.id
+            const remoteMedium = podcast.medium
+
             if (podcast?.id && remoteItemGuid && remoteFeedGuid) {
               try {
                 episode = await getEpisodeByPodcastIdAndGuid(podcast.id, remoteItemGuid)
@@ -669,7 +671,8 @@ const getLightningKeysendVTSAsChapters = async (episodeId: string) => {
               startTime,
               title,
               remoteEpisodeId,
-              remotePodcastId
+              remotePodcastId,
+              remoteMedium
             }
 
             vtsChapters.push(vtsChapter)
