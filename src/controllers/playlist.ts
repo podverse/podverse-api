@@ -167,6 +167,7 @@ const getOrCreateDefaultPlaylist = async (medium, loggedInUserId) => {
   if (!playlist) {
     const newDefaultPlaylistData = {
       owner: loggedInUserId,
+      isDefault: true,
       description: '',
       isPublic: false,
       itemsOrder: [],
