@@ -204,7 +204,7 @@ const generateEpisodeSelects = (
   }
 
   if (podcastsOnly) {
-    qb.andWhere(`podcast.medium = 'podcast' OR podcast."hasVideo" IS true`)
+    qb.andWhere(`(podcast.medium = 'podcast' OR podcast."hasVideo" IS true)`)
   }
 
   if (liveItemStatus) {

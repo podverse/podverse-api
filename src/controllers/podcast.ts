@@ -271,7 +271,7 @@ const getPodcasts = async (query, countOverride?, isFromManticoreSearch?) => {
   }
 
   if (podcastsOnly) {
-    qb.andWhere(`podcast.medium = 'podcast' OR podcast."hasVideo" IS true`)
+    qb.andWhere(`(podcast.medium = 'podcast' OR podcast."hasVideo" IS true)`)
   }
 
   const allowRandom = !!podcastIds
