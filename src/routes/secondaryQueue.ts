@@ -33,7 +33,8 @@ router.get('/playlist/:playlistId/episode-or-media-ref/:episodeOrMediaRef', pars
     const data = await getSecondaryQueueEpisodesForPlaylist(
       ctx.params.playlistId,
       ctx.params.episodeOrMediaRef,
-      !!ctx.query.audioOnly
+      !!ctx.query.audioOnly,
+      !!ctx.query.withFix
     )
     ctx.body = data
   } catch (error) {

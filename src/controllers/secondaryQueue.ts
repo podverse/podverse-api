@@ -152,7 +152,8 @@ type SecondaryQueueEpisodesForPlaylistIdResponseData = {
 export const getSecondaryQueueEpisodesForPlaylist = async (
   playlistId: string,
   episodeOrMediaRefId: string,
-  audioOnly: boolean
+  audioOnly: boolean,
+  withFix: boolean
 ): Promise<SecondaryQueueEpisodesForPlaylistIdResponseData> => {
   const currentPlaylist = await getPlaylist(playlistId)
 
@@ -181,7 +182,10 @@ export const getSecondaryQueueEpisodesForPlaylist = async (
   })
 
   // limit to the nearest 50 ids
-  const previousEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex - 50, currentItemIndex)
+  let previousEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex - 50, currentItemIndex)
+  if (withFix) {
+    previousEpisodesAndMediaRefs = previousEpisodesAndMediaRefs.reverse()
+  }
   const nextEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex + 1, currentItemIndex + 1 + 50)
 
   return { previousEpisodesAndMediaRefs, nextEpisodesAndMediaRefs }
