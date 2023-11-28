@@ -12,6 +12,73 @@ type SecondaryQueueEpisodesForPodcastIdResponseData = {
   inheritedPodcast: Podcast
 }
 
+export const getSecondaryQueueEpisodesForPodcastId2 = async (
+  episodeId: string,
+  podcastId: string
+): Promise<SecondaryQueueEpisodesForPodcastIdResponseData> => {
+  const repository = getRepository(Episode)
+  const currentEpisode = await repository.findOne(
+    {
+      isPublic: true,
+      id: episodeId
+    },
+    { relations }
+  )
+
+  if (!currentEpisode || currentEpisode.liveItem) {
+    throw new createError.NotFound('Episode not found')
+  }
+
+  const inheritedPodcast = currentEpisode.podcast
+  if (!inheritedPodcast) {
+    throw new createError.NotFound('Podcast not found')
+  }
+
+  const { itunesEpisode, pubDate } = currentEpisode
+  const take = currentEpisode.podcast.medium === 'music' ? 50 : 10
+
+  const previousEpisodesAndWhere =
+    currentEpisode.podcast.medium === 'music'
+      ? { itunesEpisode: LessThan(itunesEpisode) }
+      : { pubDate: LessThan(pubDate) }
+  const previousEpisodesOrder =
+    currentEpisode.podcast.medium === 'music' ? ['itunesEpisode', 'DESC'] : ['pubDate', 'DESC']
+  const previousEpisodes = await repository.find({
+    where: {
+      isPublic: true,
+      podcastId,
+      ...previousEpisodesAndWhere
+    },
+    order: {
+      [previousEpisodesOrder[0]]: previousEpisodesOrder[1]
+    },
+    take,
+    relations: ['authors', 'podcast', 'podcast.authors']
+  })
+
+  const nextEpisodesAndWhere =
+    currentEpisode.podcast.medium === 'music'
+      ? { itunesEpisode: MoreThan(itunesEpisode) }
+      : { pubDate: MoreThan(pubDate) }
+  const nextEpisodesOrder = currentEpisode.podcast.medium === 'music' ? ['itunesEpisode', 'ASC'] : ['pubDate', 'ASC']
+  const nextEpisodes = await repository.find({
+    where: {
+      isPublic: true,
+      podcastId,
+      ...nextEpisodesAndWhere
+    },
+    order: {
+      [nextEpisodesOrder[0]]: nextEpisodesOrder[1]
+    },
+    take,
+    relations: ['authors', 'podcast', 'podcast.authors']
+  })
+
+  return { previousEpisodes, nextEpisodes, inheritedPodcast }
+}
+
+// THIS HAS SOME CRITICAL BUGS IN PODVERSE-RN 4.15.0
+// I'M DEPRECATING IT AND REPLACING IT WITH THE "2" VERSION
 export const getSecondaryQueueEpisodesForPodcastId = async (
   episodeId: string,
   podcastId: string
@@ -85,7 +152,8 @@ type SecondaryQueueEpisodesForPlaylistIdResponseData = {
 export const getSecondaryQueueEpisodesForPlaylist = async (
   playlistId: string,
   episodeOrMediaRefId: string,
-  audioOnly: boolean
+  audioOnly: boolean,
+  withFix: boolean
 ): Promise<SecondaryQueueEpisodesForPlaylistIdResponseData> => {
   const currentPlaylist = await getPlaylist(playlistId)
 
@@ -114,7 +182,10 @@ export const getSecondaryQueueEpisodesForPlaylist = async (
   })
 
   // limit to the nearest 50 ids
-  const previousEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex - 50, currentItemIndex)
+  let previousEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex - 50, currentItemIndex)
+  if (withFix) {
+    previousEpisodesAndMediaRefs = previousEpisodesAndMediaRefs.reverse()
+  }
   const nextEpisodesAndMediaRefs = filteredPlaylistItems.slice(currentItemIndex + 1, currentItemIndex + 1 + 50)
 
   return { previousEpisodesAndMediaRefs, nextEpisodesAndMediaRefs }

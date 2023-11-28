@@ -292,7 +292,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
         actionTaken = 'added'
         const filteredMedium = getPlaylistMedium(mediaRef.episode.podcast.medium)
         if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
-          throw new createError.NotFound('Item can not be added to this type of playlist')
+          throw new createError.BadRequest('Item can not be added to this type of playlist')
         }
         playlist.mediaRefs.push(mediaRef)
         playlist.itemsOrder.push(mediaRef.id)
@@ -314,7 +314,7 @@ const addOrRemovePlaylistItem = async (playlistId, mediaRefId, episodeId, logged
         actionTaken = 'added'
         const filteredMedium = getPlaylistMedium(episode.podcast.medium)
         if (playlist.medium !== 'mixed' && playlist.medium !== filteredMedium) {
-          throw new createError.NotFound('Item can not be added to this type of playlist')
+          throw new createError.BadRequest('Item can not be added to this type of playlist')
         }
         playlist.episodes.push(episode)
         playlist.itemsOrder.push(episode.id)
