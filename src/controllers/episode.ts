@@ -36,9 +36,11 @@ const getEpisode = async (id) => {
     { relations }
   )
 
-  if (!episode || !episode.podcast.isPublic) {
+  const isEndedLivestream = episode?.liveItem?.status === 'ended'
+
+  if (!isEndedLivestream && (!episode || !episode.podcast.isPublic)) {
     throw new createError.NotFound('Episode not found')
-  } else if (!episode.isPublic) {
+  } else if (!isEndedLivestream && episode && !episode.isPublic) {
     // If a public version of the episode isn't available, check if a newer public version
     // of the episode is available and return that.
     // Otherwise, return the non-public version of the episode. Any episode that no longer appears
