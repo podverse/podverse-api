@@ -10,10 +10,10 @@ enum PagePaths {
   clips = 'clip',
   episodes = 'episode',
   podcasts = 'podcast',
-  albums = 'albums',
-  tracks = 'tracks',
-  channels = 'channels',
-  videos = 'videos'
+  albums = 'album',
+  tracks = 'track',
+  channels = 'channel',
+  videos = 'video'
 }
 
 enum StartDateOffset {
@@ -27,7 +27,11 @@ enum StartDateOffset {
 const TableNames = {
   clips: 'mediaRef',
   episodes: 'episode',
-  podcasts: 'podcast'
+  podcasts: 'podcast',
+  albums: 'podcast',
+  tracks: 'episode',
+  channels: 'podcast',
+  videos: 'episode'
 }
 
 enum TimeRanges {
@@ -39,7 +43,7 @@ enum TimeRanges {
   allTime = 'pastAllTimeTotalUniquePageviews'
 }
 
-export const queryUniquePageviews = async (pagePath: PagePaths, timeRange) => {
+export const queryUniquePageviews = async (pagePath: string, timeRange) => {
   const startDateOffset = parseInt(StartDateOffset[timeRange], 10)
 
   if (!Object.keys(PagePaths).includes(pagePath)) {
@@ -112,25 +116,11 @@ export const queryUniquePageviews = async (pagePath: PagePaths, timeRange) => {
   await savePageviewsToDatabase(pagePath, timeRange, filteredData)
 }
 
-const getTableName = (pagePath: PagePaths) => {
-  let tableName = TableNames[pagePath]
-  if (pagePath === PagePaths.albums) {
-    tableName = TableNames['podcasts']
-  } else if (pagePath === PagePaths.tracks) {
-    tableName = TableNames['episodes']
-  } else if (pagePath === PagePaths.channels) {
-    tableName = TableNames['podcasts']
-  } else if (pagePath === PagePaths.videos) {
-    tableName = TableNames['episodes']
-  }
-  return tableName
-}
-
-const savePageviewsToDatabase = async (pagePath: PagePaths, timeRange, data) => {
+const savePageviewsToDatabase = async (pagePath: string, timeRange, data) => {
   await connectToDb()
 
   const matomoDataRows = data
-  const tableName = getTableName(pagePath)
+  const tableName = TableNames[pagePath]
   console.log('savePageviewsToDatabase')
   console.log('pagePath', pagePath)
   console.log('tableName', tableName)
