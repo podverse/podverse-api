@@ -7,6 +7,14 @@ const { authToken, baseUrl, siteId } = matomoConfig
 
 const url = `${baseUrl}`
 
+/*
+  In order for queryMatomoData to return data, a corresponding "segment" must be created
+  in our Matomo instance.
+  For example:
+  album page segment
+  Page URL -> Contains -> /album/
+*/
+
 export const queryMatomoData = async (startDate, endDate, segmentPageUrl) => {
   if (!authToken || !baseUrl || !siteId) {
     throw new Error('Matomo config variables missing.')
