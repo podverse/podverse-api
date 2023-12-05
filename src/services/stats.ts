@@ -119,7 +119,7 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
   await savePageviewsToDatabase(finalPagePath, timeRange, filteredData)
 }
 
-const generateAllRelatedDataQueryString = (finalPagePath: string, timeRange) => {
+const generateGetAllRelatedDataQueryString = (finalPagePath: string, timeRange) => {
   let queryString = 'pagePath: string, timeRange, tableName: string'
 
   if (finalPagePath === PagePaths.podcasts) {
@@ -180,7 +180,7 @@ const generateAllRelatedDataQueryString = (finalPagePath: string, timeRange) => 
   } else {
     throw new Error('generateAllRelatedDataQueryString: Failed to generate queryString')
   }
-  console.log('generateAllRelatedDataQueryString queryString', queryString)
+
   return queryString
 }
 
@@ -197,13 +197,17 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      UPDATE "episodes"
-      SET "${TimeRanges[timeRange]}"=0
-      FROM episodes as e
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'podcast';
+      UPDATE "episodes" e 
+      SET "${TimeRanges[timeRange]}" = 0
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS FALSE
+        AND p."medium" = 'podcast'
+      );
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
@@ -221,12 +225,17 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" e
-      SET e."${TimeRanges[timeRange]}"=0
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'music';
+      UPDATE "episodes" e 
+      SET "${TimeRanges[timeRange]}" = 0
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS FALSE
+        AND p."medium" = 'music'
+      );
     `
   } else if (finalPagePath === PagePaths.channels) {
     queryString = `
@@ -237,16 +246,21 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" e
-      SET e."${TimeRanges[timeRange]}"=0
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS TRUE;
-    `
+      UPDATE "episodes" e 
+      SET "${TimeRanges[timeRange]}" = 0
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS TRUE
+      );
+  `
   } else {
     throw new Error('generateAllRelatedDataQueryString: Failed to generate queryString')
   }
-  console.log('generateResetToZeroQueryString queryString', queryString)
+
   return queryString
 }
 
@@ -263,12 +277,17 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      UPDATE "episodes" e
+      UPDATE "episodes" e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'podcast';
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS FALSE
+        AND p."medium" = 'podcast'
+      );
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
@@ -286,12 +305,17 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" e
+      UPDATE "episodes" e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'music';
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS FALSE
+        AND p."medium" = 'music'
+      );
     `
   } else if (finalPagePath === PagePaths.channels) {
     queryString = `
@@ -302,16 +326,21 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" e
+      UPDATE "episodes" e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e.id='${id}'
-      AND p."hasVideo" IS TRUE;
+      WHERE e.id = ${id}
+      AND e."podcastId"
+      IN (
+        SELECT p.id
+        FROM podcasts p
+        WHERE e."podcastId" = p.id
+        AND p."hasVideo" IS TRUE
+      );
     `
   } else {
     throw new Error('generateSetNewCountQuery: Failed to generate queryString')
   }
-  console.log('generateSetNewCountQuery queryString', queryString)
+
   return queryString
 }
 
@@ -331,7 +360,7 @@ const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data) =
     before writing the Matomo data to the table.
   */
 
-  const getTableRowsWithStatsData = generateAllRelatedDataQueryString(finalPagePath, timeRange)
+  const getTableRowsWithStatsData = generateGetAllRelatedDataQueryString(finalPagePath, timeRange)
   const tableRowsWithStatsData = await getConnection().createEntityManager().query(getTableRowsWithStatsData)
 
   for (const row of tableRowsWithStatsData) {
