@@ -2,6 +2,7 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import {
+  getEpisodeByGuid,
   getPodcastFromPodcastIndexById,
   getValueTagForChannelFromPodcastIndexByGuids,
   getValueTagForItemFromPodcastIndexByGuids
@@ -49,6 +50,17 @@ router.get('/value/by-guids', async (ctx) => {
     } catch (error) {
       emitRouterError(error, ctx)
     }
+  }
+})
+
+// Get episode from Podcast Index by podcastIndexId and episodeGuid
+router.get('/episode/byguid', podcastByIdLimiter, async (ctx) => {
+  try {
+    const { episodeGuid, podcastIndexId } = ctx.query as any
+    const data = await getEpisodeByGuid(podcastIndexId, episodeGuid)
+    ctx.body = data
+  } catch (error) {
+    emitRouterError(error, ctx)
   }
 })
 
