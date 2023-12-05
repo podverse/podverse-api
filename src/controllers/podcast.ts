@@ -6,6 +6,7 @@ import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } fro
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { deleteNotification } from './notification'
+import { parseFeedUrlsByPodcastIds } from '~/services/parser'
 const createError = require('http-errors')
 const SqlString = require('sqlstring')
 
@@ -435,7 +436,7 @@ const subscribeToPodcast = async (podcastId, loggedInUserId) => {
   return subscribedPodcastIds
 }
 
-const updateHasPodcastIndexValueTags = async (podcastIndexIds: string[]) => {
+const updateHasPodcastIndexValueTags = async (podcastIndexIds: number[]) => {
   console.log('updateHasPodcastIndexValueTags', podcastIndexIds.length)
   const repository = getRepository(Podcast)
 
@@ -445,12 +446,19 @@ const updateHasPodcastIndexValueTags = async (podcastIndexIds: string[]) => {
       hasPodcastIndexValueTag: true
     }
   })
+  console.log('podcastsToResetValueTag', podcastsToResetValueTag.length)
+
+  const podcastsToReparse = podcastsToResetValueTag.filter((podcast: Podcast) => {
+    return !podcastIndexIds.includes(parseInt(podcast.podcastIndexId || '', 10))
+  })
+  console.log('podcastsToReparse', podcastsToReparse.length)
+
   const newPodcastsToReset = podcastsToResetValueTag.map((podcast) => {
     podcast.hasPodcastIndexValueTag = false
     return podcast
   })
-
   console.log('newPodcastsToReset', newPodcastsToReset.length)
+
   await repository.save(newPodcastsToReset, { chunk: 400 })
 
   const podcastsToUpdate = await repository.find({
@@ -458,15 +466,23 @@ const updateHasPodcastIndexValueTags = async (podcastIndexIds: string[]) => {
       podcastIndexId: In(podcastIndexIds)
     }
   })
+  console.log('podcastsToUpdate', podcastsToUpdate.length)
 
   const newPodcastsToUpdate = podcastsToUpdate.map((podcast) => {
     podcast.hasPodcastIndexValueTag = true
     return podcast
   })
-
   console.log('newPodcastsToUpdate', newPodcastsToUpdate.length)
+
   await repository.save(newPodcastsToUpdate, { chunk: 400 })
-  console.log('newPodcastsToUpdate finished')
+
+  console.log('newPodcastsToUpdate saved')
+
+  const podcastsToReparseIds = podcastsToReparse.map((podcast) => podcast.id)
+  console.log('parseFeedUrlsByPodcastIds', podcastsToReparseIds)
+  await parseFeedUrlsByPodcastIds(podcastsToReparseIds)
+
+  console.log('updateHasPodcastIndexValueTags finished')
 }
 
 type GetPodcastWebUrl = {
