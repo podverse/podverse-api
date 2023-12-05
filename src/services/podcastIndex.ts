@@ -612,11 +612,8 @@ export const hideDeadPodcasts = async (fileUrl?: string) => {
   console.log('hideDeadPodcasts finished')
 }
 
+// the episodeGuid needs to be encoded client-side if it is an http url
 export const getEpisodeByGuid = async (podcastIndexId: string, episodeGuid: string) => {
-  if (episodeGuid.indexOf('http') === 0) {
-    episodeGuid = episodeGuid.replace(/#/g, '%23')
-    episodeGuid = episodeGuid.replace(/\?/g, '%3F')
-  }
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?feedid=${podcastIndexId}&guid=${episodeGuid}`
   const response = await axiosRequest(url)
   return response && response.data
