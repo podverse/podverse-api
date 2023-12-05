@@ -17,6 +17,13 @@ const csv = require('csvtojson')
 const createError = require('http-errors')
 const { podcastIndexConfig, userAgent } = config
 
+/*
+  NOTE!!!
+  The episodeGuid needs to be encoded both on the client-side and server side if it is an http url guid.
+  Koa will automatically decode the encoded url param, and then Podcast Index API needs it
+  encoded once again before sending the request to PI API.
+*/
+
 const axiosRequest = async (url) => {
   const apiHeaderTime = new Date().getTime() / 1000
   const hash = sha1(config.podcastIndexConfig.authKey + config.podcastIndexConfig.secretKey + apiHeaderTime).toString(
@@ -242,6 +249,9 @@ export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: 
 
 // see note above
 export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: string, episodeGuid: string) => {
+  if (episodeGuid.indexOf('http') === 0) {
+    episodeGuid = encodeURIComponent(episodeGuid)
+  }
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?podcastguid=${podcastGuid}&guid=${episodeGuid}`
   let episodeValueTag: ValueTag[] | null = null
 
@@ -612,8 +622,10 @@ export const hideDeadPodcasts = async (fileUrl?: string) => {
   console.log('hideDeadPodcasts finished')
 }
 
-// the episodeGuid needs to be encoded client-side if it is an http url
 export const getEpisodeByGuid = async (podcastIndexId: string, episodeGuid: string) => {
+  if (episodeGuid.indexOf('http') === 0) {
+    episodeGuid = encodeURIComponent(episodeGuid)
+  }
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?feedid=${podcastIndexId}&guid=${episodeGuid}`
   const response = await axiosRequest(url)
   return response && response.data
