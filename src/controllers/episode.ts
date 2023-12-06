@@ -363,7 +363,7 @@ const getEpisodesByPodcastId = async (query, qb, podcastIds) => {
 
   const allowRandom = true
   const shouldLimitCount = false
-  return handleGetEpisodesWithOrdering({ maxResults, qb, query, skip, sort, take }, allowRandom, shouldLimitCount)
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take, maxResults }, allowRandom, shouldLimitCount)
 }
 
 // When a podcast has seasons AND serial, we always return all the episodes,
@@ -463,7 +463,7 @@ const getEpisodesByPodcastIds = async (query) => {
 
   const allowRandom = true
   const shouldLimitCount = shouldUseEpisodesMostRecent
-  return handleGetEpisodesWithOrdering({ qb, skip, sort, take, maxResults }, allowRandom, shouldLimitCount)
+  return handleGetEpisodesWithOrdering({ qb, query, skip, sort, take, maxResults }, allowRandom, shouldLimitCount)
 }
 
 const handleGetEpisodesWithOrdering = async (
@@ -474,7 +474,7 @@ const handleGetEpisodesWithOrdering = async (
   isFromManticoreSearch?,
   totalOverride?
 ) => {
-  const { maxResults, skip, sort, take } = obj
+  const { query, skip, sort, take, maxResults } = obj
   const finalTake = maxResults ? maxResultsEpisodes : take
 
   let { qb } = obj
@@ -482,6 +482,15 @@ const handleGetEpisodesWithOrdering = async (
   qb.limit(finalTake)
 
   qb = addOrderByToQuery(qb, 'episode', sort, 'pubDate', allowRandom, isFromManticoreSearch)
+
+  if (query?.liveItemStatus === 'live') {
+    const halfDayEarlier = new Date(new Date().getTime() - 12 * 60 * 60 * 1000)
+    const halfDayLater = new Date(new Date().getTime() + 12 * 60 * 60 * 1000)
+    qb.andWhere('"liveItem"."start" BETWEEN :halfDayEarlier AND :halfDayLater', { halfDayEarlier, halfDayLater })
+  } else if (query?.liveItemStatus === 'pending') {
+    const currentTime = new Date()
+    qb.andWhere('"liveItem"."start" > :currentTime', { currentTime })
+  }
 
   let episodes = [] as any
   let episodesCount = 0
