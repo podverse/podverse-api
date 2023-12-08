@@ -6,7 +6,8 @@ import {
   Funding,
   ParsedEpisode,
   parseLatestLiveItemStatus,
-  parseLatestLiveItemInfo
+  parseLatestLiveItemInfo,
+  ValueTagOriginal
 } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
@@ -14,7 +15,6 @@ import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
 import { podcastItunesTypeDefaultValue } from '~/entities/podcast'
-import type { Value } from '~/entities/podcast'
 import {
   _logEnd,
   _logStart,
@@ -163,7 +163,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       }
     }
 
-    const valueCompat = (val: Phase4Value): Value => {
+    const valueCompat = (val: Phase4Value): ValueTagOriginal => {
       return {
         type: val.type,
         method: val.method,

@@ -5,7 +5,7 @@ import {
   Funding,
   SocialInteraction,
   Transcript,
-  ValueTag
+  ValueTagOriginal
 } from 'podverse-shared'
 import { Column, JoinTable, ManyToMany, ManyToOne, ViewColumn, ViewEntity } from 'typeorm'
 import { Author, Category, Podcast } from '~/entities'
@@ -115,7 +115,7 @@ export class EpisodeMostRecent {
   transcript: Transcript[]
 
   @Column('simple-json', { nullable: true })
-  value: ValueTag[]
+  value: ValueTagOriginal[]
 
   @ManyToMany((type) => Author)
   @JoinTable()

@@ -9,7 +9,7 @@ import { addFeedUrlsByPodcastIndexId } from '~/services/queue'
 import { request } from '~/lib/request'
 import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import { Podcast } from '~/entities'
-import { ValueTag } from 'podverse-shared'
+import { ValueTagOriginal } from 'podverse-shared'
 const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
@@ -228,7 +228,7 @@ export const getPodcastFromPodcastIndexByGuid = async (podcastGuid: string) => {
 // (usually a song) is playing right now.
 export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: string) => {
   const url = `${podcastIndexConfig.baseUrl}/podcasts/byguid?guid=${podcastGuid}`
-  let podcastValueTag: ValueTag[] | null = null
+  let podcastValueTag: ValueTagOriginal[] | null = null
 
   try {
     const response = await axiosRequest(url)
@@ -253,7 +253,7 @@ export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: str
     episodeGuid = encodeURIComponent(episodeGuid)
   }
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?podcastguid=${podcastGuid}&guid=${episodeGuid}`
-  let episodeValueTag: ValueTag[] | null = null
+  let episodeValueTag: ValueTagOriginal[] | null = null
 
   try {
     const response = await axiosRequest(url)

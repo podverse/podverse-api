@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import type { LiveItemStatus, PodcastMedium } from 'podverse-shared'
+import type { LiveItemStatus, PodcastMedium, ValueTagOriginal } from 'podverse-shared'
 import { Author, Category, Episode, FeedUrl, Notification } from '~/entities'
 import {
   BeforeInsert,
@@ -18,29 +18,10 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { generateShortId } from '~/lib/utility'
-import { Phase6ValueTimeSplit } from 'podcast-partytime/dist/parser/phase/phase-6'
 
 type Funding = {
   url: string
   value?: string
-}
-
-export type Value = {
-  method: string
-  suggested?: string
-  type: string
-  recipients: ValueRecipient[]
-  valueTimeSplits?: Phase6ValueTimeSplit[]
-}
-
-type ValueRecipient = {
-  address: string
-  customKey?: string
-  customValue?: string
-  fee?: boolean
-  name?: string
-  split: string
-  type: string
 }
 
 export const podcastItunesTypeDefaultValue = 'episodic'
@@ -248,7 +229,7 @@ export class Podcast {
   type?: string
 
   @Column('simple-json', { nullable: true })
-  value: Value[]
+  value: ValueTagOriginal[]
 
   @ManyToMany((type) => Author, (author) => author.podcasts)
   @JoinTable()
