@@ -1063,11 +1063,6 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.119.tgz#be847e5f4bc3e35e46d041c394ead8b603ad8b39"
   integrity sha512-Z3TNyBL8Vd/M9D9Ms2S3LmFq2sSMzahodD6rCS9V2N44HUMINb75jNkSuwAx7eo2ufqTdfOdtGQpNbieUjPQmw==
 
-"@types/lodash@4.14.172":
-  version "4.14.172"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
-  integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
-
 "@types/lodash@4.14.200":
   version "4.14.200"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.200.tgz#435b6035c7eba9cdf1e039af8212c9e9281e7149"
@@ -4985,11 +4980,6 @@ html-encoding-sniffer@^2.0.1:
   dependencies:
     whatwg-encoding "^1.0.5"
 
-html-entities@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.3.3.tgz#117d7626bece327fc8baace8868fa6f5ef856e46"
-  integrity sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==
-
 html-escaper@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.2.tgz#dfd60027da36a36dfcbe236262c00a5822681453"
@@ -8200,19 +8190,10 @@ podcast-partytime@4.6.2:
     ramda "^0.27.1"
     tiny-invariant "^1.2.0"
 
-
-podverse-shared@^4.15.2:
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/podverse-shared/-/podverse-shared-4.15.2.tgz#ef2a9ae3845ca9833f62972428ab058511bc195a"
-  integrity sha512-X9jtauggsxazN4F00PkQONiK3DT345v7qL4SXpQh+Qz+1zY5dfJbTBN4fcfya4xp5L1BPpsAj6mn6ALx+ravCQ==
-  dependencies:
-    "@types/lodash" "4.14.172"
-    he "^1.2.0"
-    html-entities "^2.3.2"
-    lodash "4.17.21"
-    moment "^2.29.4"
-    striptags "^3.2.0"
-    typescript "3.9.7"
+podverse-orm@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/podverse-orm/-/podverse-orm-1.0.0.tgz#a197a331a838a1b1bc742f76bae21cbd8d3249e1"
+  integrity sha512-5MBUXKPJOC0dL2gYpkCuya3NHKXmT1Zr5jLhwJBMOG6Xx6U1an99UVnWfQj/lY2Pu4RR6TpHTRBLUEIfcMOJ9A==
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
@@ -9626,11 +9607,6 @@ strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==
-
-striptags@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/striptags/-/striptags-3.2.0.tgz#cc74a137db2de8b0b9a370006334161f7dd67052"
-  integrity sha512-g45ZOGzHDMe2bdYMdIvdAfCQkCTDMGBazSw1ypMowwGIee7ZQ5dU0rBJ8Jqgl+jAKIv4dbeE1jscZq9wid1Tkw==
 
 strnum@^1.0.4:
   version "1.0.5"
