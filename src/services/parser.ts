@@ -7,14 +7,14 @@ import {
   ParsedEpisode,
   parseLatestLiveItemStatus,
   parseLatestLiveItemInfo,
-  ValueTagOriginal
+  ValueTagOriginal,
+  podcastItunesTypeDefaultValue
 } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
 import { Author, Category, Episode, FeedUrl, LiveItem, Podcast } from '~/entities'
-import { podcastItunesTypeDefaultValue } from '~/entities/podcast'
 import {
   _logEnd,
   _logStart,

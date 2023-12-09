@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
-import type { LiveItemStatus, PodcastMedium, ValueTagOriginal } from 'podverse-shared'
+import { podcastItunesTypeDefaultValue, LiveItemStatus, PodcastMedium, ValueTagOriginal } from 'podverse-shared'
 import { Author, Category, Episode, FeedUrl, Notification } from '~/entities'
 import {
   BeforeInsert,
@@ -23,8 +23,6 @@ type Funding = {
   url: string
   value?: string
 }
-
-export const podcastItunesTypeDefaultValue = 'episodic'
 
 @Index(['hasVideo', 'pastAllTimeTotalUniquePageviews'])
 @Index(['hasVideo', 'pastHourTotalUniquePageviews'])
