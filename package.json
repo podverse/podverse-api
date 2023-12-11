@@ -144,7 +144,7 @@
     "webpack-cli": "3.3.10"
   },
   "dependencies": {
-    "@koa/cors": "3.0.0",
+    "@koa/cors": "5.0.0",
     "@types/crypto-js": "^3.1.47",
     "@types/jest": "26.0.3",
     "@types/lodash": "4.14.200",
