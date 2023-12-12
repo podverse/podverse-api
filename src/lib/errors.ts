@@ -1,5 +1,5 @@
 import { validate } from 'class-validator'
-const createError = require('http-errors')
+import createError from 'http-errors'
 
 export const emitRouterError = (error, ctx) => {
   ctx.status = error.status || 500

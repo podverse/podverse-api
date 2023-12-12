@@ -3,7 +3,7 @@ import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
 import { convertSecondsToDaysText } from '~/lib/utility'
 import { loggerInstance } from '~/lib/logging'
-const createError = require('http-errors')
+import createError from 'http-errors'
 
 const { mailerFrom, resetPasswordTokenExpiration } = config
 

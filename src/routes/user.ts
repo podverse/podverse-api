@@ -1,8 +1,5 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { PassThrough } from 'stream'
-import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
 import {
   deleteLoggedInUser,
   getCompleteUserDataAsJSON,
@@ -14,7 +11,10 @@ import {
   getUserPlaylists,
   toggleSubscribeToUser,
   updateLoggedInUser
-} from '~/controllers/user'
+} from 'podverse-orm'
+import { PassThrough } from 'stream'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'

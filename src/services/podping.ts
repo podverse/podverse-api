@@ -1,6 +1,5 @@
 import { config } from '~/config'
-import { getFeedUrlByUrl } from '~/controllers/feedUrl'
-import { FeedUrl } from '~/entities'
+import { FeedUrl, getFeedUrlByUrl } from 'podverse-orm'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { addFeedUrlsByPodcastIndexId } from './queue'
 const ws = require('ws')

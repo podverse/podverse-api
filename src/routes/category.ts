@@ -1,8 +1,8 @@
 import * as Router from 'koa-router'
+import { getCategory, getCategories } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
-import { getCategory, getCategories } from '~/controllers/category'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateCategorySearch } from '~/middleware/queryValidation/search'
 

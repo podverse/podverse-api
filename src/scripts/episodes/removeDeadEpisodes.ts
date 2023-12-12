@@ -1,4 +1,4 @@
-import { removeDeadEpisodes } from '~/controllers/episode'
+import { removeDeadEpisodes } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
 ;(async function () {
   try {

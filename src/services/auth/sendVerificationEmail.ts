@@ -2,7 +2,7 @@ import { config } from '~/config'
 import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
 import { loggerInstance } from '~/lib/logging'
-const createError = require('http-errors')
+import createError from 'http-errors'
 
 const { mailerFrom } = config
 

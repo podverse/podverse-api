@@ -1,4 +1,3 @@
-export { validatePassword } from '~/lib/utility/validation'
 import { performance } from 'perf_hooks'
 
 export const delimitQueryValues = (ctx, keys) => {
@@ -12,17 +11,6 @@ export const delimitQueryValues = (ctx, keys) => {
 
   ctx.state.query = query
   return ctx
-}
-
-export const chunkArray = (arr, chunkSize = 10) => {
-  let i
-  let j
-  const chunks = []
-  for (i = 0, j = arr.length; i < j; i += chunkSize) {
-    const chunk = arr.slice(i, i + chunkSize) as never // TODO: What does this mean?
-    chunks.push(chunk)
-  }
-  return chunks
 }
 
 export const offsetDate = (minutesOffset = 0) => {
@@ -189,16 +177,6 @@ export const isBeforeDate = (expirationDate, dayOffset = 0) => {
 export const removeObjectKeysWithEmptyValues = (obj) =>
   Object.keys(obj).forEach((key) => obj[key] == null && delete obj[key])
 
-export const convertToSortableTitle = (title: string) => {
-  const sortableTitle = title
-    ? title
-        .toLowerCase()
-        .replace(/\b^the\b|\b^a\b|\b^an\b/i, '')
-        .trim()
-    : ''
-  return sortableTitle ? sortableTitle.replace(/#/g, '') : ''
-}
-
 export const isValidDate = (date: any) => date instanceof Date && !isNaN(date as any)
 
 // export const cleanFileExtension = (fileExtension: string) => {
@@ -248,14 +226,4 @@ export const parseProp = (item: any, key: string, defaultValue: any) => {
     }
   }
   return val
-}
-
-export const removeAllSpaces = (str: string) => {
-  str = str.replace(/%20/g, ' ')
-  str = str.replace(/\s/g, '')
-  return str
-}
-
-export const checkIfVideoMediaType = (str: string) => {
-  return str && (str.toLowerCase().indexOf('video') >= 0 || str.toLowerCase().indexOf('application/x-mpegurl')) >= 0
 }

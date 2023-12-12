@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { createUPDevice, deleteUPDevice, updateUPDevice } from 'podverse-orm'
 import { config } from '~/config'
-import { createUPDevice, deleteUPDevice, updateUPDevice } from '~/controllers/upDevice'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import {

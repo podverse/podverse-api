@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm'
 import { User } from '~/entities'
-const createError = require('http-errors')
+import createError from 'http-errors'
 
 export const isPodpingAdmin = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {

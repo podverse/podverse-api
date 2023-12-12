@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
+import { getFeedUrl } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { getFeedUrl } from '~/controllers/feedUrl'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/feedUrl` })
 

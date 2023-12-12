@@ -1,7 +1,7 @@
 import { addSeconds } from 'date-fns'
+import { getUserByEmail, getUserByVerificationToken, updateUserEmailVerificationToken } from 'podverse-orm'
 import { v4 as uuidv4 } from 'uuid'
 import { config } from '~/config'
-import { getUserByEmail, getUserByVerificationToken, updateUserEmailVerificationToken } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 

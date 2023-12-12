@@ -1,6 +1,5 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from '~/config'
 import {
   addOrUpdateAllHistoryItemsForPodcast,
   addOrUpdateHistoryItem,
@@ -11,7 +10,8 @@ import {
   removeAllUserHistoryItems,
   removeUserHistoryItemByEpisodeId,
   removeUserHistoryItemByMediaRefId
-} from '~/controllers/userHistoryItem'
+} from 'podverse-orm'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'

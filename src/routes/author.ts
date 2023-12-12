@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
+import { getAuthor, getAuthors } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { getAuthor, getAuthors } from '~/controllers/author'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateAuthorSearch } from '~/middleware/queryValidation/search'
 

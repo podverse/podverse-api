@@ -1,10 +1,10 @@
 import * as Router from 'koa-router'
-import { config } from '~/config'
 import {
   getSecondaryQueueEpisodesForPodcastId,
   getSecondaryQueueEpisodesForPlaylist,
   getSecondaryQueueEpisodesForPodcastId2
-} from '~/controllers/secondaryQueue'
+} from 'podverse-orm'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 

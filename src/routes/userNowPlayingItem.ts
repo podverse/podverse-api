@@ -1,18 +1,18 @@
+import createError from 'http-errors'
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from '~/config'
-import { getEpisode } from '~/controllers/episode'
-import { getMediaRef } from '~/controllers/mediaRef'
 import {
   deleteUserNowPlayingItem,
+  getEpisode,
+  getMediaRef,
   getUserNowPlayingItem,
   updateUserNowPlayingItem
-} from '~/controllers/userNowPlayingItem'
+} from 'podverse-orm'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { validateUserNowPlayingItemUpdate } from '~/middleware/queryValidation/update'
-const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/user-now-playing-item` })
 router.use(bodyParser())

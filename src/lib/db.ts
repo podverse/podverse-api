@@ -1,10 +1,7 @@
-import { createConnection, ConnectionOptions } from 'typeorm'
-import { config } from '~/config'
 import {
   AccountClaimToken,
   AppStorePurchase,
   Author,
-  BitPayInvoice,
   Category,
   Episode,
   EpisodeMostRecent,
@@ -25,14 +22,15 @@ import {
   UserHistoryItem,
   UserNowPlayingItem,
   UserQueueItem
-} from '~/entities'
+} from 'podverse-orm'
+import { createConnection, ConnectionOptions } from 'typeorm'
+import { config } from '~/config'
 import { loggerInstance } from './logging'
 
 const entities = [
   AccountClaimToken,
   AppStorePurchase,
   Author,
-  BitPayInvoice,
   Category,
   Episode,
   EpisodeMostRecent,

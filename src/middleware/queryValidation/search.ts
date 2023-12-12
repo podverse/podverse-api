@@ -1,6 +1,6 @@
-const Joi = require('joi')
-import { liveItemStatuses } from '~/controllers/liveItem'
+import { liveItemStatuses } from 'podverse-shared'
 import { validateBaseQuery } from './base'
+const Joi = require('joi')
 
 const validateAuthorSearch = async (ctx, next) => {
   const schema = Joi.object().keys({

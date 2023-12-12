@@ -1,5 +1,5 @@
+import { refreshMediaRefsVideosMaterializedView } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { refreshMediaRefsVideosMaterializedView } from '~/controllers/mediaRef'
 ;(async function () {
   try {
     await connectToDb()

@@ -1,6 +1,6 @@
+import createError from 'http-errors'
+import { User } from 'podverse-orm'
 import { getRepository } from 'typeorm'
-import { User } from '~/entities'
-const createError = require('http-errors')
 
 export const isDevAdmin = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {

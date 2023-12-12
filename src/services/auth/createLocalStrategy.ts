@@ -1,8 +1,8 @@
 import { compare as compareHash } from 'bcryptjs'
+import createError from 'http-errors'
 import { Strategy as LocalStrategy } from 'passport-local'
+import { User } from 'podverse-orm'
 import { getRepository } from 'typeorm'
-import { User } from '~/entities'
-const createError = require('http-errors')
 
 export const createLocalStrategy = () =>
   new LocalStrategy({ session: false, usernameField: 'email' }, async (email, password, done) => {

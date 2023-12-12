@@ -14,7 +14,8 @@
     "prettier:write": "npm run prettier:base -- --write",
     "prettier:fix": "npm run prettier:write --  \"src/**/*.{ts,js}\" \"__tests__/**/*.{ts,js}\"",
     "build": "webpack --progress --colors",
-    "dev": "NODE_ENV=development nodemon --watch 'src/**/*' --watch $(realpath node_modules/podverse-orm) -e js,ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev": "NODE_ENV=development ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
+    "dev:watch": "NODE_ENV=development nodemon --watch 'src' --watch $(realpath node_modules/podverse-external-services) --watch $(realpath node_modules/podverse-orm) --watch $(realpath node_modules/podverse-parser) --watch $(realpath node_modules/podverse-shared) -e js,ts,tsx,json --exec ts-node -r dotenv/config -r tsconfig-paths/register src/server.ts",
     "dev:scripts:addAllOrphanFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllOrphanFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "dev:scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
@@ -38,7 +39,6 @@
     "dev:scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/updateValueTagEnabledPodcastIdsFromPI.ts",
     "dev:scripts:podping:runLiveItemListener": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "dev:scripts:queryUniquePageviews": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
-    "dev:scripts:receiveErrorMessageFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
     "dev:scripts:refreshEpisodesMostRecentMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/refreshEpisodesMostRecentMaterializedView.ts",
     "dev:scripts:refreshMediaRefsVideosMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/mediaRefs_videos/refreshMediaRefsVideosMaterializedView.ts",
     "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
@@ -71,7 +71,6 @@
     "scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/updateValueTagEnabledPodcastIdsFromPI.ts",
     "scripts:podping:runLiveItemListener": "ts-node -r tsconfig-paths/register ./src/scripts/podping/runLiveItemListener.ts",
     "scripts:queryUniquePageviews": "ts-node -r tsconfig-paths/register ./src/scripts/stats/queryUniquePageviews.ts",
-    "scripts:receiveErrorMessageFromQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
     "scripts:refreshEpisodesMostRecentMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/refreshEpisodesMostRecentMaterializedView.ts",
     "scripts:refreshMediaRefsVideosMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/mediaRefs_videos/refreshMediaRefsVideosMaterializedView.ts",
     "scripts:removeDeadEpisodes": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
@@ -87,7 +86,6 @@
     "test:w:integration:single": "./scripts/runWIntegrationTestSingle.sh",
     "test:w:restoreDatabase": "./scripts/restoreDatabaseWin.sh",
     "test:unit": "jest",
-    "watch-server": "nodemon --watch 'src/**/*' -e ts,tsx,json --exec ts-node -r tsconfig-paths/register src/server.local.ts",
     "postinstall": "patch-package"
   },
   "lint-staged": {
@@ -140,7 +138,7 @@
     "nodemon": "2.0.1",
     "prettier": "^2.5.1",
     "ts-node": "8.5.4",
-    "typescript": "3.9.7",
+    "typescript": "^5.3.3",
     "webpack-cli": "3.3.10"
   },
   "dependencies": {
@@ -200,7 +198,10 @@
     "paypal-rest-sdk": "2.0.0-rc.2",
     "pg": "8.7.3",
     "podcast-partytime": "4.6.2",
+    "podverse-external-services": "^1.0.0",
     "podverse-orm": "^1.0.0",
+    "podverse-parser": "^1.0.0",
+    "podverse-shared": "^4.15.2",
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
     "request-promise-native": "1.0.8",

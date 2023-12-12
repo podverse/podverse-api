@@ -1,5 +1,4 @@
 import * as Router from 'koa-router'
-import { config } from '~/config'
 import {
   findPodcastsByFeedUrls,
   getMetadata,
@@ -11,7 +10,8 @@ import {
   getPodcastsFromSearchEngine,
   getSubscribedPodcasts,
   toggleSubscribeToPodcast
-} from '~/controllers/podcast'
+} from 'podverse-orm'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { hasValidMembership } from '~/middleware/hasValidMembership'

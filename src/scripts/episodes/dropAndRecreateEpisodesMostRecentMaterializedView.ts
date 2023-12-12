@@ -1,5 +1,5 @@
+import { dropAndRecreateEpisodesMostRecentMaterializedView } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { dropAndRecreateEpisodesMostRecentMaterializedView } from '~/controllers/episode'
 ;(async function () {
   try {
     await connectToDb()

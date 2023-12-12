@@ -1,9 +1,9 @@
+import createError from 'http-errors'
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { getAccountClaimToken, redeemAccountClaimToken } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError, errorMessages } from '~/lib/errors'
-import { getAccountClaimToken, redeemAccountClaimToken } from '~/controllers/accountClaimToken'
-const createError = require('http-errors')
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 

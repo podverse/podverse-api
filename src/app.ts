@@ -147,9 +147,6 @@ export const createApp = async (conn: Connection) => {
     app.use(authorRouter.routes())
     app.use(authorRouter.allowedMethods())
 
-    // app.use(bitpayRouter.routes())
-    // app.use(bitpayRouter.allowedMethods())
-
     app.use(categoryRouter.routes())
     app.use(categoryRouter.allowedMethods())
 

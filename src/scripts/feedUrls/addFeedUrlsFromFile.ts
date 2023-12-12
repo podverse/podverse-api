@@ -1,4 +1,4 @@
-import { addFeedUrls } from '~/controllers/feedUrl'
+import { addFeedUrls } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
 const fs = require('fs')
 const path = require('path')

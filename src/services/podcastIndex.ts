@@ -1,50 +1,27 @@
-import axios from 'axios'
-import { config } from '~/config'
+import createError from 'http-errors'
+import { convertPIValueTagToPVValueTagArray, PodcastIndexAPIService } from 'podverse-external-services'
+import { ValueTagOriginal } from 'podverse-shared'
 import { getConnection, getRepository } from 'typeorm'
-import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl } from '~/controllers/feedUrl'
+import { config } from '~/config'
+import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl, getPodcastByPodcastIndexId, Podcast } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { convertPIValueTagToPVValueTagArray } from '~/lib/podcastIndex'
 import { parseFeedUrl } from '~/services/parser'
 import { addFeedUrlsByPodcastIndexId } from '~/services/queue'
 import { request } from '~/lib/request'
-import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
-import { Podcast } from '~/entities'
-import { ValueTagOriginal } from 'podverse-shared'
 const shortid = require('shortid')
-const sha1 = require('crypto-js/sha1')
-const encHex = require('crypto-js/enc-hex')
 const csv = require('csvtojson')
-const createError = require('http-errors')
 const { podcastIndexConfig, userAgent } = config
 
-/*
-  NOTE!!!
-  The episodeGuid needs to be encoded both on the client-side and server side if it is an http url guid.
-  Koa will automatically decode the encoded url param, and then Podcast Index API needs it
-  encoded once again before sending the request to PI API.
-*/
-
-const axiosRequest = async (url) => {
-  const apiHeaderTime = new Date().getTime() / 1000
-  const hash = sha1(config.podcastIndexConfig.authKey + config.podcastIndexConfig.secretKey + apiHeaderTime).toString(
-    encHex
-  )
-
-  return axios({
-    url,
-    method: 'GET',
-    headers: {
-      'User-Agent': userAgent,
-      'X-Auth-Key': podcastIndexConfig.authKey,
-      'X-Auth-Date': apiHeaderTime,
-      Authorization: hash
-    }
-  })
-}
+const instance = new PodcastIndexAPIService({
+  authKey: podcastIndexConfig.authKey,
+  baseUrl: podcastIndexConfig.baseUrl,
+  secretKey: podcastIndexConfig.secretKey,
+  userAgent
+})
 
 const getValueTagEnabledPodcastIdsFromPIRecursively = async (accumulatedPodcastIndexIds: number[], startAt = 1) => {
   const url = `${podcastIndexConfig.baseUrl}/podcasts/bytag?podcast-value=true&max=5000&start_at=${startAt}`
-  const response = await axiosRequest(url)
+  const response = await instance.podcastIndexAPIRequest(url)
   const { data } = response
 
   for (const feed of data.feeds) {
@@ -89,23 +66,13 @@ const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = []
   }
 }
 
-/*
-  since = in seconds
-*/
+/* since = in seconds */
 const getRecentlyUpdatedData = async (since?: number) => {
   let url = `${podcastIndexConfig.baseUrl}/recent/data?max=5000`
-
   url += `&since=${since ? since : -1800}`
-
-  const response = await axiosRequest(url)
+  const response = await instance.podcastIndexAPIRequest(url)
   return response && response.data
 }
-
-// const getRecentlyUpdatedPodcastFeeds = async () => {
-//   const url = `${podcastIndexConfig.baseUrl}/recent/feeds?sort=discovery&max=1000`
-//   const response = await axiosRequest(url)
-//   return response && response.data
-// }
 
 type PodcastIndexDataFeed = {
   feedId: number
@@ -190,23 +157,11 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
   }
 }
 
-export const getPodcastFromPodcastIndexById = async (id: string) => {
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/byfeedid?id=${id}`
-  const response = await axiosRequest(url)
-  return response && response.data
-}
-
-export const getPodcastValueTagForPodcastIndexId = async (id: string) => {
-  const podcast = await getPodcastFromPodcastIndexById(id)
-  const pvValueTagArray = convertPIValueTagToPVValueTagArray(podcast.feed.value)
-  return pvValueTagArray
-}
-
 export const getPodcastFromPodcastIndexByGuid = async (podcastGuid: string) => {
   const url = `${podcastIndexConfig.baseUrl}/podcasts/byguid?guid=${podcastGuid}`
   let podcastIndexPodcast: any = null
   try {
-    const response = await axiosRequest(url)
+    const response = await instance.podcastIndexAPIRequest(url)
     podcastIndexPodcast = response.data
   } catch (error) {
     // assume a 404
@@ -231,7 +186,7 @@ export const getValueTagForChannelFromPodcastIndexByGuids = async (podcastGuid: 
   let podcastValueTag: ValueTagOriginal[] | null = null
 
   try {
-    const response = await axiosRequest(url)
+    const response = await instance.podcastIndexAPIRequest(url)
     const data = response.data
     if (data?.feed?.value) {
       podcastValueTag = convertPIValueTagToPVValueTagArray(data.feed.value)
@@ -256,7 +211,7 @@ export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: str
   let episodeValueTag: ValueTagOriginal[] | null = null
 
   try {
-    const response = await axiosRequest(url)
+    const response = await instance.podcastIndexAPIRequest(url)
     const data = response.data
 
     if (data?.episode?.value) {
@@ -273,56 +228,8 @@ export const getValueTagForItemFromPodcastIndexByGuids = async (podcastGuid: str
   return episodeValueTag
 }
 
-export const getEpisodesFromPodcastIndexById = async (podcastIndexId: string) => {
-  const url = `${podcastIndexConfig.baseUrl}/episodes/byfeedid?id=${podcastIndexId}&max=1000`
-  const response = await axiosRequest(url)
-  return response && response.data
-}
-
-export const getAllEpisodesFromPodcastIndexById = async (podcastIndexId: string) => {
-  // TODO: AFAIK Podcast Index does not support recursively paginating beyond 1000 results
-  // https://podcastindex-org.github.io/docs-api/#get-/episodes/byfeedid
-  // const allEpisodes = []
-  // let recursionLimit = 0
-
-  // const getEpisodesRecursively = async (id: string) => {
-  //   try {
-  //     if (recursionLimit >= 50) return
-  //     const episodes = await getEpisodesFromPodcastIndexById(id)
-  //     if (episodes.length > 0) {
-  //       allEpisodes.concat(episodes)
-  //     }
-  //     if (episodes.length === 1000) {
-  //     }
-  //   } catch (error) {
-  //     console.log('getAllEpisodesFromPodcastIndexById error', id, error)
-  //   }
-  // }
-
-  // await getEpisodesRecursively(id)
-
-  const response = await getEpisodesFromPodcastIndexById(podcastIndexId)
-  const allEpisodes = response?.items
-
-  return allEpisodes
-}
-
-export const getAllEpisodeValueTagsFromPodcastIndexById = async (podcastIndexId: string) => {
-  const episodes = await getAllEpisodesFromPodcastIndexById(podcastIndexId)
-  const pvEpisodesValueTagsByGuid = {}
-  for (const episode of episodes) {
-    if (episode?.value && episode?.guid) {
-      const pvValueTagArray = convertPIValueTagToPVValueTagArray(episode.value)
-      if (pvValueTagArray?.length > 0) {
-        pvEpisodesValueTagsByGuid[episode.guid] = pvValueTagArray
-      }
-    }
-  }
-  return pvEpisodesValueTagsByGuid
-}
-
 export const addOrUpdatePodcastFromPodcastIndex = async (client: any, podcastIndexId: string) => {
-  const podcastIndexPodcast = await getPodcastFromPodcastIndexById(podcastIndexId)
+  const podcastIndexPodcast = await instance.getPodcastFromPodcastIndexById(podcastIndexId)
   const allowNonPublic = true
   await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
   const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexId, allowNonPublic)
@@ -339,7 +246,7 @@ export const addOrUpdatePodcastFromPodcastIndex = async (client: any, podcastInd
 export const addFeedsByPodcastIndexIdToQueue = async (client: any, podcastIndexIds: string[]) => {
   for (const podcastIndexId of podcastIndexIds) {
     try {
-      const podcastIndexItem = await getPodcastFromPodcastIndexById(podcastIndexId)
+      const podcastIndexItem = await instance.getPodcastFromPodcastIndexById(podcastIndexId)
       if (podcastIndexItem?.feed) {
         await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexItem.feed)
       }
@@ -362,7 +269,7 @@ const getNewFeeds = async () => {
   console.log('startRangeTime-', startRangeTime)
   const url = `${podcastIndexConfig.baseUrl}/recent/newfeeds?since=${startRangeTime}&max=1000`
   console.log('url------------', url)
-  const response = await axiosRequest(url)
+  const response = await instance.podcastIndexAPIRequest(url)
 
   return response && response.data
 }
@@ -425,7 +332,7 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
     await csv()
       .fromFile(csvFilePath)
       .subscribe((json) => {
-        return new Promise(async (resolve) => {
+        return new Promise<void>(async (resolve) => {
           await new Promise((r) => setTimeout(r, 25))
           try {
             await createOrUpdatePodcastFromPodcastIndex(client, json)
@@ -586,7 +493,7 @@ export const hideDeadPodcasts = async (fileUrl?: string) => {
     await csv({ noheader: true })
       .fromString(response)
       .subscribe((json) => {
-        return new Promise(async (resolve) => {
+        return new Promise<void>(async (resolve) => {
           await new Promise((r) => setTimeout(r, 5))
           try {
             if (json?.field1) {
@@ -627,6 +534,6 @@ export const getEpisodeByGuid = async (podcastIndexId: string, episodeGuid: stri
     episodeGuid = encodeURIComponent(episodeGuid)
   }
   const url = `${podcastIndexConfig.baseUrl}/episodes/byguid?feedid=${podcastIndexId}&guid=${episodeGuid}`
-  const response = await axiosRequest(url)
+  const response = await instance.podcastIndexAPIRequest(url)
   return response && response.data
 }

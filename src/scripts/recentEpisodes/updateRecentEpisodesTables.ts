@@ -1,5 +1,5 @@
+import { updateRecentEpisodesTables } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { updateRecentEpisodesTables } from '~/controllers/recentEpisodes'
 ;(async function () {
   try {
     await connectToDb()

@@ -33,10 +33,6 @@
       "description": "podcast hosts, co-hosts, and guests"
     },
     {
-      "name": "bitpayInvoice",
-      "description": "the BitPay order object (disabled)"
-    },
-    {
       "name": "category",
       "description": "aka genre"
     },
@@ -530,91 +526,6 @@
         }
       }
     },
-    "/bitpay/invoice": {
-      "post": {
-        "tags": [
-          "bitpayInvoice"
-        ],
-        "summary": "Create a bitpayInvoice (disabled)",
-        "description": "Returns a new bitpayInvoice object (disabled because of unresolved issues with automating the BitPay private key pairing process during deploys)",
-        "operationId": "createBitPayInvoice",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/BitPayInvoice"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/bitpay/invoice/:id": {
-      "get": {
-        "tags": [
-          "bitpayInvoice"
-        ],
-        "summary": "Get the status of a bitpayInvoice by ID (disabled)",
-        "description": "Returns the status of a bitpayInvoice by ID (disabled because of unresolved issues with automating the BitPay private key pairing process during deploys)",
-        "operationId": "getBitPayInvoice",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the bitpayInvoice",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "BitPayInvoice not found"
-          }
-        },
-        "security": [
-          {
-            "authorization": []
-          }
-        ]
-      }
-    },
-    "/bitpay/notification": {
-      "post": {
-        "tags": [
-          "bitpayInvoice"
-        ],
-        "summary": "Handle webhook notifications to update a BitPayInvoice object",
-        "description": "When a request is made to this endpoint, it takes the invoiceID from the request and makes a request to BitPay to get the latest status for invoice with that id. If the invoice returned from BitPay was updated more recently than the version stored locally, then the local version is updated. Always returns status 200 so that BitPay stops sending the notification.",
-        "operationId": "notificationBitPayInvoice",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          }
-        }
-      }
-    },
     "/category": {
       "get": {
         "tags": [
@@ -1104,10 +1015,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/BitPayInvoice"
-            }
+            "description": "Successful operation"
           },
           "401": {
             "description": "Unauthorized"
@@ -2230,55 +2138,6 @@
         },
         "podcasts": {
           "$ref": "#/definitions/Podcast"
-        }
-      }
-    },
-    "BitPayInvoice": {
-      "type": "object",
-      "required": [
-        "id",
-        "orderId",
-        "currency",
-        "price",
-        "token",
-        "url"
-      ],
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "orderId": {
-          "type": "string"
-        },
-        "amountPaid": {
-          "type": "number"
-        },
-        "currency": {
-          "type": "string"
-        },
-        "exceptionStatus": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number"
-        },
-        "status": {
-          "type": "string"
-        },
-        "token": {
-          "type": "string"
-        },
-        "transactionCurrency": {
-          "type": "string"
-        },
-        "transactionSpeed": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "owner": {
-          "$ref": "#/definitions/User"
         }
       }
     },

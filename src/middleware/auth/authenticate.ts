@@ -1,5 +1,4 @@
-import { generateToken } from '~/services/auth/generateToken'
-import { authExpires } from '~/lib/constants'
+import { authExpires, generateToken } from '~/services/auth'
 import { config } from '~/config'
 
 export function authenticate(ctx, next) {

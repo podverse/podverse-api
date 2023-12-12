@@ -1,7 +1,7 @@
 import * as Router from 'koa-router'
+import { getPodcastByPodcastIndexId } from 'podverse-orm'
 import { getConnection } from 'typeorm'
 import { config } from '~/config'
-import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth'
 import { isDevAdmin } from '~/middleware/isDevAdmin'

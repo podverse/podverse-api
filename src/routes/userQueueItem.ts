@@ -1,6 +1,5 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from '~/config'
 import {
   addOrUpdateQueueItem,
   getCleanedUserQueueItems,
@@ -8,7 +7,8 @@ import {
   removeAllUserQueueItems,
   removeUserQueueItemByEpisodeId,
   removeUserQueueItemByMediaRefId
-} from '~/controllers/userQueueItem'
+} from 'podverse-orm'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'

@@ -47,7 +47,6 @@ export interface Config {
   mailerDisabled: boolean
   appStoreConfig: any
   awsConfig: any
-  bitpayConfig: any
   paypalConfig: any
   socialFacebookImageUrl: string
   socialFacebookPageUrl: string
@@ -69,7 +68,7 @@ export interface Config {
   rateLimiterMaxOverride: any
   manticore: any
   twitterAPIBearerToken: string
-  fcmGoogleApiAuthToken: string
+  googleApiAuthToken: string
   minimumMobileVersion: string
   podping: {
     hiveAccount: string
@@ -120,16 +119,7 @@ const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime = process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
 const podcastIndexNewFeedsSinceTime = process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
-const fcmGoogleApiAuthToken = process.env.FCM_GOOGLE_API_AUTH_TOKEN || ''
-
-const bitpayConfig = {
-  apiKeyPath: process.env.BITPAY_API_KEY_PATH || '/',
-  apiKeyPassword: process.env.BITPAY_API_KEY_PASSWORD || '',
-  currency: process.env.BITPAY_CURRENCY || 'USD',
-  notificationURL: process.env.BITPAY_NOTIFICATION_URL,
-  price: process.env.PREMIUM_MEMBERSHIP_COST,
-  redirectURL: process.env.BITPAY_REDIRECT_URL
-}
+const googleApiAuthToken = process.env.FCM_GOOGLE_API_AUTH_TOKEN || ''
 
 const paypalConfig = {
   clientId: process.env.PAYPAL_CLIENT_ID,
@@ -218,7 +208,6 @@ const config: Config = {
   mailerDisabled: parseBoolean(process.env.MAILER_DISABLED),
   appStoreConfig,
   awsConfig,
-  bitpayConfig,
   paypalConfig,
   matomoConfig,
   socialFacebookImageUrl,
@@ -245,7 +234,7 @@ const config: Config = {
   },
   twitterAPIBearerToken,
   minimumMobileVersion,
-  fcmGoogleApiAuthToken,
+  googleApiAuthToken,
   podping,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,

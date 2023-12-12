@@ -1,7 +1,6 @@
+import { getEpisodesByPodcastIds, getPodcastByPodcastIndexId } from 'podverse-orm'
 import { getLightningKeysendValueItem } from 'podverse-shared'
 import { Connection } from 'typeorm'
-import { getEpisodesByPodcastIds } from '~/controllers/episode'
-import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import {
   podcastIndexIds,
   podcastIndexIdsQuick,

@@ -1,5 +1,5 @@
+import { updateHasPodcastIndexValueTags } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { updateHasPodcastIndexValueTags } from '~/controllers/podcast'
 import { getValueTagEnabledPodcastIdsFromPI } from '~/services/podcastIndex'
 ;(async function () {
   await connectToDb()

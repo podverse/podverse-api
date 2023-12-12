@@ -2,12 +2,13 @@ import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import {
-  getGooglePlayPurchase,
+  addYearsToUserMembershipExpiration,
   createGooglePlayPurchase,
+  getGooglePlayPurchase,
+  getLoggedInUser,
+  GooglePlayPurchase,
   updateGooglePlayPurchase
-} from '~/controllers/googlePlayPurchase'
-import { addYearsToUserMembershipExpiration, getLoggedInUser } from '~/controllers/user'
-import { GooglePlayPurchase } from '~/entities'
+} from 'podverse-orm'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateGooglePlayPurchaseCreate } from '~/middleware/queryValidation/create'

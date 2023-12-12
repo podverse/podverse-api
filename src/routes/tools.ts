@@ -2,7 +2,7 @@ import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { request } from '~/lib/request'
-const createError = require('http-errors')
+import createError from 'http-errors'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/tools` })
 

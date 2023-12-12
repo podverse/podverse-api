@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { getLoggedInUser } from 'podverse-orm'
 import { config } from '~/config'
-import { getLoggedInUser } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { validateAppStorePurchaseCreate } from '~/middleware/queryValidation/create'

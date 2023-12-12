@@ -1,5 +1,5 @@
+import { refreshEpisodesMostRecentMaterializedView } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
-import { refreshEpisodesMostRecentMaterializedView } from '~/controllers/episode'
 ;(async function () {
   try {
     await connectToDb()

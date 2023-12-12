@@ -1,8 +1,4 @@
 import * as Router from 'koa-router'
-import type { SocialInteraction, Transcript } from 'podverse-shared'
-import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
-import { delimitQueryValues } from '~/lib/utility'
 import {
   getEpisode,
   getEpisodeByPodcastIdAndGuid,
@@ -13,7 +9,11 @@ import {
   getEpisodesFromSearchEngine,
   getLightningKeysendVTSAsChapters,
   retrieveLatestChapters
-} from '~/controllers/episode'
+} from 'podverse-orm'
+import type { SocialInteraction, Transcript } from 'podverse-shared'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'

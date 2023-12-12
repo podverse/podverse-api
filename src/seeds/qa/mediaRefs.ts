@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { getRepository } from 'typeorm'
-import { createMediaRef } from '~/controllers/mediaRef'
-import { Episode, MediaRef } from '~/entities'
+import { createMediaRef, Episode, MediaRef } from 'podverse-orm'
 import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
 import { generateQAItemsForUsers } from './utility'
 
