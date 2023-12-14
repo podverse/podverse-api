@@ -56,7 +56,7 @@ export interface Config {
   socialTwitterImageUrl: string
   socialTwitterPageUrl: string
   parserSupportedLanguages: any[]
-  podcastIndexConfig: any
+  podcastIndex: any
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -129,7 +129,7 @@ const appStoreConfig = {
 let parserSupportedLanguages = process.env.PARSER_SUPPORTED_LANGUAGES || ('en' as any)
 parserSupportedLanguages = parserSupportedLanguages.split(',')
 
-const podcastIndexConfig = {
+const podcastIndex = {
   authKey: podcastIndexAuthKey,
   secretKey: podcastIndexSecretKey,
   baseUrl: podcastIndexBaseUrl,
@@ -198,7 +198,7 @@ const config: Config = {
   socialTwitterImageUrl,
   socialTwitterPageUrl,
   parserSupportedLanguages,
-  podcastIndexConfig,
+  podcastIndex,
   legalName,
   legalAddress,
   websiteDomain,

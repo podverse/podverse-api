@@ -3,7 +3,6 @@ import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import {
   getEpisodeByGuid,
-  getPodcastFromPodcastIndexById,
   getValueTagForChannelFromPodcastIndexByGuids,
   getValueTagForItemFromPodcastIndexByGuids
 } from '~/services/podcastIndex'
