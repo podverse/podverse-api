@@ -6,7 +6,6 @@ import { config } from '~/config'
 import { getAuthorityFeedUrlByPodcastIndexId, getFeedUrlByUrl, getPodcastByPodcastIndexId, Podcast } from 'podverse-orm'
 import { connectToDb } from '~/lib/db'
 import { parseFeedUrl } from '~/services/parser'
-import { addFeedUrlsByPodcastIndexId } from '~/services/queue'
 import { request } from '~/lib/request'
 const shortid = require('shortid')
 const csv = require('csvtojson')
@@ -18,30 +17,6 @@ const instance = new PodcastIndexAPIService({
   secretKey: podcastIndexConfig.secretKey,
   userAgent
 })
-
-const getValueTagEnabledPodcastIdsFromPIRecursively = async (accumulatedPodcastIndexIds: number[], startAt = 1) => {
-  const url = `${podcastIndexConfig.baseUrl}/podcasts/bytag?podcast-value=true&max=5000&start_at=${startAt}`
-  const response = await instance.podcastIndexAPIRequest(url)
-  const { data } = response
-
-  for (const feed of data.feeds) {
-    accumulatedPodcastIndexIds.push(feed.id)
-  }
-
-  if (data.nextStartAt) {
-    return await getValueTagEnabledPodcastIdsFromPIRecursively(accumulatedPodcastIndexIds, data.nextStartAt)
-  }
-
-  return accumulatedPodcastIndexIds
-}
-
-export const getValueTagEnabledPodcastIdsFromPI = async () => {
-  const accumulatedPodcastIndexIds = []
-  const nextStartAt = 1
-  const podcastIndexIds = await getValueTagEnabledPodcastIdsFromPIRecursively(accumulatedPodcastIndexIds, nextStartAt)
-
-  return podcastIndexIds
-}
 
 const getRecentlyUpdatedDataRecursively = async (accumulatedFeedData: any[] = [], since?: number) => {
   console.log('getRecentlyUpdatedDataRecursively')
@@ -150,7 +125,7 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
     // Send the feedUrls with matching podcastIndexIds found in our database to
     // the priority parsing queue for immediate parsing.
     if (recentlyUpdatedPodcastIndexIds.length > 0) {
-      await addFeedUrlsByPodcastIndexId(recentlyUpdatedPodcastIndexIds)
+      await addFeedsToQueueForParsingByPodcastIndexId(recentlyUpdatedPodcastIndexIds)
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
@@ -243,67 +218,6 @@ export const addOrUpdatePodcastFromPodcastIndex = async (client: any, podcastInd
   }
 }
 
-export const addFeedsByPodcastIndexIdToQueue = async (client: any, podcastIndexIds: string[]) => {
-  for (const podcastIndexId of podcastIndexIds) {
-    try {
-      const podcastIndexItem = await instance.getPodcastFromPodcastIndexById(podcastIndexId)
-      if (podcastIndexItem?.feed) {
-        await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexItem.feed)
-      }
-    } catch (error) {
-      console.log('addFeedsByPodcastIndexIdToQueue error', error)
-    }
-  }
-
-  await addFeedUrlsByPodcastIndexId(podcastIndexIds)
-}
-
-const getNewFeeds = async () => {
-  const currentTime = new Date().getTime()
-  const { podcastIndexNewFeedsSinceTime } = podcastIndexConfig
-  // add 5 seconds to the query to prevent podcasts falling through the cracks between requests
-  const offset = 5000
-  const startRangeTime = Math.floor((currentTime - (podcastIndexNewFeedsSinceTime + offset)) / 1000)
-
-  console.log('currentTime----', currentTime)
-  console.log('startRangeTime-', startRangeTime)
-  const url = `${podcastIndexConfig.baseUrl}/recent/newfeeds?since=${startRangeTime}&max=1000`
-  console.log('url------------', url)
-  const response = await instance.podcastIndexAPIRequest(url)
-
-  return response && response.data
-}
-
-/**
- * addNewFeedsFromPodcastIndex
- *
- * Request a list of all podcast feeds that have been added
- * within the past X minutes from Podcast Index, then add
- * that feed to our database if it doesn't already exist.
- */
-export const addNewFeedsFromPodcastIndex = async () => {
-  console.log('addNewFeedsFromPodcastIndex')
-  await connectToDb()
-  const client = await getConnection().createEntityManager()
-  try {
-    const response = await getNewFeeds()
-    const newFeeds = response.feeds
-    console.log('total newFeeds count', newFeeds.length)
-    for (const item of newFeeds) {
-      try {
-        await createOrUpdatePodcastFromPodcastIndex(client, item)
-        const feedUrl = await getFeedUrlByUrl(item.url)
-        await parseFeedUrl(feedUrl)
-      } catch (error) {
-        console.log('addNewFeedsFromPodcastIndex item', item)
-        console.log('addNewFeedsFromPodcastIndex error', error)
-      }
-    }
-  } catch (error) {
-    console.log('addNewFeedsFromPodcastIndex', error)
-  }
-}
-
 /**
  * syncWithFeedUrlsCSVDump
  *
@@ -346,136 +260,6 @@ export const syncWithFeedUrlsCSVDump = async (rootFilePath) => {
   } catch (error) {
     console.log('podcastIndex:syncWithFeedUrlsCSVDump', error)
   }
-}
-
-async function createOrUpdatePodcastFromPodcastIndex(client, item) {
-  console.log('-----------------------------------')
-  console.log('createOrUpdatePodcastFromPodcastIndex')
-
-  if (!item || !item.url || !item.id) {
-    console.log('no item found')
-  } else {
-    const url = item.url
-    const podcastIndexId = item.id
-    const itunesId = parseInt(item.itunes_id) ? item.itunes_id : null
-
-    console.log('feed url', url, podcastIndexId, itunesId)
-
-    let existingPodcast = await getExistingPodcast(client, podcastIndexId)
-
-    if (!existingPodcast) {
-      console.log('podcast does not already exist')
-      const isPublic = true
-
-      await client.query(
-        `
-        INSERT INTO podcasts (id, "authorityId", "podcastIndexId", "isPublic")
-        VALUES ($1, $2, $3, $4);
-      `,
-        [shortid(), itunesId, podcastIndexId, isPublic]
-      )
-
-      existingPodcast = await getExistingPodcast(client, podcastIndexId)
-    } else {
-      const setSQLCommand = itunesId
-        ? `SET ("podcastIndexId", "authorityId") = (${podcastIndexId}, ${itunesId})`
-        : `SET "podcastIndexId" = ${podcastIndexId}`
-      await client.query(
-        `
-        UPDATE "podcasts"
-        ${setSQLCommand}
-        WHERE "podcastIndexId"=$1
-      `,
-        [podcastIndexId.toString()]
-      )
-      console.log('updatedPodcast id: ', existingPodcast.id)
-      console.log('updatedPodcast podcastIndexId: ', podcastIndexId)
-      console.log('updatedPodcast itunesId: ', itunesId)
-    }
-
-    const existingFeedUrls = await client.query(
-      `
-      SELECT id, url
-      FROM "feedUrls"
-      WHERE "podcastId"=$1
-    `,
-      [existingPodcast.id]
-    )
-
-    /*
-      In case the feed URL already exists in our system, but is assigned to another podcastId,
-      get the feed URL for the other podcastId, so it can be assigned to the new podcastId.
-    */
-    const existingFeedUrlsByFeedUrl = await client.query(
-      `
-        SELECT id, url
-        FROM "feedUrls"
-        WHERE "url"=$1
-      `,
-      [url]
-    )
-
-    const combinedExistingFeedUrls = [...existingFeedUrls, ...existingFeedUrlsByFeedUrl]
-
-    console.log('existingFeedUrls count', existingFeedUrls.length)
-
-    for (const existingFeedUrl of combinedExistingFeedUrls) {
-      console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
-
-      const isMatchingFeedUrl = url === existingFeedUrl.url
-
-      await client.query(
-        `
-        UPDATE "feedUrls"
-        SET ("isAuthority", "podcastId") = (${isMatchingFeedUrl ? 'TRUE' : 'NULL'}, '${existingPodcast.id}')
-        WHERE id=$1
-      `,
-        [existingFeedUrl.id]
-      )
-    }
-
-    const updatedFeedUrlResults = await client.query(
-      `
-      SELECT id, url
-      FROM "feedUrls"
-      WHERE url=$1
-    `,
-      [url]
-    )
-    const updatedFeedUrl = updatedFeedUrlResults[0]
-
-    if (updatedFeedUrl) {
-      console.log('updatedFeedUrl already exists url / id', updatedFeedUrl.url, updatedFeedUrl.id)
-    } else {
-      console.log('updatedFeedUrl does not exist url / id')
-      const isAuthority = true
-      await client.query(
-        `
-        INSERT INTO "feedUrls" (id, "isAuthority", "url", "podcastId")
-        VALUES ($1, $2, $3, $4);
-      `,
-        [shortid(), isAuthority, url, existingPodcast.id]
-      )
-    }
-  }
-  console.log('*** finished entry')
-}
-
-const getExistingPodcast = async (client, podcastIndexId) => {
-  let podcasts = [] as any
-
-  if (podcastIndexId) {
-    podcasts = await client.query(
-      `
-      SELECT "authorityId", "podcastIndexId", id, title
-      FROM podcasts
-      WHERE "podcastIndexId"=$1;
-    `,
-      [podcastIndexId]
-    )
-  }
-
-  return podcasts[0]
 }
 
 export const hideDeadPodcasts = async (fileUrl?: string) => {

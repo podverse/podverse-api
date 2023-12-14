@@ -40,7 +40,6 @@ import {
   toolsRouter
 } from '~/routes'
 import { createJwtStrategy, createLocalStrategy } from '~/services/auth'
-import { startup } from './startup'
 
 const cookie = require('cookie')
 const cors = require('@koa/cors')
@@ -56,8 +55,6 @@ const rootRouter = new Router()
 const routePrefix = `${config.apiPrefix}${config.apiVersion}`
 
 const timeAppStarted = Date.now()
-
-startup()
 
 export const createApp = async (conn: Connection) => {
   loggerInstance.debug('Creating new Koa App')

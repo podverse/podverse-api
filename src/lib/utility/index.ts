@@ -13,12 +13,6 @@ export const delimitQueryValues = (ctx, keys) => {
   return ctx
 }
 
-export const offsetDate = (minutesOffset = 0) => {
-  const todayDate = new Date()
-  todayDate.setMinutes(todayDate.getMinutes() - todayDate.getTimezoneOffset() + minutesOffset)
-  return todayDate.toISOString().slice(0, 10)
-}
-
 // NOTE: I am manually offsetting by 5 hours since the server is in UTC but the
 // Google Analytics data is in CST.
 // This WILL cause a problem when DST happens.

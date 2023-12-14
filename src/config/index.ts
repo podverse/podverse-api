@@ -8,7 +8,6 @@ export interface DbConfig {
   password: string
   database: string
   sslConnection: boolean
-  shouldSync: boolean
 }
 
 export interface Config {
@@ -58,7 +57,6 @@ export interface Config {
   socialTwitterPageUrl: string
   parserSupportedLanguages: any[]
   podcastIndexConfig: any
-  matomoConfig: any
   legalName: string
   legalAddress: string
   websiteDomain: string
@@ -70,10 +68,6 @@ export interface Config {
   twitterAPIBearerToken: string
   googleApiAuthToken: string
   minimumMobileVersion: string
-  podping: {
-    hiveAccount: string
-    hivePostingKey: string
-  }
   maintenanceMode: {
     isEnabled: boolean
     downtimeExpected: number
@@ -118,7 +112,6 @@ const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime = process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
-const podcastIndexNewFeedsSinceTime = process.env.PODCAST_INDEX_NEW_FEEDS_SINCE_TIME || '43200000' // half a day
 const googleApiAuthToken = process.env.FCM_GOOGLE_API_AUTH_TOKEN || ''
 
 const paypalConfig = {
@@ -140,14 +133,7 @@ const podcastIndexConfig = {
   authKey: podcastIndexAuthKey,
   secretKey: podcastIndexSecretKey,
   baseUrl: podcastIndexBaseUrl,
-  getRecentlyUpdatedSinceTime: parseInt(podcastIndexRecentlyUpdatedSinceTime, 10),
-  podcastIndexNewFeedsSinceTime: parseInt(podcastIndexNewFeedsSinceTime, 10)
-}
-
-const matomoConfig = {
-  baseUrl: process.env.MATOMO_BASE_URL || '',
-  siteId: process.env.MATOMO_SITE_ID || '',
-  authToken: process.env.MATOMO_AUTH_TOKEN || ''
+  getRecentlyUpdatedSinceTime: parseInt(podcastIndexRecentlyUpdatedSinceTime, 10)
 }
 
 const websiteDomain = process.env.WEBSITE_DOMAIN || ''
@@ -155,11 +141,6 @@ const websiteDomain = process.env.WEBSITE_DOMAIN || ''
 const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
 
 const twitterAPIBearerToken = process.env.TWITTER_API_BEARER_TOKEN || ''
-
-const podping = {
-  hiveAccount: process.env.PODPING_HIVE_ACCOUNT || '',
-  hivePostingKey: process.env.PODPING_HIVE_POSTING_KEY || ''
-}
 
 const parseBoolean = (value = ''): boolean => ['1', 'true'].includes(value.toLowerCase())
 
@@ -173,8 +154,7 @@ const config: Config = {
     username: process.env.DB_USERNAME || '',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_DATABASE || '',
-    sslConnection: process.env.DB_SSL_CONNECTION === 'true',
-    shouldSync: process.env.DB_SHOULD_SYNC === 'true'
+    sslConnection: process.env.DB_SSL_CONNECTION === 'true'
   },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
@@ -209,7 +189,6 @@ const config: Config = {
   appStoreConfig,
   awsConfig,
   paypalConfig,
-  matomoConfig,
   socialFacebookImageUrl,
   socialFacebookPageUrl,
   socialGithubImageUrl,
@@ -235,7 +214,6 @@ const config: Config = {
   twitterAPIBearerToken,
   minimumMobileVersion,
   googleApiAuthToken,
-  podping,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
     downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED

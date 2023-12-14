@@ -1,4 +1,0 @@
--- NOTE: This was added to the QA database, but never added to prod
--- because it was a very time-consuming query that locked the whole table.
--- ALTER TABLE ONLY public."episodes"
---     ADD COLUMN int_id SERIAL;

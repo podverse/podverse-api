@@ -1,11 +1,11 @@
 import * as Router from 'koa-router'
 import { getPodcastByPodcastIndexId } from 'podverse-orm'
+import { parseFeedUrlsByPodcastIds } from 'podverse-parser'
 import { getConnection } from 'typeorm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth'
 import { isDevAdmin } from '~/middleware/isDevAdmin'
-import { parseFeedUrlsByPodcastIds } from '~/services/parser'
 import { addOrUpdatePodcastFromPodcastIndex } from '~/services/podcastIndex'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/dev-admin` })
