@@ -1,6 +1,9 @@
 import createError from 'http-errors'
+import { getAuthorityFeedUrlByPodcastIndexId, getPodcastByPodcastIndexId } from 'podverse-orm'
 import { ValueTagOriginal } from 'podverse-shared'
+import shortid from 'shortid'
 import { config } from '~/config'
+import { parserInstance } from '~/factories/parser'
 import { podcastIndexInstance } from '~/factories/podcastIndex'
 
 const { podcastIndex } = config
@@ -67,3 +70,141 @@ export const getEpisodeByGuid = async (podcastIndexId: string, episodeGuid: stri
   const response = await podcastIndexInstance.podcastIndexAPIRequest(url)
   return response && response.data
 }
+
+/*
+
+  TODO: remove the functions below as they're duplicated in podverse-workers
+*/
+
+export const addOrUpdatePodcastFromPodcastIndex = async (client: any, podcastIndexId: string) => {
+  const podcastIndexPodcast = await podcastIndexInstance.getPodcastFromPodcastIndexById(podcastIndexId)
+  const allowNonPublic = true
+  await createOrUpdatePodcastFromPodcastIndex(client, podcastIndexPodcast.feed)
+  const feedUrl = await getAuthorityFeedUrlByPodcastIndexId(podcastIndexId, allowNonPublic)
+
+  try {
+    await parserInstance.parseFeedUrl(feedUrl, allowNonPublic)
+  } catch (error) {
+    console.log('addOrUpdatePodcastFromPodcastIndex error', error)
+  }
+}
+
+// TODO: replace client: any with client: EntityManager
+export async function createOrUpdatePodcastFromPodcastIndex(client: any, item: any) {
+  console.log('-----------------------------------')
+  console.log('createOrUpdatePodcastFromPodcastIndex')
+
+  if (!item || !item.url || !item.id) {
+    console.log('no item found')
+  } else {
+    const url = item.url
+    const podcastIndexId = item.id
+    const itunesId = parseInt(item.itunes_id) ? item.itunes_id : null
+
+    console.log('feed url', url, podcastIndexId, itunesId)
+
+    let existingPodcast = await getPodcastByPodcastIndexId(client, podcastIndexId)
+
+    if (!existingPodcast) {
+      console.log('podcast does not already exist')
+      const isPublic = true
+
+      await client.query(
+        `
+        INSERT INTO podcasts (id, "authorityId", "podcastIndexId", "isPublic")
+        VALUES ($1, $2, $3, $4);
+      `,
+        [shortid(), itunesId, podcastIndexId, isPublic]
+      )
+
+      existingPodcast = await getPodcastByPodcastIndexId(client, podcastIndexId)
+    } else {
+      const setSQLCommand = itunesId
+        ? `SET ("podcastIndexId", "authorityId") = (${podcastIndexId}, ${itunesId})`
+        : `SET "podcastIndexId" = ${podcastIndexId}`
+      await client.query(
+        `
+        UPDATE "podcasts"
+        ${setSQLCommand}
+        WHERE "podcastIndexId"=$1
+      `,
+        [podcastIndexId.toString()]
+      )
+      console.log('updatedPodcast id: ', existingPodcast.id)
+      console.log('updatedPodcast podcastIndexId: ', podcastIndexId)
+      console.log('updatedPodcast itunesId: ', itunesId)
+    }
+
+    const existingFeedUrls = await client.query(
+      `
+      SELECT id, url
+      FROM "feedUrls"
+      WHERE "podcastId"=$1
+    `,
+      [existingPodcast.id]
+    )
+
+    /*
+      In case the feed URL already exists in our system, but is assigned to another podcastId,
+      get the feed URL for the other podcastId, so it can be assigned to the new podcastId.
+    */
+    const existingFeedUrlsByFeedUrl = await client.query(
+      `
+        SELECT id, url
+        FROM "feedUrls"
+        WHERE "url"=$1
+      `,
+      [url]
+    )
+
+    const combinedExistingFeedUrls = [...existingFeedUrls, ...existingFeedUrlsByFeedUrl]
+
+    console.log('existingFeedUrls count', existingFeedUrls.length)
+
+    for (const existingFeedUrl of combinedExistingFeedUrls) {
+      console.log('existingFeedUrl url / id', existingFeedUrl.url, existingFeedUrl.id)
+
+      const isMatchingFeedUrl = url === existingFeedUrl.url
+
+      await client.query(
+        `
+        UPDATE "feedUrls"
+        SET ("isAuthority", "podcastId") = (${isMatchingFeedUrl ? 'TRUE' : 'NULL'}, '${existingPodcast.id}')
+        WHERE id=$1
+      `,
+        [existingFeedUrl.id]
+      )
+    }
+
+    const updatedFeedUrlResults = await client.query(
+      `
+      SELECT id, url
+      FROM "feedUrls"
+      WHERE url=$1
+    `,
+      [url]
+    )
+    const updatedFeedUrl = updatedFeedUrlResults[0]
+
+    if (updatedFeedUrl) {
+      console.log('updatedFeedUrl already exists url / id', updatedFeedUrl.url, updatedFeedUrl.id)
+    } else {
+      console.log('updatedFeedUrl does not exist url / id')
+      const isAuthority = true
+      await client.query(
+        `
+        INSERT INTO "feedUrls" (id, "isAuthority", "url", "podcastId")
+        VALUES ($1, $2, $3, $4);
+      `,
+        [shortid(), isAuthority, url, existingPodcast.id]
+      )
+    }
+  }
+  console.log('*** finished entry')
+}
+
+/*
+
+  TODO: remove the functions above as they're duplicated in podverse-workers
+
+*/

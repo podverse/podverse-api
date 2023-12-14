@@ -43,7 +43,7 @@ export const verifyEmail = async (ctx) => {
     if (emailVerified) {
       ctx.body = `Email already verified.`
       ctx.status = 200
-    } else if (emailVerificationTokenExpiration < new Date()) {
+    } else if (emailVerificationTokenExpiration && emailVerificationTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 401
     } else if (emailVerificationToken && token && token === emailVerificationToken) {

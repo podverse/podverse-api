@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { faker } from '@faker-js/faker'
-import { createUser, User } from 'podverse-orm'
-import { getRepository } from 'typeorm'
+import { createUser, getRepository, User } from 'podverse-orm'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
 interface RowExportData {

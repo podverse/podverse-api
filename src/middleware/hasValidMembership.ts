@@ -1,17 +1,16 @@
 import createError from 'http-errors'
-import { User } from 'podverse-orm'
-import { getRepository } from 'typeorm'
+import { getRepository, User } from 'podverse-orm'
 import { isBeforeDate } from '~/lib/utility'
 
 export const hasValidMembership = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {
     const repository = getRepository(User)
-    const user = await repository.findOne({
+    const user = (await repository.findOne({
       where: {
         id: ctx.state.user.id
       },
       select: ['freeTrialExpiration', 'membershipExpiration', 'emailVerified']
-    })
+    })) as User
 
     if (!user) {
       throw new createError.NotFound('User not found')

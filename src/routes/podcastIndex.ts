@@ -1,5 +1,6 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
+import { podcastIndexInstance } from '~/factories/podcastIndex'
 import { emitRouterError } from '~/lib/errors'
 import {
   getEpisodeByGuid,
@@ -21,7 +22,7 @@ const podcastByIdLimiter = RateLimit.middleware({
 // Get podcast from Podcast Index by feed id
 router.get('/podcast/by-id/:id', podcastByIdLimiter, async (ctx) => {
   try {
-    const data = await getPodcastFromPodcastIndexById(ctx.params.id)
+    const data = await podcastIndexInstance.getPodcastFromPodcastIndexById(ctx.params.id)
     ctx.body = data
   } catch (error) {
     emitRouterError(error, ctx)

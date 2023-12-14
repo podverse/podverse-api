@@ -1,15 +1,21 @@
 require('dotenv').config()
 
 import 'reflect-metadata'
+import { connectToDb } from 'podverse-orm'
 import { createApp } from '~/app'
-import { connectToDb } from '~/lib/db'
+import { loggerInstance } from './lib/logging'
 
-export const createTestApp = () => {
-  return connectToDb().then(async (connection) => {
-    if (connection) {
-      const app = await createApp(connection)
-      return [app.listen(), connection]
-    }
-    return null
+const port = process.env.PORT || 1234
+loggerInstance.debug(`Attempting to start server on port ${port}`)
+
+const startup = async () => {
+  await connectToDb()
+
+  const app = await createApp()
+
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`)
   })
 }
+
+startup()

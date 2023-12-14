@@ -1,5 +1,4 @@
-import { getRepository } from 'typeorm'
-import { User } from '~/entities'
+import { getRepository, User } from 'podverse-orm'
 import createError from 'http-errors'
 
 export const isPodpingAdmin = async (ctx, next) => {

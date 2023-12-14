@@ -16,7 +16,7 @@ export const resetPassword = async (ctx) => {
   try {
     const { id, resetPasswordTokenExpiration } = await getUserByResetPasswordToken(resetPasswordToken)
 
-    if (resetPasswordTokenExpiration < new Date()) {
+    if (resetPasswordTokenExpiration && resetPasswordTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 401
     } else if (id) {

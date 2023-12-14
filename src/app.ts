@@ -5,7 +5,6 @@ import * as koaStatic from 'koa-static'
 import * as mount from 'koa-mount'
 import * as passport from 'koa-passport'
 import * as Router from 'koa-router'
-import { Connection } from 'typeorm'
 import { config } from '~/config'
 import { logger, loggerInstance } from '~/lib/logging'
 import {
@@ -45,18 +44,12 @@ const cookie = require('cookie')
 const cors = require('@koa/cors')
 const swagger = require('koa2-swagger-ui')
 
-declare module 'koa' {
-  interface BaseContext {
-    db: Connection
-  }
-}
-
 const rootRouter = new Router()
 const routePrefix = `${config.apiPrefix}${config.apiVersion}`
 
 const timeAppStarted = Date.now()
 
-export const createApp = async (conn: Connection) => {
+export const createApp = async () => {
   loggerInstance.debug('Creating new Koa App')
   const app = new Koa()
 
@@ -80,8 +73,6 @@ export const createApp = async (conn: Connection) => {
   }
 
   if (!config.maintenanceMode.isEnabled) {
-    app.context.db = conn
-
     app.use(
       cors({
         credentials: true

@@ -1,5 +1,4 @@
-import { getRepository } from 'typeorm'
-import { Episode } from '~/entities'
+import { Episode, getRepository } from 'podverse-orm'
 
 export const getRandomEpisodeIds = async () => {
   const episodeRepository = getRepository(Episode)

@@ -1,6 +1,5 @@
-import { Connection } from 'typeorm'
+import { Connection, connectToDb } from 'podverse-orm'
 import { validCategories } from '~/config/categories'
-import { connectToDb } from '~/lib/db'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { generateCategories } from '~/seeds/categories'
 import { parseQAFeeds } from '~/seeds/qa/feeds'

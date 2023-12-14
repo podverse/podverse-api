@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { getRepository } from 'typeorm'
-import { Episode, MediaRef, Podcast } from '~/entities'
+import { Episode, getRepository, MediaRef, Podcast } from 'podverse-orm'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
 const statsQAMinRange = 0
