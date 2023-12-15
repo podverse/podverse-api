@@ -1,19 +1,8 @@
 import awsConfig from '~/config/aws'
 
-export interface DbConfig {
-  type: string
-  host: string
-  port: number
-  username: string
-  password: string
-  database: string
-  sslConnection: boolean
-}
-
 export interface Config {
   port: number
   debugLogging: boolean
-  dbConfig: DbConfig
   apiPrefix: string
   apiVersion: string
   userAgent: string
@@ -64,7 +53,6 @@ export interface Config {
   websiteResetPasswordPagePath: string
   websiteVerifyEmailPagePath: string
   rateLimiterMaxOverride: any
-  manticore: any
   twitterAPIBearerToken: string
   googleApiAuthToken: string
   minimumMobileVersion: string
@@ -75,7 +63,6 @@ export interface Config {
 }
 
 const port = process.env.PORT || '1234'
-const dbPort = process.env.DB_PORT || '5432'
 const resetPasswordTokenExpiration = process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400'
 const emailVerificationTokenExpiration = process.env.EMAIL_VERIFICATION_TOKEN_EXPIRATION || '31540000'
 const freeTrialExpiration = process.env.FREE_TRIAL_EXPIRATION || '2592000'
@@ -147,15 +134,6 @@ const parseBoolean = (value = ''): boolean => ['1', 'true'].includes(value.toLow
 const config: Config = {
   port: parseInt(port, 10),
   debugLogging: process.env.NODE_ENV === 'development',
-  dbConfig: {
-    type: process.env.DB_TYPE || '',
-    host: process.env.DB_HOST || '',
-    port: parseInt(dbPort, 10),
-    username: process.env.DB_USERNAME || '',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_DATABASE || '',
-    sslConnection: process.env.DB_SSL_CONNECTION === 'true'
-  },
   apiPrefix: process.env.API_PREFIX || '',
   apiVersion: process.env.API_VERSION || '',
   userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
@@ -206,11 +184,6 @@ const config: Config = {
   websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
   websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '',
   rateLimiterMaxOverride,
-  manticore: {
-    domain: process.env.MANTICORE_DOMAIN || 'localhost',
-    port: process.env.MANTICORE_PORT ? parseInt(process.env.MANTICORE_PORT, 10) : 9308,
-    protocol: process.env.MANTICORE_PROTOCOL || 'http'
-  },
   twitterAPIBearerToken,
   minimumMobileVersion,
   googleApiAuthToken,
