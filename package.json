@@ -135,7 +135,7 @@
     "podverse-external-services": "^1.0.0",
     "podverse-orm": "^1.0.0",
     "podverse-parser": "^1.0.0",
-    "podverse-shared": "^4.15.2",
+    "podverse-shared": "^4.15.3",
     "reflect-metadata": "0.1.13",
     "request": "^2.88.2",
     "request-promise-native": "1.0.8",
