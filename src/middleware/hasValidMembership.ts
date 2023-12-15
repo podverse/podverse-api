@@ -1,6 +1,6 @@
 import createError from 'http-errors'
 import { getRepository, User } from 'podverse-orm'
-import { isBeforeDate } from '~/lib/utility'
+import { isBeforeDate } from 'podverse-shared'
 
 export const hasValidMembership = async (ctx, next) => {
   if (ctx.state.user && ctx.state.user.id) {
