@@ -20,7 +20,7 @@ export const sendVerificationEmail = async (email, name, token): Promise<void> =
   const transporter = createTransporter()
 
   const emailFields = {
-    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
+    buttonLink: `${config.website.protocol}://${config.website.domain}${config.website.verifyEmailPagePath}${token}`,
     buttonText: 'Verify Email',
     closing: '',
     headerText: 'Verify your email',
