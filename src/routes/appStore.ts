@@ -36,7 +36,6 @@ router.post('/update-purchase-status', validateAppStorePurchaseCreate, createPur
       const receipt = (await verifyAppStorePurchaseByReceipt(transactionReceipt)) as any
 
       if (receipt) {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         const { in_app } = receipt
         const finishedTransactionIds = await processAppStorePurchases(in_app, user.id)
 
@@ -70,7 +69,6 @@ router.post(
         const receipt = (await verifyAppStorePurchaseByReceipt(transactionReceipt)) as any
 
         if (receipt) {
-          // eslint-disable-next-line @typescript-eslint/camelcase
           const { in_app } = receipt
           const processedPurchases = await processAppStorePurchases2(in_app, user.id)
 
