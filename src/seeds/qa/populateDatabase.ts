@@ -1,6 +1,6 @@
 import { Connection, connectToDb } from 'podverse-orm'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 import { validCategories } from '~/config/categories'
-import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 import { generateCategories } from '~/seeds/categories'
 import { parseQAFeeds } from '~/seeds/qa/feeds'
 import { generateQAUsers } from '~/seeds/qa/users'

@@ -109,7 +109,7 @@ router.get('/podcastindex/:id', parseNSFWHeader, async (ctx) => {
     const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
 
     if (podcast.id) {
-      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+      ctx.redirect(`${config.website.protocol}://${config.website.domain}/podcast/${podcast.id}`)
     } else {
       ctx.status = 404
     }
@@ -124,7 +124,7 @@ router.get('/by-podcast-guid/:podcastGuid', parseNSFWHeader, async (ctx) => {
     const podcast = await getPodcastByPodcastGuid(ctx.params.podcastGuid)
 
     if (podcast.id) {
-      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+      ctx.redirect(`${config.website.protocol}://${config.website.domain}/podcast/${podcast.id}`)
     } else {
       ctx.status = 404
     }
@@ -146,7 +146,7 @@ router.get('/by-feed-url', parseNSFWHeader, async (ctx) => {
     const podcast = await getPodcastByFeedUrl(decodedFeedUrl)
 
     if (podcast.id) {
-      ctx.redirect(`${config.websiteProtocol}://${config.websiteDomain}/podcast/${podcast.id}`)
+      ctx.redirect(`${config.website.protocol}://${config.website.domain}/podcast/${podcast.id}`)
     } else {
       ctx.status = 404
     }

@@ -22,7 +22,7 @@ export const sendResetPasswordEmail = async (email, name, token): Promise<void> 
   const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
 
   const emailFields = {
-    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
+    buttonLink: `${config.website.protocol}://${config.website.domain}${config.website.resetPasswordPagePath}${token}`,
     buttonText: 'Reset Password',
     closing: '',
     headerText: 'Reset your Podverse password',

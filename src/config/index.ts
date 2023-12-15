@@ -1,5 +1,3 @@
-import awsConfig from '~/config/aws'
-
 export interface Config {
   port: number
   debugLogging: boolean
@@ -8,7 +6,6 @@ export interface Config {
   userAgent: string
   cookieDomain: string
   cookieIsSecure: boolean
-  superUserId: string
   shrunkImageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
@@ -34,7 +31,6 @@ export interface Config {
   mailerFrom: string
   mailerDisabled: boolean
   appStoreConfig: any
-  awsConfig: any
   paypalConfig: any
   socialFacebookImageUrl: string
   socialFacebookPageUrl: string
@@ -48,10 +44,12 @@ export interface Config {
   podcastIndex: any
   legalName: string
   legalAddress: string
-  websiteDomain: string
-  websiteProtocol: string
-  websiteResetPasswordPagePath: string
-  websiteVerifyEmailPagePath: string
+  website: {
+    domain: string
+    protocol: string
+    resetPasswordPagePath: string
+    verifyEmailPagePath: string
+  }
   rateLimiterMaxOverride: any
   twitterAPIBearerToken: string
   googleApiAuthToken: string
@@ -70,7 +68,6 @@ const membershipExpiration = process.env.PREMIUM_MEMBERSHIP_EXPIRATION || '31540
 const mailerPort = process.env.MAILER_PORT || '587'
 const cookieDomain = process.env.COOKIE_DOMAIN || 'localhost'
 const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
-const superUserId = process.env.SUPER_USER_ID || ''
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
@@ -123,8 +120,6 @@ const podcastIndex = {
   getRecentlyUpdatedSinceTime: parseInt(podcastIndexRecentlyUpdatedSinceTime, 10)
 }
 
-const websiteDomain = process.env.WEBSITE_DOMAIN || ''
-
 const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
 
 const twitterAPIBearerToken = process.env.TWITTER_API_BEARER_TOKEN || ''
@@ -139,7 +134,6 @@ const config: Config = {
   userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
   cookieDomain,
   cookieIsSecure,
-  superUserId,
   shrunkImageSize: parseInt(shrunkImageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,
@@ -165,7 +159,6 @@ const config: Config = {
   mailerFrom: process.env.MAILER_FROM || 'dev@podverse.fm',
   mailerDisabled: parseBoolean(process.env.MAILER_DISABLED),
   appStoreConfig,
-  awsConfig,
   paypalConfig,
   socialFacebookImageUrl,
   socialFacebookPageUrl,
@@ -179,10 +172,12 @@ const config: Config = {
   podcastIndex,
   legalName,
   legalAddress,
-  websiteDomain,
-  websiteProtocol: process.env.WEBSITE_PROTOCOL || '',
-  websiteResetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
-  websiteVerifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || '',
+  website: {
+    domain: process.env.WEBSITE_DOMAIN || '',
+    protocol: process.env.WEBSITE_PROTOCOL || '',
+    resetPasswordPagePath: process.env.WEBSITE_RESET_PASSWORD_PAGE_PATH || '',
+    verifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || ''
+  },
   rateLimiterMaxOverride,
   twitterAPIBearerToken,
   minimumMobileVersion,
