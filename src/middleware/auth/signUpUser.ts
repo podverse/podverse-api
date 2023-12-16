@@ -1,9 +1,9 @@
 import { addSeconds } from 'date-fns'
-import { createUser, getRepository, User } from 'podverse-orm'
+import { createUser, CustomStatusError, getRepository, User } from 'podverse-orm'
 import { v4 as uuidv4 } from 'uuid'
 import isEmail from 'validator/lib/isEmail'
 import { config } from '~/config'
-import { CustomStatusError, emitRouterError } from '~/lib/errors'
+import { emitRouterError } from '~/lib/errors'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 
 const emailExists = async (email) => {
