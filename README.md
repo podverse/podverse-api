@@ -19,24 +19,20 @@ Data API, database migration scripts, and backend services for the Podverse ecos
 
 If you are looking to run this app or contribute to Podverse for the first time, please read the sections that are relevant for you in our [CONTRIBUTE.md](https://github.com/podverse/podverse-ops/blob/master/CONTRIBUTING.md) file in the podverse-ops repo. Among other things, that file contains instructions for running a local instance of the Podverse database.
 
-### NPM or Yarn
-
-We use yarn and maintain a `yarn.lock` file, but it's not really a requirement for you to use yarn. This documentation uses npm in examples, but we generally use the yarn equivalent commands.
-
 ### Setup environment variables
 
 For local development, environment variables are provided by a local `.env` file. You can find a link to example `.env` files in the [CONTRIBUTING.md](https://github.com/podverse/podverse-ops/blob/master/CONTRIBUTING.md) file.
 
 ### Install node_modules
 
-```bash
-npm install
+```sh
+yarn
 ```
 
 ### Start dev server
 
-```bash
-npm run dev
+```sh
+yarn dev:watch
 ```
 
 ### Populate database
@@ -47,8 +43,8 @@ Instructions for this can be found in the [podverse-ops CONTRIBUTING.md file](ht
 
 If you are creating a database from scratch, and not using the `populateDatabase` command explained in the CONTRIBUTE.md file, then you will need to populate the database with categories.
 
-```bash
-npm run dev:seeds:categories
+```sh
+yarn dev:seeds:categories
 ```
 
 ### Sync podcast data with Podcast Index API
