@@ -23,13 +23,15 @@ export interface Config {
   emailVerificationTokenExpiration: number
   freeTrialExpiration: number
   membershipExpiration: number
-  mailerService: string
-  mailerHost: string
-  mailerPort: number
-  mailerUsername: string
-  mailerPassword: string
-  mailerFrom: string
-  mailerDisabled: boolean
+  mailer: {
+    service: string
+    host: string
+    port: number
+    username: string
+    password: string
+    from: string
+    disabled: boolean
+  }
   appStoreConfig: any
   paypalConfig: any
   socialFacebookImageUrl: string
@@ -52,7 +54,6 @@ export interface Config {
   }
   rateLimiterMaxOverride: any
   twitterAPIBearerToken: string
-  googleApiAuthToken: string
   minimumMobileVersion: string
   maintenanceMode: {
     isEnabled: boolean
@@ -96,7 +97,6 @@ const podcastIndexSecretKey = process.env.PODCAST_INDEX_SECRET_KEY || ''
 const podcastIndexBaseUrl = process.env.PODCAST_INDEX_BASE_URL || ''
 // default 1 hour (3600000 milliseconds)
 const podcastIndexRecentlyUpdatedSinceTime = process.env.PODCAST_INDEX_RECENTLY_UPDATED_SINCE_TIME || '3600000' // 1 hour
-const googleApiAuthToken = process.env.FCM_GOOGLE_API_AUTH_TOKEN || ''
 
 const paypalConfig = {
   clientId: process.env.PAYPAL_CLIENT_ID,
@@ -151,13 +151,15 @@ const config: Config = {
   emailVerificationTokenExpiration: parseInt(emailVerificationTokenExpiration, 10),
   freeTrialExpiration: parseInt(freeTrialExpiration, 10),
   membershipExpiration: parseInt(membershipExpiration, 10),
-  mailerService: process.env.MAILER_SERVICE || '',
-  mailerHost: process.env.MAILER_HOST || '',
-  mailerPort: parseInt(mailerPort, 10),
-  mailerUsername: process.env.MAILER_USERNAME || '',
-  mailerPassword: process.env.MAILER_PASSWORD || '',
-  mailerFrom: process.env.MAILER_FROM || 'dev@podverse.fm',
-  mailerDisabled: parseBoolean(process.env.MAILER_DISABLED),
+  mailer: {
+    service: process.env.MAILER_SERVICE || '',
+    host: process.env.MAILER_HOST || '',
+    port: parseInt(mailerPort, 10),
+    username: process.env.MAILER_USERNAME || '',
+    password: process.env.MAILER_PASSWORD || '',
+    from: process.env.MAILER_FROM || 'dev@podverse.fm',
+    disabled: parseBoolean(process.env.MAILER_DISABLED)
+  },
   appStoreConfig,
   paypalConfig,
   socialFacebookImageUrl,
@@ -181,7 +183,6 @@ const config: Config = {
   rateLimiterMaxOverride,
   twitterAPIBearerToken,
   minimumMobileVersion,
-  googleApiAuthToken,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
     downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED
