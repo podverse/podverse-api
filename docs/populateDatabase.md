@@ -33,7 +33,7 @@ Also, you will need to set `SUPER_USER_ID=jISAEEgXa` (due to [this Github issue]
 #### Install node modules
 
 ```bash
-npm install
+yarn
 ```
 
 ### Populate database
@@ -43,7 +43,7 @@ npm install
 To populate the database:
 
 ```bash
-npm run dev:seeds:qa:populateDatabase
+yarn dev:seeds:qa:populateDatabase
 ```
 
 The full run will take 3+ minutes, mostly due to network requests to Podcast Index API to use real podcast data to populate the database.
@@ -53,5 +53,5 @@ The full run will take 3+ minutes, mostly due to network requests to Podcast Ind
 To populate the database faster (with fewer podcasts), you can pass a `quick` flag to the populateDatabase script:
 
 ```bash
-npm run dev:seeds:qa:populateDatabase quick
+yarn dev:seeds:qa:populateDatabase quick
 ```
