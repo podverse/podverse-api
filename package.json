@@ -34,11 +34,6 @@
       "git add"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",
   "keywords": [
