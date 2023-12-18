@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { Episode, getRepository, MediaRef, Podcast } from 'podverse-orm'
-import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 
 const statsQAMinRange = 0
 const statsQAMaxRange = 100
@@ -37,7 +37,7 @@ const statsQAUpdatePodcasts = async () => {
   logPerformance('statsQAUpdatePodcasts', _logStart)
 
   const podcastRepository = getRepository(Podcast)
-  const podcasts = await podcastRepository.find({ take: 1000 })
+  const podcasts = await podcastRepository.find({ take: 1000 }) as Podcast[]
 
   const newPodcasts: any[] = []
   for (const podcast of podcasts) {
@@ -57,7 +57,7 @@ const statsQAUpdateEpisodes = async () => {
   logPerformance('statsQAUpdateEpisodes', _logStart)
 
   const episodeRepository = getRepository(Episode)
-  const episodes = await episodeRepository.find({ take: 1000 })
+  const episodes = await episodeRepository.find({ take: 1000 }) as Episode[]
 
   const newEpisodes: any[] = []
   for (const episode of episodes) {
@@ -77,7 +77,7 @@ const statsQAUpdateMediaRefs = async () => {
   logPerformance('statsQAUpdateMediaRefs', _logStart)
 
   const mediaRefRepository = getRepository(MediaRef)
-  const mediaRefs = await mediaRefRepository.find({ take: 1000 })
+  const mediaRefs = await mediaRefRepository.find({ take: 1000 }) as MediaRef[]
 
   const newMediaRefs: any[] = []
   for (const mediaRef of mediaRefs) {

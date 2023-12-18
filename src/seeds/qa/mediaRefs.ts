@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { createMediaRef, Episode, getRepository, MediaRef } from 'podverse-orm'
-import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 import { generateQAItemsForUsers } from './utility'
 
 type MediaRefLite = {
@@ -72,7 +72,7 @@ export const getRandomMediaRefIds = async () => {
       isPublic: true
     },
     take: 100
-  })
+  }) as MediaRef[]
 
   return mediaRefs.map((mediaRef) => mediaRef.id)
 }

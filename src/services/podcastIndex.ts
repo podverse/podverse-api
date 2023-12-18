@@ -1,7 +1,6 @@
 import createError from 'http-errors'
-import { getAuthorityFeedUrlByPodcastIndexId, getPodcastByPodcastIndexId } from 'podverse-orm'
+import { Podcast, generateShortId, getAuthorityFeedUrlByPodcastIndexId, getPodcastByPodcastIndexId } from 'podverse-orm'
 import { ValueTagOriginal } from 'podverse-shared'
-import shortid from 'shortid'
 import { config } from '~/config'
 import { parserInstance } from '~/factories/parser'
 import { podcastIndexInstance } from '~/factories/podcastIndex'
@@ -103,7 +102,13 @@ export async function createOrUpdatePodcastFromPodcastIndex(client: any, item: a
 
     console.log('feed url', url, podcastIndexId, itunesId)
 
-    let existingPodcast = await getPodcastByPodcastIndexId(client, podcastIndexId)
+    let existingPodcast: Podcast | null = null
+
+    try {
+      existingPodcast = await getPodcastByPodcastIndexId(podcastIndexId)
+    } catch (error) {
+      // assume not found
+    }
 
     if (!existingPodcast) {
       console.log('podcast does not already exist')
@@ -114,14 +119,15 @@ export async function createOrUpdatePodcastFromPodcastIndex(client: any, item: a
         INSERT INTO podcasts (id, "authorityId", "podcastIndexId", "isPublic")
         VALUES ($1, $2, $3, $4);
       `,
-        [shortid(), itunesId, podcastIndexId, isPublic]
+        [generateShortId(), itunesId, podcastIndexId, isPublic]
       )
 
-      existingPodcast = await getPodcastByPodcastIndexId(client, podcastIndexId)
+      existingPodcast = await getPodcastByPodcastIndexId(podcastIndexId)
     } else {
       const setSQLCommand = itunesId
         ? `SET ("podcastIndexId", "authorityId") = (${podcastIndexId}, ${itunesId})`
         : `SET "podcastIndexId" = ${podcastIndexId}`
+
       await client.query(
         `
         UPDATE "podcasts"
@@ -196,7 +202,7 @@ export async function createOrUpdatePodcastFromPodcastIndex(client: any, item: a
         INSERT INTO "feedUrls" (id, "isAuthority", "url", "podcastId")
         VALUES ($1, $2, $3, $4);
       `,
-        [shortid(), isAuthority, url, existingPodcast.id]
+        [generateShortId(), isAuthority, url, existingPodcast.id]
       )
     }
   }

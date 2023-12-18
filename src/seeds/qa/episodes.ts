@@ -8,7 +8,7 @@ export const getRandomEpisodeIds = async () => {
     .where('episode."isPublic" = TRUE')
     .orderBy('RANDOM()')
     .limit(100)
-    .getMany()
+    .getMany() as Episode[]
 
   return episodes.map((episode) => episode.id)
 }

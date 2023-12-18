@@ -1,16 +1,18 @@
 import { Connection, getEpisodesByPodcastIds, getPodcastByPodcastIndexId } from 'podverse-orm'
 import { getLightningKeysendValueItem } from 'podverse-shared'
+import { podcastIndexInstance } from '~/factories/podcastIndex'
 import {
   podcastIndexIds,
   podcastIndexIdsQuick,
   podcastIndexIdsWithLiveItems,
   podcastIndexIdsWithLiveItemsQuick
 } from '~/seeds/qa/podcastIndexIds'
-import { addOrUpdatePodcastFromPodcastIndex, getPodcastFromPodcastIndexByGuid } from '~/services/podcastIndex'
+import { addOrUpdatePodcastFromPodcastIndex } from '~/services/podcastIndex'
 
 export const parseQAFeeds = async (connection: Connection, isQuickRun: boolean) => {
   const pIds = isQuickRun ? podcastIndexIdsQuick : podcastIndexIds
   const pIdsLive = isQuickRun ? podcastIndexIdsWithLiveItemsQuick : podcastIndexIdsWithLiveItems
+
   for (const id of pIds) {
     await addOrUpdatePodcastFromPodcastIndex(connection, id.toString())
   }
@@ -28,7 +30,7 @@ export const parseQAFeeds = async (connection: Connection, isQuickRun: boolean) 
     the latest episode of Boostagram Ball, and parse and save
     each remoteItem's RSS feed as well.
   */
-  const boostagramBallPodcastIndexId = 6524027
+  const boostagramBallPodcastIndexId = '6524027'
   const boostagramBall = await getPodcastByPodcastIndexId(boostagramBallPodcastIndexId)
   if (boostagramBall?.id) {
     const boostagramBallEpisodes = await getEpisodesByPodcastIds({ podcastId: boostagramBall.id, sort: 'most-recent' })
@@ -43,7 +45,7 @@ export const parseQAFeeds = async (connection: Connection, isQuickRun: boolean) 
             for (const valueTaggg of valueTimeSplits) {
               try {
                 const valueTag: any = valueTaggg
-                const podcastIndexPodcast = await getPodcastFromPodcastIndexByGuid(valueTag?.remoteItem?.feedGuid)
+                const podcastIndexPodcast = await podcastIndexInstance.getPodcastFromPodcastIndexByGuid(valueTag?.remoteItem?.feedGuid)
                 const podcastIndexId = podcastIndexPodcast?.feed?.id
                 if (podcastIndexId) {
                   await addOrUpdatePodcastFromPodcastIndex(connection, podcastIndexId)

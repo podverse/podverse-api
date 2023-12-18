@@ -1,5 +1,5 @@
 import { addOrUpdateQueueItem } from 'podverse-orm'
-import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 import { getRandomEpisodeIds } from './episodes'
 import { getRandomMediaRefIds } from './mediaRefs'
 import { generateQAItemsForUsers } from './utility'
