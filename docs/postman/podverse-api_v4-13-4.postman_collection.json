@@ -1186,7 +1186,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "key={{FCM_GOOGLE_API_AUTH_TOKEN}}",
+						"value": "key={{GOOGLE_AUTH_TOKEN}}",
 						"type": "text"
 					},
 					{
