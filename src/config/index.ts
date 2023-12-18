@@ -6,7 +6,6 @@ export interface Config {
   userAgent: string
   cookieDomain: string
   cookieIsSecure: boolean
-  shrunkImageSize: number
   emailBrandColor: string
   emailHeaderImageUrl: string
   emailUnsubscribeUrl: string
@@ -53,7 +52,6 @@ export interface Config {
     verifyEmailPagePath: string
   }
   rateLimiterMaxOverride: any
-  twitterAPIBearerToken: string
   minimumMobileVersion: string
   maintenanceMode: {
     isEnabled: boolean
@@ -72,7 +70,6 @@ const cookieIsSecure = process.env.COOKIE_IS_SECURE === 'true'
 const emailBrandColor = process.env.EMAIL_BRAND_COLOR || '#000'
 const emailHeaderImageUrl = process.env.EMAIL_HEADER_IMAGE_URL || ''
 const emailUnsubscribeUrl = process.env.EMAIL_UNSUBSCRIBE_URL || ''
-const shrunkImageSize = process.env.SHRUNK_IMAGE_SIZE || '400'
 const queryAuthorsLimit = process.env.QUERY_AUTHORS_LIMIT || '20'
 const queryCategoriesLimit = process.env.QUERY_CATEGORIES_LIMIT || '20'
 const queryEpisodesLimit = process.env.QUERY_EPISODES_LIMIT || '20'
@@ -122,8 +119,6 @@ const podcastIndex = {
 
 const minimumMobileVersion = process.env.MINIMUM_MOBILE_VERSION || ''
 
-const twitterAPIBearerToken = process.env.TWITTER_API_BEARER_TOKEN || ''
-
 const parseBoolean = (value = ''): boolean => ['1', 'true'].includes(value.toLowerCase())
 
 const config: Config = {
@@ -134,7 +129,6 @@ const config: Config = {
   userAgent: process.env.USER_AGENT || 'Unidentified podcast API',
   cookieDomain,
   cookieIsSecure,
-  shrunkImageSize: parseInt(shrunkImageSize, 10),
   emailBrandColor,
   emailHeaderImageUrl,
   emailUnsubscribeUrl,
@@ -181,7 +175,6 @@ const config: Config = {
     verifyEmailPagePath: process.env.WEBSITE_VERIFY_EMAIL_PAGE_PATH || ''
   },
   rateLimiterMaxOverride,
-  twitterAPIBearerToken,
   minimumMobileVersion,
   maintenanceMode: {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
