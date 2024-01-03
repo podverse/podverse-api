@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { createNotification, deleteNotification } from 'podverse-orm'
 import { config } from '~/config'
-import { createNotification, deleteNotification } from '~/controllers/notification'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import {

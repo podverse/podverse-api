@@ -1,8 +1,7 @@
 import { compare as compareHash } from 'bcryptjs'
+import createError from 'http-errors'
 import { Strategy as LocalStrategy } from 'passport-local'
-import { getRepository } from 'typeorm'
-import { User } from '~/entities'
-const createError = require('http-errors')
+import { getRepository, User } from 'podverse-orm'
 
 export const createLocalStrategy = () =>
   new LocalStrategy({ session: false, usernameField: 'email' }, async (email, password, done) => {
@@ -32,7 +31,7 @@ export const createLocalStrategy = () =>
         .leftJoinAndSelect('user.playlists', 'playlists')
         .where('user.email ILIKE :email', { email })
 
-      const user = await qb.getOne()
+      const user = (await qb.getOne()) as User
 
       if (user) {
         const isValid = await compareHash(password, user.password)

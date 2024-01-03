@@ -1,7 +1,6 @@
 import * as Router from 'koa-router'
+import { getEpisodeWebUrl, getPodcastWebUrl } from 'podverse-orm'
 import { config } from '~/config'
-import { getEpisodeWebUrl } from '~/controllers/episode'
-import { getPodcastWebUrl } from '~/controllers/podcast'
 import { emitRouterError } from '~/lib/errors'
 import { validateUrlResolverEpisode, validateUrlResolverPodcast } from '~/middleware/queryValidation/urlResolver'
 

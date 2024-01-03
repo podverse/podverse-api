@@ -29,18 +29,13 @@
         "preserveConstEnums": true,
         "removeComments": false,
         "sourceMap": true,
-        "strictNullChecks": true,
-        "suppressImplicitAnyIndexErrors": true,
+        "strictNullChecks": true
     },
     "include": [
         "./src/**/*"
     ],
-    "exclude": [
-        "**/*.itest.ts",
-        "**/*.test.ts",
-        "node_modules"
-    ],
+    "exclude": ["node_modules"],
     "files": [
-        "global.d.ts", "src/lib/notifications/sendNotificationOptions.ts"
+        "global.d.ts"
     ]
 }

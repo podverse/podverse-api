@@ -1,12 +1,12 @@
 import { addSeconds } from 'date-fns'
-import { v4 as uuidv4 } from 'uuid'
-import { config } from '~/config'
 import {
   getUserByEmail,
   getUserByResetPasswordToken,
   updateUserPassword,
   updateUserResetPasswordToken
-} from '~/controllers/user'
+} from 'podverse-orm'
+import { v4 as uuidv4 } from 'uuid'
+import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { sendResetPasswordEmail } from '~/services/auth/sendResetPasswordEmail'
 
@@ -16,7 +16,7 @@ export const resetPassword = async (ctx) => {
   try {
     const { id, resetPasswordTokenExpiration } = await getUserByResetPasswordToken(resetPasswordToken)
 
-    if (resetPasswordTokenExpiration < new Date()) {
+    if (resetPasswordTokenExpiration && resetPasswordTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 401
     } else if (id) {

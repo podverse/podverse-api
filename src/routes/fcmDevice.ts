@@ -1,7 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { createFCMDevice, deleteFCMDevice, updateFCMDevice } from 'podverse-orm'
 import { config } from '~/config'
-import { createFCMDevice, deleteFCMDevice, updateFCMDevice } from '~/controllers/fcmDevice'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import {

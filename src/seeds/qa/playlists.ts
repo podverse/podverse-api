@@ -1,10 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { _logEnd, _logStart, logPerformance } from '~/lib/utility'
-import {
-  addOrRemovePlaylistItem,
-  addOrRemovePlaylistItemToDefaultPlaylist,
-  createPlaylist
-} from '~/controllers/playlist'
+import { addOrRemovePlaylistItem, addOrRemovePlaylistItemToDefaultPlaylist, createPlaylist } from 'podverse-orm'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 import { getRandomMediaRefIds } from './mediaRefs'
 import { getRandomEpisodeIds } from './episodes'
 import { generateQAItemsForUsers, getQABatchRange } from './utility'

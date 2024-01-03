@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { faker } from '@faker-js/faker'
-import { getRepository } from 'typeorm'
-import { createUser } from '~/controllers/user'
-import { User } from '~/entities'
-import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
+import { createUser, getRepository, User } from 'podverse-orm'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 
 interface RowExportData {
   email: string
@@ -81,7 +79,7 @@ export const getQAUserByEmail = async (email: string) => {
   return await userRepository.findOne({
     where: { email },
     select: ['id', 'email']
-  })
+  }) as User
 }
 
 const enrichRowExportData = (userLite: RowExportData) => {

@@ -1,15 +1,13 @@
 import { addSeconds } from 'date-fns'
-import { Connection } from 'typeorm'
+import { createUser, CustomStatusError, getRepository, User } from 'podverse-orm'
 import { v4 as uuidv4 } from 'uuid'
 import isEmail from 'validator/lib/isEmail'
 import { config } from '~/config'
-import { User } from '~/entities'
-import { CustomStatusError, emitRouterError } from '~/lib/errors'
-import { createUser } from '~/controllers/user'
+import { emitRouterError } from '~/lib/errors'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 
-const emailExists = async (conn: Connection, email) => {
-  const user = await conn.getRepository(User).findOne({ email })
+const emailExists = async (email) => {
+  const user = await getRepository(User).findOne({ email })
   return !!user
 }
 
@@ -23,7 +21,7 @@ export const validEmail = async (ctx, next) => {
 }
 
 export const emailNotExists = async (ctx, next) => {
-  if (await emailExists(ctx.db, ctx.request.body.email)) {
+  if (await emailExists(ctx.request.body.email)) {
     emitRouterError(new CustomStatusError('Email is already signed up.').BadRequest(), ctx)
     return
   }

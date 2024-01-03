@@ -1,5 +1,6 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { getLoggedInUser } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import {
@@ -23,7 +24,6 @@ import {
   validateAuthSignUp,
   validateAuthVerifyEmail
 } from '~/middleware/queryValidation/auth'
-import { getLoggedInUser } from '~/controllers/user'
 const RateLimit = require('koa2-ratelimit').RateLimit
 const { rateLimiterMaxOverride } = config
 

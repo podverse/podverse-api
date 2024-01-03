@@ -1,8 +1,4 @@
 import * as Router from 'koa-router'
-import type { SocialInteraction, Transcript } from 'podverse-shared'
-import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
-import { delimitQueryValues } from '~/lib/utility'
 import {
   getEpisode,
   getEpisodeByPodcastIdAndGuid,
@@ -13,7 +9,11 @@ import {
   getEpisodesFromSearchEngine,
   getLightningKeysendVTSAsChapters,
   retrieveLatestChapters
-} from '~/controllers/episode'
+} from 'podverse-orm'
+import type { SocialInteraction, Transcript } from 'podverse-shared'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
@@ -191,35 +191,6 @@ router.get('/:id/proxy/activity-pub', async (ctx) => {
 
     const protocol = 'activitypub'
     const body = await getThreadcap(finalUrl, protocol)
-    ctx.body = body
-  } catch (error) {
-    emitRouterError(error, ctx)
-  }
-})
-
-router.get('/:id/proxy/twitter', async (ctx) => {
-  try {
-    if (!ctx.params.id) throw new Error('An episodeId is required.')
-    const episode = await getEpisode(ctx.params.id)
-    if (!episode) {
-      throw new Error('No episode found with that id.')
-    }
-    if (!episode.socialInteraction || episode.socialInteraction.length === 0) {
-      throw new Error('No socialInteraction value found for episode.')
-    }
-
-    const twitter = episode.socialInteraction.find(
-      (item: SocialInteraction) => item.protocol === 'twitter' || item.platform === 'twitter'
-    )
-
-    const finalUrl = twitter?.uri || twitter?.url
-
-    if (!finalUrl) {
-      throw new Error('No twitter uri or url found for episode.')
-    }
-
-    const protocol = 'twitter'
-    const body = await getThreadcap(finalUrl, protocol, config.twitterAPIBearerToken)
     ctx.body = body
   } catch (error) {
     emitRouterError(error, ctx)

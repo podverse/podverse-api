@@ -1,17 +1,11 @@
-const Joi = require('joi')
-import { podcastMediumAllowedValues } from '~/lib/constants'
+import Joi from 'joi'
+import { podcastMediumAllowedValues } from 'podverse-shared'
 import { validateBaseBody } from './base'
 
 const validateAppStorePurchaseCreate = async (ctx, next) => {
   const schema = Joi.object().keys({
     transactionReceipt: Joi.string().required()
   })
-
-  await validateBaseBody(schema, ctx, next)
-}
-
-const validateBitPayInvoiceCreate = async (ctx, next) => {
-  const schema = Joi.object().keys({})
 
   await validateBaseBody(schema, ctx, next)
 }
@@ -72,7 +66,6 @@ const validatePlaylistCreate = async (ctx, next) => {
 
 export {
   validateAppStorePurchaseCreate,
-  validateBitPayInvoiceCreate,
   validateGooglePlayPurchaseCreate,
   validateFeedUrlCreate,
   validateMediaRefCreate,

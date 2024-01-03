@@ -1,6 +1,6 @@
 import { sign } from 'jsonwebtoken'
 import { config } from '~/config'
-import { authExpires } from '~/lib/constants'
+import { authExpires } from '~/services/auth'
 const { jwtSecret } = config
 
 const genTokenAsync = (payload) =>

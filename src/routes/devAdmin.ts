@@ -1,11 +1,10 @@
 import * as Router from 'koa-router'
-import { getConnection } from 'typeorm'
+import { getConnection, getPodcastByPodcastIndexId } from 'podverse-orm'
 import { config } from '~/config'
-import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
+import { parserInstance } from '~/factories/parser'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth'
 import { isDevAdmin } from '~/middleware/isDevAdmin'
-import { parseFeedUrlsByPodcastIds } from '~/services/parser'
 import { addOrUpdatePodcastFromPodcastIndex } from '~/services/podcastIndex'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/dev-admin` })
@@ -14,7 +13,7 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/dev
 router.get('/parse-feed-by-podcast-id/:podcastId', jwtAuth, isDevAdmin, async (ctx) => {
   try {
     const { podcastId } = ctx.params
-    await parseFeedUrlsByPodcastIds([podcastId])
+    await parserInstance.parseFeedUrlsByPodcastIds([podcastId])
     ctx.body = {
       message: 'Feed parsed successfully.'
     }

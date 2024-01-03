@@ -1,18 +1,16 @@
 import { config } from '~/config'
-import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
 import { loggerInstance } from '~/lib/logging'
-const createError = require('http-errors')
-
-const { mailerFrom } = config
+import { createTransporter } from '~/services/mailer'
+import createError from 'http-errors'
 
 export const sendVerificationEmail = async (email, name, token): Promise<void> => {
-  if (config.mailerDisabled) {
+  if (config.mailer.disabled) {
     loggerInstance.debug('Mailer has been disabled, verification email will be skipped')
     return Promise.resolve()
   }
 
-  if (!config.mailerHost) {
+  if (!config.mailer.host) {
     loggerInstance.error('Mailer host is not configured, verification email will be skipped')
     return Promise.resolve()
   }
@@ -20,7 +18,7 @@ export const sendVerificationEmail = async (email, name, token): Promise<void> =
   const transporter = createTransporter()
 
   const emailFields = {
-    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteVerifyEmailPagePath}${token}`,
+    buttonLink: `${config.website.protocol}://${config.website.domain}${config.website.verifyEmailPagePath}${token}`,
     buttonText: 'Verify Email',
     closing: '',
     headerText: 'Verify your email',
@@ -30,7 +28,7 @@ export const sendVerificationEmail = async (email, name, token): Promise<void> =
 
   try {
     await transporter.sendMail({
-      from: `Podverse <${mailerFrom}>`,
+      from: `Podverse <${config.mailer.from}>`,
       to: email,
       subject: 'Verify your email address with Podverse',
       html: emailTemplate(emailFields),

@@ -1,8 +1,8 @@
-FROM node:16-bullseye
+FROM node:20-bullseye
 WORKDIR /tmp
 COPY . .
 
-RUN npm install -g ts-node@8.5.4
+RUN npm install -g ts-node@10.9.2
 RUN npm install
 
 # Update the package listing, so we know what package exist:

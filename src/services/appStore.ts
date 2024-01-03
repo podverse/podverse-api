@@ -1,6 +1,6 @@
+import { createOrUpdateAppStorePurchase } from 'podverse-orm'
 import * as request from 'request-promise-native'
 import { config } from '~/config'
-import { createOrUpdateAppStorePurchase } from '~/controllers/appStorePurchase'
 
 /*
 requestBody

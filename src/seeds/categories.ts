@@ -1,7 +1,5 @@
-import { Connection } from 'typeorm'
-import { deleteCategoryByTitle, getCategories } from '~/controllers/category'
-import { Category } from '~/entities'
-import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
+import { Category, Connection, deleteCategoryByTitle, getCategories } from 'podverse-orm'
+import { logPerformance, _logEnd, _logStart } from 'podverse-shared'
 
 export const generateCategories = async (connection: Connection, data: any): Promise<any> => {
   logPerformance('generateCategories', _logStart)

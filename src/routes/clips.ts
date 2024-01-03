@@ -1,9 +1,9 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { getPublicMediaRefsByEpisodeGuid, getPublicMediaRefsByEpisodeMediaUrl } from 'podverse-orm'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { convertToChaptersFile } from '~/lib/podcastIndex'
-import { getPublicMediaRefsByEpisodeGuid, getPublicMediaRefsByEpisodeMediaUrl } from '~/controllers/mediaRef'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 const json = require('koa-json')
 

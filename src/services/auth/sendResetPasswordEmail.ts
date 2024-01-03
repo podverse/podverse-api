@@ -3,26 +3,24 @@ import { createTransporter } from '~/services/mailer'
 import { emailTemplate } from '~/lib/emailTemplate'
 import { convertSecondsToDaysText } from '~/lib/utility'
 import { loggerInstance } from '~/lib/logging'
-const createError = require('http-errors')
-
-const { mailerFrom, resetPasswordTokenExpiration } = config
+import createError from 'http-errors'
 
 export const sendResetPasswordEmail = async (email, name, token): Promise<void> => {
-  if (config.mailerDisabled) {
+  if (config.mailer.disabled) {
     loggerInstance.debug('Mailer has been disabled, password reset email will be skipped')
     return Promise.resolve()
   }
 
-  if (!config.mailerHost) {
+  if (!config.mailer.host) {
     loggerInstance.error('Mailer host is not configured, password reset email will be skipped')
     return Promise.resolve()
   }
 
   const transporter = createTransporter()
-  const daysToExpire = convertSecondsToDaysText(resetPasswordTokenExpiration)
+  const daysToExpire = convertSecondsToDaysText(config.resetPasswordTokenExpiration)
 
   const emailFields = {
-    buttonLink: `${config.websiteProtocol}://${config.websiteDomain}${config.websiteResetPasswordPagePath}${token}`,
+    buttonLink: `${config.website.protocol}://${config.website.domain}${config.website.resetPasswordPagePath}${token}`,
     buttonText: 'Reset Password',
     closing: '',
     headerText: 'Reset your Podverse password',
@@ -32,7 +30,7 @@ export const sendResetPasswordEmail = async (email, name, token): Promise<void> 
 
   try {
     await transporter.sendMail({
-      from: `Podverse <${mailerFrom}>`,
+      from: `Podverse <${config.mailer.from}>`,
       to: email,
       subject: 'Reset your Podverse password',
       html: emailTemplate(emailFields),

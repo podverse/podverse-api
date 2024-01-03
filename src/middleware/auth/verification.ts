@@ -1,7 +1,7 @@
 import { addSeconds } from 'date-fns'
+import { getUserByEmail, getUserByVerificationToken, updateUserEmailVerificationToken } from 'podverse-orm'
 import { v4 as uuidv4 } from 'uuid'
 import { config } from '~/config'
-import { getUserByEmail, getUserByVerificationToken, updateUserEmailVerificationToken } from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { sendVerificationEmail } from '~/services/auth/sendVerificationEmail'
 
@@ -43,7 +43,7 @@ export const verifyEmail = async (ctx) => {
     if (emailVerified) {
       ctx.body = `Email already verified.`
       ctx.status = 200
-    } else if (emailVerificationTokenExpiration < new Date()) {
+    } else if (emailVerificationTokenExpiration && emailVerificationTokenExpiration < new Date()) {
       ctx.body = `Email verification code has expired.`
       ctx.status = 401
     } else if (emailVerificationToken && token && token === emailVerificationToken) {

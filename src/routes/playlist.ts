@@ -1,8 +1,5 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
-import { config } from '~/config'
-import { emitRouterError } from '~/lib/errors'
-import { delimitQueryValues } from '~/lib/utility'
 import {
   addOrRemovePlaylistItem,
   addOrRemovePlaylistItemToDefaultPlaylist,
@@ -13,7 +10,10 @@ import {
   getSubscribedPlaylists,
   toggleSubscribeToPlaylist,
   updatePlaylist
-} from '~/controllers/playlist'
+} from 'podverse-orm'
+import { config } from '~/config'
+import { emitRouterError } from '~/lib/errors'
+import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'

@@ -1,11 +1,7 @@
 import * as bodyParser from 'koa-bodyparser'
 import * as Router from 'koa-router'
+import { addByRSSPodcastFeedUrlAdd, addByRSSPodcastFeedUrlAddMany, addByRSSPodcastFeedUrlRemove } from 'podverse-orm'
 import { config } from '~/config'
-import {
-  addByRSSPodcastFeedUrlAdd,
-  addByRSSPodcastFeedUrlAddMany,
-  addByRSSPodcastFeedUrlRemove
-} from '~/controllers/user'
 import { emitRouterError } from '~/lib/errors'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
