@@ -16,4 +16,19 @@ router.get('/min-mobile-version', async (ctx) => {
   }
 })
 
+router.get('/app-info', async (ctx) => {
+  const { minimumMobileVersion, maintenanceMode } = config
+  try {
+    ctx.body = {
+      version: minimumMobileVersion,
+      maintenanceScheduled: {
+        endTime: maintenanceMode?.scheduled?.endTime,
+        startTime: maintenanceMode?.scheduled?.startTime
+      }
+    }
+  } catch (error) {
+    emitRouterError(error, ctx)
+  }
+})
+
 export const metaRouter = router
