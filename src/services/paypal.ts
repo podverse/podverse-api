@@ -1,6 +1,7 @@
 import { config } from '~/config'
 const { paypalConfig } = config
 const { clientId, clientSecret } = paypalConfig
+// TODO: move paypal-rest-sdk to external-services
 const paypal = require('paypal-rest-sdk')
 const payments = paypal.v1.payments
 
