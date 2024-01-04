@@ -88,7 +88,7 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
   */
 
   const filterCustomFeedUrls = (data: any[], limit: number) => {
-    return data.filter((x) => x.url.length <= limit)
+    return data.filter((x) => x.url.length <= limit && x.url?.split('/').length - 1 === 4)
   }
 
   const podcastLimit = 42 // https://podverse.fm/podcast/12345678901234
