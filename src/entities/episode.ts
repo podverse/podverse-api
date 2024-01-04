@@ -7,7 +7,7 @@ import {
   Funding,
   SocialInteraction,
   Transcript,
-  ValueTag
+  ValueTagOriginal
 } from 'podverse-shared'
 import {
   Author,
@@ -198,7 +198,7 @@ export class Episode {
   transcript: Transcript[]
 
   @Column('simple-json', { nullable: true })
-  value: ValueTag[]
+  value: ValueTagOriginal[]
 
   @ManyToMany((type) => Author)
   @JoinTable()

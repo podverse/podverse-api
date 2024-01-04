@@ -78,6 +78,10 @@ export interface Config {
   maintenanceMode: {
     isEnabled: boolean
     downtimeExpected: number
+    scheduled: {
+      startTime: Date | null
+      endTime: Date | null
+    }
   }
 }
 
@@ -251,7 +255,15 @@ const config: Config = {
     isEnabled: process.env.MAINTENANCE_MODE_ENABLED === 'true' || false,
     downtimeExpected: process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED
       ? parseInt(process.env.MAINTENANCE_MODE_DOWNTIME_EXPECTED)
-      : 0
+      : 0,
+    scheduled: {
+      startTime: process.env.MAINTENANCE_MODE_SCHEDULED_START_TIME
+        ? new Date(process.env.MAINTENANCE_MODE_SCHEDULED_START_TIME)
+        : null,
+      endTime: process.env.MAINTENANCE_MODE_SCHEDULED_END_TIME
+        ? new Date(process.env.MAINTENANCE_MODE_SCHEDULED_END_TIME)
+        : null
+    }
   }
 }
 
