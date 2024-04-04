@@ -192,7 +192,7 @@
     "manticoresearch": "^2.0.3",
     "moment": "^2.29.4",
     "node-fetch": "2.6.7",
-    "nodemailer": "6.6.1",
+    "nodemailer": "6.9.9",
     "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
     "password-validator": "5.0.3",
