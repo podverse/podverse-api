@@ -278,9 +278,9 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
       UPDATE "episodes" AS e 
-      SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE e.id = ${id}
-      AND e."podcastId"
+      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
+      WHERE id = '${id}'
+      AND "podcastId"
       IN (
         SELECT p.id
         FROM podcasts p
@@ -291,9 +291,9 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
-      UPDATE "mediaRefs" AS m
-      SET m."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE m.id='${id}';
+      UPDATE "mediaRefs"
+      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
+      WHERE id='${id}';
     `
   } else if (finalPagePath === PagePaths.albums) {
     queryString = `
@@ -306,9 +306,9 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
       UPDATE "episodes" AS e 
-      SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE e.id = ${id}
-      AND e."podcastId"
+      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
+      WHERE id = '${id}'
+      AND "podcastId"
       IN (
         SELECT p.id
         FROM podcasts p
@@ -327,9 +327,9 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
       UPDATE "episodes" AS e 
-      SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE e.id = ${id}
-      AND e."podcastId"
+      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
+      WHERE id = '${id}'
+      AND "podcastId"
       IN (
         SELECT p.id
         FROM podcasts p
