@@ -212,7 +212,7 @@
     "ts-loader": "6.2.1",
     "tsconfig-paths": "3.9.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
-    "typeorm": "0.2.45",
+    "typeorm": "0.3.0",
     "uuid": "^9.0.1",
     "valid-url": "1.0.9",
     "validator": "13.7.0",
