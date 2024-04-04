@@ -225,7 +225,7 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" e 
+      UPDATE "episodes" AS e 
       SET "${TimeRanges[timeRange]}" = 0
       WHERE e.id = ${id}
       AND e."podcastId"
@@ -246,7 +246,7 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" e 
+      UPDATE "episodes" AS e 
       SET "${TimeRanges[timeRange]}" = 0
       WHERE e.id = ${id}
       AND e."podcastId"
@@ -277,7 +277,7 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      UPDATE "episodes" e 
+      UPDATE "episodes" AS e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
       WHERE e.id = ${id}
       AND e."podcastId"
@@ -291,7 +291,7 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
-      UPDATE "mediaRefs" m
+      UPDATE "mediaRefs" AS m
       SET m."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
       WHERE m.id='${id}';
     `
@@ -305,7 +305,7 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" e 
+      UPDATE "episodes" AS e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
       WHERE e.id = ${id}
       AND e."podcastId"
@@ -326,7 +326,7 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" e 
+      UPDATE "episodes" AS e 
       SET e."${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
       WHERE e.id = ${id}
       AND e."podcastId"
