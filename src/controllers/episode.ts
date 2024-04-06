@@ -742,8 +742,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
             .addSelect('mediaRef.chapterHash', 'chapterHash')
             .where({
               isOfficialChapter: true,
-              episode: episode.id,
-              isPublic: true
+              episode: episode.id
             })
           const existingChapters = await qb.getRawMany()
 
