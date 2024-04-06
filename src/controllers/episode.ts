@@ -763,8 +763,18 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
             try {
               const newChapter = newChapters[i]
               const roundedStartTime = Math.floor(newChapter.startTime)
+              const roundedEndTime =
+                newChapter.endTime !== null && newChapter.endTime >= 1 ? Math.floor(newChapter.endTime) : null
               const isChapterToc = newChapter.toc === false ? false : newChapter.toc
-              const chapterHash = uuidv5(JSON.stringify(newChapter), uuidNIL)
+
+              const chapterInfoToHash = {
+                startTime: roundedStartTime,
+                endTime: roundedEndTime || null,
+                isChapterToc,
+                episodeId: id
+              }
+
+              const chapterHash = uuidv5(JSON.stringify(chapterInfoToHash), uuidNIL)
 
               // If a chapter with that chapterHash already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
@@ -772,7 +782,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
               if (existingChapter && existingChapter.id) {
                 await updateMediaRef(
                   {
-                    endTime: newChapter.endTime || null,
+                    endTime: roundedEndTime,
                     id: existingChapter.id,
                     imageUrl: newChapter.img || null,
                     isOfficialChapter: true,
@@ -788,7 +798,7 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
                 )
               } else {
                 await createMediaRef({
-                  endTime: newChapter.endTime || null,
+                  endTime: roundedEndTime,
                   imageUrl: newChapter.img || null,
                   isOfficialChapter: true,
                   isPublic: true,
@@ -804,6 +814,27 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
             } catch (error) {
               console.log('retrieveLatestChapters newChapter', error)
             }
+          }
+        }
+
+        const qb = mediaRefRepository
+          .createQueryBuilder('mediaRef')
+          .select('mediaRef.id', 'id')
+          .addSelect('mediaRef.isOfficialChapter', 'isOfficialChapter')
+          .addSelect('mediaRef.chapterHash', 'chapterHash')
+          .addSelect('mediaRef.isPublic', 'isPublic')
+          .where({
+            isOfficialChapter: true,
+            episode: episode.id,
+            isPublic: false
+          })
+
+        const hiddenChaptersToDelete = await qb.getRawMany()
+        for (const chapterToDelete of hiddenChaptersToDelete) {
+          try {
+            await mediaRefRepository.remove(chapterToDelete)
+          } catch (error) {
+            console.log('error removing isPublic false chapter:', error)
           }
         }
       } catch (error) {
