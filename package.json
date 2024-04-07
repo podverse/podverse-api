@@ -41,6 +41,7 @@
     "dev:scripts:receiveErrorMessageFromQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/receiveErrorMessageFromQueue.ts",
     "dev:scripts:refreshEpisodesMostRecentMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/refreshEpisodesMostRecentMaterializedView.ts",
     "dev:scripts:refreshMediaRefsVideosMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/mediaRefs_videos/refreshMediaRefsVideosMaterializedView.ts",
+    "dev:scripts:removeDeadChapters": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/mediaRefs/removeDeadChapters.ts",
     "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
     "dev:scripts:syncWithFeedUrlsCSVDump": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
     "dev:scripts:updateRecentEpisodesTables": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
