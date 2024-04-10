@@ -365,6 +365,27 @@ const refreshMediaRefsVideosMaterializedView = async () => {
   await em.query('REFRESH MATERIALIZED VIEW CONCURRENTLY "mediaRefs_videos"')
 }
 
+const removeDeadChapters = async () => {
+  const em = await getConnection().createEntityManager()
+  try {
+    for (let i = 0; i < 10000; i++) {
+      console.log('removeDeadChapters i:', i)
+      await em.query(`
+        DELETE FROM "mediaRefs"
+        WHERE "id" IN (
+            SELECT "id" 
+            FROM "mediaRefs" 
+            WHERE "isOfficialChapter" = TRUE 
+            AND "isPublic" = FALSE 
+            LIMIT 100
+        );
+      `)
+    }
+  } catch (error) {
+    console.log('deleteHiddenMediaRefs error:', error)
+  }
+}
+
 export {
   createMediaRef,
   deleteMediaRef,
@@ -374,6 +395,7 @@ export {
   getPublicMediaRefsByEpisodeMediaUrl,
   getPublicMediaRefsByEpisodeGuid,
   refreshMediaRefsVideosMaterializedView,
+  removeDeadChapters,
   updateMediaRef,
   updateSoundBites
 }

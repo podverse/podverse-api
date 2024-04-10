@@ -776,6 +776,9 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
 
               const chapterHash = uuidv5(JSON.stringify(chapterInfoToHash), uuidNIL)
 
+              const imageUrl = newChapter?.img?.replace(/ /g, '%20') || null
+              const linkUrl = newChapter?.url?.replace(/ /g, '%20') || null
+
               // If a chapter with that chapterHash already exists, then update it.
               // If it does not exist, then create a new mediaRef with isOfficialChapter = true.
               const existingChapter = existingChapters.find((x) => x.chapterHash === chapterHash)
@@ -784,10 +787,10 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
                   {
                     endTime: roundedEndTime,
                     id: existingChapter.id,
-                    imageUrl: newChapter.img || null,
+                    imageUrl,
                     isOfficialChapter: true,
                     isPublic: true,
-                    linkUrl: newChapter.url || null,
+                    linkUrl,
                     startTime: roundedStartTime,
                     title: newChapter.title,
                     episodeId: id,
@@ -799,10 +802,10 @@ const retrieveLatestChapters = async (id, includeNonToc = true) => {
               } else {
                 await createMediaRef({
                   endTime: roundedEndTime,
-                  imageUrl: newChapter.img || null,
+                  imageUrl,
                   isOfficialChapter: true,
                   isPublic: true,
-                  linkUrl: newChapter.url || null,
+                  linkUrl,
                   startTime: roundedStartTime,
                   title: newChapter.title,
                   owner: superUserId,
