@@ -11,6 +11,7 @@ import {
   podcastItunesTypeDefaultValue
 } from 'podverse-shared'
 import { getRepository, In, Not } from 'typeorm'
+import isUUID from 'validator/lib/isUUID'
 import { config } from '~/config'
 import { updateSoundBites } from '~/controllers/mediaRef'
 import { getPodcast } from '~/controllers/podcast'
@@ -371,7 +372,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     // guid is deprecated
     podcast.guid = meta.guid
     // podcastGuid is the column we want to use going forward
-    podcast.podcastGuid = meta.guid
+
+    if (meta.guid && isUUID(meta.guid)) {
+      podcast.podcastGuid = meta.guid
+    }
 
     const hasNewImageUrl = meta.imageURL && podcast.imageUrl !== meta.imageURL
     podcast.imageUrl = meta.imageURL
