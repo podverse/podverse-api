@@ -64,7 +64,7 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
   const startDate = new Date(timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset))
   const endDate = new Date(offsetDate())
 
-  const numberOfIntervals = ['allTime'].includes(timeRange) ? 60 : ['year'].includes(timeRange) ? 12 : 1
+  const numberOfIntervals = ['allTime'].includes(timeRange) ? 120 : ['year'].includes(timeRange) ? 24 : 1
   const dateIntervals = splitDateIntoEqualIntervals(startDate, endDate, numberOfIntervals)
   let data: any[] = []
 
