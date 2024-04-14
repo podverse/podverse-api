@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { IsInt, Min, ValidateIf } from 'class-validator'
 import { MediaRef } from '~/entities'
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import { StatsTimeFrames, timeframeEnumValues } from '~/lib/stats'
 
 @Entity('stats_media_ref')
 export class StatsMediaRef {
@@ -10,40 +9,21 @@ export class StatsMediaRef {
   id: string
 
   @Index()
-  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
+  @ValidateIf((a) => a.play_count != null)
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
-  pastDayTotalUniquePageviews: number
+  play_count: number
 
   @Index()
-  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastWeekTotalUniquePageviews: number
+  @Column({
+    type: 'enum',
+    enum: timeframeEnumValues,
+    nullable: false
+  })
+  timeframe: StatsTimeFrames
 
   @Index()
-  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastMonthTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastYearTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @OneToOne(() => MediaRef, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'media_ref_id' })
   mediaRef: MediaRef

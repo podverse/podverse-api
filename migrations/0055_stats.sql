@@ -1,65 +1,54 @@
+
+-- Timeframe enum
+CREATE TYPE timeframe_enum AS ENUM ('daily', 'weekly', 'monthly', 'yearly', 'all_time');
+
 -- Podcasts Stats
 CREATE TABLE IF NOT EXISTS stats_podcast (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "pastDayTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastWeekTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastMonthTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastYearTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastAllTimeTotalUniquePageviews" INTEGER DEFAULT 0,
-    podcast_id VARCHAR NOT NULL UNIQUE REFERENCES podcasts(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    play_count INTEGER DEFAULT 0,
+    timeframe timeframe_enum NOT NULL,
+    podcast_id VARCHAR NOT NULL REFERENCES podcasts(id) ON DELETE CASCADE,
+    CONSTRAINT unique_timeframe_podcast UNIQUE (timeframe, podcast_id),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX "stats_podcast_pastDayTotalUniquePageviews_idx" ON stats_podcast ("pastDayTotalUniquePageviews");
-CREATE INDEX "stats_podcast_pastWeekTotalUniquePageviews_idx" ON stats_podcast ("pastWeekTotalUniquePageviews");
-CREATE INDEX "stats_podcast_pastMonthTotalUniquePageviews_idx" ON stats_podcast ("pastMonthTotalUniquePageviews");
-CREATE INDEX "stats_podcast_pastYearTotalUniquePageviews_idx" ON stats_podcast ("pastYearTotalUniquePageviews");
-CREATE INDEX "stats_podcast_pastAllTimeTotalUniquePageviews_idx" ON stats_podcast ("pastAllTimeTotalUniquePageviews");
+CREATE INDEX "stats_podcast_play_count_idx" ON stats_podcast (play_count);
+CREATE INDEX "stats_podcast_timeframe_idx" ON stats_podcast (timeframe);
+CREATE INDEX "stats_podcast_podcast_id_idx" ON stats_podcast (podcast_id);
 
-ALTER TABLE podcasts
-ADD COLUMN stats_podcast_id VARCHAR UNIQUE;
+ALTER TABLE podcasts ADD COLUMN stats_podcast_id VARCHAR UNIQUE;
 
 -- Episodes Stats
 CREATE TABLE IF NOT EXISTS stats_episode (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "pastDayTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastWeekTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastMonthTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastYearTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastAllTimeTotalUniquePageviews" INTEGER DEFAULT 0,
-    episode_id VARCHAR NOT NULL UNIQUE REFERENCES episodes(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    play_count INTEGER DEFAULT 0,
+    timeframe timeframe_enum NOT NULL,
+    episode_id VARCHAR NOT NULL REFERENCES episodes(id) ON DELETE CASCADE,
+    CONSTRAINT unique_timeframe_episode UNIQUE (timeframe, episode_id),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX "stats_episode_pastDayTotalUniquePageviews_idx" ON stats_episode ("pastDayTotalUniquePageviews");
-CREATE INDEX "stats_episode_pastWeekTotalUniquePageviews_idx" ON stats_episode ("pastWeekTotalUniquePageviews");
-CREATE INDEX "stats_episode_pastMonthTotalUniquePageviews_idx" ON stats_episode ("pastMonthTotalUniquePageviews");
-CREATE INDEX "stats_episode_pastYearTotalUniquePageviews_idx" ON stats_episode ("pastYearTotalUniquePageviews");
-CREATE INDEX "stats_episode_pastAllTimeTotalUniquePageviews_idx" ON stats_episode ("pastAllTimeTotalUniquePageviews");
+CREATE INDEX "stats_episode_play_count_idx" ON stats_episode (play_count);
+CREATE INDEX "stats_episode_timeframe_idx" ON stats_episode (timeframe);
+CREATE INDEX "stats_episode_episode_id_idx" ON stats_episode (episode_id);
 
-ALTER TABLE episodes
-ADD COLUMN stats_episode_id VARCHAR UNIQUE;
+ALTER TABLE episodes ADD COLUMN stats_episode_id VARCHAR UNIQUE;
 
--- Media Refs Stats
+-- MediaRef Stats
 CREATE TABLE IF NOT EXISTS stats_media_ref (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "pastDayTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastWeekTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastMonthTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastYearTotalUniquePageviews" INTEGER DEFAULT 0,
-    "pastAllTimeTotalUniquePageviews" INTEGER DEFAULT 0,
-    media_ref_id VARCHAR NOT NULL UNIQUE REFERENCES "mediaRefs"(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    play_count INTEGER DEFAULT 0,
+    timeframe timeframe_enum NOT NULL,
+    media_ref_id VARCHAR NOT NULL REFERENCES "mediaRefs"(id) ON DELETE CASCADE,
+    CONSTRAINT unique_timeframe_media_ref UNIQUE (timeframe, media_ref_id),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX "stats_media_ref_pastDayTotalUniquePageviews_idx" ON stats_media_ref ("pastDayTotalUniquePageviews");
-CREATE INDEX "stats_media_ref_pastWeekTotalUniquePageviews_idx" ON stats_media_ref ("pastWeekTotalUniquePageviews");
-CREATE INDEX "stats_media_ref_pastMonthTotalUniquePageviews_idx" ON stats_media_ref ("pastMonthTotalUniquePageviews");
-CREATE INDEX "stats_media_ref_pastYearTotalUniquePageviews_idx" ON stats_media_ref ("pastYearTotalUniquePageviews");
-CREATE INDEX "stats_media_ref_pastAllTimeTotalUniquePageviews_idx" ON stats_media_ref ("pastAllTimeTotalUniquePageviews");
+CREATE INDEX "stats_media_ref_play_count_idx" ON stats_media_ref (play_count);
+CREATE INDEX "stats_media_ref_timeframe_idx" ON stats_media_ref (timeframe);
+CREATE INDEX "stats_media_ref_media_ref_id_idx" ON stats_media_ref (media_ref_id);
 
-ALTER TABLE "mediaRefs"
-ADD COLUMN stats_media_ref_id VARCHAR UNIQUE;
+ALTER TABLE "mediaRefs" ADD COLUMN stats_media_ref_id VARCHAR UNIQUE;
