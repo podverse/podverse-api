@@ -37,7 +37,6 @@ enum StartDateOffset {
 */
 
 enum TimeRanges {
-  // hour = 'pastHourTotalUniquePageviews',
   day = 'pastDayTotalUniquePageviews',
   week = 'pastWeekTotalUniquePageviews',
   month = 'pastMonthTotalUniquePageviews',

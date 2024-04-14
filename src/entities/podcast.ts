@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { IsUrl, IsInt, Min, ValidateIf } from 'class-validator'
+import { IsUrl, ValidateIf } from 'class-validator'
 import { podcastItunesTypeDefaultValue, LiveItemStatus, PodcastMedium, ValueTagOriginal } from 'podverse-shared'
-import { Author, Category, Episode, FeedUrl, Notification } from '~/entities'
+import { Author, Category, Episode, FeedUrl, Notification, StatsPodcast } from '~/entities'
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -11,9 +12,11 @@ import {
   Entity,
   Generated,
   Index,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
@@ -24,18 +27,6 @@ type Funding = {
   value?: string
 }
 
-@Index(['hasVideo', 'pastAllTimeTotalUniquePageviews'])
-@Index(['hasVideo', 'pastHourTotalUniquePageviews'])
-@Index(['hasVideo', 'pastDayTotalUniquePageviews'])
-@Index(['hasVideo', 'pastWeekTotalUniquePageviews'])
-@Index(['hasVideo', 'pastMonthTotalUniquePageviews'])
-@Index(['hasVideo', 'pastYearTotalUniquePageviews'])
-@Index(['medium', 'pastAllTimeTotalUniquePageviews'])
-@Index(['medium', 'pastHourTotalUniquePageviews'])
-@Index(['medium', 'pastDayTotalUniquePageviews'])
-@Index(['medium', 'pastWeekTotalUniquePageviews'])
-@Index(['medium', 'pastMonthTotalUniquePageviews'])
-@Index(['medium', 'pastYearTotalUniquePageviews'])
 @Entity('podcasts')
 export class Podcast {
   @PrimaryColumn('varchar', {
@@ -53,12 +44,10 @@ export class Podcast {
   @Column({ nullable: true, unique: true })
   podcastIndexId?: string
 
-  // This replaces the podcast.guid column
   @Index()
   @Column({ type: 'uuid', nullable: true })
   podcastGuid?: string
 
-  // deprecated: use podcastGuid instead
   @Column({ nullable: true })
   guid?: string
 
@@ -147,9 +136,6 @@ export class Podcast {
   @Column({ nullable: true })
   linkUrl?: string
 
-  // TODO: the Podcast.medium enum is currently missing the "mixed" value.
-  // It is also missing Medium Lists values (podcastL, musicL, etc.),
-  // but I don't know how those would fit into our UX yet.
   @Index()
   @Column({
     type: 'enum',
@@ -160,48 +146,6 @@ export class Podcast {
 
   @Column({ default: false })
   parsingPriority?: boolean
-
-  @Index()
-  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastHourTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastHourTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastDayTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastWeekTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastMonthTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastYearTotalUniquePageviews: number
 
   @ValidateIf((a) => a.shrunkImageUrl != null)
   @IsUrl()
@@ -245,6 +189,10 @@ export class Podcast {
 
   @OneToMany((type) => Notification, (notification) => notification.podcast)
   notifications: Notification[]
+
+  @OneToOne(() => StatsPodcast, { nullable: true })
+  @JoinColumn({ name: 'stats_podcast_id' })
+  stats_podcast?: StatsPodcast
 
   @CreateDateColumn()
   createdAt: Date

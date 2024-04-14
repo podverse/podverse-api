@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { getRepository } from 'typeorm'
-import { Episode, MediaRef, Podcast } from '~/entities'
+import { Episode, MediaRef, Podcast, StatsEpisode, StatsMediaRef, StatsPodcast } from '~/entities'
 import { logPerformance, _logEnd, _logStart } from '~/lib/utility'
 
 const statsQAMinRange = 0
@@ -25,7 +25,6 @@ const statsQAGetNumber = () => {
 
 const statsQAGetPageviews = () => {
   return {
-    pastHourTotalUniquePageviews: statsQAGetNumber(),
     pastDayTotalUniquePageviews: statsQAGetNumber(),
     pastWeekTotalUniquePageviews: statsQAGetNumber(),
     pastMonthTotalUniquePageviews: statsQAGetNumber(),
@@ -40,16 +39,15 @@ const statsQAUpdatePodcasts = async () => {
   const podcastRepository = getRepository(Podcast)
   const podcasts = await podcastRepository.find({ take: 1000 })
 
-  const newPodcasts: any[] = []
+  const statsPodcastsRepository = getRepository(StatsPodcast)
   for (const podcast of podcasts) {
-    const newPodcast = {
-      ...podcast,
+    const statsPodcast = await statsPodcastsRepository.find({ podcast })
+    const newStatsPodcast = {
+      ...(statsPodcast?.[0] ? statsPodcast[0] : { podcast }),
       ...statsQAGetPageviews()
     }
-    newPodcasts.push(newPodcast)
+    await statsPodcastsRepository.save(newStatsPodcast)
   }
-
-  await podcastRepository.save(newPodcasts)
 
   logPerformance('statsQAUpdatePodcasts', _logEnd)
 }
@@ -60,16 +58,15 @@ const statsQAUpdateEpisodes = async () => {
   const episodeRepository = getRepository(Episode)
   const episodes = await episodeRepository.find({ take: 1000 })
 
-  const newEpisodes: any[] = []
+  const statsEpisodesRepository = getRepository(StatsEpisode)
   for (const episode of episodes) {
-    const newEpisode = {
-      ...episode,
+    const statsEpisode = await statsEpisodesRepository.find({ episode })
+    const newStatsEpisode = {
+      ...(statsEpisode?.[0] ? statsEpisode[0] : { episode }),
       ...statsQAGetPageviews()
     }
-    newEpisodes.push(newEpisode)
+    await statsEpisodesRepository.save(newStatsEpisode)
   }
-
-  await episodeRepository.save(newEpisodes)
 
   logPerformance('statsQAUpdateEpisodes', _logEnd)
 }
@@ -80,16 +77,15 @@ const statsQAUpdateMediaRefs = async () => {
   const mediaRefRepository = getRepository(MediaRef)
   const mediaRefs = await mediaRefRepository.find({ take: 1000 })
 
-  const newMediaRefs: any[] = []
+  const statsMediaRefsRepository = getRepository(StatsMediaRef)
   for (const mediaRef of mediaRefs) {
-    const newMediaRef = {
-      ...mediaRef,
+    const statsMediaRef = await statsMediaRefsRepository.find({ mediaRef })
+    const newStatsMediaRef = {
+      ...(statsMediaRef?.[0] ? statsMediaRef[0] : { mediaRef }),
       ...statsQAGetPageviews()
     }
-    newMediaRefs.push(newMediaRef)
+    await statsMediaRefsRepository.save(newStatsMediaRef)
   }
-
-  await mediaRefRepository.save(newMediaRefs)
 
   logPerformance('statsQAUpdateMediaRefs', _logEnd)
 }
