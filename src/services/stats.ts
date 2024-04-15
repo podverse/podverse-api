@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { getConnection } from 'typeorm'
 import { connectToDb } from '~/lib/db'
-import { /* lastHour,*/ offsetDate } from '~/lib/utility'
+import { _logEnd, _logStart, logPerformance, offsetDate } from '~/lib/utility'
 import { splitDateIntoEqualIntervals } from '~/lib/utility/date'
 import { queryMatomoData } from './matomo'
 const moment = require('moment')
@@ -36,15 +36,28 @@ enum StartDateOffset {
   }
 */
 
-enum TimeRanges {
-  day = 'pastDayTotalUniquePageviews',
-  week = 'pastWeekTotalUniquePageviews',
-  month = 'pastMonthTotalUniquePageviews',
-  year = 'pastYearTotalUniquePageviews',
-  allTime = 'pastAllTimeTotalUniquePageviews'
+enum QueryTimeFrame {
+  day = 'daily',
+  week = 'weekly',
+  month = 'monthly',
+  year = 'yearly',
+  allTime = 'all_time'
+}
+
+enum QueryIntervals {
+  day = 1,
+  week = 4,
+  month = 10,
+  year = 100,
+  allTime = 200
 }
 
 export const queryUniquePageviews = async (pagePath: string, timeRange) => {
+  logPerformance('queryUniquePageviews', _logStart)
+  /* This start time is later used to determine which rows can be reset to 0. */
+  const jobStartTimeISO = new Date().toISOString()
+  console.log('jobStartTimeISO:', jobStartTimeISO)
+
   const finalPagePath = PagePaths[pagePath]
   const startDateOffset = parseInt(StartDateOffset[timeRange], 10)
 
@@ -54,7 +67,7 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
     return
   }
 
-  if (!Object.keys(TimeRanges).includes(timeRange)) {
+  if (!Object.keys(QueryTimeFrame).includes(timeRange)) {
     console.log('A valid timeRange must be provided in the second parameter.')
     console.log('Valid options are: day, week, month, year, allTime')
     return
@@ -63,17 +76,21 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
   const startDate = new Date(timeRange === 'allTime' ? '2017-01-01' : offsetDate(startDateOffset))
   const endDate = new Date(offsetDate())
 
-  const numberOfIntervals = ['allTime'].includes(timeRange) ? 120 : ['year'].includes(timeRange) ? 24 : 1
+  const numberOfIntervals = parseInt(QueryIntervals[timeRange], 10)
   const dateIntervals = splitDateIntoEqualIntervals(startDate, endDate, numberOfIntervals)
   let data: any[] = []
 
   for (const dateInterval of dateIntervals) {
+    logPerformance('matomo stats query', _logStart)
+    console.log('query dateInterval query', dateInterval)
     const response: any = await queryMatomoData(
       moment(dateInterval.start).format('YYYY-MM-DD'),
       moment(dateInterval.end).format('YYYY-MM-DD'),
       finalPagePath
     )
     data = data.concat(response.data)
+    console.log('data length:', data.length)
+    logPerformance('matomo stats query', _logEnd)
   }
 
   /*
@@ -115,66 +132,88 @@ export const queryUniquePageviews = async (pagePath: string, timeRange) => {
     filteredData = filterCustomFeedUrls(data, videoLimit)
   }
 
-  await savePageviewsToDatabase(finalPagePath, timeRange, filteredData)
+  await savePageviewsToDatabase(finalPagePath, timeRange, filteredData, jobStartTimeISO)
+  logPerformance('queryUniquePageviews', _logEnd)
 }
 
-const generateGetAllRelatedDataQueryString = (finalPagePath: string, timeRange) => {
+const generateGetOutdatedDataQueryString = (finalPagePath: string, timeRange, jobStartTimeISO) => {
   let queryString = 'pagePath: string, timeRange, tableName: string'
 
   if (finalPagePath === PagePaths.podcasts) {
     queryString = `
-      SELECT p.id, p."${TimeRanges[timeRange]}"
+      SELECT sp.id
       FROM "podcasts" p
-      WHERE p."${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'podcast';
+      LEFT JOIN
+        stats_podcast sp ON p.id = sp.podcast_id
+          AND sp.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS FALSE
+        AND p.medium = 'podcast'
+        AND sp."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      SELECT e.id, e."${TimeRanges[timeRange]}"
+      SELECT se.id
       FROM "episodes" e
       JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e."${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'podcast';
+      LEFT JOIN
+        stats_episode se on e.id = se.episode_id
+        AND se.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS FALSE
+        AND p."medium" = 'podcast'
+        AND se."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
-      SELECT id, "${TimeRanges[timeRange]}"
-      FROM "mediaRefs"
-      WHERE "${TimeRanges[timeRange]}">0
+      SELECT smr.id
+      FROM "mediaRefs" mr
+      LEFT JOIN
+        stats_media_ref smr ON mr.id = smr.media_ref_id
+          AND smr.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE smr."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.albums) {
     queryString = `
-      SELECT p.id, p."${TimeRanges[timeRange]}"
+      SELECT sp.id
       FROM "podcasts" p
-      WHERE p."${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'music';
+      LEFT JOIN
+        stats_podcast sp ON p.id = sp.podcast_id
+          AND sp.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS FALSE
+        AND p.medium = 'music'
+        AND sp."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      SELECT e.id, e."${TimeRanges[timeRange]}"
+      SELECT se.id
       FROM "episodes" e
       JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e."${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS FALSE
-      AND p."medium" = 'music';
+      LEFT JOIN
+        stats_episode se on e.id = se.episode_id
+        AND se.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS FALSE
+        AND p."medium" = 'music'
+        AND se."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.channels) {
     queryString = `
-      SELECT p.id, p."${TimeRanges[timeRange]}"
+      SELECT sp.id
       FROM "podcasts" p
-      WHERE "${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS TRUE;
+      LEFT JOIN
+        stats_podcast sp ON p.id = sp.podcast_id
+          AND sp.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS TRUE
+        AND sp."updatedAt" < '${jobStartTimeISO}'
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      SELECT e.id, e."${TimeRanges[timeRange]}"
+      SELECT se.id
       FROM "episodes" e
       JOIN "podcasts" p ON p.id = e."podcastId"
-      WHERE e."${TimeRanges[timeRange]}">0
-      AND p."hasVideo" IS TRUE;
+      LEFT JOIN
+        stats_episode se on e.id = se.episode_id
+        AND se.timeframe = '${QueryTimeFrame[timeRange]}'
+      WHERE p."hasVideo" IS TRUE
+        AND se."updatedAt" < '${jobStartTimeISO}'
     `
   } else {
     throw new Error('generateAllRelatedDataQueryString: Failed to generate queryString')
@@ -188,74 +227,46 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
 
   if (finalPagePath === PagePaths.podcasts) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=0
-      WHERE id = '${id}'
-      AND "hasVideo" IS FALSE
-      AND "medium" = 'podcast';
+      UPDATE "stats_podcast"
+      SET play_count=0
+      WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      UPDATE "episodes" e 
-      SET "${TimeRanges[timeRange]}" = 0
-      WHERE id = '${id}'
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS FALSE
-        AND p."medium" = 'podcast'
-      );
+      UPDATE "stats_episode"
+      SET play_count=0
+      WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
-      UPDATE "mediaRefs"
-      SET "${TimeRanges[timeRange]}"=0
+      UPDATE "stats_media_ref"
+      SET play_count=0
       WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.albums) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=0
-      WHERE id = '${id}'
-      AND "hasVideo" IS FALSE
-      AND "medium" = 'music';
+      UPDATE "stats_podcast"
+      SET play_count=0
+      WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" AS e 
-      SET "${TimeRanges[timeRange]}" = 0
-      WHERE id = ${id}
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS FALSE
-        AND p."medium" = 'music'
-      );
+      UPDATE "stats_episode"
+      SET play_count=0
+      WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.channels) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=0
-      WHERE id = '${id}'
-      AND "hasVideo" IS TRUE;
+      UPDATE "stats_podcast"
+      SET play_count=0
+      WHERE id = '${id}';
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" AS e 
-      SET "${TimeRanges[timeRange]}" = 0
-      WHERE id = ${id}
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS TRUE
-      );
-  `
+      UPDATE "stats_episode"
+      SET play_count=0
+      WHERE id = '${id}';
+    `
   } else {
     throw new Error('generateAllRelatedDataQueryString: Failed to generate queryString')
   }
@@ -268,73 +279,52 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
 
   if (finalPagePath === PagePaths.podcasts) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "hasVideo" IS FALSE
-      AND "medium" = 'podcast';
+      INSERT INTO stats_podcast (play_count, timeframe, podcast_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, podcast_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.episodes) {
     queryString = `
-      UPDATE "episodes" AS e 
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS FALSE
-        AND p."medium" = 'podcast'
-      );
+      INSERT INTO stats_episode (play_count, timeframe, episode_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, episode_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.clips) {
     queryString = `
-      UPDATE "mediaRefs"
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}';
+      INSERT INTO stats_media_ref (play_count, timeframe, media_ref_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, media_ref_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.albums) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "hasVideo" IS FALSE
-      AND "medium" = 'music';
+      INSERT INTO stats_podcast (play_count, timeframe, podcast_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, podcast_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.tracks) {
     queryString = `
-      UPDATE "episodes" AS e 
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS FALSE
-        AND p."medium" = 'music'
-      );
+      INSERT INTO stats_episode (play_count, timeframe, episode_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, episode_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.channels) {
     queryString = `
-      UPDATE "podcasts"
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "hasVideo" IS TRUE;
+      INSERT INTO stats_podcast (play_count, timeframe, podcast_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, podcast_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else if (finalPagePath === PagePaths.videos) {
     queryString = `
-      UPDATE "episodes" AS e 
-      SET "${TimeRanges[timeRange]}"=${sum_daily_nb_uniq_visitors}
-      WHERE id = '${id}'
-      AND "podcastId"
-      IN (
-        SELECT p.id
-        FROM podcasts p
-        WHERE e."podcastId" = p.id
-        AND p."hasVideo" IS TRUE
-      );
+      INSERT INTO stats_episode (play_count, timeframe, episode_id)
+      VALUES (${sum_daily_nb_uniq_visitors}, '${QueryTimeFrame[timeRange]}', '${id}')
+      ON CONFLICT (timeframe, episode_id)
+      DO UPDATE SET play_count = EXCLUDED.play_count;
     `
   } else {
     throw new Error('generateSetNewCountQuery: Failed to generate queryString')
@@ -343,7 +333,7 @@ const generateSetNewCountQuery = (finalPagePath: string, timeRange, id: string, 
   return queryString
 }
 
-const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data) => {
+const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data, jobStartTimeISO) => {
   await connectToDb()
 
   const matomoDataRows = data
@@ -351,26 +341,7 @@ const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data) =
   console.log('finalPagePath', finalPagePath)
   console.log('timeRange', timeRange)
   console.log('matomoDataRows.length', matomoDataRows.length)
-  console.log('TimeRange', TimeRanges[timeRange])
-
-  /*
-    The Matomo stats endpoint will only return data for pages that have a view in the past X days,
-    so we need to first set all of the table rows with values > 0 back to 0,
-    before writing the Matomo data to the table.
-  */
-
-  const getTableRowsWithStatsData = generateGetAllRelatedDataQueryString(finalPagePath, timeRange)
-  const tableRowsWithStatsData = await getConnection().createEntityManager().query(getTableRowsWithStatsData)
-
-  for (const row of tableRowsWithStatsData) {
-    try {
-      const rawSQLUpdate = generateResetToZeroQueryString(finalPagePath, timeRange, row.id)
-      await getConnection().createEntityManager().query(rawSQLUpdate)
-    } catch (err) {
-      console.log('tableRowsWithStatsData err', err)
-      console.log('tableRowsWithStatsData err row', row)
-    }
-  }
+  console.log('TimeRange', QueryTimeFrame[timeRange])
 
   for (const row of matomoDataRows) {
     try {
@@ -395,6 +366,19 @@ const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data) =
     } catch (err) {
       console.log('row err', err)
       console.log('row', row)
+    }
+  }
+
+  const getOutdatedStatsRowsQuery = generateGetOutdatedDataQueryString(finalPagePath, timeRange, jobStartTimeISO)
+  const outdatedStatsRows = await getConnection().createEntityManager().query(getOutdatedStatsRowsQuery)
+
+  for (const row of outdatedStatsRows) {
+    try {
+      const rawSQLUpdate = generateResetToZeroQueryString(finalPagePath, timeRange, row.id)
+      await getConnection().createEntityManager().query(rawSQLUpdate)
+    } catch (err) {
+      console.log('outdatedStatsRows err', err)
+      console.log('outdatedStatsRows err row', row)
     }
   }
 }
