@@ -12,11 +12,9 @@ import {
   Entity,
   Generated,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
   UpdateDateColumn
 } from 'typeorm'
@@ -190,8 +188,7 @@ export class Podcast {
   @OneToMany((type) => Notification, (notification) => notification.podcast)
   notifications: Notification[]
 
-  @OneToOne(() => StatsPodcast, { nullable: true })
-  @JoinColumn({ name: 'stats_podcast_id' })
+  @OneToMany(() => StatsPodcast, (stats_podcast) => stats_podcast.podcast)
   stats_podcast?: StatsPodcast
 
   @CreateDateColumn()

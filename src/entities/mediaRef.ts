@@ -9,12 +9,10 @@ import {
   Entity,
   Generated,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
   Unique,
   UpdateDateColumn
@@ -130,8 +128,7 @@ export class MediaRef {
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.mediaRef)
   userQueueItems: UserQueueItem[]
 
-  @OneToOne(() => StatsMediaRef, { nullable: true })
-  @JoinColumn({ name: 'stats_media_ref_id' })
+  @OneToMany(() => StatsMediaRef, (stats_media_ref) => stats_media_ref.mediaRef)
   stats_media_ref?: StatsMediaRef
 
   @CreateDateColumn()

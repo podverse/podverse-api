@@ -27,7 +27,6 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -191,8 +190,7 @@ export class Episode {
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.episode)
   userQueueItems: UserQueueItem[]
 
-  @OneToOne(() => StatsEpisode, { nullable: true })
-  @JoinColumn({ name: 'stats_episode_id' })
+  @OneToMany(() => StatsEpisode, (stats_episode) => stats_episode.episode)
   stats_episode?: StatsEpisode
 
   @CreateDateColumn()

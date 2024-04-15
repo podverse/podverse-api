@@ -17,8 +17,6 @@ CREATE INDEX "stats_podcast_play_count_idx" ON stats_podcast (play_count);
 CREATE INDEX "stats_podcast_timeframe_idx" ON stats_podcast (timeframe);
 CREATE INDEX "stats_podcast_podcast_id_idx" ON stats_podcast (podcast_id);
 
-ALTER TABLE podcasts ADD COLUMN stats_podcast_id VARCHAR UNIQUE;
-
 -- Episodes Stats
 CREATE TABLE IF NOT EXISTS stats_episode (
     id SERIAL PRIMARY KEY,
@@ -34,8 +32,6 @@ CREATE INDEX "stats_episode_play_count_idx" ON stats_episode (play_count);
 CREATE INDEX "stats_episode_timeframe_idx" ON stats_episode (timeframe);
 CREATE INDEX "stats_episode_episode_id_idx" ON stats_episode (episode_id);
 
-ALTER TABLE episodes ADD COLUMN stats_episode_id VARCHAR UNIQUE;
-
 -- MediaRef Stats
 CREATE TABLE IF NOT EXISTS stats_media_ref (
     id SERIAL PRIMARY KEY,
@@ -50,5 +46,3 @@ CREATE TABLE IF NOT EXISTS stats_media_ref (
 CREATE INDEX "stats_media_ref_play_count_idx" ON stats_media_ref (play_count);
 CREATE INDEX "stats_media_ref_timeframe_idx" ON stats_media_ref (timeframe);
 CREATE INDEX "stats_media_ref_media_ref_id_idx" ON stats_media_ref (media_ref_id);
-
-ALTER TABLE "mediaRefs" ADD COLUMN stats_media_ref_id VARCHAR UNIQUE;
