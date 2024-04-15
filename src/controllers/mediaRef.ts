@@ -203,7 +203,7 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
     searchTitle: `%${searchTitle?.toLowerCase().trim()}%`
   })
 
-  qb.andWhere('"mediaRef"."isOfficialChapter" IS null')
+  qb.andWhere('"mediaRef"."isOfficialChapter" IS false')
 
   if (mediaRefIds?.length) {
     qb.andWhere('mediaRef.id IN (:...mediaRefIds)', { mediaRefIds })
