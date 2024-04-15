@@ -1,5 +1,6 @@
 export { validatePassword } from '~/lib/utility/validation'
 import { performance } from 'perf_hooks'
+import { StatsEpisode, StatsMediaRef, StatsPodcast } from '~/entities'
 const shortid = require('shortid')
 
 export const delimitQueryValues = (ctx, keys) => {
@@ -101,9 +102,7 @@ export const getManticoreOrderByColumnName = (sort) => {
   let orderByColumnName = ''
   let orderByDirection = 'desc'
 
-  if (sort === 'top-past-hour') {
-    orderByColumnName = 'pasthourtotaluniquepageviews'
-  } else if (sort === 'top-past-week') {
+  if (sort === 'top-past-week') {
     orderByColumnName = 'pastweektotaluniquepageviews'
   } else if (sort === 'top-past-month') {
     orderByColumnName = 'pastmonthtotaluniquepageviews'
@@ -134,22 +133,61 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
   const ascKey = 'ASC'
   const descKey = 'DESC'
 
+  let ormStatsType = null as any
+  if (type === 'podcast') {
+    ormStatsType = StatsPodcast
+  } else if (type === 'episode') {
+    ormStatsType = StatsEpisode
+  } else if (type === 'mediaRef') {
+    ormStatsType = StatsMediaRef
+  }
+
   if (!sort && isFromManticoreSearch) {
     // apply no sorting
   } else if (sort === 'live-item-start-asc') {
     qb.orderBy(`liveItem.start`, ascKey)
   } else if (sort === 'live-item-start-desc') {
     qb.orderBy(`liveItem.start`, descKey)
-  } else if (sort === 'top-past-hour') {
-    qb.orderBy(`${type}.pastHourTotalUniquePageviews`, descKey)
   } else if (sort === 'top-past-day') {
-    qb.orderBy(`${type}.pastDayTotalUniquePageviews`, descKey)
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'daily' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
+  } else if (sort === 'top-past-week') {
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'weekly' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-month') {
-    qb.orderBy(`${type}.pastMonthTotalUniquePageviews`, descKey)
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'monthly' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-year') {
-    qb.orderBy(`${type}.pastYearTotalUniquePageviews`, descKey)
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'yearly' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-all-time') {
-    qb.orderBy(`${type}.pastAllTimeTotalUniquePageviews`, descKey)
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'all_time' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'most-recent') {
     qb.orderBy(`${type}.${sortDateKey}`, descKey)
   } else if (sort === 'oldest') {
@@ -165,8 +203,13 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
   } else if (sort === 'episode-number-asc') {
     qb.orderBy(`${type}.itunesEpisode`, ascKey)
   } else {
-    // sort = top-past-week
-    qb.orderBy(`${type}.pastWeekTotalUniquePageviews`, descKey)
+    qb.innerJoin(
+      ormStatsType,
+      `stats_${type}`,
+      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      { timeframe: 'weekly' }
+    )
+    qb.orderBy(`stats_${type}.play_count`, descKey)
   }
 
   return qb
