@@ -86,6 +86,28 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
   }, abortTimeLimit)
 
   try {
+    let podcast = new Podcast()
+    if (feedUrl.podcast) {
+      logPerformance('feedUrl.podcast getPodcast', _logStart)
+      const savedPodcast = await getPodcast(feedUrl.podcast.id, false, allowNonPublic)
+      logPerformance('feedUrl.podcast getPodcast', _logEnd)
+      if (!savedPodcast) throw Error('Invalid podcast id provided.')
+      podcast = savedPodcast
+    }
+
+    if (podcast.flag_status === 'spam') {
+      console.log(`Aborting parser: podcast id ${podcast.id} marked as flag_status = spam`)
+      return
+    } else if (podcast.flag_status === 'takedown') {
+      console.log(`Aborting parser: podcast id ${podcast.id} marked as flag_status = takedown`)
+      return
+    } else if (podcast.flag_status === 'other') {
+      console.log(`Aborting parser: podcast id ${podcast.id} marked as flag_status = other`)
+      return
+    }
+
+    const podcastRepo = getRepository(Podcast)
+
     /* Temporary: Stop parsing papi.qingting.fm domain until mediaUrl/guid switch is completed */
     const isQingTing = feedUrl.url.indexOf('qingting.fm') > -1
     if (isQingTing) {
@@ -294,13 +316,11 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const parsedEpisodes = parsedFeed.items.map(itemCompat)
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
 
-    let podcast = new Podcast()
-    if (feedUrl.podcast) {
-      logPerformance('feedUrl.podcast getPodcast', _logStart)
-      const savedPodcast = await getPodcast(feedUrl.podcast.id, false, allowNonPublic)
-      logPerformance('feedUrl.podcast getPodcast', _logEnd)
-      if (!savedPodcast) throw Error('Invalid podcast id provided.')
-      podcast = savedPodcast
+    if (parsedEpisodes?.length >= 1 || parsedLiveItemEpisodes?.length >= 1) {
+      console.log('Aborting parser: too many episodes. Marking podcast as spam.')
+      podcast.flag_status = 'spam'
+      await podcastRepo.save(podcast)
+      return
     }
 
     logPerformance('podcast id', podcast.id)
@@ -483,8 +503,6 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
         console.log('getPodcastValueTagForPodcastIndexId error', error)
       }
     }
-
-    const podcastRepo = getRepository(Podcast)
 
     logPerformance('podcastRepo.save', _logStart)
     await podcastRepo.save(podcast)
