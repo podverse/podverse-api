@@ -10,6 +10,7 @@ import { request } from '~/lib/request'
 import { getPodcastByPodcastIndexId } from '~/controllers/podcast'
 import { Podcast } from '~/entities'
 import { ValueTagOriginal } from 'podverse-shared'
+import { chunkArray } from '~/lib/utility'
 const shortid = require('shortid')
 const sha1 = require('crypto-js/sha1')
 const encHex = require('crypto-js/enc-hex')
@@ -174,16 +175,19 @@ export const addRecentlyUpdatedFeedUrlsToPriorityQueue = async (sinceTime?: numb
       }
     }
 
-    // TODO: THIS TAKES A VERY LONG TIME TO COMPLETE,
-    // AND IS ARBITRARILY LIMITED TO 10000...
-    // const uniquePodcastIndexIds = [...new Set(recentlyUpdatedPodcastIndexIds)].slice(0, 10000)
-
-    // console.log('unique recentlyUpdatedPodcastIndexIds count', uniquePodcastIndexIds.length)
-
-    // Send the feedUrls with matching podcastIndexIds found in our database to
-    // the priority parsing queue for immediate parsing.
-    if (recentlyUpdatedPodcastIndexIds.length > 0) {
-      await addFeedUrlsByPodcastIndexId(recentlyUpdatedPodcastIndexIds)
+    const recentlyUpdatedPodcastIndexIdsChunks = chunkArray(recentlyUpdatedPodcastIndexIds, 500)
+    console.log('recentlyUpdatedPodcastIndexIdsChunks array count', recentlyUpdatedPodcastIndexIdsChunks.length)
+    let chunkIndex = 0
+    for (const chunk of recentlyUpdatedPodcastIndexIdsChunks) {
+      try {
+        chunkIndex++
+        console.log('sending feedUrls chunk to queue...', chunkIndex)
+        if (chunk.length > 0) {
+          await addFeedUrlsByPodcastIndexId(chunk)
+        }
+      } catch (error) {
+        console.log('addFeedUrlsByPodcastIndexId error:', error)
+      }
     }
   } catch (error) {
     console.log('addRecentlyUpdatedFeedUrlsToPriorityQueue', error)
