@@ -7,6 +7,12 @@ ALTER TABLE episodes
 ALTER SEQUENCE episodes_int_id_seq OWNED BY episodes.int_id;
 COMMIT;
 
+/*
+  NOTE: the int_id columns exist mainly so that the Manticore index jobs have
+  a reliable numeric identifier for selecting ~10000 rows at a time as part
+  of the index operation.
+*/
+
 CREATE UNIQUE INDEX CONCURRENTLY episodes_int_id_key ON episodes (int_id);
 
 -- Use a script to report the UPDATE and VACUUM commands until not episodes with int_ids are left
