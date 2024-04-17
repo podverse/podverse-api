@@ -320,7 +320,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
 
     if (
       podcast.flag_status !== 'always-allow' &&
-      (parsedEpisodes?.length >= 1 || parsedLiveItemEpisodes?.length >= 1)
+      (parsedEpisodes?.length >= 10000 || parsedLiveItemEpisodes?.length >= 10000)
     ) {
       console.log('Aborting parser: too many episodes. Marking podcast as spam.')
       podcast.flag_status = 'spam'
