@@ -24,7 +24,7 @@ type Funding = {
   value?: string
 }
 
-type PodcastFlagStatus = 'none' | 'spam' | 'takedown' | 'other'
+type PodcastFlagStatus = 'none' | 'spam' | 'takedown' | 'other' | 'always-allow'
 
 @Index(['hasVideo', 'pastAllTimeTotalUniquePageviews'])
 @Index(['hasVideo', 'pastHourTotalUniquePageviews'])
@@ -93,7 +93,7 @@ export class Podcast {
   @Index()
   @Column({
     type: 'enum',
-    enum: ['none', 'spam', 'takedown', 'other'],
+    enum: ['none', 'spam', 'takedown', 'other', 'always-allow'],
     default: 'none'
   })
   flag_status: PodcastFlagStatus

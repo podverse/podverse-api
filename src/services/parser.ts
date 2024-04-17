@@ -95,7 +95,9 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
       podcast = savedPodcast
     }
 
-    if (podcast.flag_status === 'spam') {
+    if (podcast.flag_status === 'always-allow') {
+      // do nothing
+    } else if (podcast.flag_status === 'spam') {
       console.log(`Aborting parser: podcast id ${podcast.id} marked as flag_status = spam`)
       return
     } else if (podcast.flag_status === 'takedown') {
@@ -316,7 +318,10 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     const parsedEpisodes = parsedFeed.items.map(itemCompat)
     const parsedLiveItemEpisodes = meta.liveItems.map(liveItemCompatToParsedEpisode)
 
-    if (parsedEpisodes?.length >= 1 || parsedLiveItemEpisodes?.length >= 1) {
+    if (
+      podcast.flag_status !== 'always-allow' &&
+      (parsedEpisodes?.length >= 1 || parsedLiveItemEpisodes?.length >= 1)
+    ) {
       console.log('Aborting parser: too many episodes. Marking podcast as spam.')
       podcast.flag_status = 'spam'
       await podcastRepo.save(podcast)
