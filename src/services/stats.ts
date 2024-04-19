@@ -227,7 +227,7 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     queryString = `
       UPDATE "episodes" AS e 
       SET "${TimeRanges[timeRange]}" = 0
-      WHERE id = ${id}
+      WHERE id = '${id}'
       AND "podcastId"
       IN (
         SELECT p.id
@@ -248,7 +248,7 @@ const generateResetToZeroQueryString = (finalPagePath: string, timeRange, id: st
     queryString = `
       UPDATE "episodes" AS e 
       SET "${TimeRanges[timeRange]}" = 0
-      WHERE id = ${id}
+      WHERE id = '${id}'
       AND "podcastId"
       IN (
         SELECT p.id
