@@ -1,8 +1,7 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { request } from '~/lib/request'
-const createError = require('http-errors')
+import { getFinalRedirectedUrl } from '~/lib/request'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/tools` })
 
@@ -25,24 +24,11 @@ router.post('/findHTTPS', async (ctx) => {
 
 const extractHTTPSFromURL = async (url, tries) => {
   try {
-    const res = await request(url, { followRedirect: true, method: 'head' })
     if (tries > 5) {
-      throw new createError.NotFound('Secure URL for ' + url + ' was not found. Too many redirects')
-    } else if (!res.location) {
-      if (url.startsWith('https://')) {
-        return url
-      } else {
-        try {
-          const attemptHttpsUrl = url.replace('http://', 'https://')
-          // If no error is thrown,then assume it is a valid url.
-          await request(attemptHttpsUrl, { followRedirect: true, method: 'head' })
-          return attemptHttpsUrl
-        } catch (error) {
-          throw new createError.NotFound('Secure URL for ' + url + ' was not found.')
-        }
-      }
+      return url
     } else {
-      return extractHTTPSFromURL(res.location, tries + 1)
+      const redirectedUrl = await getFinalRedirectedUrl(url)
+      return redirectedUrl
     }
   } catch (error) {
     if (['301', '302', '303', '307', '308'].includes(String(error.statusCode))) {

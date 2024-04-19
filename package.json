@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.16.9",
+  "version": "4.16.10",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -175,6 +175,7 @@
     "eslint-plugin-jsx-a11y": "6.x",
     "eslint-plugin-react": "7.x",
     "eslint-plugin-react-hooks": "1.x",
+    "follow-redirects": "^1.15.6",
     "googleapis": "45.0.0",
     "http-errors": "1.7.3",
     "husky": "3.1.0",
