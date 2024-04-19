@@ -1,6 +1,7 @@
 import * as requestPromiseNative from 'request-promise-native'
 import { config } from '~/config'
 const { userAgent } = config
+const { http, https } = require('follow-redirects')
 
 export const request = async (url: string, options?: any) => {
   const headers = (options && options.headers) || {}
@@ -14,4 +15,41 @@ export const request = async (url: string, options?: any) => {
   })
 
   return response
+}
+
+export const getFinalRedirectedUrl = (url: string) => {
+  return new Promise<string>((resolve) => {
+    const parsedOrginalUrl = new URL(url)
+    if (url.startsWith('https://')) {
+      const frRequest = https.request(
+        {
+          method: 'HEAD',
+          hostname: parsedOrginalUrl.hostname,
+          path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
+          Headers: {
+            'User-Agent': userAgent
+          }
+        },
+        (response) => {
+          resolve(response.responseUrl)
+        }
+      )
+      frRequest.end()
+    } else {
+      const frRequest = http.request(
+        {
+          method: 'HEAD',
+          hostname: parsedOrginalUrl.hostname,
+          path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
+          Headers: {
+            'User-Agent': userAgent
+          }
+        },
+        (response) => {
+          resolve(response.responseUrl)
+        }
+      )
+      frRequest.end()
+    }
+  })
 }
