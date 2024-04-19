@@ -25,7 +25,7 @@ router.post('/findHTTPS', async (ctx) => {
 
 const extractHTTPSFromURL = async (url, tries) => {
   try {
-    const res = await request(url, { followRedirect: false, method: 'head' })
+    const res = await request(url, { followRedirect: true, method: 'head' })
     if (tries > 5) {
       throw new createError.NotFound('Secure URL for ' + url + ' was not found. Too many redirects')
     } else if (!res.location) {
@@ -35,7 +35,7 @@ const extractHTTPSFromURL = async (url, tries) => {
         try {
           const attemptHttpsUrl = url.replace('http://', 'https://')
           // If no error is thrown,then assume it is a valid url.
-          await request(attemptHttpsUrl, { followRedirect: false, method: 'head' })
+          await request(attemptHttpsUrl, { followRedirect: true, method: 'head' })
           return attemptHttpsUrl
         } catch (error) {
           throw new createError.NotFound('Secure URL for ' + url + ' was not found.')
