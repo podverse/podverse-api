@@ -18,37 +18,46 @@ export const request = async (url: string, options?: any) => {
 }
 
 export const getFinalRedirectedUrl = (url: string) => {
-  return new Promise<string>((resolve) => {
+  console.log('getFinalRedirectedUrl', url)
+  return new Promise<string>((resolve, reject) => {
     const parsedOrginalUrl = new URL(url)
     if (url.startsWith('https://')) {
-      const frRequest = https.request(
-        {
-          method: 'HEAD',
-          hostname: parsedOrginalUrl.hostname,
-          path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
-          Headers: {
-            'User-Agent': userAgent
+      const frRequest = https
+        .request(
+          {
+            method: 'HEAD',
+            hostname: parsedOrginalUrl.hostname,
+            path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
+            Headers: {
+              'User-Agent': userAgent
+            }
+          },
+          (response) => {
+            resolve(response.responseUrl)
           }
-        },
-        (response) => {
-          resolve(response.responseUrl)
-        }
-      )
+        )
+        .on('error', (err) => {
+          reject(err)
+        })
       frRequest.end()
     } else {
-      const frRequest = http.request(
-        {
-          method: 'HEAD',
-          hostname: parsedOrginalUrl.hostname,
-          path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
-          Headers: {
-            'User-Agent': userAgent
+      const frRequest = http
+        .request(
+          {
+            method: 'HEAD',
+            hostname: parsedOrginalUrl.hostname,
+            path: parsedOrginalUrl.pathname + parsedOrginalUrl.search,
+            Headers: {
+              'User-Agent': userAgent
+            }
+          },
+          (response) => {
+            resolve(response.responseUrl)
           }
-        },
-        (response) => {
-          resolve(response.responseUrl)
-        }
-      )
+        )
+        .on('error', (err) => {
+          reject(err)
+        })
       frRequest.end()
     }
   })
