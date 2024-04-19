@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.16.8",
+  "version": "4.16.9",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -28,6 +28,7 @@
     "dev:scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "dev:scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "dev:scripts:backupDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "dev:scripts:devtools:generateDeadRowsCSV": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/devtools/db/generateDeadRowsCSV.ts",
     "dev:scripts:dropAndRecreateEpisodesMostRecentMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/dropAndRecreateEpisodesMostRecentMaterializedView.ts",
     "dev:scripts:hideDeadPodcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "dev:scripts:parseFeedUrlsByPodcastIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
@@ -43,6 +44,7 @@
     "dev:scripts:refreshMediaRefsVideosMaterializedView": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/mediaRefs_videos/refreshMediaRefsVideosMaterializedView.ts",
     "dev:scripts:removeDeadChapters": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/mediaRefs/removeDeadChapters.ts",
     "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
+    "dev:scripts:removePodcastsByIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcasts/removePodcastsByIds.ts",
     "dev:scripts:syncWithFeedUrlsCSVDump": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
     "dev:scripts:updateRecentEpisodesTables": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
@@ -62,6 +64,7 @@
     "scripts:addNonPodcastIndexFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addNonPodcastIndexFeedUrlsToPriorityQueue.ts",
     "scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addRecentlyUpdatedFeedUrlsToPriorityQueue.ts",
     "scripts:backupDatabase": "ts-node -r tsconfig-paths/register ./src/scripts/backupDatabase/backupDatabase.ts",
+    "scripts:devtools:generateDeadRowsCSV": "ts-node -r tsconfig-paths/register ./src/scripts/devtools/db/generateDeadRowsCSV.ts",
     "scripts:dropAndRecreateEpisodesMostRecentMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/dropAndRecreateEpisodesMostRecentMaterializedView.ts",
     "scripts:hideDeadPodcasts": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/hideDeadPodcasts.ts",
     "scripts:parseFeedUrlsByPodcastIds": "ts-node -r tsconfig-paths/register ./src/scripts/parser/parseFeedUrlsByPodcastIds.ts",
@@ -76,6 +79,7 @@
     "scripts:refreshEpisodesMostRecentMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/refreshEpisodesMostRecentMaterializedView.ts",
     "scripts:refreshMediaRefsVideosMaterializedView": "ts-node -r tsconfig-paths/register ./src/scripts/mediaRefs_videos/refreshMediaRefsVideosMaterializedView.ts",
     "scripts:removeDeadEpisodes": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
+    "scripts:removePodcastsByIds": "ts-node -r tsconfig-paths/register ./src/scripts/podcasts/removePodcastsByIds.ts",
     "scripts:syncWithFeedUrlsCSVDump": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
     "scripts:updateRecentEpisodesTables": "ts-node -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
@@ -177,6 +181,7 @@
     "isomorphic-fetch": "^3.0.0",
     "jest": "26.1.0",
     "joi": "14.3.1",
+    "json-2-csv": "^5.5.1",
     "koa": "2.11.0",
     "koa-bodyparser": "4.2.1",
     "koa-helmet": "5.2.0",
