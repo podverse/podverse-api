@@ -1,7 +1,8 @@
 import * as Router from 'koa-router'
 import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
-import { getFinalRedirectedUrl } from '~/lib/request'
+import { getFinalRedirectedUrl, request } from '~/lib/request'
+const createError = require('http-errors')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/tools` })
 
@@ -28,7 +29,20 @@ const extractHTTPSFromURL = async (url, tries) => {
       return url
     } else {
       const redirectedUrl = await getFinalRedirectedUrl(url)
-      return redirectedUrl
+      let finalUrl = redirectedUrl
+
+      if (redirectedUrl.startsWith('http://')) {
+        try {
+          const attemptHttpsUrl = redirectedUrl.replace('http://', 'https://')
+          // If no error is thrown,then assume it is a valid url.
+          await request(attemptHttpsUrl, { followRedirect: true, method: 'head' })
+          finalUrl = attemptHttpsUrl
+        } catch (error) {
+          throw new createError.NotFound('Secure URL for ' + url + ' was not found.')
+        }
+      }
+
+      return finalUrl
     }
   } catch (error) {
     if (['301', '302', '303', '307', '308'].includes(String(error.statusCode))) {
