@@ -116,6 +116,8 @@ DROP COLUMN "pastAllTimeTotalUniquePageviews";
 
 -- Drop old mediaRefs stats columns
 
+DROP MATERIALIZED VIEW "mediaRefs_videos";
+
 ALTER TABLE "mediaRefs"
 DROP COLUMN "pastHourTotalUniquePageviews";
 
