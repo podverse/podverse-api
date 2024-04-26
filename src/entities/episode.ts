@@ -190,7 +190,7 @@ export class Episode {
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.episode)
   userQueueItems: UserQueueItem[]
 
-  @OneToMany(() => StatsEpisode, (stats_episode) => stats_episode.episode)
+  @OneToOne(() => StatsEpisode, (stats_episode) => stats_episode.episode)
   stats_episode?: StatsEpisode
 
   @CreateDateColumn()
