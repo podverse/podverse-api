@@ -133,6 +133,8 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
   const ascKey = 'ASC'
   const descKey = 'DESC'
 
+  const statsParentId = type === 'mediaRef' ? 'media_ref' : type
+
   let ormStatsType = null as any
   if (type === 'podcast') {
     ormStatsType = StatsPodcast
@@ -152,7 +154,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.innerJoin(
       ormStatsType,
       `stats_${type}`,
-      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'daily' }
     )
     qb.orderBy(`stats_${type}.play_count`, descKey)
@@ -160,7 +162,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.innerJoin(
       ormStatsType,
       `stats_${type}`,
-      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'weekly' }
     )
     qb.orderBy(`stats_${type}.play_count`, descKey)
@@ -168,7 +170,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.innerJoin(
       ormStatsType,
       `stats_${type}`,
-      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'monthly' }
     )
     qb.orderBy(`stats_${type}.play_count`, descKey)
@@ -176,7 +178,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.innerJoin(
       ormStatsType,
       `stats_${type}`,
-      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'yearly' }
     )
     qb.orderBy(`stats_${type}.play_count`, descKey)
@@ -184,7 +186,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     qb.innerJoin(
       ormStatsType,
       `stats_${type}`,
-      `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
+      `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'all_time' }
     )
     qb.orderBy(`stats_${type}.play_count`, descKey)
