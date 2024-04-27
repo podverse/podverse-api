@@ -13,11 +13,21 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
   Unique,
   UpdateDateColumn
 } from 'typeorm'
-import { Author, Category, Episode, User, UserHistoryItem, UserNowPlayingItem, UserQueueItem } from '~/entities'
+import {
+  Author,
+  Category,
+  Episode,
+  StatsMediaRef,
+  User,
+  UserHistoryItem,
+  UserNowPlayingItem,
+  UserQueueItem
+} from '~/entities'
 import { generateShortId } from '~/lib/utility'
 
 @Entity('mediaRefs')
@@ -81,48 +91,6 @@ export class MediaRef {
   linkUrl?: string
 
   @Index()
-  @ValidateIf((a) => a.pastHourTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastHourTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastDayTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastWeekTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastMonthTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastYearTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
-  @Index()
   @IsInt()
   @Min(0)
   @Column({ default: 0 })
@@ -160,6 +128,9 @@ export class MediaRef {
 
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.mediaRef)
   userQueueItems: UserQueueItem[]
+
+  @OneToOne(() => StatsMediaRef, (stats_media_ref) => stats_media_ref.mediaRef)
+  stats_media_ref?: StatsMediaRef
 
   @CreateDateColumn()
   createdAt: Date

@@ -82,24 +82,6 @@ export class EpisodeMostRecent {
   mediaUrl: string
 
   @ViewColumn()
-  pastHourTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastDayTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastWeekTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastMonthTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastYearTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastAllTimeTotalUniquePageviews: number
-
-  @ViewColumn()
   pubDate?: Date
 
   @Column('simple-json', { nullable: true })

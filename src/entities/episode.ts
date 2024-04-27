@@ -15,6 +15,7 @@ import {
   LiveItem,
   MediaRef,
   Podcast,
+  StatsEpisode,
   UserHistoryItem,
   UserNowPlayingItem,
   UserQueueItem
@@ -38,12 +39,6 @@ import { generateShortId } from '~/lib/utility'
 
 @Entity('episodes')
 @Index(['isPublic', 'pubDate'])
-@Index(['mediaType', 'pastAllTimeTotalUniquePageviews'])
-@Index(['mediaType', 'pastHourTotalUniquePageviews'])
-@Index(['mediaType', 'pastDayTotalUniquePageviews'])
-@Index(['mediaType', 'pastWeekTotalUniquePageviews'])
-@Index(['mediaType', 'pastMonthTotalUniquePageviews'])
-@Index(['mediaType', 'pastYearTotalUniquePageviews'])
 export class Episode {
   @PrimaryColumn('varchar', {
     default: generateShortId(),
@@ -139,48 +134,6 @@ export class Episode {
   @Column()
   mediaUrl: string
 
-  @Index()
-  @ValidateIf((a) => a.pastHourTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastHourTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastDayTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastDayTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastWeekTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastWeekTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastMonthTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastMonthTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastYearTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastYearTotalUniquePageviews: number
-
-  @Index()
-  @ValidateIf((a) => a.pastAllTimeTotalUniquePageviews != null)
-  @IsInt()
-  @Min(0)
-  @Column({ default: 0 })
-  pastAllTimeTotalUniquePageviews: number
-
   @Column({ nullable: true })
   pubDate?: Date
 
@@ -236,6 +189,9 @@ export class Episode {
 
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.episode)
   userQueueItems: UserQueueItem[]
+
+  @OneToOne(() => StatsEpisode, (stats_episode) => stats_episode.episode)
+  stats_episode?: StatsEpisode
 
   @CreateDateColumn()
   createdAt: Date
