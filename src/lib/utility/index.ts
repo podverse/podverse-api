@@ -151,45 +151,50 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
   } else if (sort === 'live-item-start-desc') {
     qb.orderBy(`liveItem.start`, descKey)
   } else if (sort === 'top-past-day') {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'daily' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-week') {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'weekly' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-month') {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'monthly' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-year') {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'yearly' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-all-time') {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'all_time' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'most-recent') {
     qb.orderBy(`${type}.${sortDateKey}`, descKey)
   } else if (sort === 'oldest') {
@@ -205,13 +210,14 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
   } else if (sort === 'episode-number-asc') {
     qb.orderBy(`${type}.itunesEpisode`, ascKey)
   } else {
-    qb.innerJoin(
+    qb.leftJoin(
       ormStatsType,
       `stats_${type}`,
       `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'weekly' }
     )
-    qb.orderBy(`stats_${type}.play_count`, descKey)
+    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+    qb.addOrderBy(`stats_${type}.play_count`, descKey)
   }
 
   return qb
