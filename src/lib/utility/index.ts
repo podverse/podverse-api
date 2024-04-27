@@ -157,7 +157,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'daily' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-week') {
     qb.leftJoin(
@@ -166,7 +166,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'weekly' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-month') {
     qb.leftJoin(
@@ -175,7 +175,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'monthly' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-past-year') {
     qb.leftJoin(
@@ -184,7 +184,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'yearly' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'top-all-time') {
     qb.leftJoin(
@@ -193,7 +193,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${statsParentId}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'all_time' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   } else if (sort === 'most-recent') {
     qb.orderBy(`${type}.${sortDateKey}`, descKey)
@@ -216,7 +216,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
       `${type}.id = stats_${type}.${type}_id AND stats_${type}.timeframe = :timeframe`,
       { timeframe: 'weekly' }
     )
-    qb.addOrderBy(`CASE WHEN stats_${type}.play_count IS NULL THEN 1 ELSE 0 END`, 'ASC')
+
     qb.addOrderBy(`stats_${type}.play_count`, descKey)
   }
 
