@@ -386,7 +386,7 @@ export const parseFeedUrl = async (feedUrl, forceReparsing = false, cacheBust = 
     logPerformance('categoryRepo.save', _logEnd)
     podcast.categories = categories
 
-    podcast.description = meta.description
+    podcast.description = meta.description?.substring(0, 4000)
     podcast.feedLastParseFailed = false
 
     const feedLastUpdated = new Date(mostRecentUpdateDateFromFeed || meta.lastBuildDate || meta.pubDate || '')
@@ -980,7 +980,7 @@ const assignParsedEpisodeData = async (
     episode.chaptersUrl = parsedEpisode.chapters.url
     episode.chaptersType = parsedEpisode.chapters.type
   }
-  episode.description = parsedEpisode.summary || parsedEpisode.description
+  episode.description = (parsedEpisode.summary || parsedEpisode.description)?.substring(0, 4000)
   episode.duration = parsedEpisode.duration ? parseInt(parsedEpisode.duration, 10) : 0
   /* TODO: podcast-partytime is missing type and funding on episode */
   // episode.episodeType = parsedEpisode.type
@@ -1009,7 +1009,7 @@ const assignParsedEpisodeData = async (
 
   episode.socialInteraction = parsedEpisode.socialInteraction
   episode.soundbite = parsedEpisode.soundbite
-  episode.subtitle = parsedEpisode.subtitle
+  episode.subtitle = parsedEpisode.subtitle?.substring(0, 4000)
   episode.title = parsedEpisode.title
   episode.transcript = parsedEpisode.transcript
   episode.value =

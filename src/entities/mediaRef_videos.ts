@@ -30,24 +30,6 @@ export class MediaRefVideos {
   linkUrl?: string
 
   @ViewColumn()
-  pastHourTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastDayTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastWeekTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastMonthTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastYearTotalUniquePageviews: number
-
-  @ViewColumn()
-  pastAllTimeTotalUniquePageviews: number
-
-  @ViewColumn()
   startTime: number
 
   @ViewColumn()
