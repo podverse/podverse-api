@@ -351,6 +351,10 @@ const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data, j
       const idStartIndex = label.indexOf(`${finalPagePath}/`) + (finalPagePath.length + 1)
       const id = label.substr(idStartIndex)
 
+      if (id === 'custom-url') {
+        continue
+      }
+
       // max length of ids = 14
       if (id.length > 14) {
         console.log('id too long!', id)
@@ -359,13 +363,11 @@ const savePageviewsToDatabase = async (finalPagePath: string, timeRange, data, j
 
       const sum_daily_nb_uniq_visitors = row.sum_daily_nb_uniq_visitors
 
-      if (id) {
-        const rawSQLUpdate = generateSetNewCountQuery(finalPagePath, timeRange, id, sum_daily_nb_uniq_visitors)
-        await getConnection().createEntityManager().query(rawSQLUpdate)
-      }
+      const rawSQLUpdate = generateSetNewCountQuery(finalPagePath, timeRange, id, sum_daily_nb_uniq_visitors)
+      await getConnection().createEntityManager().query(rawSQLUpdate)
     } catch (err) {
       console.log('row err', err)
-      console.log('row', row)
+      console.log('row', row.label)
     }
   }
 
