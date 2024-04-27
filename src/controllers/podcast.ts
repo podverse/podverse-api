@@ -2,7 +2,14 @@ import { getRepository, In } from 'typeorm'
 import { config } from '~/config'
 import { getUserSubscribedPodcastIds } from '~/controllers/user'
 import { FeedUrl, Podcast, User } from '~/entities'
-import { addOrderByToQuery, getManticoreOrderByColumnName, removeAllSpaces } from '~/lib/utility'
+import {
+  _logEnd,
+  _logStart,
+  addOrderByToQuery,
+  getManticoreOrderByColumnName,
+  logPerformance,
+  removeAllSpaces
+} from '~/lib/utility'
 import { validateSearchQueryString } from '~/lib/utility/validation'
 import { manticoreWildcardSpecialCharacters, searchApi } from '~/services/manticore'
 import { deleteNotification } from './notification'
@@ -500,6 +507,21 @@ const getPodcastWebUrl = async ({ podcastGuid, podcastIndexId }: GetPodcastWebUr
   }
 }
 
+const removePodcasts = async (ids: string[]) => {
+  logPerformance('removePodcasts', _logStart)
+  const repository = getRepository(Podcast)
+  for (const id of ids) {
+    try {
+      logPerformance(`removePodcast ${id}`, _logStart)
+      await repository.delete(id)
+      logPerformance(`removePodcast ${id}`, _logEnd)
+    } catch (error) {
+      console.log(`error removing podcast ${id}`, error)
+    }
+  }
+  logPerformance('removePodcasts', _logEnd)
+}
+
 export {
   findPodcastsByFeedUrls,
   getPodcast,
@@ -513,5 +535,6 @@ export {
   subscribeToPodcast,
   toggleSubscribeToPodcast,
   updateHasPodcastIndexValueTags,
-  getPodcastWebUrl
+  getPodcastWebUrl,
+  removePodcasts
 }

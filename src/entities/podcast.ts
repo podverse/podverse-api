@@ -26,6 +26,8 @@ type Funding = {
   value?: string
 }
 
+type PodcastFlagStatus = 'none' | 'spam' | 'takedown' | 'other' | 'always-allow'
+
 @Entity('podcasts')
 export class Podcast {
   @PrimaryColumn('varchar', {
@@ -75,6 +77,14 @@ export class Podcast {
   @Index()
   @Column({ nullable: true })
   feedLastUpdated?: Date
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: ['none', 'spam', 'takedown', 'other', 'always-allow'],
+    default: 'none'
+  })
+  flag_status: PodcastFlagStatus
 
   @Column('simple-json', { nullable: true })
   funding: Funding[]

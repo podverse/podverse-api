@@ -70,20 +70,6 @@ const getMediaRef = async (id) => {
   return mediaRef
 }
 
-const getPublicMediaRefsByEpisodeMediaUrl = (mediaUrl) => {
-  return getRepository(MediaRef)
-    .createQueryBuilder('mediaRef')
-    .select('mediaRef.id')
-    .addSelect('mediaRef.startTime')
-    .addSelect('mediaRef.endTime')
-    .addSelect('mediaRef.title')
-    .innerJoin('mediaRef.episode', 'episode')
-    .where('episode.mediaUrl = :mediaUrl', { mediaUrl })
-    .andWhere('mediaRef.isPublic = TRUE')
-    .orderBy('mediaRef.startTime', 'ASC')
-    .getManyAndCount()
-}
-
 const getPublicMediaRefsByEpisodeGuid = (episodeGuid, podcastId) => {
   return getRepository(MediaRef)
     .createQueryBuilder('mediaRef')
@@ -392,7 +378,6 @@ export {
   getMediaRef,
   getMediaRefs,
   getMediaRefsFromSearchEngine,
-  getPublicMediaRefsByEpisodeMediaUrl,
   getPublicMediaRefsByEpisodeGuid,
   refreshMediaRefsVideosMaterializedView,
   removeDeadChapters,

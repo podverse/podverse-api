@@ -19,9 +19,9 @@ export const delimitQueryValues = (ctx, keys) => {
 export const chunkArray = (arr, chunkSize = 10) => {
   let i
   let j
-  const chunks = []
+  const chunks: any[] = []
   for (i = 0, j = arr.length; i < j; i += chunkSize) {
-    const chunk = arr.slice(i, i + chunkSize) as never // TODO: What does this mean?
+    const chunk = arr.slice(i, i + chunkSize) as any[]
     chunks.push(chunk)
   }
   return chunks
