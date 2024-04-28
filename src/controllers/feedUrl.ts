@@ -120,6 +120,19 @@ const getFeedUrls = (query) => {
   })
 }
 
+export const getAuthorityFeedUrlByPodcastId = async (podcastId: string): Promise<FeedUrl | null> => {
+  const feedUrlRepo = getRepository(FeedUrl)
+
+  const feedUrl = await feedUrlRepo
+    .createQueryBuilder('feedUrl')
+    .select('feedUrl.url')
+    .innerJoin('feedUrl.podcast', 'podcast')
+    .where('feedUrl.isAuthority = true AND podcast.id = :podcastId', { podcastId })
+    .getOne()
+
+  return feedUrl || null
+}
+
 export const getAuthorityFeedUrlByPodcastIndexId = async (podcastIndexId: string, allowNonPublic?: boolean) => {
   const repository = getRepository(FeedUrl)
 
