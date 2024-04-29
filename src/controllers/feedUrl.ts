@@ -126,6 +126,7 @@ export const getAuthorityFeedUrlByPodcastId = async (podcastId: string): Promise
   const feedUrl = await feedUrlRepo
     .createQueryBuilder('feedUrl')
     .select('feedUrl.url')
+    .addSelect('feedUrl.id')
     .innerJoin('feedUrl.podcast', 'podcast')
     .where('feedUrl.isAuthority = true AND podcast.id = :podcastId', { podcastId })
     .getOne()
