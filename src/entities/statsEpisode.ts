@@ -1,6 +1,15 @@
 import { IsInt, Min, ValidateIf } from 'class-validator'
 import { Episode } from '~/entities'
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { StatsTimeFrames, timeframeEnumValues } from '~/lib/stats'
 
 @Entity('stats_episode')
@@ -24,7 +33,7 @@ export class StatsEpisode {
   timeframe: StatsTimeFrames
 
   @Index()
-  @OneToOne(() => Episode, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => Episode, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'episode_id' })
   episode: Episode
 
