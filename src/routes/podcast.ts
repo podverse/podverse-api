@@ -16,7 +16,6 @@ import { emitRouterError } from '~/lib/errors'
 import { delimitQueryValues } from '~/lib/utility'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validatePodcastSearch } from '~/middleware/queryValidation/search'
 const RateLimit = require('koa2-ratelimit').RateLimit
@@ -31,7 +30,6 @@ router.get(
   '/metadata',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -49,7 +47,6 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'podcasts'),
   validatePodcastSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       const { query = {} } = ctx.state
@@ -94,7 +91,7 @@ router.get(
 )
 
 // Get by Podcast Index ID
-router.get('/podcastindex/data/:id', parseNSFWHeader, async (ctx) => {
+router.get('/podcastindex/data/:id', async (ctx) => {
   try {
     const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
     ctx.body = podcast
@@ -104,7 +101,7 @@ router.get('/podcastindex/data/:id', parseNSFWHeader, async (ctx) => {
 })
 
 // Redirect to Podcast web page by Podcast Index ID
-router.get('/podcastindex/:id', parseNSFWHeader, async (ctx) => {
+router.get('/podcastindex/:id', async (ctx) => {
   try {
     const podcast = await getPodcastByPodcastIndexId(ctx.params.id)
 
@@ -119,7 +116,7 @@ router.get('/podcastindex/:id', parseNSFWHeader, async (ctx) => {
 })
 
 // Redirect to Podcast web page by <podcast:guid>
-router.get('/by-podcast-guid/:podcastGuid', parseNSFWHeader, async (ctx) => {
+router.get('/by-podcast-guid/:podcastGuid', async (ctx) => {
   try {
     const podcast = await getPodcastByPodcastGuid(ctx.params.podcastGuid)
 
@@ -134,7 +131,7 @@ router.get('/by-podcast-guid/:podcastGuid', parseNSFWHeader, async (ctx) => {
 })
 
 // Redirect to Podcast web page by feedUrl
-router.get('/by-feed-url', parseNSFWHeader, async (ctx) => {
+router.get('/by-feed-url', async (ctx) => {
   try {
     const feedUrl = ctx.query.feedUrl ? (ctx.query.feedUrl as string) : ''
     const decodedFeedUrl = decodeURIComponent(feedUrl)
@@ -156,7 +153,7 @@ router.get('/by-feed-url', parseNSFWHeader, async (ctx) => {
 })
 
 // Get
-router.get('/:id', parseNSFWHeader, async (ctx) => {
+router.get('/:id', async (ctx) => {
   try {
     const podcast = await getPodcast(ctx.params.id)
 
@@ -167,7 +164,7 @@ router.get('/:id', parseNSFWHeader, async (ctx) => {
 })
 
 // Find Podcasts by FeedUrls
-router.post('/find-by-feed-urls', parseNSFWHeader, async (ctx) => {
+router.post('/find-by-feed-urls', async (ctx) => {
   try {
     const body: any = ctx.request.body
     const results = await findPodcastsByFeedUrls(body.feedUrls)

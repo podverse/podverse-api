@@ -130,7 +130,6 @@ const getMediaRefsFromSearchEngine = async (query) => {
 }
 
 const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
-  const includeNSFW = true
   const { mediaRefId, searchTitle } = query
   const mediaRefIds = (mediaRefId && mediaRefId.split(',')) || []
   const podcastIds = (query.podcastId && query.podcastId.split(',')) || []
@@ -143,7 +142,6 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
 
   const queryConditions = `
     episode.isPublic = true
-    ${includeNSFW ? '' : 'AND episode.isExplicit = :isExplicit'}
     ${podcastIds.length > 0 ? 'AND episode.podcastId IN (:...podcastIds)' : ''}
     ${episodeIds.length > 0 ? 'AND episode.id IN (:...episodeIds)' : ''}
   `
@@ -153,7 +151,6 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
 
   if (includePodcast) {
     qb.innerJoinAndSelect('mediaRef.episode', 'episode', queryConditions, {
-      isExplicit: !!includeNSFW,
       podcastIds: podcastIds,
       episodeIds: episodeIds
     })
@@ -164,13 +161,11 @@ const getMediaRefs = async (query, isFromManticoreSearch?, totalOverride?) => {
     }
   } else if (includeEpisode) {
     qb.innerJoinAndSelect('mediaRef.episode', 'episode', queryConditions, {
-      isExplicit: !!includeNSFW,
       podcastIds: podcastIds,
       episodeIds: episodeIds
     })
   } else {
     qb.innerJoin('mediaRef.episode', 'episode', queryConditions, {
-      isExplicit: !!includeNSFW,
       podcastIds: podcastIds,
       episodeIds: episodeIds
     })

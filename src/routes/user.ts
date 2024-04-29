@@ -19,7 +19,6 @@ import { delimitQueryValues } from '~/lib/utility'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
 import { hasValidMembership } from '~/middleware/hasValidMembership'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { validateUserSearch } from '~/middleware/queryValidation/search'
 import { validateUserUpdate } from '~/middleware/queryValidation/update'
 const archiver = require('archiver')
@@ -107,13 +106,12 @@ router.get('/download', downloadUserLimiter, jwtAuth, async (ctx) => {
 router.get(
   '/mediaRefs',
   jwtAuth,
-  parseNSFWHeader,
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   async (ctx) => {
     try {
       const { query } = ctx.state
-
-      const mediaRefs = await getUserMediaRefs(query, ctx.state.user.id, ctx.state.includeNSFW, true)
+      const includePrivate = true
+      const mediaRefs = await getUserMediaRefs(query, ctx.state.user.id, includePrivate)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
@@ -162,7 +160,6 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'users'),
   validateUserSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -198,7 +195,7 @@ router.get(
 )
 
 // Get Public User
-router.get('/:id', parseNSFWHeader, async (ctx) => {
+router.get('/:id', async (ctx) => {
   try {
     const user = await getPublicUser(ctx.params.id)
 
@@ -212,12 +209,11 @@ router.get('/:id', parseNSFWHeader, async (ctx) => {
 router.get(
   '/:id/mediaRefs',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
-  parseNSFWHeader,
   async (ctx) => {
     try {
       const { query } = ctx.state
-
-      const mediaRefs = await getUserMediaRefs(query, ctx.params.id, ctx.state.includeNSFW, false)
+      const includePrivate = false
+      const mediaRefs = await getUserMediaRefs(query, ctx.params.id, includePrivate)
       ctx.body = mediaRefs
     } catch (error) {
       emitRouterError(error, ctx)
@@ -229,7 +225,6 @@ router.get(
 router.get(
   '/:id/playlists',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
-  parseNSFWHeader,
   async (ctx) => {
     try {
       const { query } = ctx.state
