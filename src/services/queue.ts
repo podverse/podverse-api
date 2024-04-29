@@ -5,6 +5,7 @@ import { chunkArray } from '~/lib/utility'
 import { connectToDb } from '~/lib/db'
 import { sqs } from '~/services/aws'
 import { generateFeedMessageAttributes } from '~/services/parser'
+import { getAuthorityFeedUrlByPodcastId } from '~/controllers/feedUrl'
 
 const { awsConfig } = config
 const queueUrls = awsConfig.queueUrls
@@ -102,6 +103,29 @@ export const addFeedsToQueueByPriority = async (parsingPriority: number, offset 
   } catch (error) {
     console.log('queue:addAllUntitledPodcastFeedUrlsToQueue', error)
   }
+}
+
+export const addAuthorityFeedUrlByPodcastIdToQueue = async (podcastIds: string[]) => {
+  await connectToDb()
+
+  const feedUrls: FeedUrl[] = []
+
+  for (const podcastId of podcastIds) {
+    try {
+      const feedUrl = await getAuthorityFeedUrlByPodcastId(podcastId)
+      if (feedUrl) {
+        console.log('feedUrl', feedUrl)
+        feedUrls.push(feedUrl)
+      }
+    } catch (error) {
+      console.log('addAuthorityFeedUrlByPodcastIdToQueue error')
+      console.log(error)
+    }
+  }
+
+  const forceReparsing = true
+  const cacheBust = false
+  await sendFeedUrlsToQueue(feedUrls, queueUrls.feedsToParse.priorityQueueUrl, forceReparsing, cacheBust)
 }
 
 export const addAllUntitledPodcastFeedUrlsToQueue = async () => {

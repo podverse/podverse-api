@@ -13,7 +13,6 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
   Unique,
   UpdateDateColumn
@@ -129,7 +128,7 @@ export class MediaRef {
   @OneToMany((type) => UserQueueItem, (userQueueItem) => userQueueItem.mediaRef)
   userQueueItems: UserQueueItem[]
 
-  @OneToOne(() => StatsMediaRef, (stats_media_ref) => stats_media_ref.mediaRef)
+  @OneToMany(() => StatsMediaRef, (stats_media_ref) => stats_media_ref.mediaRef)
   stats_media_ref?: StatsMediaRef
 
   @CreateDateColumn()

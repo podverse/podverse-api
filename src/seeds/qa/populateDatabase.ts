@@ -47,10 +47,6 @@ const populateDatabase = async (connection: Connection, isQuickRun: boolean): Pr
   /* Playlists */
   await generateQAPlaylists()
 
-  /* TODO: RecentEpisodesByCategory */
-
-  /* TODO: RecentEpisodesByPodcast */
-
   /* TODO: UPDevices */
 
   /* TODO: UserHistoryItems */

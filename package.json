@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "4.16.18",
+  "version": "4.16.19",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "contributors": [
     "Mitch Downey"
@@ -19,6 +19,7 @@
     "dev:scripts:addAllPublicFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllPublicFeedUrlsToQueue.ts",
     "dev:scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
     "dev:scripts:addAndParseFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
+    "dev:scripts:addAuthorityFeedUrlByPodcastIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addAuthorityFeedUrlByPodcastIdToQueue.ts",
     "dev:scripts:addFeedsByPodcastIndexIdToQueue": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/addFeedsByPodcastIndexIdToQueue.ts",
     "dev:scripts:addFeedsToQueueByPriority": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/queue/addFeedsToQueueByPriority.ts",
     "dev:scripts:addFeedUrls": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
@@ -46,7 +47,6 @@
     "dev:scripts:removeDeadEpisodes": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
     "dev:scripts:removePodcastsByIds": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcasts/removePodcastsByIds.ts",
     "dev:scripts:syncWithFeedUrlsCSVDump": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
-    "dev:scripts:updateRecentEpisodesTables": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "dev:seeds:categories": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/categories.ts",
     "dev:seeds:podcasts": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "dev:seeds:qa:populateDatabase": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/seeds/qa/populateDatabase.ts",
@@ -56,6 +56,7 @@
     "scripts:addAllUntitledPodcastFeedUrlsToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAllUntitledPodcastFeedUrlsToQueue.ts",
     "scripts:addAndParseFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addAndParseFeedUrls.ts",
     "scripts:addFeedsByPodcastIndexIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/addFeedsByPodcastIndexIdToQueue.ts",
+    "scripts:addAuthorityFeedUrlByPodcastIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addAuthorityFeedUrlByPodcastIdToQueue.ts",
     "scripts:addFeedsToQueueByPriority": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedsToQueueByPriority.ts",
     "scripts:addFeedUrls": "ts-node -r tsconfig-paths/register ./src/scripts/feedUrls/addFeedUrls.ts",
     "scripts:addFeedUrlsByFeedIdToQueue": "ts-node -r tsconfig-paths/register ./src/scripts/queue/addFeedUrlsByFeedIdToQueue.ts",
@@ -81,7 +82,6 @@
     "scripts:removeDeadEpisodes": "ts-node -r tsconfig-paths/register ./src/scripts/episodes/removeDeadEpisodes.ts",
     "scripts:removePodcastsByIds": "ts-node -r tsconfig-paths/register ./src/scripts/podcasts/removePodcastsByIds.ts",
     "scripts:syncWithFeedUrlsCSVDump": "ts-node -r tsconfig-paths/register ./src/scripts/podcastIndex/syncWithFeedUrlsCSVDump.ts",
-    "scripts:updateRecentEpisodesTables": "ts-node -r tsconfig-paths/register ./src/scripts/recentEpisodes/updateRecentEpisodesTables.ts",
     "seeds:categories": "ts-node -r tsconfig-paths/register ./src/seeds/categories.ts",
     "seeds:podcasts": "ts-node -r tsconfig-paths/register ./src/seeds/podcasts.ts",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",

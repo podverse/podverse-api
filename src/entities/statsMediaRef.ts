@@ -1,6 +1,15 @@
 import { IsInt, Min, ValidateIf } from 'class-validator'
 import { MediaRef } from '~/entities'
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { StatsTimeFrames, timeframeEnumValues } from '~/lib/stats'
 
 @Entity('stats_media_ref')
@@ -24,7 +33,7 @@ export class StatsMediaRef {
   timeframe: StatsTimeFrames
 
   @Index()
-  @OneToOne(() => MediaRef, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => MediaRef, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'media_ref_id' })
   mediaRef: MediaRef
 
