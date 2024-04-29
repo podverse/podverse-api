@@ -244,16 +244,13 @@ const getUserSubscribedPublicUserIds = async (id) => {
   return getUserSingleField(id, 'subscribedUserIds')
 }
 
-const getUserMediaRefs = async (query, ownerId, includeNSFW, includePrivate) => {
+const getUserMediaRefs = async (query, ownerId, includePrivate) => {
   const { skip, sort, take } = query
   const repository = getRepository(MediaRef)
-  const episodeJoinAndSelect = `${includeNSFW ? 'true' : 'episode.isExplicit = :isExplicit'}`
 
   let qb = await repository
     .createQueryBuilder('mediaRef')
-    .innerJoinAndSelect('mediaRef.episode', 'episode', episodeJoinAndSelect, {
-      isExplicit: !!includeNSFW
-    })
+    .innerJoinAndSelect('mediaRef.episode', 'episode')
     .innerJoinAndSelect('episode.podcast', 'podcast')
     .where({
       ...(includePrivate ? {} : { isPublic: true }),

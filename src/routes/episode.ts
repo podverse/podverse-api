@@ -15,7 +15,6 @@ import {
 } from '~/controllers/episode'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateEpisodeSearch } from '~/middleware/queryValidation/search'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { getThreadcap } from '~/services/socialInteraction/threadcap'
 import { request } from '~/lib/request'
 // import { MediaRef } from '~/entities'
@@ -29,7 +28,6 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'episodes'),
   validateEpisodeSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       const { query = {} } = ctx.state
@@ -57,7 +55,7 @@ router.get(
 )
 
 // Get
-router.get('/:id', parseNSFWHeader, async (ctx) => {
+router.get('/:id', async (ctx) => {
   try {
     const episode = await getEpisode(ctx.params.id)
 
@@ -226,7 +224,7 @@ router.get('/:id/proxy/twitter', async (ctx) => {
 })
 
 // Get Episode by GUID
-router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
+router.post('/get-by-guid', async (ctx) => {
   try {
     const body: any = ctx.request.body
     const { episodeGuid, podcastId } = body
@@ -238,7 +236,7 @@ router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
 })
 
 // Get Episode by guid
-router.post('/get-by-guid', parseNSFWHeader, async (ctx) => {
+router.post('/get-by-guid', async (ctx) => {
   try {
     const body: any = ctx.request.body
     const { episodeGuid, podcastId } = body

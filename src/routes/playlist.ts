@@ -15,7 +15,6 @@ import {
   updatePlaylist
 } from '~/controllers/playlist'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validatePlaylistCreate } from '~/middleware/queryValidation/create'
 import { validatePlaylistSearch } from '~/middleware/queryValidation/search'
@@ -35,7 +34,6 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'playlists'),
   validatePlaylistSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       ctx = delimitQueryValues(ctx, delimitKeys)
@@ -71,7 +69,7 @@ router.get(
 )
 
 // Get
-router.get('/:id', parseNSFWHeader, async (ctx) => {
+router.get('/:id', async (ctx) => {
   try {
     const playlist = await getPlaylist(ctx.params.id)
 

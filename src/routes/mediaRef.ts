@@ -12,7 +12,6 @@ import {
   updateMediaRef
 } from '~/controllers/mediaRef'
 import { jwtAuth } from '~/middleware/auth/jwtAuth'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateMediaRefCreate } from '~/middleware/queryValidation/create'
 import { validateMediaRefSearch } from '~/middleware/queryValidation/search'
@@ -32,19 +31,18 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'mediaRefs'),
   validateMediaRefSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
-      const { includeNSFW, query } = ctx.state
+      const { query } = ctx.state
       ctx = delimitQueryValues(ctx, delimitKeys)
       let mediaRefs = [[], 0]
 
       if (query.podcastId && query.searchTitle) {
-        mediaRefs = await getMediaRefs(query, includeNSFW)
+        mediaRefs = await getMediaRefs(query)
       } else if (query.searchTitle) {
         mediaRefs = await getMediaRefsFromSearchEngine(query)
       } else {
-        mediaRefs = await getMediaRefs(query, includeNSFW)
+        mediaRefs = await getMediaRefs(query)
       }
 
       ctx.body = mediaRefs
@@ -55,7 +53,7 @@ router.get(
 )
 
 // Get
-router.get('/:id', parseNSFWHeader, async (ctx) => {
+router.get('/:id', async (ctx) => {
   try {
     const mediaRef = await getMediaRef(ctx.params.id)
 

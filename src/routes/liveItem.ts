@@ -4,7 +4,6 @@ import { emitRouterError } from '~/lib/errors'
 import { getLiveItems } from '~/controllers/liveItem'
 import { parseQueryPageOptions } from '~/middleware/parseQueryPageOptions'
 import { validateLiveItemSearch } from '~/middleware/queryValidation/search'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 import { delimitQueryValues } from '~/lib/utility'
 import {
   getEpisodes,
@@ -22,7 +21,6 @@ router.get(
   '/',
   (ctx, next) => parseQueryPageOptions(ctx, next, 'liveItems'),
   validateLiveItemSearch,
-  parseNSFWHeader,
   async (ctx) => {
     try {
       const { query = {} } = ctx.state

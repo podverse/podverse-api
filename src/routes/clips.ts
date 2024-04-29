@@ -4,7 +4,6 @@ import { config } from '~/config'
 import { emitRouterError } from '~/lib/errors'
 import { convertToChaptersFile } from '~/lib/podcastIndex'
 import { getPublicMediaRefsByEpisodeGuid } from '~/controllers/mediaRef'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 const json = require('koa-json')
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/clips` })
@@ -12,7 +11,7 @@ const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/cli
 router.use(bodyParser())
 
 // Get public mediaRefs by episode guid
-router.get('/', parseNSFWHeader, json(), async (ctx) => {
+router.get('/', json(), async (ctx) => {
   try {
     const { episodeGuid, podcastId } = ctx.query
     const mediaRefsResult = await getPublicMediaRefsByEpisodeGuid(episodeGuid, podcastId)

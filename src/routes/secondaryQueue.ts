@@ -6,12 +6,11 @@ import {
   getSecondaryQueueEpisodesForPodcastId2
 } from '~/controllers/secondaryQueue'
 import { emitRouterError } from '~/lib/errors'
-import { parseNSFWHeader } from '~/middleware/parseNSFWHeader'
 
 const router = new Router({ prefix: `${config.apiPrefix}${config.apiVersion}/secondary-queue` })
 
 // Get episodes that are adjacent within a podcast
-router.get('/podcast/:podcastId/episode/:episodeId', parseNSFWHeader, async (ctx) => {
+router.get('/podcast/:podcastId/episode/:episodeId', async (ctx) => {
   try {
     const { withFix } = ctx.query
     if (!!withFix) {
@@ -28,7 +27,7 @@ router.get('/podcast/:podcastId/episode/:episodeId', parseNSFWHeader, async (ctx
 })
 
 // Get episodes that are adjacent within a playlist
-router.get('/playlist/:playlistId/episode-or-media-ref/:episodeOrMediaRef', parseNSFWHeader, async (ctx) => {
+router.get('/playlist/:playlistId/episode-or-media-ref/:episodeOrMediaRef', async (ctx) => {
   try {
     const data = await getSecondaryQueueEpisodesForPlaylist(
       ctx.params.playlistId,
