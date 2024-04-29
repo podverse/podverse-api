@@ -144,7 +144,7 @@ export const addOrderByToQuery = (qb, type, sort, sortDateKey, allowRandom, isFr
     ormStatsType = StatsMediaRef
   }
 
-  if (!sort && isFromManticoreSearch) {
+  if (isFromManticoreSearch) {
     // apply no sorting
   } else if (sort === 'live-item-start-asc') {
     qb.orderBy(`liveItem.start`, ascKey)
