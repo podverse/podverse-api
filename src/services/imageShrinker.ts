@@ -2,6 +2,7 @@ import { config } from '~/config'
 import * as request from 'request-promise-native'
 import { convertToSlug } from '~/lib/utility'
 import { s3 } from '~/services/aws'
+const { userAgent } = config
 
 const sharp = require('sharp')
 
@@ -14,13 +15,17 @@ export const shrinkImage = async (podcast: any) => {
   try {
     const imgResponse = await request(podcast.imageUrl, {
       timeout: 5000,
-      encoding: null
+      encoding: null,
+      headers: {
+        'User-Agent': userAgent
+      }
     })
 
     const shrunkImage = await sharp(imgResponse).resize(shrunkImageSize).toFormat('jpg').toBuffer()
 
     let slug = podcast.title ? convertToSlug(podcast.title) : 'image'
     slug = `${slug}-${Date.now()}`
+
     const filePath = `podcast-images/${podcast.id}/`
     const fileName = `${slug}.jpg`
 
