@@ -31,6 +31,7 @@ export default [
       ...pluginJsRecommended.rules,
       ...tseslintRecommended.rules,
     },
+    ignores: ["eslint.config.mjs"],
   },
   {
     files: ["src/entities/**/*.ts"],
