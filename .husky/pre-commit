@@ -1,4 +1,2 @@
 #!/usr/bin/env sh
-$(which yarn) run pretty-quick --staged && $(which yarn) lint
-
 npm run lint

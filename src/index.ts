@@ -6,10 +6,10 @@ const app = express();
 const port = 3000;
 
 AppDataSource.initialize().then(() => {
-  console.log("Connected to the database");
+  console.log("Connected to the database")
 
   app.get("/", (req: Request, res: Response) => {
-    res.send(`The server is running on port ${port}`);
+      res.send(`The server is running on port ${port}`);
   });
 
   app.listen(port, () => {
