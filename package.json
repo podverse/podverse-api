@@ -5,7 +5,9 @@
   "contributors": [
     "Mitch Downey"
   ],
-  "scripts": {},
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
   "license": "AGPLv3",
   "homepage": "https://github.com/podverse/podverse-api#readme",
   "keywords": [
@@ -22,7 +24,12 @@
   ],
   "dependencies": {
     "express": "^4.19.2",
+    "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "ts-node": "^10.9.2"
   }
 }
