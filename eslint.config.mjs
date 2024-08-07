@@ -26,10 +26,11 @@ export default [
       "@typescript-eslint": tseslint,
     },
     rules: {
-      "semi": ["error", "always"],
-      "indent": ["error", 2],
       ...pluginJsRecommended.rules,
       ...tseslintRecommended.rules,
+      "semi": ["error", "always"],
+      "indent": ["error", 2],
+      "@typescript-eslint/no-require-imports": "off",
     },
     ignores: ["**/eslint.config.mjs"],
   },
