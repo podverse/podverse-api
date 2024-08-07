@@ -2,6 +2,10 @@ import "reflect-metadata";
 import express, { Request, Response } from "express";
 import { AppDataSource } from "./db";
 
+require('@dotenvx/dotenvx').config();
+
+console.log(`Hello ${process.env.NODE_ENV}!`);
+
 const app = express();
 const port = 3000;
 
