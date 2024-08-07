@@ -2,7 +2,7 @@
   "name": "podverse-api",
   "version": "5.0.0",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
-  "main": "index.js",
+  "main": "./src/index.js",
   "repository": "https://github.com/podverse/podverse-api.git",
   "homepage": "https://github.com/podverse/podverse-api#readme",
   "author": "Mitch Downey <mitchldowney@gmail.com>",
@@ -10,6 +10,7 @@
     "Mitch Downey"
   ],
   "scripts": {
+    "lint": "eslint 'src/**/*.{ts,js}'",
     "start": "ts-node src/index.ts"
   },
   "license": "AGPLv3",
@@ -32,7 +33,13 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.8.0",
     "@types/express": "^4.17.21",
-    "ts-node": "^10.9.2"
+    "eslint": "9.x",
+    "globals": "^15.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1"
   }
 }
