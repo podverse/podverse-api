@@ -1,2 +1,4 @@
 #!/usr/bin/env sh
-npm run lint -- "src/**/*.{ts}"
+$(which yarn) run pretty-quick --staged && $(which yarn) lint
+
+npm run lint
