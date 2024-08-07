@@ -2,6 +2,10 @@
   "name": "podverse-api",
   "version": "5.0.0",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
+  "main": "index.js",
+  "repository": "https://github.com/podverse/podverse-api.git",
+  "homepage": "https://github.com/podverse/podverse-api#readme",
+  "author": "Mitch Downey <mitchldowney@gmail.com>",
   "contributors": [
     "Mitch Downey"
   ],
@@ -9,7 +13,6 @@
     "start": "ts-node src/index.ts"
   },
   "license": "AGPLv3",
-  "homepage": "https://github.com/podverse/podverse-api#readme",
   "keywords": [
     "podcast",
     "episode",
