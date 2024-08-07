@@ -17,7 +17,7 @@ const tseslintRecommended = {
 
 export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    files: ["src/**/*.{js,ts}"],
     languageOptions: {
       globals: globals.node,
       parser: tsParser,
@@ -31,7 +31,7 @@ export default [
       ...pluginJsRecommended.rules,
       ...tseslintRecommended.rules,
     },
-    ignores: ["eslint.config.mjs"],
+    ignores: ["**/eslint.config.mjs"],
   },
   {
     files: ["src/entities/**/*.ts"],
