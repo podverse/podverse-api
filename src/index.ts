@@ -29,7 +29,7 @@ export const startApp = async () => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-      console.error(err.stack);
+      logger.error(err.stack);
       res.status(500).json({ error: err.message });
     });
 
