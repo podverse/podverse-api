@@ -19,11 +19,11 @@ export const startApp = async () => {
     await AppDataSource.initialize();
     logger.info("Connected to the database");
 
-    app.use(channelRoutes);
-
     app.get("/", (req: Request, res: Response) => {
       res.send(`The server is running on port ${port}`);
     });
+
+    app.use(channelRoutes);
 
     app.listen(port, () => {
       logger.info(`The server is running on port ${port}`);
