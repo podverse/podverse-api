@@ -1,5 +1,7 @@
 import { DataSource } from "typeorm";
 import { config } from "@/config";
+import { Category } from "@/entities/category";
+import { MediumValue } from "@/entities/mediumValue";
 import { User } from "@/entities/user";
 
 export const AppDataSource = new DataSource({
@@ -11,7 +13,11 @@ export const AppDataSource = new DataSource({
   database: config.database.database,
   synchronize: false,
   logging: false,
-  entities: [User],
+  entities: [
+    Category,
+    MediumValue,
+    User
+  ],
   migrations: [],
   subscribers: [],
 });
