@@ -2,7 +2,7 @@ import 'module-alias/register';
 require('@dotenvx/dotenvx').config();
 
 import "reflect-metadata";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { config } from '@/config';
 import { AppDataSource } from "@/db";
 import logger, { logError } from '@/lib/logs/logger';
@@ -26,6 +26,12 @@ export const startApp = async () => {
 
     app.use(channelRoutes);
     app.use(mediumValueRoutes);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      console.error(err.stack);
+      res.status(500).json({ error: err.message });
+    });
 
     app.listen(port, () => {
       logger.info(`The server is running on port ${port}`);

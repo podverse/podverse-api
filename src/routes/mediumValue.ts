@@ -1,17 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { config } from '@/config';
-import { MediumValueService } from '@/services/mediumValue';
-
-const mediumValueService = new MediumValueService();
+import { MediumValueController } from '@/controllers/mediumValue';
+import { asyncHandler } from '@/middleware/asyncHandler';
 
 const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/medium-value`, router);
 
-router.get('/', async (req: Request, res: Response) => {
-  const result = await mediumValueService.mediumValueGetAll();
-
-  res.json(result);
-});
+router.get('/', asyncHandler(MediumValueController.getAllMediumValues));
 
 export default router;
