@@ -7,6 +7,7 @@ import { config } from '@/config';
 import { AppDataSource } from "@/db";
 import logger, { logError } from '@/lib/logs/logger';
 import channelRoutes from '@/routes/channel';
+import mediumValueRoutes from '@/routes/mediumValue';
 
 console.log(`NODE_ENV = ${config.nodeEnv}`);
 
@@ -24,6 +25,7 @@ export const startApp = async () => {
     });
 
     app.use(channelRoutes);
+    app.use(mediumValueRoutes);
 
     app.listen(port, () => {
       logger.info(`The server is running on port ${port}`);

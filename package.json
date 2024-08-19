@@ -10,9 +10,10 @@
     "Mitch Downey"
   ],
   "scripts": {
+    "dev:watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint 'src/**/*.{ts,js}'",
-    "start": "ts-node src/index.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "ts-node src/index.ts"
   },
   "license": "AGPLv3",
   "keywords": [
@@ -46,6 +47,7 @@
     "globals": "^15.9.0",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.8",
+    "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
