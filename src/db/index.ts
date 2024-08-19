@@ -1,8 +1,10 @@
 import { DataSource } from "typeorm";
 import { config } from "@/config";
 import { Category } from "@/entities/category";
+import { Feed } from "@/entities/feed/feed";
+import { FeedFlagStatus } from "@/entities/feed/feedFlagStatus";
+import { FeedLog } from "@/entities/feed/feedLog";
 import { MediumValue } from "@/entities/mediumValue";
-import { User } from "@/entities/user";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -15,8 +17,10 @@ export const AppDataSource = new DataSource({
   logging: false,
   entities: [
     Category,
-    MediumValue,
-    User
+    Feed,
+    FeedFlagStatus,
+    FeedLog,
+    MediumValue
   ],
   migrations: [],
   subscribers: [],
