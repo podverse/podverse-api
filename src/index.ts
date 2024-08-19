@@ -1,22 +1,36 @@
-import "reflect-metadata";
-import express, { Request, Response } from "express";
-import { AppDataSource } from "./db";
-
+import 'module-alias/register';
 require('@dotenvx/dotenvx').config();
 
-console.log(`Hello ${process.env.NODE_ENV}!`);
+import "reflect-metadata";
+import express, { Request, Response } from "express";
+import { config } from '@/config';
+import { AppDataSource } from "@/db";
+import logger, { logError } from '@/lib/logs/logger';
+import channelRoutes from '@/routes/channel';
+
+console.log(`NODE_ENV = ${config.nodeEnv}`);
 
 const app = express();
-const port = 3000;
+const port = 1234;
 
-AppDataSource.initialize().then(() => {
-  console.log("Connected to the database");
+export const startApp = async () => {
+  try {
+    logger.info("Connecting to the database");
+    await AppDataSource.initialize();
+    logger.info("Connected to the database");
 
-  app.get("/", (req: Request, res: Response) => {
-    res.send(`The server is running on port ${port}`);
-  });
+    app.use(channelRoutes);
 
-  app.listen(port, () => {
-    console.log(`The server is running on port ${port}`);
-  });
-}).catch(error => console.log(error));
+    app.get("/", (req: Request, res: Response) => {
+      res.send(`The server is running on port ${port}`);
+    });
+
+    app.listen(port, () => {
+      logger.info(`The server is running on port ${port}`);
+    });
+  } catch (error) {
+    logError(error as Error);
+  }
+};
+
+startApp();

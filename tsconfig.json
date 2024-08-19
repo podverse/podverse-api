@@ -3,13 +3,18 @@
     "target": "ES6",
     "module": "commonjs",
     "strict": true,
+    "noImplicitAny": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
