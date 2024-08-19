@@ -7,6 +7,6 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/medium-value`, router);
 
-router.get('/', asyncHandler(MediumValueController.getAllMediumValues));
+router.get('/', asyncHandler(MediumValueController.mediumValuesGetAll));
 
 export default router;
