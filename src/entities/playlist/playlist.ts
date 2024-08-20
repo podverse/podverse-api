@@ -9,7 +9,7 @@ export class Playlist {
   id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  idText!: string;
+  id_text!: string;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })
@@ -17,7 +17,7 @@ export class Playlist {
 
   @ManyToOne(() => SharableStatus, sharableStatus => sharableStatus.id)
   @JoinColumn({ name: 'sharable_status_id' })
-  sharableStatus!: SharableStatus;
+  sharable_status!: SharableStatus;
 
   @Column({ type: 'varchar', nullable: true })
   title?: string;
@@ -26,15 +26,15 @@ export class Playlist {
   description?: string;
 
   @Column({ type: 'boolean', default: false })
-  isDefaultFavorites!: boolean;
+  is_default_favorites!: boolean;
 
   @Column({ type: 'boolean', default: false })
-  isPublic!: boolean;
+  is_public!: boolean;
 
   @Column({ type: 'int', default: 0 })
-  itemCount!: number;
+  item_count!: number;
 
   @ManyToOne(() => MediumValue, mediumValue => mediumValue.id)
   @JoinColumn({ name: 'medium_value_id' })
-  mediumValue!: MediumValue;
+  medium_value!: MediumValue;
 }

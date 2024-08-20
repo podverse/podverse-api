@@ -5,10 +5,10 @@ import { Channel } from '@/entities/channel/channel';
 @Entity()
 export class AccountNotification {
   @PrimaryColumn()
-  channelId!: number;
+  channel_id!: number;
 
   @PrimaryColumn()
-  accountId!: number;
+  account_id!: number;
 
   @ManyToOne(() => Channel, channel => channel.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })

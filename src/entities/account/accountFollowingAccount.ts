@@ -4,10 +4,10 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountFollowingAccount {
   @PrimaryColumn()
-  accountId!: number;
+  account_id!: number;
 
   @PrimaryColumn()
-  followingAccountId!: number;
+  following_account_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })
@@ -15,5 +15,5 @@ export class AccountFollowingAccount {
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'following_account_id' })
-  followingAccount!: Account;
+  following_account!: Account;
 }

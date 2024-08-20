@@ -13,14 +13,14 @@ export class LiveItem {
 
   @ManyToOne(() => LiveItemStatus, liveItemStatus => liveItemStatus.id)
   @JoinColumn({ name: 'live_item_status_id' })
-  liveItemStatus!: LiveItemStatus;
+  live_item_status!: LiveItemStatus;
 
   @Column({ type: 'timestamptz' })
-  startTime!: Date;
+  start_time!: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
-  endTime?: Date;
+  end_time?: Date;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  chatWebUrl?: string;
+  chat_web_url?: string;
 }

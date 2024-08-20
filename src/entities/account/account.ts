@@ -7,12 +7,12 @@ export class Account {
   id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  idText!: string;
+  id_text!: string;
 
   @Column({ type: 'boolean', default: false })
   verified!: boolean;
 
   @ManyToOne(() => SharableStatus, sharableStatus => sharableStatus.id)
   @JoinColumn({ name: 'sharable_status_id' })
-  sharableStatus!: SharableStatus;
+  sharable_status!: SharableStatus;
 }

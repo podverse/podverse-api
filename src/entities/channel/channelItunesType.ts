@@ -8,5 +8,5 @@ export class ChannelItunesType {
   id!: number;
 
   @Column()
-  itunesType!: string;
+  itunes_type!: string;
 }

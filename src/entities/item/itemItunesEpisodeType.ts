@@ -8,5 +8,5 @@ export class ItemItunesEpisodeType {
   id!: number;
 
   @Column({ type: 'text', name: 'itunes_episode_type' })
-  itunesEpisodeType!: string;
+  itunes_episode_type!: string;
 }

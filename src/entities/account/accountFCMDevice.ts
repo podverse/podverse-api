@@ -4,10 +4,10 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountFCMDevice {
   @PrimaryColumn()
-  fcmToken!: string;
+  fcm_token!: string;
 
   @Column()
-  accountId!: number;
+  account_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })

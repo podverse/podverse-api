@@ -17,7 +17,7 @@ export class ChannelChat {
   protocol!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  accountId!: string;
+  account_id!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   space!: string;

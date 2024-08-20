@@ -8,7 +8,7 @@ export class ChannelSeason {
   id!: number;
 
   @Column({ type: 'integer', name: 'channel_id' })
-  channelId!: number;
+  channel_id!: number;
 
   @ManyToOne(() => Channel, channel => channel.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })

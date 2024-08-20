@@ -4,10 +4,10 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountFollowingAddByRssChannel {
   @PrimaryColumn()
-  accountId!: number;
+  account_id!: number;
 
   @PrimaryColumn()
-  feedUrl!: string;
+  feed_url!: string;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })
@@ -17,5 +17,5 @@ export class AccountFollowingAddByRssChannel {
   title!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  imageUrl!: string;
+  image_url!: string;
 }

@@ -13,5 +13,5 @@ export class Queue {
 
   @ManyToOne(() => MediumValue, mediumValue => mediumValue.id)
   @JoinColumn({ name: 'medium_value_id' })
-  mediumValue!: MediumValue;
+  medium_value!: MediumValue;
 }

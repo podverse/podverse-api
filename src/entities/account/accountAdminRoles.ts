@@ -11,8 +11,8 @@ export class AccountAdminRoles {
   account!: Account;
 
   @Column({ type: 'boolean', default: false })
-  devAdmin!: boolean;
+  dev_admin!: boolean;
 
   @Column({ type: 'boolean', default: false })
-  podpingAdmin!: boolean;
+  podping_admin!: boolean;
 }

@@ -4,16 +4,16 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountUpDevice {
   @PrimaryColumn()
-  upEndpoint!: string;
+  up_endpoint!: string;
 
   @Column()
-  upPublicKey!: string;
+  up_public_key!: string;
 
   @Column()
-  upAuthKey!: string;
+  up_auth_key!: string;
 
   @Column()
-  accountId!: number;
+  account_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })

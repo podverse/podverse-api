@@ -8,14 +8,14 @@ export class ItemChapterImage {
 
   @ManyToOne(() => ItemChapter, itemChapter => itemChapter.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_chapter_id' })
-  itemChapter!: ItemChapter;
+  item_chapter!: ItemChapter;
 
   @Column({ type: 'varchar', name: 'url' })
   url!: string;
 
   @Column({ type: 'int', name: 'image_width_size', nullable: true })
-  imageWidthSize?: number;
+  image_width_size?: number;
 
   @Column({ type: 'boolean', name: 'is_resized', default: false })
-  isResized!: boolean;
+  is_resized!: boolean;
 }

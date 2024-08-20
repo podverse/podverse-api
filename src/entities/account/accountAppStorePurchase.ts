@@ -4,70 +4,70 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountAppStorePurchase {
   @PrimaryColumn()
-  transactionId!: string;
+  transaction_id!: string;
 
   @Column({ nullable: true })
-  cancellationDate?: string;
+  cancellation_date?: string;
 
   @Column({ nullable: true })
-  cancellationDateMs?: string;
+  cancellation_date_ms?: string;
 
   @Column({ nullable: true })
-  cancellationDatePst?: string;
+  cancellation_date_pst?: string;
 
   @Column({ nullable: true })
-  cancellationReason?: string;
+  cancellation_reason?: string;
 
   @Column({ nullable: true })
-  expiresDate?: string;
+  expires_date?: string;
 
   @Column({ nullable: true })
-  expiresDateMs?: string;
+  expires_date_ms?: string;
 
   @Column({ nullable: true })
-  expiresDatePst?: string;
+  expires_date_pst?: string;
 
   @Column({ nullable: true })
-  isInIntroOfferPeriod?: boolean;
+  is_in_intro_offer_period?: boolean;
 
   @Column({ nullable: true })
-  isTrialPeriod?: boolean;
+  is_trial_period?: boolean;
 
   @Column({ nullable: true })
-  originalPurchaseDate?: string;
+  original_purchase_date?: string;
 
   @Column({ nullable: true })
-  originalPurchaseDateMs?: string;
+  original_purchase_date_ms?: string;
 
   @Column({ nullable: true })
-  originalPurchaseDatePst?: string;
+  original_purchase_date_pst?: string;
 
   @Column({ nullable: true })
-  originalTransactionId?: string;
+  original_transaction_id?: string;
 
   @Column({ nullable: true })
-  productId?: string;
+  product_id?: string;
 
   @Column({ nullable: true })
-  promotionalOfferId?: string;
+  promotional_offer_id?: string;
 
   @Column({ nullable: true })
-  purchaseDate?: string;
+  purchase_date?: string;
 
   @Column({ nullable: true })
-  purchaseDateMs?: string;
+  purchase_date_ms?: string;
 
   @Column({ nullable: true })
-  purchaseDatePst?: string;
+  purchase_date_pst?: string;
 
   @Column({ nullable: true })
   quantity?: number;
 
   @Column({ nullable: true })
-  webOrderLineItemId?: string;
+  web_order_line_item_id?: string;
 
   @Column()
-  accountId!: number;
+  account_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })

@@ -17,10 +17,10 @@ export class ItemSocialInteract {
   uri!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  accountId?: string;
+  account_id?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  accountUrl?: string;
+  account_url?: string;
 
   @Column({ type: 'int', nullable: true })
   priority?: number;

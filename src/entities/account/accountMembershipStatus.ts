@@ -13,8 +13,8 @@ export class AccountMembershipStatus {
 
   @ManyToOne(() => AccountMembership, accountMembership => accountMembership.id)
   @JoinColumn({ name: 'account_membership_id' })
-  accountMembership!: AccountMembership;
+  account_membership!: AccountMembership;
 
   @Column({ type: 'timestamp', nullable: true })
-  membershipExpiresAt?: Date;
+  membership_expires_at?: Date;
 }

@@ -35,5 +35,5 @@ export class ItemEnclosure {
   codecs?: string;
 
   @Column({ type: 'boolean', default: false })
-  itemEnclosureDefault!: boolean;
+  item_enclosure_default!: boolean;
 }

@@ -8,17 +8,17 @@ export class ItemValueTagTimeSplit {
 
   @ManyToOne(() => ItemValueTag, itemValueTag => itemValueTag.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_value_tag_id' })
-  itemValueTag!: ItemValueTag;
+  item_value_tag!: ItemValueTag;
 
   @Column({ type: 'int' })
-  startTime!: number;
+  start_time!: number;
 
   @Column({ type: 'int' })
   duration!: number;
 
   @Column({ type: 'int', default: 0 })
-  remoteStartTime!: number;
+  remote_start_time!: number;
 
   @Column({ type: 'int', default: 100 })
-  remotePercentage!: number;
+  remote_percentage!: number;
 }

@@ -8,17 +8,17 @@ export class ChannelValueTagTimeSplit {
 
   @ManyToOne(() => ChannelValueTag, channelValueTag => channelValueTag.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_value_tag_id' })
-  channelValueTag!: ChannelValueTag;
+  channel_value_tag!: ChannelValueTag;
 
   @Column({ type: 'int', name: 'start_time' })
-  startTime!: number;
+  start_time!: number;
 
   @Column({ type: 'int', name: 'duration' })
   duration!: number;
 
   @Column({ type: 'int', name: 'remote_start_time', default: 0 })
-  remoteStartTime!: number;
+  remote_start_time!: number;
 
   @Column({ type: 'int', name: 'remote_percentage', default: 100 })
-  remotePercentage!: number;
+  remote_percentage!: number;
 }

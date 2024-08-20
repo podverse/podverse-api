@@ -8,7 +8,7 @@ export class ChannelValueTagReceipient {
 
   @ManyToOne(() => ChannelValueTag, channelValueTag => channelValueTag.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_value_tag_id' })
-  channelValueTag!: ChannelValueTag;
+  channel_value_tag!: ChannelValueTag;
 
   @Column({ type: 'varchar', length: 255, name: 'type' })
   type!: string;
@@ -23,10 +23,10 @@ export class ChannelValueTagReceipient {
   name!: string;
 
   @Column({ type: 'varchar', length: 255, name: 'custom_key', nullable: true })
-  customKey!: string;
+  custom_key!: string;
 
   @Column({ type: 'varchar', length: 255, name: 'custom_value', nullable: true })
-  customValue!: string;
+  custom_value!: string;
 
   @Column({ type: 'boolean', name: 'fee', default: false })
   fee!: boolean;

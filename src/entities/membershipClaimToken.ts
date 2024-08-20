@@ -10,12 +10,12 @@ export class MembershipClaimToken {
   claimed!: boolean;
 
   @Column({ default: 1 })
-  yearsToAdd!: number;
+  years_to_add!: number;
 
   @Column()
-  accountMembershipId!: number;
+  account_membership_id!: number;
 
   @ManyToOne(() => AccountMembership, accountMembership => accountMembership.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_membership_id' })
-  accountMembership!: AccountMembership;
+  account_membership!: AccountMembership;
 }

@@ -9,7 +9,7 @@ export class ItemChapterLocation {
 
   @ManyToOne(() => ItemChapter, itemChapter => itemChapter.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_chapter_id' })
-  itemChapter!: ItemChapter;
+  item_chapter!: ItemChapter;
 
   @Column({ type: 'varchar', nullable: true })
   geo?: string;

@@ -9,7 +9,7 @@ export class Clip {
   id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  idText!: string;
+  id_text!: string;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })
@@ -20,10 +20,10 @@ export class Clip {
   item!: Item;
 
   @Column({ type: 'float' })
-  startTime!: number;
+  start_time!: number;
   
   @Column({ type: 'float', nullable: true })
-  endTime?: number;
+  end_time?: number;
 
   @Column({ type: 'varchar', nullable: true })
   title?: string;
@@ -33,5 +33,5 @@ export class Clip {
 
   @ManyToOne(() => SharableStatus, sharableStatus => sharableStatus.id)
   @JoinColumn({ name: 'sharable_status_id' })
-  sharableStatus!: SharableStatus;
+  sharable_status!: SharableStatus;
 }

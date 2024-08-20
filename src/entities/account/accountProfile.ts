@@ -11,7 +11,7 @@ export class AccountProfile {
   account!: Account;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  displayName?: string;
+  display_name?: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: true })
   bio?: string;

@@ -15,18 +15,18 @@ export class ChannelAbout {
   author!: string;
 
   @Column({ type: 'int', nullable: true })
-  episodeCount!: number;
+  episode_count!: number;
 
   @Column({ type: 'boolean', nullable: true })
   explicit!: boolean;
 
   @ManyToOne(() => ChannelItunesType, channelItunesType => channelItunesType.id, { nullable: true })
   @JoinColumn({ name: 'itunes_type_id' })
-  itunesType!: ChannelItunesType;
+  itunes_type!: ChannelItunesType;
 
   @Column({ type: 'varchar', length: 50 })
   language!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  websiteLinkUrl!: string;
+  website_link_url!: string;
 }

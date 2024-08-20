@@ -17,23 +17,23 @@ export class ItemChapters {
   type!: string;
 
   @Column({ type: 'int', name: 'last_http_status', nullable: true })
-  lastHttpStatus?: number;
+  last_http_status?: number;
 
   @Column({ type: 'timestamp', name: 'last_crawl_time', nullable: true })
-  lastCrawlTime?: Date;
+  last_crawl_time?: Date;
 
   @Column({ type: 'timestamp', name: 'last_good_http_status_time', nullable: true })
-  lastGoodHttpStatusTime?: Date;
+  last_good_http_status_time?: Date;
 
   @Column({ type: 'timestamp', name: 'last_parse_time', nullable: true })
-  lastParseTime?: Date;
+  last_parse_time?: Date;
 
   @Column({ type: 'timestamp', name: 'last_update_time', nullable: true })
-  lastUpdateTime?: Date;
+  last_update_time?: Date;
 
   @Column({ type: 'int', name: 'crawl_errors', default: 0 })
-  crawlErrors!: number;
+  crawl_errors!: number;
 
   @Column({ type: 'int', name: 'parse_errors', default: 0 })
-  parseErrors!: number;
+  parse_errors!: number;
 }

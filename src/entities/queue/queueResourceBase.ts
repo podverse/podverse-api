@@ -11,13 +11,13 @@ export class QueueResourceBase {
   queue!: Queue;
 
   @Column({ type: 'numeric' })
-  listPosition!: number;
+  list_position!: number;
 
   @Column({ type: 'numeric', default: 0 })
-  playbackPosition!: number;
+  playback_position!: number;
 
   @Column({ type: 'float', default: 0 })
-  mediaFileDuration!: number;
+  media_file_duration!: number;
 
   @Column({ type: 'boolean', default: false })
   completed!: boolean;

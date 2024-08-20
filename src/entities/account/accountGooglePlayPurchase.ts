@@ -4,34 +4,34 @@ import { Account } from '@/entities/account/account';
 @Entity()
 export class AccountGooglePlayPurchase {
   @PrimaryColumn()
-  transactionId!: string;
+  transaction_id!: string;
 
   @Column({ nullable: true })
-  acknowledgementState?: number;
+  acknowledgement_state?: number;
 
   @Column({ nullable: true })
-  consumptionState?: number;
+  consumption_state?: number;
 
   @Column({ nullable: true })
-  developerPayload?: string;
+  developer_payload?: string;
 
   @Column({ nullable: true })
   kind?: string;
 
   @Column()
-  productId!: string;
+  product_id!: string;
 
   @Column({ nullable: true })
-  purchaseTimeMillis?: string;
+  purchase_time_millis?: string;
 
   @Column({ nullable: true })
-  purchaseState?: number;
+  purchase_state?: number;
 
   @Column({ unique: true })
-  purchaseToken!: string;
+  purchase_token!: string;
 
   @Column()
-  accountId!: number;
+  account_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })

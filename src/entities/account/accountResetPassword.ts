@@ -11,8 +11,8 @@ export class AccountResetPassword {
   account!: Account;
 
   @Column({ type: 'varchar', length: 36 })
-  resetToken!: string;
+  reset_token!: string;
 
   @Column({ type: 'timestamp' })
-  resetTokenExpiresAt!: Date;
+  reset_token_expires_at!: Date;
 }

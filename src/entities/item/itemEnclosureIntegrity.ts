@@ -8,7 +8,7 @@ export class ItemEnclosureIntegrity {
 
   @ManyToOne(() => ItemEnclosureSource, itemEnclosureSource => itemEnclosureSource.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_enclosure_id' })
-  itemEnclosureSource!: ItemEnclosureSource;
+  item_enclosure_source!: ItemEnclosureSource;
 
   @Column({ type: 'text' })
   type!: 'sri' | 'pgp-signature';

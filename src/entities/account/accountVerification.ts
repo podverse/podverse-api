@@ -11,8 +11,8 @@ export class AccountVerification {
   account!: Account;
 
   @Column({ type: 'varchar', length: 36 })
-  verificationToken!: string;
+  verification_token!: string;
 
   @Column({ type: 'timestamp' })
-  verificationTokenExpiresAt!: Date;
+  verification_token_expires_at!: Date;
 }

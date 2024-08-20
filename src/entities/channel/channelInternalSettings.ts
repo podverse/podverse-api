@@ -11,5 +11,5 @@ export class ChannelInternalSettings {
   channel!: Channel;
 
   @Column({ type: 'text', nullable: true })
-  embedApprovedMediaUrlPaths!: string;
+  embed_approved_media_url_paths!: string;
 }

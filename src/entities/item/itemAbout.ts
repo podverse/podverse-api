@@ -18,9 +18,9 @@ export class ItemAbout {
   explicit?: boolean;
 
   @Column({ type: 'varchar', name: 'website_link_url', nullable: true })
-  websiteLinkUrl?: string;
+  website_link_url?: string;
 
   @ManyToOne(() => ItemItunesEpisodeType, itemItunesEpisodeType => itemItunesEpisodeType.id, { nullable: true })
   @JoinColumn({ name: 'item_itunes_episode_type_id' })
-  itemItunesEpisodeType?: ItemItunesEpisodeType;
+  item_itunes_episode_type?: ItemItunesEpisodeType;
 }

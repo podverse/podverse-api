@@ -14,8 +14,8 @@ export class ItemImage {
   url!: string;
 
   @Column({ type: 'int', nullable: true })
-  imageWidthSize?: number;
+  image_width_size?: number;
 
   @Column({ type: 'boolean', default: false })
-  isResized!: boolean;
+  is_resized!: boolean;
 }

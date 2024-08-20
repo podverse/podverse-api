@@ -5,10 +5,10 @@ import { Playlist } from '@/entities/playlist/playlist';
 @Entity()
 export class AccountFollowingPlaylist {
   @PrimaryColumn()
-  accountId!: number;
+  account_id!: number;
 
   @PrimaryColumn()
-  playlistId!: number;
+  playlist_id!: number;
 
   @ManyToOne(() => Account, account => account.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'account_id' })

@@ -7,5 +7,5 @@ import { QueueResourceBase } from "@/entities/queue/queueResourceBase";
 export class QueueResourceItemChapter extends QueueResourceBase {
   @ManyToOne(() => ItemChapter, itemChapter => itemChapter.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_chapter_id' })
-  itemChapter!: ItemChapter;
+  item_chapter!: ItemChapter;
 }

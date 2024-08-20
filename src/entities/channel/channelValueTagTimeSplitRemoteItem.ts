@@ -8,16 +8,16 @@ export class ChannelValueTagTimeSplitRemoteItem {
 
   @ManyToOne(() => ChannelValueTagTimeSplit, channelValueTagTimeSplit => channelValueTagTimeSplit.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_value_tag_time_split_id' })
-  channelValueTagTimeSplit!: ChannelValueTagTimeSplit;
+  channel_value_tag_time_split!: ChannelValueTagTimeSplit;
 
   @Column({ type: 'uuid', name: 'feed_guid' })
-  feedGuid!: string;
+  feed_guid!: string;
 
   @Column({ type: 'varchar', name: 'feed_url' })
-  feedUrl!: string;
+  feed_url!: string;
 
   @Column({ type: 'varchar', name: 'item_guid' })
-  itemGuid!: string;
+  item_guid!: string;
 
   @Column({ type: 'varchar', name: 'title' })
   title!: string;

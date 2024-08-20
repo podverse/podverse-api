@@ -9,7 +9,7 @@ export class ItemSeason {
 
   @ManyToOne(() => ChannelSeason, channelSeason => channelSeason.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_season_id' })
-  channelSeason!: ChannelSeason;
+  channel_season!: ChannelSeason;
 
   @ManyToOne(() => Item, item => item.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_id' })

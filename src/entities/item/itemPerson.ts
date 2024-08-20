@@ -17,7 +17,7 @@ export class ItemPerson {
   role!: string;
 
   @Column({ type: 'varchar', length: 255, default: 'cast' })
-  personGroup!: string;
+  person_group!: string;
 
   @Column({ type: 'varchar', length: 255 })
   img!: string;

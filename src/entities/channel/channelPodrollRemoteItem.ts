@@ -9,21 +9,21 @@ export class ChannelPodrollRemoteItem {
 
   @ManyToOne(() => ChannelPodroll, channelPodroll => channelPodroll.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_podroll_id' })
-  channelPodroll!: ChannelPodroll;
+  channel_podroll!: ChannelPodroll;
 
   @Column({ type: 'uuid', name: 'feed_guid' })
-  feedGuid!: string;
+  feed_guid!: string;
 
   @Column({ type: 'varchar', name: 'feed_url', nullable: true })
-  feedUrl!: string;
+  feed_url!: string;
 
   @Column({ type: 'varchar', name: 'item_guid', nullable: true })
-  itemGuid!: string;
+  item_guid!: string;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title!: string;
 
   @ManyToOne(() => MediumValue, mediumValue => mediumValue.id, { nullable: true })
   @JoinColumn({ name: 'medium_value_id' })
-  mediumValue!: MediumValue;
+  medium_value!: MediumValue;
 }

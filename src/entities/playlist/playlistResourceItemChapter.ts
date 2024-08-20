@@ -6,5 +6,5 @@ import { PlaylistResourceBase } from '@/entities/playlist/playlistResourceBase';
 export class PlaylistResourceItemChapter extends PlaylistResourceBase {
   @ManyToOne(() => ItemChapter, itemChapter => itemChapter.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_chapter_id' })
-  itemChapter!: ItemChapter;
+  item_chapter!: ItemChapter;
 }

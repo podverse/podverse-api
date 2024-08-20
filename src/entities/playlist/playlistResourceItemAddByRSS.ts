@@ -4,5 +4,5 @@ import { PlaylistResourceBase } from "@/entities/playlist/playlistResourceBase";
 @Entity()
 export class PlaylistResourceItemAddByRss extends PlaylistResourceBase {
   @Column({ type: 'jsonb' })
-  resourceData!: object;
+  resource_data!: object;
 }

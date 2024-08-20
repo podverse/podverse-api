@@ -9,7 +9,7 @@ export class Item {
   id!: number;
 
   @Column({ type: 'varchar', name: 'id_text' })
-  idText!: string;
+  id_text!: string;
 
   @Column({ type: 'varchar', name: 'slug', nullable: true })
   slug?: string;
@@ -22,7 +22,7 @@ export class Item {
   guid?: string;
 
   @Column({ type: 'timestamptz', name: 'pub_date', nullable: true })
-  pubDate?: Date;
+  pub_date?: Date;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title?: string;
@@ -31,5 +31,5 @@ export class Item {
   hidden!: boolean;
 
   @Column({ type: 'boolean', name: 'marked_for_deletion', default: false })
-  markedForDeletion!: boolean;
+  marked_for_deletion!: boolean;
 }

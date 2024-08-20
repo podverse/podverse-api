@@ -14,5 +14,5 @@ export class ItemSeasonEpisode {
   display?: string;
 
   @Column({ type: 'float' })
-  episodeNumber!: number;
+  episode_number!: number;
 }

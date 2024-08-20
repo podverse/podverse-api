@@ -8,7 +8,7 @@ export class ItemValueTagTimeSplitRecipient {
 
   @ManyToOne(() => ItemValueTagTimeSplit, itemValueTagTimeSplit => itemValueTagTimeSplit.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_value_tag_time_split_id' })
-  itemValueTagTimeSplit!: ItemValueTagTimeSplit;
+  item_value_tag_time_split!: ItemValueTagTimeSplit;
 
   @Column({ type: 'varchar', length: 255 })
   type!: string;
@@ -23,10 +23,10 @@ export class ItemValueTagTimeSplitRecipient {
   name?: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: true })
-  customKey?: string;
+  custom_key?: string;
 
   @Column({ type: 'varchar', length: 1024, nullable: true })
-  customValue?: string;
+  custom_value?: string;
 
   @Column({ type: 'boolean', default: false })
   fee!: boolean;
