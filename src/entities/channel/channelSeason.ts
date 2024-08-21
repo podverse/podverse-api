@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique }
 import { Channel } from '@/entities/channel/channel';
 
 @Entity({ name: 'channel_season' })
-@Unique(['channelId', 'number'])
+@Unique(['channel_id', 'number'])
 export class ChannelSeason {
   @PrimaryGeneratedColumn()
   id!: number;

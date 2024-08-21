@@ -21,6 +21,6 @@ export class LiveItem {
   @Column({ type: 'timestamptz', nullable: true })
   end_time?: Date;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   chat_web_url?: string;
 }

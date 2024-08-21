@@ -11,9 +11,9 @@ export class ItemLocation {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   geo?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   osm?: string;
 }

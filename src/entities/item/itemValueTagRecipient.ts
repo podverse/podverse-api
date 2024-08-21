@@ -10,22 +10,22 @@ export class ItemValueTagRecipient {
   @JoinColumn({ name: 'item_value_tag_id' })
   item_value_tag!: ItemValueTag;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   type!: string;
 
-  @Column({ type: 'varchar', length: 1024 })
+  @Column({ type: 'varchar' })
   address!: string;
 
   @Column({ type: 'float' })
   split!: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   name?: string;
 
-  @Column({ type: 'varchar', length: 1024, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   custom_key?: string;
 
-  @Column({ type: 'varchar', length: 1024, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   custom_value?: string;
 
   @Column({ type: 'boolean', default: false })

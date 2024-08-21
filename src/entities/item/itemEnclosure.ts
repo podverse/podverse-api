@@ -10,7 +10,7 @@ export class ItemEnclosure {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   type!: string;
 
   @Column({ type: 'int', nullable: true })
@@ -22,16 +22,16 @@ export class ItemEnclosure {
   @Column({ type: 'int', nullable: true })
   height?: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   language?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   title?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   rel?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   codecs?: string;
 
   @Column({ type: 'boolean', default: false })

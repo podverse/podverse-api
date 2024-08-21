@@ -11,7 +11,7 @@ export class ChannelAbout {
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   author!: string;
 
   @Column({ type: 'int', nullable: true })
@@ -24,9 +24,9 @@ export class ChannelAbout {
   @JoinColumn({ name: 'itunes_type_id' })
   itunes_type!: ChannelItunesType;
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar' })
   language!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   website_link_url!: string;
 }

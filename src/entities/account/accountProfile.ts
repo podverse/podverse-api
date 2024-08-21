@@ -10,9 +10,9 @@ export class AccountProfile {
   @JoinColumn({ name: 'account_id' })
   account!: Account;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   display_name?: string;
 
-  @Column({ type: 'varchar', length: 1024, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   bio?: string;
 }

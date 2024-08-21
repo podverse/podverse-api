@@ -11,9 +11,9 @@ export class ChannelLocation {
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   geo!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   osm!: string;
 }

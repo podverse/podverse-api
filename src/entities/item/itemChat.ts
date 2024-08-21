@@ -10,15 +10,15 @@ export class ItemChat {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   server!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   protocol?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   account_id?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   space?: string;
 }

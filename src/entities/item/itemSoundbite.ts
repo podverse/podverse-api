@@ -6,14 +6,14 @@ export class ItemSoundbite {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', unique: true })
   id_text!: string;
 
   @ManyToOne(() => Item, item => item.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   url!: string;
 
   @Column({ type: 'int' })
@@ -22,6 +22,6 @@ export class ItemSoundbite {
   @Column({ type: 'int' })
   duration!: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   title?: string;
 }

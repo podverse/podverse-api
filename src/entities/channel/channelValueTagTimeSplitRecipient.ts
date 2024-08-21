@@ -10,22 +10,22 @@ export class ChannelValueTagTimeSplitReceipient {
   @JoinColumn({ name: 'channel_value_tag_time_split_id' })
   channel_value_tag_time_split!: ChannelValueTagTimeSplit;
 
-  @Column({ type: 'varchar', length: 255, name: 'type' })
+  @Column({ type: 'varchar', name: 'type' })
   type!: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'address' })
+  @Column({ type: 'varchar', name: 'address' })
   address!: string;
 
   @Column({ type: 'float', name: 'split' })
   split!: number;
 
-  @Column({ type: 'varchar', length: 255, name: 'name', nullable: true })
+  @Column({ type: 'varchar', name: 'name', nullable: true })
   name?: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'custom_key', nullable: true })
+  @Column({ type: 'varchar', name: 'custom_key', nullable: true })
   custom_key?: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'custom_value', nullable: true })
+  @Column({ type: 'varchar', name: 'custom_value', nullable: true })
   custom_value?: string;
 
   @Column({ type: 'boolean', name: 'fee', default: false })

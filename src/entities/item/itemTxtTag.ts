@@ -10,9 +10,9 @@ export class ItemTxtTag {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   verify!: string;
 
-  @Column({ type: 'varchar', length: 1024 })
+  @Column({ type: 'varchar' })
   value!: string;
 }

@@ -10,10 +10,10 @@ export class ItemValueTag {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   type!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   method!: string;
 
   @Column({ type: 'float', nullable: true })

@@ -10,7 +10,7 @@ export class ChannelImage {
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   url!: string;
 
   @Column({ type: 'int', nullable: true })

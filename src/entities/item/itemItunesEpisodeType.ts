@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique, Check } from 'typeorm';
 
 @Entity()
-@Unique(['itunesEpisodeType'])
-@Check(`"itunesEpisodeType" IN ('full', 'trailer', 'bonus')`)
+@Unique(['itunes_episode_type'])
+@Check(`"itunes_episode_type" IN ('full', 'trailer', 'bonus')`)
 export class ItemItunesEpisodeType {
   @PrimaryGeneratedColumn()
   id!: number;

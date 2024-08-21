@@ -10,7 +10,7 @@ export class AccountVerification {
   @JoinColumn({ name: 'account_id' })
   account!: Account;
 
-  @Column({ type: 'varchar', length: 36 })
+  @Column({ type: 'varchar' })
   verification_token!: string;
 
   @Column({ type: 'timestamp' })

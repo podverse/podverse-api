@@ -13,12 +13,12 @@ export class ItemValueTagTimeSplitRemoteItem {
   @Column({ type: 'uuid' })
   feed_guid!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   feed_url?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   item_guid?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   title?: string;
 }

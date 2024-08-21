@@ -12,10 +12,10 @@ export class Channel {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   id_text!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   slug!: string | null;
 
   @ManyToOne(() => Feed, feed => feed.id, { onDelete: 'CASCADE' })
@@ -27,10 +27,10 @@ export class Channel {
   @Column({ type: 'uuid', nullable: true })
   podcast_guid!: string | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   title!: string | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   sortable_title!: string | null;
 
   @ManyToOne(() => MediumValue, mediumValue => mediumValue.id, { nullable: true })

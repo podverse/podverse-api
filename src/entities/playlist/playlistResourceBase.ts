@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique }
 import { Playlist } from '@/entities/playlist/playlist';
 
 @Entity()
-@Unique(['playlist', 'listPosition'])
+@Unique(['playlist', 'list_position'])
 export class PlaylistResourceBase {
   @PrimaryGeneratedColumn()
   id!: number;

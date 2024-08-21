@@ -10,9 +10,9 @@ export class ItemEnclosureSource {
   @JoinColumn({ name: 'item_enclosure_id' })
   item_enclosure!: ItemEnclosure;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   uri!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   content_type?: string;
 }

@@ -10,15 +10,15 @@ export class ChannelChat {
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   server!: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   protocol!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   account_id!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   space!: string;
 }

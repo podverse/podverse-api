@@ -10,18 +10,18 @@ export class ItemPerson {
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   name!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   role!: string;
 
-  @Column({ type: 'varchar', length: 255, default: 'cast' })
+  @Column({ type: 'varchar', default: 'cast' })
   person_group!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   img!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   href!: string;
 }

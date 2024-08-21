@@ -10,7 +10,7 @@ export class ItemSeasonEpisode {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   display?: string;
 
   @Column({ type: 'float' })

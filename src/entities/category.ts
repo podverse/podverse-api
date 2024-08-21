@@ -5,12 +5,12 @@ export class Category {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   node_text!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   display_name!: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   slug!: string;
 }

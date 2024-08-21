@@ -10,7 +10,7 @@ export class ItemImage {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   url!: string;
 
   @Column({ type: 'int', nullable: true })

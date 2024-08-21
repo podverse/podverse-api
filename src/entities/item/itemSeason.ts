@@ -15,6 +15,6 @@ export class ItemSeason {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar' })
   title!: string;
 }
