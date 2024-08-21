@@ -13,15 +13,17 @@
     "rootDir": "../",
     "baseUrl": ".",
     "paths": {
+      "@helpers/*": ["../helpers/src/*"],
+      "@orm/*": ["../orm/src/*"],
       "@parser-rss/*": ["src/*"],
-      "@router-api/*": ["../router-api/src/*"],
-      "@orm/*": ["../orm/src/*"]
+      "@router-api/*": ["../router-api/src/*"]
     }
   },
   "include": [
+    "../helpers/src/**/*.ts",
     "../orm/src/**/*.ts",
-    "../router-api/src/**/*.ts",
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "../router-api/src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

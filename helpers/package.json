@@ -1,5 +1,5 @@
 {
-  "name": "podverse-parser-rss",
+  "name": "podverse-helpers",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,12 +9,13 @@
   "author": "",
   "license": "ISC",
   "_moduleAliases": {
-    "@helpers": "../helpers/src",
+    "@helpers": "src",
     "@orm": "../orm/src",
-    "@parser-rss": "src",
+    "@parser-rss": "../parser-rss/src",
     "@router-api": "../router-api/src"
   },
   "dependencies": {
+    "axios": "^1.7.4",
     "podcast-partytime": "^4.8.0"
   }
 }

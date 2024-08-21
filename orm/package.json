@@ -19,6 +19,7 @@
     "eslint": "^9.9.0"
   },
   "_moduleAliases": {
+    "@helpers": "../helpers/src",
     "@orm": "src",
     "@parser-rss": "../parser-rss/src",
     "@router-api": "../router-api/src"
