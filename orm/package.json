@@ -17,5 +17,10 @@
     "@eslint/js": "^9.8.0",
     "@types/node": "^22.1.0",
     "eslint": "^9.9.0"
+  },
+  "_moduleAliases": {
+    "@orm": "src",
+    "@parser-rss": "../parser-rss/src",
+    "@router-api": "../router-api/src"
   }
 }

@@ -33,12 +33,6 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
     ignores: ["**/eslint.config.mjs"],
-  },
-  {
-    files: ["src/entities/**/*.ts"],
-    rules: {
-      "indent": "off",
-    },
-  },
+  }
 ];
 

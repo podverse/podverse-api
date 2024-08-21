@@ -49,7 +49,8 @@
     "typescript-eslint": "^8.0.1"
   },
   "_moduleAliases": {
-    "@router-api": "src",
-    "@orm": "../orm/src"
+    "@orm": "../orm/src",
+    "@parser-rss": "../parser-rss/src",
+    "@router-api": "src"
   }
 }
