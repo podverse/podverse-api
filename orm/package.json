@@ -1,0 +1,21 @@
+{
+  "name": "podverse-orm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@eslint/config-array": "^0.18.0",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.8.0",
+    "@types/node": "^22.1.0",
+    "eslint": "^9.9.0"
+  }
+}

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { config } from '@/config';
-import { MediumValueController } from '@/controllers/mediumValue';
-import { asyncHandler } from '@/middleware/asyncHandler';
+import { config } from '@router-api/config';
+import { MediumValueController } from '@router-api/controllers/mediumValue';
+import { asyncHandler } from '@router-api/middleware/asyncHandler';
 
 const router = Router();
 

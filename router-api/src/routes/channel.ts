@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { config } from '@/config';
-import { MediumValueService } from '@/services/mediumValue';
+import { config } from '@router-api/config';
+import { MediumValueService } from '@orm/services/mediumValue';
 
 const mediumValueService = new MediumValueService();
 

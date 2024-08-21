@@ -3,11 +3,11 @@ require('@dotenvx/dotenvx').config();
 
 import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
-import { config } from '@/config';
-import { AppDataSource } from "@/db";
-import logger, { logError } from '@/lib/logs/logger';
-import channelRoutes from '@/routes/channel';
-import mediumValueRoutes from '@/routes/mediumValue';
+import { AppDataSource } from "@orm/db";
+import { config } from '@router-api/config';
+import logger, { logError } from '@router-api/lib/logs/logger';
+import channelRoutes from '@router-api/routes/channel';
+import mediumValueRoutes from '@router-api/routes/mediumValue';
 
 console.log(`NODE_ENV = ${config.nodeEnv}`);
 

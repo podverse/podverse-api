@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { MediumValueService } from '@/services/mediumValue';
+import { MediumValueService } from '@orm/services/mediumValue';
 
 const mediumValueService = new MediumValueService();
 

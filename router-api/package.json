@@ -10,7 +10,7 @@
     "Mitch Downey"
   ],
   "scripts": {
-    "dev:watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "dev:watch": "nodemon --watch '../**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint 'src/**/*.{ts,js}'",
     "start": "ts-node src/index.ts"
   },
@@ -33,7 +33,6 @@
     "module-alias": "^2.2.3",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.20",
     "winston": "^3.14.2"
   },
   "devDependencies": {
@@ -44,13 +43,13 @@
     "@types/node": "^22.1.0",
     "eslint": "^9.9.0",
     "globals": "^15.9.0",
-    "lint-staged": "^15.2.8",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
   },
   "_moduleAliases": {
-    "@": "src"
+    "@router-api": "src",
+    "@orm": "../orm/src"
   }
 }
