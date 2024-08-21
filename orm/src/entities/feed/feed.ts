@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn,
-  UpdateDateColumn } from 'typeorm';
-import { FeedFlagStatus } from './feedFlagStatus';
+  UpdateDateColumn, JoinColumn} from 'typeorm';
+import { FeedFlagStatus, FeedFlagStatusStatusEnum } from '@orm/entities/feed/feedFlagStatus';
 
 @Entity('feed')
 export class Feed {
@@ -11,7 +11,8 @@ export class Feed {
   url!: string;
 
   @ManyToOne(() => FeedFlagStatus, feedFlagStatus => feedFlagStatus.id)
-  feed_flag_status_id!: FeedFlagStatus;
+  @JoinColumn({ name: 'feed_flag_status_id' }) 
+  feed_flag_status_id!: FeedFlagStatusStatusEnum;
 
   @Column({ type: 'timestamp', nullable: true })
   is_parsing!: Date | null;
@@ -21,10 +22,4 @@ export class Feed {
 
   @Column({ type: 'varchar', nullable: true })
   container_id!: string | null;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-  updated_at!: Date;
 }

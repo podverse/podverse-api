@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { config } from "@router-api/config";
+import { config } from "@orm/config";
 import { Account } from "@orm/entities/account/account";
 import { AccountAdminRoles } from "@orm/entities/account/accountAdminRoles";
 import { AccountAppStorePurchase } from "@orm/entities/account/accountAppStorePurchase";

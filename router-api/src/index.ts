@@ -3,11 +3,13 @@ require('@dotenvx/dotenvx').config();
 
 import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
+import logger, { logError } from '@helpers/lib/logs/logger';
 import { AppDataSource } from "@orm/db";
 import { config } from '@router-api/config';
-import logger, { logError } from '@router-api/lib/logs/logger';
 import channelRoutes from '@router-api/routes/channel';
 import mediumValueRoutes from '@router-api/routes/mediumValue';
+
+import { parseRSSFeed } from '@parser-rss/lib/parser';
 
 console.log(`NODE_ENV = ${config.nodeEnv}`);
 
@@ -19,6 +21,9 @@ export const startApp = async () => {
     logger.info("Connecting to the database");
     await AppDataSource.initialize();
     logger.info("Connected to the database");
+
+    const parsedFeed = await parseRSSFeed('https://sirlibre.com/lightning-thrashes-rss.xml');
+    console.log(typeof parsedFeed);
 
     app.get("/", (req: Request, res: Response) => {
       res.send(`The server is running on port ${port}`);

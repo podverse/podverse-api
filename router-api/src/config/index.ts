@@ -12,14 +12,5 @@ export const config = {
       domain: process.env.COOKIE_DOMAIN || 'localhost',
       secure: process.env.COOKIE_SECURE === 'true',
     },
-  },
-  database: {
-    type: process.env.DB_TYPE || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    username: process.env.DB_USERNAME || 'user',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_DATABASE || 'db',
-    ssl_connection: process.env.DB_SSL_CONNECTION === 'true',
   }
 };

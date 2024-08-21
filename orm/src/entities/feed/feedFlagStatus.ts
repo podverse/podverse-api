@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Feed } from './feed';
 
-type FeedFlagStatusStatus = 'none' | 'spam' | 'takedown' | 'other' | 'always-allow'
+export enum FeedFlagStatusStatusEnum {
+  None = 1,
+  Spam = 2,
+  Takedown = 3,
+  Other = 4,
+  AlwaysAllow = 5,
+}
 
 @Entity('feed_flag_status')
 export class FeedFlagStatus {
@@ -8,15 +15,12 @@ export class FeedFlagStatus {
   id!: number;
 
   @Column({
-    type: 'text',
-    unique: true,
-    enum: ['none', 'spam', 'takedown', 'other', 'always-allow'],
+    type: 'enum',
+    enum: FeedFlagStatusStatusEnum,
+    default: FeedFlagStatusStatusEnum.None,
   })
-  status!: FeedFlagStatusStatus;
+  status!: FeedFlagStatusStatusEnum;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-  updated_at!: Date;
+  @OneToMany(() => Feed, feed => feed.feed_flag_status_id)
+  feeds!: Feed[];
 }

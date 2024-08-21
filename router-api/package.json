@@ -32,8 +32,7 @@
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
     "pg": "^8.12.0",
-    "reflect-metadata": "^0.2.2",
-    "winston": "^3.14.2"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.18.0",
