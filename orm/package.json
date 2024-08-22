@@ -9,7 +9,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "typeorm": "^0.3.20"
+    "shortid": "^2.2.16",
+    "typeorm": "^0.3.20",
+    "typeorm-naming-strategies": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.18.0",

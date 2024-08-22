@@ -15,7 +15,7 @@ export const request = async (
       abort.controller.abort();
     }, abort.timeoutMs);
   }
-  console.log('config', config)
+  
   try {
     const response = await axios.request({
       url,

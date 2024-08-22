@@ -21,6 +21,6 @@ export class FeedFlagStatus {
   })
   status!: FeedFlagStatusStatusEnum;
 
-  @OneToMany(() => Feed, feed => feed.feed_flag_status_id)
+  @OneToMany(() => Feed, feed => feed.feed_flag_status)
   feeds!: Feed[];
 }

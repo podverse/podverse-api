@@ -7,7 +7,7 @@ export class FeedLog {
   id!: number;
 
   @ManyToOne(() => Feed, feed => feed.id, { onDelete: 'CASCADE' })
-  feed_id!: Feed;
+  feed!: Feed;
 
   @Column({ type: 'int', nullable: true })
   last_http_status!: number | null;

@@ -2,19 +2,25 @@ import 'module-alias/register';
 require('@dotenvx/dotenvx').config();
 
 import "reflect-metadata";
+import bodyParser from 'body-parser';
 import express, { NextFunction, Request, Response } from "express";
 import logger, { logError } from '@helpers/lib/logs/logger';
 import { AppDataSource } from "@orm/db";
+import { parseAllRSSFeeds, parseRSSFeed } from '@parser-rss/lib/parser';
 import { config } from '@router-api/config';
-import channelRoutes from '@router-api/routes/channel';
-import mediumValueRoutes from '@router-api/routes/mediumValue';
-
-import { parseRSSFeed } from '@parser-rss/lib/parser';
+import { channelRouter } from '@router-api/routes/channel';
+import { feedRouter } from '@router-api/routes/feed';
+import { mediumValueRouter } from '@router-api/routes/mediumValue';
 
 console.log(`NODE_ENV = ${config.nodeEnv}`);
 
 const app = express();
 const port = 1234;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const baseUrl = `${config.api.prefix}${config.api.version}`;
 
 export const startApp = async () => {
   try {
@@ -22,20 +28,27 @@ export const startApp = async () => {
     await AppDataSource.initialize();
     logger.info("Connected to the database");
 
-    const parsedFeed = await parseRSSFeed('https://sirlibre.com/lightning-thrashes-rss.xml');
-    console.log(typeof parsedFeed);
-
-    app.get("/", (req: Request, res: Response) => {
+    app.get(`${baseUrl}/`, (req: Request, res: Response) => {
       res.send(`The server is running on port ${port}`);
     });
 
-    app.use(channelRoutes);
-    app.use(mediumValueRoutes);
+    app.get(`${baseUrl}/parse-all`, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const data = await parseAllRSSFeeds();
+        res.status(200).send(data);
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    app.use(channelRouter);
+    app.use(feedRouter);
+    app.use(mediumValueRouter);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       logger.error(err.stack);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     });
 
     app.listen(port, () => {

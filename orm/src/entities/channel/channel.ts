@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn } from 'typeorm';
 import { Feed } from '@orm/entities/feed/feed'; 
 import { MediumValue } from '@orm/entities/mediumValue';
 
@@ -18,8 +18,12 @@ export class Channel {
   @Column({ type: 'varchar', nullable: true })
   slug!: string | null;
 
-  @ManyToOne(() => Feed, feed => feed.id, { onDelete: 'CASCADE' })
-  feed_id!: Feed;
+  @OneToOne(() => Feed, { cascade: true })
+  @JoinColumn({ name: 'feed_id' })
+  feed!: Feed;
+
+  @Column({ type: 'int', nullable: false })
+  feed_id!: number;
 
   @Column({ type: 'int' })
   podcast_index_id!: number;
@@ -33,8 +37,8 @@ export class Channel {
   @Column({ type: 'varchar', nullable: true })
   sortable_title!: string | null;
 
-  @ManyToOne(() => MediumValue, mediumValue => mediumValue.id, { nullable: true })
-  medium_value_id!: MediumValue | null;
+  @ManyToOne(() => MediumValue, medium_value => medium_value.id, { nullable: true })
+  medium_value!: MediumValue | null;
 
   @Column({ type: 'boolean', default: false })
   has_podcast_index_value_tags!: boolean;

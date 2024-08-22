@@ -97,6 +97,7 @@ import { QueueResourceItemSoundbite } from "@orm/entities/queue/queueResourceIte
 import { Clip } from "@orm/entities/clip";
 import { MembershipClaimToken } from "@orm/entities/membershipClaimToken";
 import { SharableStatus } from "@orm/entities/sharableStatus";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -208,4 +209,5 @@ export const AppDataSource = new DataSource({
   ],
   migrations: [],
   subscribers: [],
+  namingStrategy: new SnakeNamingStrategy()
 });

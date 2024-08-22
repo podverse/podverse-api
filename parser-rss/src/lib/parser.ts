@@ -9,9 +9,11 @@ import { MediumValueService } from '@orm/services/mediumValue';
 const feedService = new FeedService();
 const mediumValueService = new MediumValueService();
 
-export const parseRSSFeed = async (url: string) => {
+
+// If a podcast_index_id is provided, then the parsed data
+// will be saved to the database
+export const parseRSSFeed = async (url: string, podcast_index_id?: number) => {
   const xml = await request(url);
-  
   const parsedFeed = parseFeed(xml, { allowMissingGuid: true });
 
   if (!parsedFeed) {
@@ -19,15 +21,24 @@ export const parseRSSFeed = async (url: string) => {
   }
   
   const feedData = feedCompat(parsedFeed);
-  console.log('feedData', typeof feedData);
+
   // const itemsData = parsedFeed.items.map(itemCompat)
   // console.log('itemsData', itemsData.length);
   // const liveItemsData = feedData.liveItems.map(liveItemCompat as any) // TODO: remove any
   // console.log('liveItemsData', liveItemsData.length);
 
-  await feedService.create(url);
+  if (!podcast_index_id) {
+    return parsedFeed;
+  }
 
-  return parsedFeed;
+  const feed = await feedService.getOrCreateFeed({ url, podcast_index_id });
+
+  return feed;
 }
 
-
+export const parseAllRSSFeeds = async () => {
+  const feeds = await feedService.getAll();
+  for (const feed of feeds) {
+    return await parseRSSFeed(feed.url, feed?.channel?.podcast_index_id);
+  }
+}
