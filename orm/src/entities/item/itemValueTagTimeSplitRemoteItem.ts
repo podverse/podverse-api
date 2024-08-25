@@ -14,11 +14,11 @@ export class ItemValueTagTimeSplitRemoteItem {
   feed_guid!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  feed_url?: string;
+  feed_url?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  item_guid?: string;
+  item_guid?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 }

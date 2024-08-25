@@ -19,8 +19,8 @@ export class LiveItem {
   start_time!: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
-  end_time?: Date;
+  end_time?: Date | null;
 
   @Column({ type: 'varchar', nullable: true })
-  chat_web_url?: string;
+  chat_web_url?: string | null;
 }

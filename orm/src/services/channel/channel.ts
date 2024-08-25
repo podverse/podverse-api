@@ -1,12 +1,25 @@
 import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { Feed } from '@orm/entities/feed/feed';
+import { MediumValue, MediumValueValueEnum } from '@orm/entities/mediumValue';
+import { applyProperties } from '@orm/lib/applyProperties';
 
 const shortid = require('shortid');
 
 type ChannelInitializeDto = {
   feed: Feed,
   podcast_index_id: number
+}
+
+type ChannelUpdateDto = {
+  slug?: string | null
+  podcast_guid?: string | null
+  title?: string | null
+  sortable_title?: string | null
+  medium_value?: MediumValueValueEnum | null
+  has_podcast_index_value_tags?: boolean
+  hidden?: boolean
+  marked_for_deletion?: boolean
 }
 
 export class ChannelService {
@@ -33,5 +46,30 @@ export class ChannelService {
       channel.podcast_index_id = dto.podcast_index_id;
     }
     return await this.channelRepository.save(channel);
+  }
+
+  async update(id: number, dto: ChannelUpdateDto): Promise<Channel | null> {
+    let channel = await this.getById(id);
+    console.log('channel1', channel);
+
+
+    console.log('channel', channel);
+
+    if (!channel) {
+      throw new Error(`Channel with id ${id} not found`);
+    }
+
+    channel = applyProperties(channel, dto);
+
+    console.log('channel2', channel);
+
+    await this.channelRepository.save(channel);
+
+    /* update all other related tables */
+
+    
+
+
+    return await this.getById(id);
   }
 }

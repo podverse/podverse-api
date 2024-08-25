@@ -14,11 +14,11 @@ export class ChannelChat {
   server!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  protocol!: string;
+  protocol!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  account_id!: string;
+  account_id!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  space!: string;
+  space!: string | null;
 }

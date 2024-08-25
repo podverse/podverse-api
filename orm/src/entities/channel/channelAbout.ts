@@ -12,21 +12,21 @@ export class ChannelAbout {
   channel!: Channel;
 
   @Column({ type: 'varchar', nullable: true })
-  author!: string;
+  author!: string | null;
 
   @Column({ type: 'int', nullable: true })
-  episode_count!: number;
+  episode_count!: number | null;
 
   @Column({ type: 'boolean', nullable: true })
-  explicit!: boolean;
+  explicit!: boolean | null;
 
   @ManyToOne(() => ChannelItunesType, channelItunesType => channelItunesType.id, { nullable: true })
   @JoinColumn({ name: 'itunes_type_id' })
-  itunes_type!: ChannelItunesType;
-
-  @Column({ type: 'varchar' })
-  language!: string;
+  itunes_type!: ChannelItunesType | null;
 
   @Column({ type: 'varchar', nullable: true })
-  website_link_url!: string;
+  language!: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  website_link_url!: string | null;
 }

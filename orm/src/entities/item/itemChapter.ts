@@ -20,13 +20,13 @@ export class ItemChapter {
   start_time!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  end_time?: string;
+  end_time?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  web_url?: string;
+  web_url?: string | null;
 
   @Column({ type: 'boolean', default: true })
   table_of_contents!: boolean;

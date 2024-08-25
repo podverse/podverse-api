@@ -16,5 +16,5 @@ export class AccountMembershipStatus {
   account_membership!: AccountMembership;
 
   @Column({ type: 'timestamp', nullable: true })
-  membership_expires_at?: Date;
+  membership_expires_at?: Date | null;
 }

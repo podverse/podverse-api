@@ -20,13 +20,13 @@ export class ChannelValueTagTimeSplitReceipient {
   split!: number;
 
   @Column({ type: 'varchar', name: 'name', nullable: true })
-  name?: string;
+  name?: string | null;
 
   @Column({ type: 'varchar', name: 'custom_key', nullable: true })
-  custom_key?: string;
+  custom_key?: string | null;
 
   @Column({ type: 'varchar', name: 'custom_value', nullable: true })
-  custom_value?: string;
+  custom_value?: string | null;
 
   @Column({ type: 'boolean', name: 'fee', default: false })
   fee!: boolean;

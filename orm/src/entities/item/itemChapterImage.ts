@@ -14,7 +14,7 @@ export class ItemChapterImage {
   url!: string;
 
   @Column({ type: 'int', name: 'image_width_size', nullable: true })
-  image_width_size?: number;
+  image_width_size?: number | null;
 
   @Column({ type: 'boolean', name: 'is_resized', default: false })
   is_resized!: boolean;

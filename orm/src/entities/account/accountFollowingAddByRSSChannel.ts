@@ -14,8 +14,8 @@ export class AccountFollowingAddByRssChannel {
   account!: Account;
 
   @Column({ type: 'varchar', nullable: true })
-  title!: string;
+  title!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  image_url!: string;
+  image_url!: string | null;
 }

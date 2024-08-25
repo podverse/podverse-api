@@ -11,20 +11,20 @@ export class ChannelTrailer {
   channel!: Channel;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
-  title!: string;
+  title!: string | null;
 
   @Column({ type: 'varchar', name: 'url' })
-  url!: string;
+  url!: string | null;
 
   @Column({ type: 'timestamptz', name: 'pub_date' })
   pubDate!: Date;
 
   @Column({ type: 'integer', name: 'length', nullable: true })
-  length!: number;
+  length!: number | null;
 
   @Column({ type: 'varchar', name: 'type', nullable: true })
-  type!: string;
+  type!: string | null;
 
   @Column({ type: 'integer', name: 'season', nullable: true })
-  season!: number;
+  season!: number | null;
 }

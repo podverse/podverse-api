@@ -12,8 +12,8 @@ export class ItemLocation {
   item!: Item;
 
   @Column({ type: 'varchar', nullable: true })
-  geo?: string;
+  geo?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  osm?: string;
+  osm?: string | null;
 }

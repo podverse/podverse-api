@@ -17,11 +17,11 @@ export class ChannelSocialInteract {
   uri!: string;
 
   @Column({ type: 'varchar', name: 'account_id', nullable: true })
-  account_id!: string;
+  account_id!: string | null;
 
   @Column({ type: 'varchar', name: 'account_url', nullable: true })
-  account_url!: string;
+  account_url!: string | null;
 
   @Column({ type: 'integer', name: 'priority', nullable: true })
-  priority!: number;
+  priority!: number | null;
 }

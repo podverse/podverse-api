@@ -20,10 +20,10 @@ export class Playlist {
   sharable_status!: SharableStatus;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  description?: string;
+  description?: string | null;
 
   @Column({ type: 'boolean', default: false })
   is_default_favorites!: boolean;

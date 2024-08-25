@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn } from 'typeorm';
 import { Feed } from '@orm/entities/feed/feed'; 
-import { MediumValue } from '@orm/entities/mediumValue';
+import { MediumValue, MediumValueValueEnum } from '@orm/entities/mediumValue';
 
 @Entity('channel')
 @Unique(['id_text'])
@@ -38,7 +38,8 @@ export class Channel {
   sortable_title!: string | null;
 
   @ManyToOne(() => MediumValue, medium_value => medium_value.id, { nullable: true })
-  medium_value!: MediumValue | null;
+  @JoinColumn({ name: 'medium_value_id' })
+  medium_value!: MediumValueValueEnum | null;
 
   @Column({ type: 'boolean', default: false })
   has_podcast_index_value_tags!: boolean;

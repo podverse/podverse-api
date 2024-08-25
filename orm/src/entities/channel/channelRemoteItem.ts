@@ -15,15 +15,15 @@ export class ChannelRemoteItem {
   feed_guid!: string;
 
   @Column({ type: 'varchar', name: 'feed_url', nullable: true })
-  feed_url!: string;
+  feed_url!: string | null;
 
   @Column({ type: 'varchar', name: 'item_guid', nullable: true })
-  item_guid!: string;
+  item_guid!: string | null;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
-  title!: string;
+  title!: string | null;
 
   @ManyToOne(() => MediumValue, mediumValue => mediumValue.id, { nullable: true })
   @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: MediumValue;
+  medium_value!: MediumValue | null;
 }

@@ -23,5 +23,5 @@ export class ItemSoundbite {
   duration!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 }

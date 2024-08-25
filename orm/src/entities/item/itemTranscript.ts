@@ -17,8 +17,8 @@ export class ItemTranscript {
   type!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  language?: string;
+  language?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  rel?: string;
+  rel?: string | null;
 }

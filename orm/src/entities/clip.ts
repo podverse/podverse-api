@@ -23,13 +23,13 @@ export class Clip {
   start_time!: number;
   
   @Column({ type: 'float', nullable: true })
-  end_time?: number;
+  end_time?: number | null;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'text', nullable: true })
-  description?: string;
+  description?: string | null;
 
   @ManyToOne(() => SharableStatus, sharableStatus => sharableStatus.id)
   @JoinColumn({ name: 'sharable_status_id' })

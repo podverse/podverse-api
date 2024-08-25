@@ -20,13 +20,13 @@ export class ItemValueTagTimeSplitRecipient {
   split!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  name?: string;
+  name?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  custom_key?: string;
+  custom_key?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  custom_value?: string;
+  custom_value?: string | null;
 
   @Column({ type: 'boolean', default: false })
   fee!: boolean;

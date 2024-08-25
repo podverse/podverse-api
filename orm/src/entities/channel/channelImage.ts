@@ -14,7 +14,7 @@ export class ChannelImage {
   url!: string;
 
   @Column({ type: 'int', nullable: true })
-  image_width_size!: number;
+  image_width_size!: number | null;
 
   @Column({ type: 'boolean', default: false })
   is_resized!: boolean;

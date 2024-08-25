@@ -14,5 +14,5 @@ export class ItemEnclosureSource {
   uri!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  content_type?: string;
+  content_type?: string | null;
 }

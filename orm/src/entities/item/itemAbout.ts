@@ -12,15 +12,15 @@ export class ItemAbout {
   item!: Item;
 
   @Column({ type: 'int', nullable: true })
-  duration?: number;
+  duration?: number | null;
 
   @Column({ type: 'boolean', nullable: true })
-  explicit?: boolean;
+  explicit?: boolean | null;
 
   @Column({ type: 'varchar', name: 'website_link_url', nullable: true })
-  website_link_url?: string;
+  website_link_url?: string | null;
 
   @ManyToOne(() => ItemItunesEpisodeType, itemItunesEpisodeType => itemItunesEpisodeType.id, { nullable: true })
   @JoinColumn({ name: 'item_itunes_episode_type_id' })
-  item_itunes_episode_type?: ItemItunesEpisodeType;
+  item_itunes_episode_type?: ItemItunesEpisodeType | null;
 }

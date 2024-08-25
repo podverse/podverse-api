@@ -6,28 +6,28 @@ export class AccountGooglePlayPurchase {
   @PrimaryColumn()
   transaction_id!: string;
 
-  @Column({ nullable: true })
-  acknowledgement_state?: number;
+  @Column({ type: 'int', nullable: true })
+  acknowledgement_state?: number | null;
 
-  @Column({ nullable: true })
-  consumption_state?: number;
+  @Column({ type: 'int', nullable: true })
+  consumption_state?: number | null;
 
-  @Column({ nullable: true })
-  developer_payload?: string;
+  @Column({ type: 'varchar', nullable: true })
+  developer_payload?: string | null;
 
-  @Column({ nullable: true })
-  kind?: string;
+  @Column({ type: 'varchar', nullable: true })
+  kind?: string | null;
 
   @Column()
   product_id!: string;
 
-  @Column({ nullable: true })
-  purchase_time_millis?: string;
+  @Column({ type: 'varchar', nullable: true })
+  purchase_time_millis?: string | null;
 
-  @Column({ nullable: true })
-  purchase_state?: number;
+  @Column({ type: 'int', nullable: true })
+  purchase_state?: number | null;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   purchase_token!: string;
 
   @Column()

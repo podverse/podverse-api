@@ -17,5 +17,5 @@ export class ItemValueTag {
   method!: string;
 
   @Column({ type: 'float', nullable: true })
-  suggested?: number;
+  suggested?: number | null;
 }

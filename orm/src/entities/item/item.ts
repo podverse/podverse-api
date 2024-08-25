@@ -12,20 +12,20 @@ export class Item {
   id_text!: string;
 
   @Column({ type: 'varchar', name: 'slug', nullable: true })
-  slug?: string;
+  slug?: string | null;
 
   @ManyToOne(() => Channel, channel => channel.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
 
   @Column({ type: 'varchar', name: 'guid', nullable: true })
-  guid?: string;
+  guid?: string | null;
 
   @Column({ type: 'timestamptz', name: 'pub_date', nullable: true })
-  pub_date?: Date;
+  pub_date?: Date | null;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'boolean', name: 'hidden', default: false })
   hidden!: boolean;

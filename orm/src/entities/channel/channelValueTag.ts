@@ -17,5 +17,5 @@ export class ChannelValueTag {
   method!: string;
 
   @Column({ type: 'float', name: 'suggested', nullable: true })
-  suggested!: number;
+  suggested!: number | null;
 }

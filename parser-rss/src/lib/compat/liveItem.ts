@@ -2,14 +2,14 @@ import { Phase4PodcastLiveItem } from "podcast-partytime/dist/parser/phase/phase
 import { PhasePendingChat } from "podcast-partytime/dist/parser/phase/phase-pending"
 import { valueCompat } from "@parser-rss/lib/compat/value"
 
-interface ExtendedPhase4PodcastLiveItem extends Phase4PodcastLiveItem {
-  chat?: PhasePendingChat
+interface ExtendedPhase4PodcastLiveItem extends Omit<Phase4PodcastLiveItem, 'chat'> {
+  chat?: ExtendedChat
   image?: string
 }
 
-interface ExtendedChat extends Omit<PhasePendingChat, 'phase'> {
+interface ExtendedChat extends Omit<PhasePendingChat, 'phase' | 'protocol'> {
   phase?: 'pending' | '4'
-  protocol: string;
+  protocol?: string
   url?: string
 }
 

@@ -14,5 +14,5 @@ export class ItemFunding {
   url!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 }

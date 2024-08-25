@@ -17,19 +17,19 @@ export class ItemChapters {
   type!: string;
 
   @Column({ type: 'int', name: 'last_http_status', nullable: true })
-  last_http_status?: number;
+  last_http_status?: number | null;
 
   @Column({ type: 'timestamp', name: 'last_crawl_time', nullable: true })
-  last_crawl_time?: Date;
+  last_crawl_time?: Date | null;
 
   @Column({ type: 'timestamp', name: 'last_good_http_status_time', nullable: true })
-  last_good_http_status_time?: Date;
+  last_good_http_status_time?: Date | null;
 
   @Column({ type: 'timestamp', name: 'last_parse_time', nullable: true })
-  last_parse_time?: Date;
+  last_parse_time?: Date | null;
 
   @Column({ type: 'timestamp', name: 'last_update_time', nullable: true })
-  last_update_time?: Date;
+  last_update_time?: Date | null;
 
   @Column({ type: 'int', name: 'crawl_errors', default: 0 })
   crawl_errors!: number;

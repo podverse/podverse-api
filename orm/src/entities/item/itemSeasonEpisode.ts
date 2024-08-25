@@ -11,7 +11,7 @@ export class ItemSeasonEpisode {
   item!: Item;
 
   @Column({ type: 'varchar', nullable: true })
-  display?: string;
+  display?: string | null;
 
   @Column({ type: 'float' })
   episode_number!: number;

@@ -6,65 +6,65 @@ export class AccountAppStorePurchase {
   @PrimaryColumn()
   transaction_id!: string;
 
-  @Column({ nullable: true })
-  cancellation_date?: string;
+  @Column({ type: 'varchar', nullable: true })
+  cancellation_date?: string | null;
 
-  @Column({ nullable: true })
-  cancellation_date_ms?: string;
+  @Column({ type: 'varchar', nullable: true })
+  cancellation_date_ms?: string | null;
 
-  @Column({ nullable: true })
-  cancellation_date_pst?: string;
+  @Column({ type: 'varchar', nullable: true })
+  cancellation_date_pst?: string | null;
 
-  @Column({ nullable: true })
-  cancellation_reason?: string;
+  @Column({ type: 'varchar', nullable: true })
+  cancellation_reason?: string | null;
 
-  @Column({ nullable: true })
-  expires_date?: string;
+  @Column({ type: 'varchar', nullable: true })
+  expires_date?: string | null;
 
-  @Column({ nullable: true })
-  expires_date_ms?: string;
+  @Column({ type: 'varchar', nullable: true })
+  expires_date_ms?: string | null;
 
-  @Column({ nullable: true })
-  expires_date_pst?: string;
+  @Column({ type: 'varchar', nullable: true })
+  expires_date_pst?: string | null;
 
-  @Column({ nullable: true })
-  is_in_intro_offer_period?: boolean;
+  @Column({ type: 'boolean', nullable: true })
+  is_in_intro_offer_period?: boolean | null;
 
-  @Column({ nullable: true })
-  is_trial_period?: boolean;
+  @Column({ type: 'boolean', nullable: true })
+  is_trial_period?: boolean | null;
 
-  @Column({ nullable: true })
-  original_purchase_date?: string;
+  @Column({ type: 'varchar', nullable: true })
+  original_purchase_date?: string | null;
 
-  @Column({ nullable: true })
-  original_purchase_date_ms?: string;
-
-  @Column({ nullable: true })
-  original_purchase_date_pst?: string;
-
-  @Column({ nullable: true })
-  original_transaction_id?: string;
-
-  @Column({ nullable: true })
-  product_id?: string;
-
-  @Column({ nullable: true })
-  promotional_offer_id?: string;
-
-  @Column({ nullable: true })
-  purchase_date?: string;
-
-  @Column({ nullable: true })
-  purchase_date_ms?: string;
-
-  @Column({ nullable: true })
-  purchase_date_pst?: string;
-
-  @Column({ nullable: true })
-  quantity?: number;
-
-  @Column({ nullable: true })
-  web_order_line_item_id?: string;
+  @Column({ type: 'varchar', nullable: true })
+  original_purchase_date_ms?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  original_purchase_date_pst?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  original_transaction_id?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  product_id?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  promotional_offer_id?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  purchase_date?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  purchase_date_ms?: string | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  purchase_date_pst?: string | null;
+  
+  @Column({ type: 'int', nullable: true })
+  quantity?: number | null;
+  
+  @Column({ type: 'varchar', nullable: true })
+  web_order_line_item_id?: string | null;
 
   @Column()
   account_id!: number;

@@ -14,5 +14,5 @@ export class ItemContentLink {
   href!: string;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
-  title?: string;
+  title?: string | null;
 }

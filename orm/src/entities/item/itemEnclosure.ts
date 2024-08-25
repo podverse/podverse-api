@@ -14,25 +14,25 @@ export class ItemEnclosure {
   type!: string;
 
   @Column({ type: 'int', nullable: true })
-  length?: number;
+  length?: number | null;
 
   @Column({ type: 'int', nullable: true })
-  bitrate?: number;
+  bitrate?: number | null;
 
   @Column({ type: 'int', nullable: true })
-  height?: number;
+  height?: number | null;
 
   @Column({ type: 'varchar', nullable: true })
-  language?: string;
+  language?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  title?: string;
+  title?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  rel?: string;
+  rel?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  codecs?: string;
+  codecs?: string | null;
 
   @Column({ type: 'boolean', default: false })
   item_enclosure_default!: boolean;
