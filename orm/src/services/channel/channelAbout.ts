@@ -27,24 +27,18 @@ export class ChannelAboutService {
   }
 
   async createOrUpdate(channel: Channel, dto: ChannelAboutUpdateDto): Promise<ChannelAbout | null> {
-    // let channelAbout = await this.getByChannel(channel);
-    // console.log('channelAbout1', channelAbout);
+    let channelAbout = await this.getByChannel(channel);
+    console.log('channelAbout1', channelAbout);
 
-    // if (!channelAbout) {
-    //   channelAbout = new ChannelAbout();
-    // }
+    if (!channelAbout) {
+      channelAbout = new ChannelAbout();
+      channelAbout.channel = channel;
+    }
 
-    // channelAbout = applyProperties(channelAbout, dto);
+    channelAbout = applyProperties(channelAbout, dto);
 
-    // console.log('channel2', channel);
+    console.log('channelAbout2', channelAbout);
 
-    // await this.channelRepository.save(channel);
-
-    // /* update all other related tables */
-
-    
-
-
-    // return await this.getById(id);
+    return this.channelAboutRepository.save(channelAbout);
   }
 }

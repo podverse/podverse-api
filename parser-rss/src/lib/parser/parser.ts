@@ -1,21 +1,26 @@
 import { parseFeed } from 'podcast-partytime';
 import { request } from '@helpers/lib/request';
 import { FeedService } from '@orm/services/feed/feed';
-import { MediumValueService } from '@orm/services/mediumValue';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
 import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
 import { createSortableTitle } from '@orm/lib/sortableTitle';
-import { getMediumValueValueEnumValue, MediumValueValueEnum } from '@orm/entities/mediumValue';
-
-const channelService = new ChannelService();
-const feedService = new FeedService();
-const mediumValueService = new MediumValueService();
+import { getMediumValueValueEnumValue } from '@orm/entities/mediumValue';
+import { ChannelAboutService } from '@orm/services/channel/channelAbout';
+import { getBooleanOrNull } from '@helpers/lib/boolean';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
   RSS feeds without podcast_index_id (Add By RSS feeds) will NOT be saved to the database.
 */
+
+// TEMP: exists for development purposes
+export const parseAllRSSFeeds = async () => {
+  const feeds = await feedService.getAll();
+  for (const feed of feeds) {
+    return await parseRSSFeedAndSaveToDatabase(feed.url, feed?.channel?.podcast_index_id);
+  }
+}
 
 export const getAndParseRSSFeed = async (url: string) => {
   const xml = await request(url);
@@ -33,6 +38,10 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
   const compatData = convertParsedRSSFeedToCompat(parsedFeed);
   return compatData
 }
+
+const channelService = new ChannelService();
+const channelAboutService = new ChannelAboutService();
+const feedService = new FeedService();
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const parsedFeed = await getAndParseRSSFeed(url);
@@ -57,12 +66,14 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   await channelService.update(channel.id, updateChannelDto);
   
-  return compatData;
-}
-
-export const parseAllRSSFeeds = async () => {
-  const feeds = await feedService.getAll();
-  for (const feed of feeds) {
-    return await parseRSSFeedAndSaveToDatabase(feed.url, feed?.channel?.podcast_index_id);
+  const updateChannelAboutDto = {
+    author: compatData.channel.author?.join(', ') || null,
+    explicit: getBooleanOrNull(compatData.channel.explicit),
+    language: compatData.channel.language || null,
+    website_link_url: compatData.channel.link || null
   }
+
+  await channelAboutService.createOrUpdate(channel, updateChannelAboutDto);
+
+  return compatData;
 }
