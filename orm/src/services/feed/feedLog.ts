@@ -23,6 +23,7 @@ export class FeedLogService {
     let feed_log: FeedLog | null = feed.feed_log
     if (!feed_log) {
       feed_log = new FeedLog();
+      feed_log.feed = feed;
     }
     return await this.feedLogRepository.save(feed_log);
   }

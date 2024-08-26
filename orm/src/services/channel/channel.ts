@@ -50,10 +50,6 @@ export class ChannelService {
 
   async update(id: number, dto: ChannelUpdateDto): Promise<Channel | null> {
     let channel = await this.getById(id);
-    console.log('channel1', channel);
-
-
-    console.log('channel', channel);
 
     if (!channel) {
       throw new Error(`Channel with id ${id} not found`);
@@ -61,14 +57,7 @@ export class ChannelService {
 
     channel = applyProperties(channel, dto);
 
-    console.log('channel2', channel);
-
     await this.channelRepository.save(channel);
-
-    /* update all other related tables */
-
-    
-
 
     return await this.getById(id);
   }

@@ -5,9 +5,9 @@ import { createSortableTitle } from "@orm/lib/sortableTitle"
 import { getMediumValueValueEnumValue } from "@orm/entities/mediumValue"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
+import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
 
 export const feedCompat = (feed: FeedObject) => {
-  console.log('feed', feed)
   return {
     blocked: feed.itunesBlock,
     categories: feed.itunesCategory,
@@ -50,4 +50,36 @@ export const compatChannelFundingDtos = (parsedFeed: FeedObject) => {
     url: f.url,
     title: f.message
   })) : []
+}
+
+export const compatChannelImageDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+  if (parsedFeed.itunesImage) {
+    dtos.push({
+      url: parsedFeed.itunesImage,
+      image_width_size: null
+    })
+  } else if (parsedFeed.image?.url) {
+    dtos.push({
+      url: parsedFeed.image.url,
+      image_width_size: null
+    })
+  }
+
+  function hasWidth(image: Phase4PodcastImage['parsed']): image is { url: string; width: number } {
+    return (image as { width: number }).width !== undefined;
+  }
+
+  if (Array.isArray(parsedFeed.podcastImages)) {
+    for (const image of parsedFeed.podcastImages) {
+      if (image.parsed.url && hasWidth(image.parsed)) {
+        dtos.push({
+          url: image.parsed.url,
+          image_width_size: image.parsed.width
+        })
+      }
+    }
+  }
+
+  return dtos
 }

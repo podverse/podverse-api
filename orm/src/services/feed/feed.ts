@@ -3,6 +3,7 @@ import { Feed } from '@orm/entities/feed/feed';
 import { FeedFlagStatusStatusEnum } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
 import { FeedLogService } from '@orm/services/feed/feedLog';
+import { FeedFlagStatusService } from './feedFlagStatus';
 
 const channelService = new ChannelService();
 const feedLogService = new FeedLogService();
@@ -37,13 +38,18 @@ export class FeedService {
   async create({ url, podcast_index_id }: FeedCreateDto): Promise<Feed> {
     const feed = new Feed();
     feed.url = url;
-    feed.feed_flag_status.id = FeedFlagStatusStatusEnum.None;
+
+    const feedFlagStatusService = new FeedFlagStatusService();
+    const feed_flag_status = await feedFlagStatusService.get(FeedFlagStatusStatusEnum.None);
+    if (feed_flag_status) {
+      feed.feed_flag_status = feed_flag_status;
+    }
+
     feed.is_parsing = new Date();
     feed.parsing_priority = 1;
     feed.container_id = '';
-    
-    const newFeed = await this.feedRepository.save(feed);
 
+    const newFeed = await this.feedRepository.save(feed);
     await feedLogService.create({ feed: newFeed });
 
     const channel = await channelService.getOrCreateByPodcastIndexId({

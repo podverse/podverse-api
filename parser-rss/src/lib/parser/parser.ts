@@ -6,8 +6,9 @@ import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagSta
 import { ChannelService } from '@orm/services/channel/channel';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
-import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos } from '@parser-rss/lib/compat/channel';
+import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos } from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
+import { ChannelImageService } from '@orm/services/channel/channelImage';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -73,6 +74,10 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channelFundingService = new ChannelFundingService();
   const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
   await channelFundingService.createOrUpdateMany(channel, channelFundingDtos);
+
+  const channelImageService = new ChannelImageService();
+  const channelImageDtos = compatChannelImageDtos(parsedFeed);
+  await channelImageService.createOrUpdateMany(channel, channelImageDtos);
 
   return feed;
 }
