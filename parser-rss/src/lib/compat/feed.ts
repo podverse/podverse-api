@@ -3,6 +3,7 @@ import { fundingCompat } from "@parser-rss/lib/compat/funding"
 import { valueCompat } from "@parser-rss/lib/compat/value"
 
 export const feedCompat = (feed: FeedObject) => {
+  console.log('feed', feed)
   return {
     author: Array.isArray(feed.author) ? feed.author : feed.author ? [feed.author] : [],
     blocked: feed.itunesBlock,

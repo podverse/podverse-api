@@ -8,6 +8,8 @@ import { createSortableTitle } from '@orm/lib/sortableTitle';
 import { getMediumValueValueEnumValue } from '@orm/entities/mediumValue';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { getBooleanOrNull } from '@helpers/lib/boolean';
+import { getChannelItunesTypeItunesTypeEnumValue } from '@orm/entities/channel/channelItunesType';
+import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -41,6 +43,7 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
 
 const channelService = new ChannelService();
 const channelAboutService = new ChannelAboutService();
+const channelDescriptionService = new ChannelDescriptionService();
 const feedService = new FeedService();
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
@@ -66,14 +69,29 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   await channelService.update(channel.id, updateChannelDto);
   
-  const updateChannelAboutDto = {
+  const channelAboutDto = {
     author: compatData.channel.author?.join(', ') || null,
     explicit: getBooleanOrNull(compatData.channel.explicit),
     language: compatData.channel.language || null,
-    website_link_url: compatData.channel.link || null
+    website_link_url: compatData.channel.link || null,
+    itunes_type: getChannelItunesTypeItunesTypeEnumValue(compatData.channel.itunesType)
   }
 
-  await channelAboutService.createOrUpdate(channel, updateChannelAboutDto);
+  await channelAboutService.createOrUpdate(channel, channelAboutDto);
+
+  // TODO: add channelCategory support
+
+  // TODO: add channelChat support
+
+  const channelDescriptionDto = {
+    value: compatData.channel.description
+  }
+
+  await channelDescriptionService.createOrUpdate(channel, channelDescriptionDto);
+
+  // const channelFundingDto = {
+  //   url: compatData.channel.funding[0]?.url || null,
+  // }
 
   return compatData;
 }
