@@ -1,5 +1,5 @@
 import { FeedObject } from "podcast-partytime";
-import { feedCompat } from "@parser-rss/lib/compat/feed";
+import { feedCompat } from "@parser-rss/lib/compat/channel";
 import { itemCompat } from "@parser-rss/lib/compat/item";
 import { liveItemCompat } from "@parser-rss/lib/compat/liveItem";
 

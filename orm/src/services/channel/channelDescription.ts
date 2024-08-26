@@ -15,15 +15,15 @@ export class ChannelDescriptionService {
   }
 
   async createOrUpdate(channel: Channel, dto: ChannelDescriptionDto): Promise<ChannelDescription | null> {
-    let channelDescription = await this.getByChannel(channel);
+    let channel_description = await this.getByChannel(channel);
 
-    if (!channelDescription) {
-      channelDescription = new ChannelDescription();
-      channelDescription.channel = channel;
+    if (!channel_description) {
+      channel_description = new ChannelDescription();
+      channel_description.channel = channel;
     }
 
-    channelDescription = applyProperties(channelDescription, dto);
+    channel_description = applyProperties(channel_description, dto);
 
-    return this.channelDescriptionRepository.save(channelDescription);
+    return this.channelDescriptionRepository.save(channel_description);
   }
 }

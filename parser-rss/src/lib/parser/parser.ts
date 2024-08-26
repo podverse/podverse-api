@@ -4,12 +4,10 @@ import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
 import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
-import { createSortableTitle } from '@orm/lib/sortableTitle';
-import { getMediumValueValueEnumValue } from '@orm/entities/mediumValue';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
-import { getBooleanOrNull } from '@helpers/lib/boolean';
-import { getChannelItunesTypeItunesTypeEnumValue } from '@orm/entities/channel/channelItunesType';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
+import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos } from '@parser-rss/lib/compat/channel';
+import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -18,6 +16,7 @@ import { ChannelDescriptionService } from '@orm/services/channel/channelDescript
 
 // TEMP: exists for development purposes
 export const parseAllRSSFeeds = async () => {
+  const feedService = new FeedService();
   const feeds = await feedService.getAll();
   for (const feed of feeds) {
     return await parseRSSFeedAndSaveToDatabase(feed.url, feed?.channel?.podcast_index_id);
@@ -41,15 +40,10 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
   return compatData
 }
 
-const channelService = new ChannelService();
-const channelAboutService = new ChannelAboutService();
-const channelDescriptionService = new ChannelDescriptionService();
-const feedService = new FeedService();
-
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const parsedFeed = await getAndParseRSSFeed(url);
-  const compatData = convertParsedRSSFeedToCompat(parsedFeed);
-
+  
+  const feedService = new FeedService();
   const feed = await feedService.getOrCreateFeed({ url, podcast_index_id });
 
   // TODO: check if already isParsing
@@ -58,40 +52,27 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     throw new Error(`parseRSSFeedAndSaveToDatabase: feed_flag_status.status is not None or AlwaysAllow for ${url}`);
   }
   
+  const channelService = new ChannelService();
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
 
-  const updateChannelDto = {
-    podcast_guid: compatData.channel.guid,
-    title: compatData.channel.title,
-    sortable_title: createSortableTitle(compatData.channel.title),
-    medium_value: getMediumValueValueEnumValue(compatData.channel.medium)
-  }
-
-  await channelService.update(channel.id, updateChannelDto);
+  const channelDto = compatChannelDto(parsedFeed);
+  await channelService.update(channel.id, channelDto);
   
-  const channelAboutDto = {
-    author: compatData.channel.author?.join(', ') || null,
-    explicit: getBooleanOrNull(compatData.channel.explicit),
-    language: compatData.channel.language || null,
-    website_link_url: compatData.channel.link || null,
-    itunes_type: getChannelItunesTypeItunesTypeEnumValue(compatData.channel.itunesType)
-  }
-
+  const channelAboutService = new ChannelAboutService();
+  const channelAboutDto = compatChannelAboutDto(parsedFeed);
   await channelAboutService.createOrUpdate(channel, channelAboutDto);
 
   // TODO: add channelCategory support
 
   // TODO: add channelChat support
 
-  const channelDescriptionDto = {
-    value: compatData.channel.description
-  }
-
+  const channelDescriptionService = new ChannelDescriptionService();
+  const channelDescriptionDto = compatChannelDescriptionDto(parsedFeed);
   await channelDescriptionService.createOrUpdate(channel, channelDescriptionDto);
 
-  // const channelFundingDto = {
-  //   url: compatData.channel.funding[0]?.url || null,
-  // }
+  const channelFundingService = new ChannelFundingService();
+  const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
+  await channelFundingService.createOrUpdateMany(channel, channelFundingDtos);
 
-  return compatData;
+  return feed;
 }

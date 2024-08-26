@@ -18,15 +18,15 @@ export class ChannelAboutService {
   }
 
   async createOrUpdate(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout | null> {
-    let channelAbout = await this.getByChannel(channel);
+    let channel_about = await this.getByChannel(channel);
 
-    if (!channelAbout) {
-      channelAbout = new ChannelAbout();
-      channelAbout.channel = channel;
+    if (!channel_about) {
+      channel_about = new ChannelAbout();
+      channel_about.channel = channel;
     }
 
-    channelAbout = applyProperties(channelAbout, dto);
+    channel_about = applyProperties(channel_about, dto);
 
-    return this.channelAboutRepository.save(channelAbout);
+    return this.channelAboutRepository.save(channel_about);
   }
 }
