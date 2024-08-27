@@ -13,15 +13,15 @@ export class ItemPerson {
   @Column({ type: 'varchar' })
   name!: string;
 
-  @Column({ type: 'varchar' })
-  role!: string;
+  @Column({ type: 'varchar', nullable: true })
+  role!: string | null;
 
   @Column({ type: 'varchar', default: 'cast' })
-  person_group!: string;
+  person_group!: string | null;
 
-  @Column({ type: 'varchar' })
-  img!: string;
+  @Column({ type: 'varchar', nullable: true  })
+  img!: string | null;
 
-  @Column({ type: 'varchar' })
-  href!: string;
+  @Column({ type: 'varchar', nullable: true  })
+  href!: string | null;
 }

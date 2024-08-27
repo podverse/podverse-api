@@ -12,8 +12,8 @@ export class ChannelLicense {
   channel!: Channel;
 
   @Column({ type: 'varchar' })
-  type!: string;
+  identifier!: string;
 
-  @Column({ type: 'varchar' })
-  url!: string;
+  @Column({ type: 'varchar', nullable: true })
+  url!: string | null;
 }

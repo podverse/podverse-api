@@ -2,6 +2,7 @@ import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelFunding } from '@orm/entities/channel/channelFunding';
 import { applyProperties } from '@orm/lib/applyProperties';
+import { channelCreateOrUpdateMany } from '@orm/lib/channel/channelCreateOrUpdateMany';
 
 type ChannelFundingDto = {
   url: string
@@ -11,7 +12,7 @@ type ChannelFundingDto = {
 export class ChannelFundingService {
   private channelFundingRepository = AppDataSource.getRepository(ChannelFunding);
 
-  async getAllByChannel(channel: Channel): Promise<ChannelFunding[] | null> {
+  async getAllByChannel(channel: Channel): Promise<ChannelFunding[]> {
     return this.channelFundingRepository.find({ where: { channel } });
   }
 
@@ -33,23 +34,20 @@ export class ChannelFundingService {
   }
 
   async createOrUpdateMany(channel: Channel, dtos: ChannelFundingDto[]): Promise<ChannelFunding[]> {
-    const existingChannelFundings = await this.getAllByChannel(channel);
-    const updatedChannelFundings: ChannelFunding[] = [];
-    const dtoUrls = dtos.map(dto => dto.url);
-  
-    for (const dto of dtos) {
-      const channel_funding = await this.createOrUpdate(channel, dto);
-      updatedChannelFundings.push(channel_funding);
-    }
-    
-    await this.channelFundingRepository.save(updatedChannelFundings);
-
-    const fundingsToDelete = existingChannelFundings?.filter(funding => !dtoUrls.includes(funding.url));
-    if (fundingsToDelete && fundingsToDelete.length > 0) {
-      await this.channelFundingRepository.remove(fundingsToDelete);
-    }
-    
-    return updatedChannelFundings;
+    return channelCreateOrUpdateMany(
+      channel,
+      dtos,
+      this.getAllByChannel.bind(this),
+      this.createOrUpdate.bind(this),
+      {
+        save: this.channelFundingRepository.save.bind(this.channelFundingRepository),
+        remove: async (entities: ChannelFunding[]) => {
+          await this.channelFundingRepository.remove(entities);
+        }
+      },
+      (dto: ChannelFundingDto) => dto.url,
+      (funding: ChannelFunding) => funding.url
+    );
   }
 
   async deleteAllByChannel(channel: Channel): Promise<void> {

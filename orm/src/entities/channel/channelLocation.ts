@@ -16,4 +16,7 @@ export class ChannelLocation {
 
   @Column({ type: 'varchar', nullable: true })
   osm!: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  name!: string | null;
 }

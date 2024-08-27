@@ -6,9 +6,11 @@ import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagSta
 import { ChannelService } from '@orm/services/channel/channel';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
-import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos } from '@parser-rss/lib/compat/channel';
+import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos, compatChannelLicense, compatChannelLocation } from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
+import { ChannelLocationService } from '@orm/services/channel/channelLocation';
+import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -89,6 +91,22 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelImageService.createOrUpdateMany(channel, channelImageDtos);
   } else {
     await channelImageService.deleteAllByChannel(channel);
+  }
+
+  const channelLicenseService = new ChannelLicenseService();
+  const channelLicenseDto = compatChannelLicense(parsedFeed);
+  if (channelLicenseDto) {
+    await channelLicenseService.createOrUpdate(channel, channelLicenseDto);
+  } else {
+    await channelLicenseService.deleteByChannel(channel);
+  }
+
+  const channelLocationService = new ChannelLocationService();
+  const channelLocationDto = compatChannelLocation(parsedFeed);
+  if (channelLocationDto) {
+    await channelLocationService.createOrUpdate(channel, channelLocationDto);
+  } else {
+    await channelLocationService.deleteByChannel(channel);
   }
 
   return feed;

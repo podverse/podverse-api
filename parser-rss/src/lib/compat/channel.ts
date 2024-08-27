@@ -90,11 +90,23 @@ export const compatChannelImageDtos = (parsedFeed: FeedObject) => {
 }
 
 export const compatChannelLicense = (parsedFeed: FeedObject) => {
-  if (!parsedFeed?.license?.url || !parsedFeed?.license?.identifier) {
+  if (!parsedFeed?.license?.identifier) {
     return null
   }
   return {
-    type: parsedFeed.license?.identifier,
-    url: parsedFeed.license?.url
+    identifier: parsedFeed.license.identifier,
+    url: parsedFeed.license.url || null
+  }
+}
+
+export const compatChannelLocation = (parsedFeed: FeedObject) => {
+  if (!parsedFeed?.podcastLocation?.geo && !parsedFeed?.podcastLocation?.osm) {
+    return null
+  }
+
+  return {
+    geo: parsedFeed.podcastLocation.geo || null,
+    osm: parsedFeed.podcastLocation.osm || null,
+    name: parsedFeed.podcastLocation.name || null
   }
 }

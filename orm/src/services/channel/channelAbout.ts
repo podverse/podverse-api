@@ -4,10 +4,10 @@ import { ChannelAbout } from '@orm/entities/channel/channelAbout';
 import { applyProperties } from '@orm/lib/applyProperties';
 
 type ChannelAboutDto = {
-  author?: string | null
-  explicit?: boolean | null
-  language?: string | null
-  website_link_url?: string | null
+  author: string | null
+  explicit: boolean | null
+  language: string | null
+  website_link_url: string | null
 }
 
 export class ChannelAboutService {
