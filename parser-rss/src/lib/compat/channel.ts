@@ -41,9 +41,14 @@ export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({
   itunes_type: getChannelItunesTypeItunesTypeEnumValue(parsedFeed.itunesType || 'episodic')
 })
 
-export const compatChannelDescriptionDto = (parsedFeed: FeedObject) => ({
-  value: parsedFeed.description
-})
+export const compatChannelDescriptionDto = (parsedFeed: FeedObject) => {
+  if (!parsedFeed.description) {
+    return null
+  }
+  return {
+    value: parsedFeed.description
+  }
+}
 
 export const compatChannelFundingDtos = (parsedFeed: FeedObject) => {
   return Array.isArray(parsedFeed.podcastFunding) ? parsedFeed.podcastFunding.map((f) => ({
@@ -82,4 +87,14 @@ export const compatChannelImageDtos = (parsedFeed: FeedObject) => {
   }
 
   return dtos
+}
+
+export const compatChannelLicense = (parsedFeed: FeedObject) => {
+  if (!parsedFeed?.license?.url || !parsedFeed?.license?.identifier) {
+    return null
+  }
+  return {
+    type: parsedFeed.license?.identifier,
+    url: parsedFeed.license?.url
+  }
 }

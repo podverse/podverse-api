@@ -51,4 +51,11 @@ export class ChannelFundingService {
     
     return updatedChannelFundings;
   }
+
+  async deleteAllByChannel(channel: Channel): Promise<void> {
+    const channelFundings = await this.getAllByChannel(channel);
+    if (channelFundings) {
+      await this.channelFundingRepository.remove(channelFundings);
+    }
+  }
 }

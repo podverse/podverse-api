@@ -69,15 +69,27 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   const channelDescriptionService = new ChannelDescriptionService();
   const channelDescriptionDto = compatChannelDescriptionDto(parsedFeed);
-  await channelDescriptionService.createOrUpdate(channel, channelDescriptionDto);
+  if (channelDescriptionDto) {
+    await channelDescriptionService.createOrUpdate(channel, channelDescriptionDto);
+  } else {
+    await channelDescriptionService.deleteByChannel(channel);
+  }
 
   const channelFundingService = new ChannelFundingService();
   const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
-  await channelFundingService.createOrUpdateMany(channel, channelFundingDtos);
+  if (channelFundingDtos.length > 0) {
+    await channelFundingService.createOrUpdateMany(channel, channelFundingDtos);
+  } else {
+    await channelFundingService.deleteAllByChannel(channel);
+  }
 
   const channelImageService = new ChannelImageService();
   const channelImageDtos = compatChannelImageDtos(parsedFeed);
-  await channelImageService.createOrUpdateMany(channel, channelImageDtos);
+  if (channelImageDtos.length > 0) {
+    await channelImageService.createOrUpdateMany(channel, channelImageDtos);
+  } else {
+    await channelImageService.deleteAllByChannel(channel);
+  }
 
   return feed;
 }

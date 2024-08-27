@@ -35,6 +35,8 @@ export class ChannelImageService {
   async createOrUpdateMany(channel: Channel, dtos: ChannelImageDto[]): Promise<ChannelImage[]> {
     const existingChannelImages = await this.getAllByChannel(channel);
     const updatedChannelImages: ChannelImage[] = [];
+
+    // TODO: adding image shrinking if an image < 500px is not found
   
     function filterDtosByHighestWidth(dtos: ChannelImageDto[]): ChannelImageDto[] {
       const dtoMap = new Map<string, ChannelImageDto>();
@@ -65,5 +67,12 @@ export class ChannelImageService {
     }
   
     return updatedChannelImages;
+  }
+
+  async deleteAllByChannel(channel: Channel): Promise<void> {
+    const channelImages = await this.getAllByChannel(channel);
+    if (channelImages) {
+      await this.channelImageRepository.remove(channelImages);
+    }
   }
 }
