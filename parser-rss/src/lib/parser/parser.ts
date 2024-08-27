@@ -119,5 +119,27 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelPersonService.deleteAllByChannel(channel);
   }
 
+  // TODO: add channelPodroll support
+  // TODO: add channelPodrollRemoteItem support
+
+  // TODO: add channelPublisher support
+  // TODO: add channelPublisherRemoteItem support
+
+  // TODO: add channelRemoteItem support
+
+  // TODO: add channelSeason support
+
+  // TODO: add channelSocialInteract support
+
+  // TODO: add channelTrailer support
+
+  // TODO: add channelTxt support
+
+  // TODO: add channelValueTag support
+  // TODO: add channelValueTagRecipient support
+  // TODO: add channelValueTagTimeSplit support
+  // TODO: add channelValueTagTimeSplitRecipient support
+  // TODO: add channelValueTagTimeSplitRemoteItem support
+
   return feed;
 }
