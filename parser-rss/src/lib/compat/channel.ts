@@ -51,10 +51,20 @@ export const compatChannelDescriptionDto = (parsedFeed: FeedObject) => {
 }
 
 export const compatChannelFundingDtos = (parsedFeed: FeedObject) => {
-  return Array.isArray(parsedFeed.podcastFunding) ? parsedFeed.podcastFunding.map((f) => ({
-    url: f.url,
-    title: f.message
-  })) : []
+  const dtos = []
+
+  if (Array.isArray(parsedFeed.podcastFunding)) {
+    for (const f of parsedFeed.podcastFunding) {
+      if (f.url) {
+        dtos.push({
+          url: f.url,
+          title: f.message || null
+        })
+      }
+    }
+  }
+
+  return dtos
 }
 
 export const compatChannelImageDtos = (parsedFeed: FeedObject) => {
@@ -89,7 +99,7 @@ export const compatChannelImageDtos = (parsedFeed: FeedObject) => {
   return dtos
 }
 
-export const compatChannelLicense = (parsedFeed: FeedObject) => {
+export const compatChannelLicenseDto = (parsedFeed: FeedObject) => {
   if (!parsedFeed?.license?.identifier) {
     return null
   }
@@ -99,7 +109,7 @@ export const compatChannelLicense = (parsedFeed: FeedObject) => {
   }
 }
 
-export const compatChannelLocation = (parsedFeed: FeedObject) => {
+export const compatChannelLocationDto = (parsedFeed: FeedObject) => {
   if (!parsedFeed?.podcastLocation?.geo && !parsedFeed?.podcastLocation?.osm) {
     return null
   }
@@ -109,4 +119,24 @@ export const compatChannelLocation = (parsedFeed: FeedObject) => {
     osm: parsedFeed.podcastLocation.osm || null,
     name: parsedFeed.podcastLocation.name || null
   }
+}
+
+export const compatChannelPersonDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+
+  if (Array.isArray(parsedFeed.podcastPeople)) {
+    for (const p of parsedFeed.podcastPeople) {
+      if (p.name) {
+        dtos.push({
+          name: p.name,
+          role: p.role || null,
+          person_group: p.group || 'cast',
+          img: p.img || null,
+          href: p.href || null
+        })
+      }
+    }
+  }
+
+  return dtos
 }

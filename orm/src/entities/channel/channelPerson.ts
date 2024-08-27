@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 
 @Entity()
@@ -24,4 +24,16 @@ export class ChannelPerson {
 
   @Column({ type: 'varchar', nullable: true  })
   href!: string | null;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  lowercaseFields() {
+    if (this.role) {
+      this.role = this.role.toLowerCase();
+    }
+    if (this.person_group) {
+      this.person_group = this.person_group.toLowerCase();
+    }
+  }
 }
+

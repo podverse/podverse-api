@@ -6,11 +6,13 @@ import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagSta
 import { ChannelService } from '@orm/services/channel/channel';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
-import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos, compatChannelLicense, compatChannelLocation } from '@parser-rss/lib/compat/channel';
+import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos,
+  compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos } from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
 import { ChannelLocationService } from '@orm/services/channel/channelLocation';
 import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
+import { ChannelPersonService } from '@orm/services/channel/channelPerson';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -94,7 +96,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   }
 
   const channelLicenseService = new ChannelLicenseService();
-  const channelLicenseDto = compatChannelLicense(parsedFeed);
+  const channelLicenseDto = compatChannelLicenseDto(parsedFeed);
   if (channelLicenseDto) {
     await channelLicenseService.createOrUpdate(channel, channelLicenseDto);
   } else {
@@ -102,11 +104,19 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   }
 
   const channelLocationService = new ChannelLocationService();
-  const channelLocationDto = compatChannelLocation(parsedFeed);
+  const channelLocationDto = compatChannelLocationDto(parsedFeed);
   if (channelLocationDto) {
     await channelLocationService.createOrUpdate(channel, channelLocationDto);
   } else {
     await channelLocationService.deleteByChannel(channel);
+  }
+
+  const channelPersonService = new ChannelPersonService();
+  const channelPersonDtos = compatChannelPersonDtos(parsedFeed);
+  if (channelPersonDtos.length > 0) {
+    await channelPersonService.createOrUpdateMany(channel, channelPersonDtos);
+  } else {
+    await channelPersonService.deleteAllByChannel(channel);
   }
 
   return feed;

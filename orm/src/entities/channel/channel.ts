@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Feed } from '@orm/entities/feed/feed'; 
 import { MediumValue, MediumValueValueEnum } from '@orm/entities/mediumValue';
 
@@ -49,4 +49,12 @@ export class Channel {
 
   @Column({ type: 'boolean', default: false })
   marked_for_deletion!: boolean;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  lowercaseFields() {
+    if (this.sortable_title) {
+      this.sortable_title = this.sortable_title.toLowerCase();
+    }
+  }
 }
