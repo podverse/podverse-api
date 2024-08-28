@@ -11,10 +11,10 @@ type ChannelAboutDto = {
 }
 
 export class ChannelAboutService {
-  private channelAboutRepository = AppDataSource.getRepository(ChannelAbout);
+  private repository = AppDataSource.getRepository(ChannelAbout);
 
   async get(channel: Channel): Promise<ChannelAbout | null> {
-    return this.channelAboutRepository.findOne({ where: { channel } });
+    return this.repository.findOne({ where: { channel } });
   }
 
   async update(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout | null> {
@@ -27,6 +27,6 @@ export class ChannelAboutService {
 
     channel_about = applyProperties(channel_about, dto);
 
-    return this.channelAboutRepository.save(channel_about);
+    return this.repository.save(channel_about);
   }
 }

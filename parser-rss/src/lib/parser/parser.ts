@@ -8,7 +8,8 @@ import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
 import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos,
   compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos, 
-  compatChannelPodrollRemoteItemDtos} from '@parser-rss/lib/compat/channel';
+  compatChannelPodrollRemoteItemDtos,
+  compatChannelRemoteItemDtos} from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
 import { ChannelLocationService } from '@orm/services/channel/channelLocation';
@@ -16,6 +17,9 @@ import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
 import { ChannelPersonService } from '@orm/services/channel/channelPerson';
 import { ChannelPodrollRemoteItemService } from '@orm/services/channel/channelPodrollRemoteItem';
 import { ChannelPodrollService } from '@orm/services/channel/channelPodroll';
+import { ChannelPublisherService } from '@orm/services/channel/channelPublisher';
+import { ChannelPublisherRemoteItemService } from '@orm/services/channel/channelPublisherRemoteItem';
+import { ChannelRemoteItemService } from '@orm/services/channel/channelRemoteItem';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -52,7 +56,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const parsedFeed = await getAndParseRSSFeed(url);
 
   const feedService = new FeedService();
-  const feed = await feedService.getOrCreateFeed({ url, podcast_index_id });
+  const feed = await feedService.getOrCreate({ url, podcast_index_id });
 
   // TODO: check if already isParsing
 
@@ -76,10 +80,11 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   const channelDescriptionService = new ChannelDescriptionService();
   const channelDescriptionDto = compatChannelDescriptionDto(parsedFeed);
+
   if (channelDescriptionDto) {
-    await channelDescriptionService.createOrUpdate(channel, channelDescriptionDto);
+    await channelDescriptionService.update(channel, channelDescriptionDto);
   } else {
-    await channelDescriptionService.deleteByChannel(channel);
+    await channelDescriptionService.delete(channel);
   }
 
   const channelFundingService = new ChannelFundingService();
@@ -88,35 +93,39 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelFundingDtos.length > 0) {
     await channelFundingService.updateMany(channel, channelFundingDtos);
   } else {
-    await channelFundingService.deleteAllByChannel(channel);
+    await channelFundingService.deleteAll(channel);
   }
 
   const channelImageService = new ChannelImageService();
   const channelImageDtos = compatChannelImageDtos(parsedFeed);
+
   if (channelImageDtos.length > 0) {
     await channelImageService.updateMany(channel, channelImageDtos);
   } else {
-    await channelImageService.deleteAllByChannel(channel);
+    await channelImageService.deleteAll(channel);
   }
 
   const channelLicenseService = new ChannelLicenseService();
   const channelLicenseDto = compatChannelLicenseDto(parsedFeed);
+
   if (channelLicenseDto) {
-    await channelLicenseService.createOrUpdate(channel, channelLicenseDto);
+    await channelLicenseService.update(channel, channelLicenseDto);
   } else {
-    await channelLicenseService.deleteByChannel(channel);
+    await channelLicenseService.delete(channel);
   }
 
   const channelLocationService = new ChannelLocationService();
   const channelLocationDto = compatChannelLocationDto(parsedFeed);
+
   if (channelLocationDto) {
-    await channelLocationService.createOrUpdate(channel, channelLocationDto);
+    await channelLocationService.update(channel, channelLocationDto);
   } else {
-    await channelLocationService.deleteByChannel(channel);
+    await channelLocationService.delete(channel);
   }
 
   const channelPersonService = new ChannelPersonService();
   const channelPersonDtos = compatChannelPersonDtos(parsedFeed);
+
   if (channelPersonDtos.length > 0) {
     await channelPersonService.updateMany(channel, channelPersonDtos);
   } else {
@@ -125,21 +134,38 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   const channelPodrollService = new ChannelPodrollService();
   const channelPodrollRemoteItemService = new ChannelPodrollRemoteItemService();
-
   const channelPodrollRemoteItemDtos = compatChannelPodrollRemoteItemDtos(parsedFeed);
+
   if (channelPodrollRemoteItemDtos.length > 0) {
-    const channel_podroll = await channelPodrollService.createOrUpdate(channel);
-    await channelPodrollRemoteItemService.createOrUpdateMany(channel_podroll, channelPodrollRemoteItemDtos);
+    const channel_podroll = await channelPodrollService.update(channel);
+    await channelPodrollRemoteItemService.updateMany(channel_podroll, channelPodrollRemoteItemDtos);
   } else {
-    await channelPodrollService.deleteByChannel(channel);
+    await channelPodrollService.delete(channel);
   }
 
-  // TODO: add channelPublisher support
-  // TODO: add channelPublisherRemoteItem support
+  // const channelPublisherService = new ChannelPublisherService();
+  // const channelPublisherRemoteItemService = new ChannelPublisherRemoteItemService();
+
+  // const channelPublisherRemoteItemDtos = compatChannelPublisherRemoteItemDtos(parsedFeed);
+  // if (channelPublisherRemoteItemDtos.length > 0) {
+  //   const channel_publisher = await channelPublisherService.update(channel);
+  //   await channelPublisherRemoteItemService.updateMany(channel_publisher, channelPodrollRemoteItemDtos);
+  // } else {
+  //   await channelPublisherService.delete(channel);
+  // }
 
   // TODO: add channelRemoteItem support
+  const channelRemoteItemService = new ChannelRemoteItemService();
+  const channelRemoteItemDtos = compatChannelRemoteItemDtos(parsedFeed);
+
+  if (channelRemoteItemDtos.length > 0) {
+    await channelRemoteItemService.updateMany(channel, channelRemoteItemDtos);
+  } else {
+    await channelRemoteItemService.deleteAll(channel);
+  }
 
   // TODO: add channelSeason support
+  // const channelSeasonService = new ChannelSeasonService();
 
   // TODO: add channelSocialInteract support
 

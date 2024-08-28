@@ -9,14 +9,14 @@ type ChannelLicenseDto = {
 }
 
 export class ChannelLicenseService {
-  private channelLicenseRepository = AppDataSource.getRepository(ChannelLicense);
+  private repository = AppDataSource.getRepository(ChannelLicense);
 
-  async getByChannel(channel: Channel): Promise<ChannelLicense | null> {
-    return this.channelLicenseRepository.findOne({ where: { channel } });
+  async get(channel: Channel): Promise<ChannelLicense | null> {
+    return this.repository.findOne({ where: { channel } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelLicenseDto): Promise<ChannelLicense | null> {
-    let channel_license = await this.getByChannel(channel);
+  async update(channel: Channel, dto: ChannelLicenseDto): Promise<ChannelLicense | null> {
+    let channel_license = await this.get(channel);
 
     if (!channel_license) {
       channel_license = new ChannelLicense();
@@ -25,13 +25,13 @@ export class ChannelLicenseService {
 
     channel_license = applyProperties(channel_license, dto);
 
-    return this.channelLicenseRepository.save(channel_license);
+    return this.repository.save(channel_license);
   }
 
-  async deleteByChannel(channel: Channel): Promise<void> {
-    const channelLicense = await this.getByChannel(channel);
+  async delete(channel: Channel): Promise<void> {
+    const channelLicense = await this.get(channel);
     if (channelLicense) {
-      await this.channelLicenseRepository.remove(channelLicense);
+      await this.repository.remove(channelLicense);
     }
   }
 }

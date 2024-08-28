@@ -23,18 +23,18 @@ type ChannelUpdateDto = {
 }
 
 export class ChannelService {
-  private channelRepository = AppDataSource.getRepository(Channel);
+  private repository = AppDataSource.getRepository(Channel);
 
   async getById(id: number): Promise<Channel | null> {
-    return this.channelRepository.findOne({ where: { id } });
+    return this.repository.findOne({ where: { id } });
   }
 
   async getByIdText(id_text: string): Promise<Channel | null> {
-    return this.channelRepository.findOne({ where: { id_text } });
+    return this.repository.findOne({ where: { id_text } });
   }
 
   async getByPodcastIndexId(podcast_index_id: number): Promise<Channel | null> {
-    return this.channelRepository.findOne({ where: { podcast_index_id } });
+    return this.repository.findOne({ where: { podcast_index_id } });
   }
 
   async getOrCreateByPodcastIndexId(dto: ChannelInitializeDto): Promise<Channel> {
@@ -45,7 +45,7 @@ export class ChannelService {
       channel.feed_id = dto.feed.id;
       channel.podcast_index_id = dto.podcast_index_id;
     }
-    return await this.channelRepository.save(channel);
+    return await this.repository.save(channel);
   }
 
   async update(id: number, dto: ChannelUpdateDto): Promise<Channel | null> {
@@ -57,7 +57,7 @@ export class ChannelService {
 
     channel = applyProperties(channel, dto);
 
-    await this.channelRepository.save(channel);
+    await this.repository.save(channel);
 
     return await this.getById(id);
   }

@@ -13,38 +13,38 @@ type ChannelPodrollRemoteItemDto = {
 }
 
 export class ChannelPodrollRemoteItemService {
-  private channelPodrollRemoteItemRepository = AppDataSource.getRepository(ChannelPodrollRemoteItem);
+  private repository = AppDataSource.getRepository(ChannelPodrollRemoteItem);
 
-  async getAllByChannelPodroll(channel_podroll: ChannelPodroll): Promise<ChannelPodrollRemoteItem[] | null> {
-    return this.channelPodrollRemoteItemRepository.find({ where: { channel_podroll } });
+  async getAll(channel_podroll: ChannelPodroll): Promise<ChannelPodrollRemoteItem[]> {
+    return this.repository.find({ where: { channel_podroll } });
   }
 
-  async getByChannelAndFeedGuid(channel_podroll: ChannelPodroll, feed_guid: string): Promise<ChannelPodrollRemoteItem | null> {
-    return this.channelPodrollRemoteItemRepository.findOne({ where: { channel_podroll, feed_guid } });
+  async getByItemGuid(channel_podroll: ChannelPodroll, item_guid: string): Promise<ChannelPodrollRemoteItem | null> {
+    return this.repository.findOne({ where: { channel_podroll, item_guid } });
   }
 
-  async getByChannelAndFeedUrl(channel_podroll: ChannelPodroll, feed_url: string): Promise<ChannelPodrollRemoteItem | null> {
-    return this.channelPodrollRemoteItemRepository.findOne({ where: { channel_podroll, feed_url } });
+  async getByFeedGuid(channel_podroll: ChannelPodroll, feed_guid: string): Promise<ChannelPodrollRemoteItem | null> {
+    return this.repository.findOne({ where: { channel_podroll, feed_guid } });
   }
 
-  async getByChannelAndItemGuid(channel_podroll: ChannelPodroll, item_guid: string): Promise<ChannelPodrollRemoteItem | null> {
-    return this.channelPodrollRemoteItemRepository.findOne({ where: { channel_podroll, item_guid } });
+  async getByFeedUrl(channel_podroll: ChannelPodroll, feed_url: string): Promise<ChannelPodrollRemoteItem | null> {
+    return this.repository.findOne({ where: { channel_podroll, feed_url } });
   }
 
-  async getByChannelPodrollAndData(channel_podroll: ChannelPodroll, dto: ChannelPodrollRemoteItemDto): Promise<ChannelPodrollRemoteItem | null> {
+  async get(channel_podroll: ChannelPodroll, dto: ChannelPodrollRemoteItemDto): Promise<ChannelPodrollRemoteItem | null> {
     if (dto.item_guid) {
-      return this.getByChannelAndItemGuid(channel_podroll, dto.item_guid);
+      return this.getByItemGuid(channel_podroll, dto.item_guid);
     } else if (dto.feed_guid) {
-      return this.getByChannelAndFeedGuid(channel_podroll, dto.feed_guid);
+      return this.getByFeedGuid(channel_podroll, dto.feed_guid);
     } else if (dto.feed_url) {
-      return this.getByChannelAndFeedUrl(channel_podroll, dto.feed_url);
+      return this.getByFeedUrl(channel_podroll, dto.feed_url);
     }
 
     return null;
   }
 
-  async createOrUpdate(channel_podroll: ChannelPodroll, dto: ChannelPodrollRemoteItemDto): Promise<ChannelPodrollRemoteItem> {
-    let channel_podroll_remote_item = await this.getByChannelPodrollAndData(channel_podroll, dto);
+  async update(channel_podroll: ChannelPodroll, dto: ChannelPodrollRemoteItemDto): Promise<ChannelPodrollRemoteItem> {
+    let channel_podroll_remote_item = await this.get(channel_podroll, dto);
 
     if (!channel_podroll_remote_item) {
       channel_podroll_remote_item = new ChannelPodrollRemoteItem();
@@ -53,12 +53,12 @@ export class ChannelPodrollRemoteItemService {
 
     channel_podroll_remote_item = applyProperties(channel_podroll_remote_item, dto);
 
-    return this.channelPodrollRemoteItemRepository.save(channel_podroll_remote_item);
+    return this.repository.save(channel_podroll_remote_item);
   }
 
-  async createOrUpdateMany(channel_podroll: ChannelPodroll,
+  async updateMany(channel_podroll: ChannelPodroll,
     dtos: ChannelPodrollRemoteItemDto[]): Promise<ChannelPodrollRemoteItem[]> {
-    const existingChannelPodrollRemoteItems = await this.getAllByChannelPodroll(channel_podroll);
+    const existingChannelPodrollRemoteItems = await this.getAll(channel_podroll);
     const updatedChannelPodrollRemoteItems: ChannelPodrollRemoteItem[] = [];
     const dtoUniqueKeys = dtos.map(dto => ({
       feed_guid: dto.feed_guid,
@@ -67,11 +67,11 @@ export class ChannelPodrollRemoteItemService {
     }));
   
     for (const dto of dtos) {
-      const channel_podroll_remote_item = await this.createOrUpdate(channel_podroll, dto);
+      const channel_podroll_remote_item = await this.update(channel_podroll, dto);
       updatedChannelPodrollRemoteItems.push(channel_podroll_remote_item);
     }
     
-    await this.channelPodrollRemoteItemRepository.save(updatedChannelPodrollRemoteItems);
+    await this.repository.save(updatedChannelPodrollRemoteItems);
 
     const channelPodrollRemoteItemsToDelete = existingChannelPodrollRemoteItems?.filter(channel_podroll_remote_item => 
       dtoUniqueKeys.every(key => 
@@ -82,16 +82,16 @@ export class ChannelPodrollRemoteItemService {
     );
 
     if (channelPodrollRemoteItemsToDelete && channelPodrollRemoteItemsToDelete.length > 0) {
-      await this.channelPodrollRemoteItemRepository.remove(channelPodrollRemoteItemsToDelete);
+      await this.repository.remove(channelPodrollRemoteItemsToDelete);
     }
     
     return updatedChannelPodrollRemoteItems;
   }
 
-  async deleteAllByChannel(channel_podroll: ChannelPodroll): Promise<void> {
-    const channel_podroll_remote_items = await this.getAllByChannelPodroll(channel_podroll);
+  async deleteAll(channel_podroll: ChannelPodroll): Promise<void> {
+    const channel_podroll_remote_items = await this.getAll(channel_podroll);
     if (channel_podroll_remote_items) {
-      await this.channelPodrollRemoteItemRepository.remove(channel_podroll_remote_items);
+      await this.repository.remove(channel_podroll_remote_items);
     }
   }
 }

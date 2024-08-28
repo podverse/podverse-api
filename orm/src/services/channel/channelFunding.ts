@@ -10,18 +10,18 @@ type ChannelFundingDto = {
 }
 
 export class ChannelFundingService {
-  private channelFundingRepository = AppDataSource.getRepository(ChannelFunding);
+  private repository = AppDataSource.getRepository(ChannelFunding);
 
-  async getAllByChannel(channel: Channel): Promise<ChannelFunding[]> {
-    return this.channelFundingRepository.find({ where: { channel } });
+  async getAll(channel: Channel): Promise<ChannelFunding[]> {
+    return this.repository.find({ where: { channel } });
   }
 
-  async getByChannelAndUrl(channel: Channel, url: string): Promise<ChannelFunding | null> {
-    return this.channelFundingRepository.findOne({ where: { channel, url } });
+  async get(channel: Channel, url: string): Promise<ChannelFunding | null> {
+    return this.repository.findOne({ where: { channel, url } });
   }
 
   async update(channel: Channel, dto: ChannelFundingDto): Promise<ChannelFunding> {
-    let channel_funding = await this.getByChannelAndUrl(channel, dto.url);
+    let channel_funding = await this.get(channel, dto.url);
 
     if (!channel_funding) {
       channel_funding = new ChannelFunding();
@@ -30,24 +30,24 @@ export class ChannelFundingService {
 
     channel_funding = applyProperties(channel_funding, dto);
 
-    return this.channelFundingRepository.save(channel_funding);
+    return this.repository.save(channel_funding);
   }
 
   async updateMany(channel: Channel, dtos: ChannelFundingDto[]): Promise<ChannelFunding[]> {
     return entityUpdateMany<Channel, ChannelFundingDto, ChannelFunding>(
       channel,
       dtos,
-      this.getAllByChannel.bind(this),
+      this.getAll.bind(this),
       this.update.bind(this),
-      this.channelFundingRepository,
+      this.repository,
       'url'
     );
   }
 
-  async deleteAllByChannel(channel: Channel): Promise<void> {
-    const channelFundings = await this.getAllByChannel(channel);
+  async deleteAll(channel: Channel): Promise<void> {
+    const channelFundings = await this.getAll(channel);
     if (channelFundings) {
-      await this.channelFundingRepository.remove(channelFundings);
+      await this.repository.remove(channelFundings);
     }
   }
 }

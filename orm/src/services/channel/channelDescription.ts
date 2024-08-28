@@ -8,14 +8,14 @@ type ChannelDescriptionDto = {
 }
 
 export class ChannelDescriptionService {
-  private channelDescriptionRepository = AppDataSource.getRepository(ChannelDescription);
+  private repository = AppDataSource.getRepository(ChannelDescription);
 
-  async getByChannel(channel: Channel): Promise<ChannelDescription | null> {
-    return this.channelDescriptionRepository.findOne({ where: { channel } });
+  async get(channel: Channel): Promise<ChannelDescription | null> {
+    return this.repository.findOne({ where: { channel } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelDescriptionDto): Promise<ChannelDescription | null> {
-    let channel_description = await this.getByChannel(channel);
+  async update(channel: Channel, dto: ChannelDescriptionDto): Promise<ChannelDescription | null> {
+    let channel_description = await this.get(channel);
 
     if (!channel_description) {
       channel_description = new ChannelDescription();
@@ -24,13 +24,13 @@ export class ChannelDescriptionService {
 
     channel_description = applyProperties(channel_description, dto);
 
-    return this.channelDescriptionRepository.save(channel_description);
+    return this.repository.save(channel_description);
   }
 
-  async deleteByChannel(channel: Channel): Promise<void> {
-    const channel_description = await this.getByChannel(channel);
+  async delete(channel: Channel): Promise<void> {
+    const channel_description = await this.get(channel);
     if (channel_description) {
-      await this.channelDescriptionRepository.remove(channel_description);
+      await this.repository.remove(channel_description);
     }
   }
 }

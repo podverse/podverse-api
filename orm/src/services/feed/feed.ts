@@ -14,16 +14,16 @@ type FeedCreateDto = {
 }
 
 export class FeedService {
-  private feedRepository = AppDataSource.getRepository(Feed);
+  private repository = AppDataSource.getRepository(Feed);
 
   async getAll(): Promise<Feed[]> {
-    return await this.feedRepository.find({
+    return await this.repository.find({
       relations: ['channel']
     });
   }
 
-  async getOrCreateFeed({ url, podcast_index_id }: FeedCreateDto): Promise<Feed> {
-    const feed = await this.feedRepository.findOne({
+  async getOrCreate({ url, podcast_index_id }: FeedCreateDto): Promise<Feed> {
+    const feed = await this.repository.findOne({
       where: { url },
       relations: ['feed_flag_status', 'feed_log'],
     });
@@ -49,8 +49,8 @@ export class FeedService {
     feed.parsing_priority = 1;
     feed.container_id = '';
 
-    const newFeed = await this.feedRepository.save(feed);
-    await feedLogService.create({ feed: newFeed });
+    const newFeed = await this.repository.save(feed);
+    await feedLogService.update({ feed: newFeed });
 
     const channel = await channelService.getOrCreateByPodcastIndexId({
       feed: newFeed,
@@ -58,6 +58,6 @@ export class FeedService {
     });
     
     newFeed.channel = channel;
-    return this.feedRepository.save(newFeed);
+    return this.repository.save(newFeed);
   }
 }

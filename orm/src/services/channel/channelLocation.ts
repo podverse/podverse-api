@@ -10,14 +10,14 @@ type ChannelLocationDto = {
 }
 
 export class ChannelLocationService {
-  private channelLocationRepository = AppDataSource.getRepository(ChannelLocation);
+  private repository = AppDataSource.getRepository(ChannelLocation);
 
-  async getOne(channel: Channel): Promise<ChannelLocation | null> {
-    return this.channelLocationRepository.findOne({ where: { channel } });
+  async get(channel: Channel): Promise<ChannelLocation | null> {
+    return this.repository.findOne({ where: { channel } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelLocationDto): Promise<ChannelLocation | null> {
-    let channel_location = await this.getOne(channel);
+  async update(channel: Channel, dto: ChannelLocationDto): Promise<ChannelLocation | null> {
+    let channel_location = await this.get(channel);
 
     if (!channel_location) {
       channel_location = new ChannelLocation();
@@ -26,13 +26,13 @@ export class ChannelLocationService {
 
     channel_location = applyProperties(channel_location, dto);
 
-    return this.channelLocationRepository.save(channel_location);
+    return this.repository.save(channel_location);
   }
 
-  async deleteByChannel(channel: Channel): Promise<void> {
-    const channelLocation = await this.getOne(channel);
+  async delete(channel: Channel): Promise<void> {
+    const channelLocation = await this.get(channel);
     if (channelLocation) {
-      await this.channelLocationRepository.remove(channelLocation);
+      await this.repository.remove(channelLocation);
     }
   }
 }

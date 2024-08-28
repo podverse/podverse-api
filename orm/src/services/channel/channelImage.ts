@@ -9,18 +9,18 @@ type ChannelImageDto = {
 }
 
 export class ChannelImageService {
-  private channelImageRepository = AppDataSource.getRepository(ChannelImage);
+  private repository = AppDataSource.getRepository(ChannelImage);
 
-  async getAllByChannel(channel: Channel): Promise<ChannelImage[] | null> {
-    return this.channelImageRepository.find({ where: { channel } });
+  async getAll(channel: Channel): Promise<ChannelImage[] | null> {
+    return this.repository.find({ where: { channel } });
   }
 
-  async getByChannelAndUrl(channel: Channel, url: string): Promise<ChannelImage | null> {
-    return this.channelImageRepository.findOne({ where: { channel, url } });
+  async get(channel: Channel, url: string): Promise<ChannelImage | null> {
+    return this.repository.findOne({ where: { channel, url } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelImageDto): Promise<ChannelImage> {
-    let channel_image = await this.getByChannelAndUrl(channel, dto.url);
+  async update(channel: Channel, dto: ChannelImageDto): Promise<ChannelImage> {
+    let channel_image = await this.get(channel, dto.url);
 
     if (!channel_image) {
       channel_image = new ChannelImage();
@@ -29,11 +29,11 @@ export class ChannelImageService {
 
     channel_image = applyProperties(channel_image, dto);
 
-    return this.channelImageRepository.save(channel_image);
+    return this.repository.save(channel_image);
   }
 
   async updateMany(channel: Channel, dtos: ChannelImageDto[]): Promise<ChannelImage[]> {
-    const existingChannelImages = await this.getAllByChannel(channel);
+    const existingChannelImages = await this.getAll(channel);
     const updatedChannelImages: ChannelImage[] = [];
 
     // TODO: adding image shrinking if an image < 500px is not found
@@ -55,24 +55,24 @@ export class ChannelImageService {
     const dtoUrls = filteredDtos.map(dto => dto.url);
   
     for (const dto of filteredDtos) {
-      const channel_image = await this.createOrUpdate(channel, dto);
+      const channel_image = await this.update(channel, dto);
       updatedChannelImages.push(channel_image);
     }
   
-    await this.channelImageRepository.save(updatedChannelImages);
+    await this.repository.save(updatedChannelImages);
   
     const imagesToDelete = existingChannelImages?.filter(image => !dtoUrls.includes(image.url));
     if (imagesToDelete && imagesToDelete.length > 0) {
-      await this.channelImageRepository.remove(imagesToDelete);
+      await this.repository.remove(imagesToDelete);
     }
   
     return updatedChannelImages;
   }
 
-  async deleteAllByChannel(channel: Channel): Promise<void> {
-    const channelImages = await this.getAllByChannel(channel);
+  async deleteAll(channel: Channel): Promise<void> {
+    const channelImages = await this.getAll(channel);
     if (channelImages) {
-      await this.channelImageRepository.remove(channelImages);
+      await this.repository.remove(channelImages);
     }
   }
 }

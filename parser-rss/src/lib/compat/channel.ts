@@ -160,3 +160,43 @@ export const compatChannelPodrollRemoteItemDtos = (parsedFeed: FeedObject) => {
 
   return dtos
 }
+
+export const compatChannelPublisherRemoteItemDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+
+  if (Array.isArray(parsedFeed.podroll)) {
+    for (const ri of parsedFeed.podroll) {
+      if (ri.feedGuid) {
+        dtos.push({
+          feed_guid: ri.feedGuid,
+          feed_url: ri.feedUrl || null,
+          item_guid: null,
+          medium: ri.medium ? getMediumValueValueEnumValue(ri.medium) : null,
+          title: /* TODO: ri.title || */ null
+        })
+      }
+    }
+  }
+
+  return dtos
+}
+
+export const compatChannelRemoteItemDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+
+  if (Array.isArray(parsedFeed.podcastRemoteItems)) {
+    for (const ri of parsedFeed.podcastRemoteItems) {
+      if (ri.feedGuid) {
+        dtos.push({
+          feed_guid: ri.feedGuid,
+          feed_url: ri.feedUrl || null,
+          item_guid: null,
+          medium: ri.medium ? getMediumValueValueEnumValue(ri.medium) : null,
+          title: /* TODO: ri.title || */ null
+        })
+      }
+    }
+  }
+
+  return dtos
+}
