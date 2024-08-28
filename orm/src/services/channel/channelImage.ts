@@ -70,9 +70,9 @@ export class ChannelImageService {
   }
 
   async deleteAll(channel: Channel): Promise<void> {
-    const channelImages = await this.getAll(channel);
-    if (channelImages) {
-      await this.repository.remove(channelImages);
+    const channel_images = await this.getAll(channel);
+    if (channel_images) {
+      await this.repository.remove(channel_images);
     }
   }
 }

@@ -48,9 +48,9 @@ export class ChannelPersonService {
   }
 
   async deleteAll(channel: Channel): Promise<void> {
-    const channelFundings = await this.getAll(channel);
-    if (channelFundings) {
-      await this.repository.remove(channelFundings);
+    const channel_persons = await this.getAll(channel);
+    if (channel_persons) {
+      await this.repository.remove(channel_persons);
     }
   }
 }
