@@ -17,9 +17,8 @@ import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
 import { ChannelPersonService } from '@orm/services/channel/channelPerson';
 import { ChannelPodrollRemoteItemService } from '@orm/services/channel/channelPodrollRemoteItem';
 import { ChannelPodrollService } from '@orm/services/channel/channelPodroll';
-import { ChannelPublisherService } from '@orm/services/channel/channelPublisher';
-import { ChannelPublisherRemoteItemService } from '@orm/services/channel/channelPublisherRemoteItem';
 import { ChannelRemoteItemService } from '@orm/services/channel/channelRemoteItem';
+// import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -164,8 +163,15 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelRemoteItemService.deleteAll(channel);
   }
 
-  // TODO: add channelSeason support
+  // // TODO: add channelSeason support
   // const channelSeasonService = new ChannelSeasonService();
+  // const channelSeasonDtos = compatChannelSeasonDtos(parsedFeed);
+
+  // if (channelSeasonDtos.length > 0) {
+  //   await channelSeasonService.updateMany(channel, channelSeasonDtos);
+  // } else {
+  //   await channelSeasonService.deleteAll(channel);
+  // }
 
   // TODO: add channelSocialInteract support
 
