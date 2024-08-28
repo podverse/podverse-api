@@ -2,7 +2,7 @@ import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPerson } from '@orm/entities/channel/channelPerson';
 import { applyProperties } from '@orm/lib/applyProperties';
-import { channelCreateOrUpdateMany } from '@orm/lib/channel/channelCreateOrUpdateMany';
+import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelPersonDto = {
   name: string
@@ -13,18 +13,18 @@ type ChannelPersonDto = {
 }
 
 export class ChannelPersonService {
-  private channelPersonRepository = AppDataSource.getRepository(ChannelPerson);
+  private repository = AppDataSource.getRepository(ChannelPerson);
 
-  async getAllByChannel(channel: Channel): Promise<ChannelPerson[]> {
-    return this.channelPersonRepository.find({ where: { channel } });
+  async getAll(channel: Channel): Promise<ChannelPerson[]> {
+    return this.repository.find({ where: { channel } });
   }
 
-  async getByChannelAndName(channel: Channel, name: string): Promise<ChannelPerson | null> {
-    return this.channelPersonRepository.findOne({ where: { channel, name } });
+  async getOne(channel: Channel, name: string): Promise<ChannelPerson | null> {
+    return this.repository.findOne({ where: { channel, name } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelPersonDto): Promise<ChannelPerson> {
-    let channel_person = await this.getByChannelAndName(channel, dto.name);
+  async update(channel: Channel, dto: ChannelPersonDto): Promise<ChannelPerson> {
+    let channel_person = await this.getOne(channel, dto.name);
 
     if (!channel_person) {
       channel_person = new ChannelPerson();
@@ -33,30 +33,24 @@ export class ChannelPersonService {
 
     channel_person = applyProperties(channel_person, dto);
 
-    return this.channelPersonRepository.save(channel_person);
+    return this.repository.save(channel_person);
   }
 
-  async createOrUpdateMany(channel: Channel, dtos: ChannelPersonDto[]): Promise<ChannelPerson[]> {
-    return channelCreateOrUpdateMany(
+  async updateMany(channel: Channel, dtos: ChannelPersonDto[]): Promise<ChannelPerson[]> {
+    return entityUpdateMany<Channel, ChannelPersonDto, ChannelPerson>(
       channel,
       dtos,
-      this.getAllByChannel.bind(this),
-      this.createOrUpdate.bind(this),
-      {
-        save: this.channelPersonRepository.save.bind(this.channelPersonRepository),
-        remove: async (entities: ChannelPerson[]) => {
-          await this.channelPersonRepository.remove(entities);
-        }
-      },
-      (dto: ChannelPersonDto) => dto.name,
-      (person: ChannelPerson) => person.name
+      this.getAll.bind(this),
+      this.update.bind(this),
+      this.repository,
+      'name'
     );
   }
 
-  async deleteAllByChannel(channel: Channel): Promise<void> {
-    const channelPersons = await this.getAllByChannel(channel);
-    if (channelPersons) {
-      await this.channelPersonRepository.remove(channelPersons);
+  async deleteAll(channel: Channel): Promise<void> {
+    const channelFundings = await this.getAll(channel);
+    if (channelFundings) {
+      await this.repository.remove(channelFundings);
     }
   }
 }

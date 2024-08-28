@@ -7,12 +7,15 @@ import { ChannelService } from '@orm/services/channel/channel';
 import { ChannelAboutService } from '@orm/services/channel/channelAbout';
 import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
 import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos,
-  compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos } from '@parser-rss/lib/compat/channel';
+  compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos, 
+  compatChannelPodrollRemoteItemDtos} from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
 import { ChannelLocationService } from '@orm/services/channel/channelLocation';
 import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
 import { ChannelPersonService } from '@orm/services/channel/channelPerson';
+import { ChannelPodrollRemoteItemService } from '@orm/services/channel/channelPodrollRemoteItem';
+import { ChannelPodrollService } from '@orm/services/channel/channelPodroll';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -47,7 +50,7 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const parsedFeed = await getAndParseRSSFeed(url);
-  
+
   const feedService = new FeedService();
   const feed = await feedService.getOrCreateFeed({ url, podcast_index_id });
 
@@ -65,7 +68,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
   const channelAboutService = new ChannelAboutService();
   const channelAboutDto = compatChannelAboutDto(parsedFeed);
-  await channelAboutService.createOrUpdate(channel, channelAboutDto);
+  await channelAboutService.update(channel, channelAboutDto);
 
   // TODO: add channelCategory support
 
@@ -81,8 +84,9 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   const channelFundingService = new ChannelFundingService();
   const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
+
   if (channelFundingDtos.length > 0) {
-    await channelFundingService.createOrUpdateMany(channel, channelFundingDtos);
+    await channelFundingService.updateMany(channel, channelFundingDtos);
   } else {
     await channelFundingService.deleteAllByChannel(channel);
   }
@@ -90,7 +94,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channelImageService = new ChannelImageService();
   const channelImageDtos = compatChannelImageDtos(parsedFeed);
   if (channelImageDtos.length > 0) {
-    await channelImageService.createOrUpdateMany(channel, channelImageDtos);
+    await channelImageService.updateMany(channel, channelImageDtos);
   } else {
     await channelImageService.deleteAllByChannel(channel);
   }
@@ -114,13 +118,21 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channelPersonService = new ChannelPersonService();
   const channelPersonDtos = compatChannelPersonDtos(parsedFeed);
   if (channelPersonDtos.length > 0) {
-    await channelPersonService.createOrUpdateMany(channel, channelPersonDtos);
+    await channelPersonService.updateMany(channel, channelPersonDtos);
   } else {
-    await channelPersonService.deleteAllByChannel(channel);
+    await channelPersonService.deleteAll(channel);
   }
 
-  // TODO: add channelPodroll support
-  // TODO: add channelPodrollRemoteItem support
+  const channelPodrollService = new ChannelPodrollService();
+  const channelPodrollRemoteItemService = new ChannelPodrollRemoteItemService();
+
+  const channelPodrollRemoteItemDtos = compatChannelPodrollRemoteItemDtos(parsedFeed);
+  if (channelPodrollRemoteItemDtos.length > 0) {
+    const channel_podroll = await channelPodrollService.createOrUpdate(channel);
+    await channelPodrollRemoteItemService.createOrUpdateMany(channel_podroll, channelPodrollRemoteItemDtos);
+  } else {
+    await channelPodrollService.deleteByChannel(channel);
+  }
 
   // TODO: add channelPublisher support
   // TODO: add channelPublisherRemoteItem support

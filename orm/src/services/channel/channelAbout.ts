@@ -13,12 +13,12 @@ type ChannelAboutDto = {
 export class ChannelAboutService {
   private channelAboutRepository = AppDataSource.getRepository(ChannelAbout);
 
-  async getByChannel(channel: Channel): Promise<ChannelAbout | null> {
+  async get(channel: Channel): Promise<ChannelAbout | null> {
     return this.channelAboutRepository.findOne({ where: { channel } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout | null> {
-    let channel_about = await this.getByChannel(channel);
+  async update(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout | null> {
+    let channel_about = await this.get(channel);
 
     if (!channel_about) {
       channel_about = new ChannelAbout();

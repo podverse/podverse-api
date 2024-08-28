@@ -28,9 +28,9 @@ export class ChannelDescriptionService {
   }
 
   async deleteByChannel(channel: Channel): Promise<void> {
-    const channelDescription = await this.getByChannel(channel);
-    if (channelDescription) {
-      await this.channelDescriptionRepository.remove(channelDescription);
+    const channel_description = await this.getByChannel(channel);
+    if (channel_description) {
+      await this.channelDescriptionRepository.remove(channel_description);
     }
   }
 }

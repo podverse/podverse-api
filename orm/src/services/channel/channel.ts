@@ -1,7 +1,7 @@
 import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { Feed } from '@orm/entities/feed/feed';
-import { MediumValue, MediumValueValueEnum } from '@orm/entities/mediumValue';
+import { MediumValueValueEnum } from '@orm/entities/mediumValue';
 import { applyProperties } from '@orm/lib/applyProperties';
 
 const shortid = require('shortid');

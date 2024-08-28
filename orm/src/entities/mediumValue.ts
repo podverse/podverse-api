@@ -22,9 +22,8 @@ export enum MediumValueValueEnum {
   CourseL = 19
 }
 
-export function getMediumValueValueEnumValue(input: string): MediumValueValueEnum | undefined {
-  const sanitizedInput = input
-    .toLowerCase()
+export function getMediumValueValueEnumValue(input: string | null): MediumValueValueEnum | null {
+  const sanitizedInput = input?.toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9]/g, '');
 
@@ -50,7 +49,7 @@ export function getMediumValueValueEnumValue(input: string): MediumValueValueEnu
     coursel: MediumValueValueEnum.CourseL
   };
 
-  return mapping[sanitizedInput];
+  return (sanitizedInput && mapping[sanitizedInput]) || null;
 }
 
 @Entity({ name: 'medium_value' })

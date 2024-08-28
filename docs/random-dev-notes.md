@@ -13,3 +13,10 @@ https://mikeneumann.show/themnshowrss.xml
 https://rssblue.com/static/dist/feeds/deck-darlings.xml
 
 https://rssblue.com/static/dist/feeds/payday-picks.xml
+
+## RSS feeds that are publisher feeds
+
+https://publishers.rssblue.com/ainsleycostello
+
+Full list from RSS Blue:
+https://publishers.rssblue.com/api/all

@@ -32,7 +32,7 @@ export class ChannelImageService {
     return this.channelImageRepository.save(channel_image);
   }
 
-  async createOrUpdateMany(channel: Channel, dtos: ChannelImageDto[]): Promise<ChannelImage[]> {
+  async updateMany(channel: Channel, dtos: ChannelImageDto[]): Promise<ChannelImage[]> {
     const existingChannelImages = await this.getAllByChannel(channel);
     const updatedChannelImages: ChannelImage[] = [];
 

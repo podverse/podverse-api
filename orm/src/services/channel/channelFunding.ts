@@ -2,7 +2,7 @@ import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelFunding } from '@orm/entities/channel/channelFunding';
 import { applyProperties } from '@orm/lib/applyProperties';
-import { channelCreateOrUpdateMany } from '@orm/lib/channel/channelCreateOrUpdateMany';
+import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelFundingDto = {
   url: string
@@ -20,7 +20,7 @@ export class ChannelFundingService {
     return this.channelFundingRepository.findOne({ where: { channel, url } });
   }
 
-  async createOrUpdate(channel: Channel, dto: ChannelFundingDto): Promise<ChannelFunding> {
+  async update(channel: Channel, dto: ChannelFundingDto): Promise<ChannelFunding> {
     let channel_funding = await this.getByChannelAndUrl(channel, dto.url);
 
     if (!channel_funding) {
@@ -33,20 +33,14 @@ export class ChannelFundingService {
     return this.channelFundingRepository.save(channel_funding);
   }
 
-  async createOrUpdateMany(channel: Channel, dtos: ChannelFundingDto[]): Promise<ChannelFunding[]> {
-    return channelCreateOrUpdateMany(
+  async updateMany(channel: Channel, dtos: ChannelFundingDto[]): Promise<ChannelFunding[]> {
+    return entityUpdateMany<Channel, ChannelFundingDto, ChannelFunding>(
       channel,
       dtos,
       this.getAllByChannel.bind(this),
-      this.createOrUpdate.bind(this),
-      {
-        save: this.channelFundingRepository.save.bind(this.channelFundingRepository),
-        remove: async (entities: ChannelFunding[]) => {
-          await this.channelFundingRepository.remove(entities);
-        }
-      },
-      (dto: ChannelFundingDto) => dto.url,
-      (funding: ChannelFunding) => funding.url
+      this.update.bind(this),
+      this.channelFundingRepository,
+      'url'
     );
   }
 
