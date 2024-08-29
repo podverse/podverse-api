@@ -10,7 +10,8 @@ import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, c
   compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos, 
   compatChannelPodrollRemoteItemDtos,
   compatChannelRemoteItemDtos,
-  compatChannelSocialInteractDtos} from '@parser-rss/lib/compat/channel';
+  compatChannelSocialInteractDtos,
+  compatChannelTrailerDtos} from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
 import { ChannelLocationService } from '@orm/services/channel/channelLocation';
@@ -20,6 +21,7 @@ import { ChannelPodrollRemoteItemService } from '@orm/services/channel/channelPo
 import { ChannelPodrollService } from '@orm/services/channel/channelPodroll';
 import { ChannelRemoteItemService } from '@orm/services/channel/channelRemoteItem';
 import { ChannelSocialInteractService } from '@orm/services/channel/channelSocialInteract';
+import { ChannelTrailerService } from '@orm/services/channel/channelTrailer';
 // import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 
 /*
@@ -185,7 +187,14 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelSocialInteractService._deleteAll(channel);
   }
 
-  // TODO: add channelTrailer support
+  const channelTrailerService = new ChannelTrailerService();
+  const channelTrailerDtos = compatChannelTrailerDtos(parsedFeed);
+
+  if (channelTrailerDtos.length > 0) {
+    await channelTrailerService.updateMany(channel, channelTrailerDtos);
+  } else {
+    await channelTrailerService._deleteAll(channel);
+  }
 
   // TODO: add channelTxt support
 
