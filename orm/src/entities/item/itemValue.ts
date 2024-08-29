@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Item } from '@orm/entities/item/item';
 
 @Entity()
-export class ItemValueTag {
+export class ItemValue {
   @PrimaryGeneratedColumn()
   id!: number;
 

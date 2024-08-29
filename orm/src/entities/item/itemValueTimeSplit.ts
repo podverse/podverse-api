@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ItemValueTag } from '@orm/entities/item/itemValueTag';
+import { ItemValue } from '@orm/entities/item/itemValue';
 
 @Entity()
-export class ItemValueTagTimeSplit {
+export class ItemValueTimeSplit {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ItemValueTag, itemValueTag => itemValueTag.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'item_value_tag_id' })
-  item_value_tag!: ItemValueTag;
+  @ManyToOne(() => ItemValue, itemValue => itemValue.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'item_value_id' })
+  item_value!: ItemValue;
 
   @Column({ type: 'int' })
   start_time!: number;

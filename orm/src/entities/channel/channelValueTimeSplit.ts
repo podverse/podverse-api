@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ChannelValueTag } from '@orm/entities/channel/channelValueTag';
+import { ChannelValue } from '@orm/entities/channel/channelValue';
 
-@Entity({ name: 'channel_value_tag_time_split' })
-export class ChannelValueTagTimeSplit {
+@Entity({ name: 'channel_value_time_split' })
+export class ChannelValueTimeSplit {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ChannelValueTag, channelValueTag => channelValueTag.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'channel_value_tag_id' })
-  channel_value_tag!: ChannelValueTag;
+  @ManyToOne(() => ChannelValue, channelValue => channelValue.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'channel_value_id' })
+  channel_value!: ChannelValue;
 
   @Column({ type: 'int', name: 'start_time' })
   start_time!: number;

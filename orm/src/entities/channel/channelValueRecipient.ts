@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ChannelValueTagTimeSplit } from '@orm/entities/channel/channelValueTagTimeSplit';
+import { ChannelValue } from '@orm/entities/channel/channelValue';
 
-@Entity({ name: 'channel_value_tag_time_split_receipient' })
-export class ChannelValueTagTimeSplitReceipient {
+@Entity({ name: 'channel_value_receipient' })
+export class ChannelValueReceipient {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ChannelValueTagTimeSplit, channelValueTagTimeSplit => channelValueTagTimeSplit.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'channel_value_tag_time_split_id' })
-  channel_value_tag_time_split!: ChannelValueTagTimeSplit;
+  @ManyToOne(() => ChannelValue, channelValue => channelValue.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'channel_value_id' })
+  channel_value!: ChannelValue;
 
   @Column({ type: 'varchar', name: 'type' })
   type!: string;
@@ -20,13 +20,13 @@ export class ChannelValueTagTimeSplitReceipient {
   split!: number;
 
   @Column({ type: 'varchar', name: 'name', nullable: true })
-  name?: string | null;
+  name!: string | null;
 
   @Column({ type: 'varchar', name: 'custom_key', nullable: true })
-  custom_key?: string | null;
+  custom_key!: string | null;
 
   @Column({ type: 'varchar', name: 'custom_value', nullable: true })
-  custom_value?: string | null;
+  custom_value!: string | null;
 
   @Column({ type: 'boolean', name: 'fee', default: false })
   fee!: boolean;

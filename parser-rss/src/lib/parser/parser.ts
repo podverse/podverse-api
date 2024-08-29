@@ -207,11 +207,11 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelTxtService._deleteAll(channel);
   }
 
-  // TODO: add channelValueTag support
-  // TODO: add channelValueTagRecipient support
-  // TODO: add channelValueTagTimeSplit support
-  // TODO: add channelValueTagTimeSplitRecipient support
-  // TODO: add channelValueTagTimeSplitRemoteItem support
+  // TODO: add channelValue support
+  // TODO: add channelValueRecipient support
+  // TODO: add channelValueTimeSplit support
+  // TODO: add channelValueTimeSplitRecipient support
+  // TODO: add channelValueTimeSplitRemoteItem support
 
   return feed;
 }

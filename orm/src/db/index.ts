@@ -44,11 +44,11 @@ import { ChannelSeason } from "@orm/entities/channel/channelSeason";
 import { ChannelSocialInteract } from "@orm/entities/channel/channelSocialInteract";
 import { ChannelTrailer } from "@orm/entities/channel/channelTrailer";
 import { ChannelTxt } from "@orm/entities/channel/channelTxt";
-import { ChannelValueTag } from "@orm/entities/channel/channelValueTag";
-import { ChannelValueTagReceipient } from "@orm/entities/channel/channelValueTagRecipient";
-import { ChannelValueTagTimeSplit } from "@orm/entities/channel/channelValueTagTimeSplit";
-import { ChannelValueTagTimeSplitReceipient } from "@orm/entities/channel/channelValueTagTimeSplitRecipient";
-import { ChannelValueTagTimeSplitRemoteItem } from "@orm/entities/channel/channelValueTagTimeSplitRemoteItem";
+import { ChannelValue } from "@orm/entities/channel/channelValue";
+import { ChannelValueReceipient } from "@orm/entities/channel/channelValueRecipient";
+import { ChannelValueTimeSplit } from "@orm/entities/channel/channelValueTimeSplit";
+import { ChannelValueTimeSplitReceipient } from "@orm/entities/channel/channelValueTimeSplitRecipient";
+import { ChannelValueTimeSplitRemoteItem } from "@orm/entities/channel/channelValueTimeSplitRemoteItem";
 import { Item } from "@orm/entities/item/item";
 import { ItemAbout } from "@orm/entities/item/itemAbout";
 import { ItemChapter } from "@orm/entities/item/itemChapter";
@@ -73,11 +73,11 @@ import { ItemSocialInteract } from "@orm/entities/item/itemSocialInteract";
 import { ItemSoundbite } from "@orm/entities/item/itemSoundbite";
 import { ItemTranscript } from "@orm/entities/item/itemTranscript";
 import { ItemTxt } from "@orm/entities/item/itemTxt";
-import { ItemValueTag } from "@orm/entities/item/itemValueTag";
-import { ItemValueTagRecipient } from "@orm/entities/item/itemValueTagRecipient";
-import { ItemValueTagTimeSplit } from "@orm/entities/item/itemValueTagTimeSplit";
-import { ItemValueTagTimeSplitRecipient } from "@orm/entities/item/itemValueTagTimeSplitRecipient";
-import { ItemValueTagTimeSplitRemoteItem } from "@orm/entities/item/itemValueTagTimeSplitRemoteItem";
+import { ItemValue } from "@orm/entities/item/itemValue";
+import { ItemValueRecipient } from "@orm/entities/item/itemValueRecipient";
+import { ItemValueTimeSplit } from "@orm/entities/item/itemValueTimeSplit";
+import { ItemValueTimeSplitRecipient } from "@orm/entities/item/itemValueTimeSplitRecipient";
+import { ItemValueTimeSplitRemoteItem } from "@orm/entities/item/itemValueTimeSplitRemoteItem";
 import { LiveItem } from "@orm/entities/liveItem/liveItem";
 import { LiveItemStatus } from "@orm/entities/liveItem/liveItemStatus";
 import { Playlist } from "@orm/entities/playlist/playlist";
@@ -149,11 +149,11 @@ export const AppDataSource = new DataSource({
     ChannelSocialInteract,
     ChannelTrailer,
     ChannelTxt,
-    ChannelValueTag,
-    ChannelValueTagReceipient,
-    ChannelValueTagTimeSplit,
-    ChannelValueTagTimeSplitReceipient,
-    ChannelValueTagTimeSplitRemoteItem,
+    ChannelValue,
+    ChannelValueReceipient,
+    ChannelValueTimeSplit,
+    ChannelValueTimeSplitReceipient,
+    ChannelValueTimeSplitRemoteItem,
     Clip,
     Feed,
     FeedFlagStatus,
@@ -182,11 +182,11 @@ export const AppDataSource = new DataSource({
     ItemSoundbite,
     ItemTranscript,
     ItemTxt,
-    ItemValueTag,
-    ItemValueTagRecipient,
-    ItemValueTagTimeSplit,
-    ItemValueTagTimeSplitRecipient,
-    ItemValueTagTimeSplitRemoteItem,
+    ItemValue,
+    ItemValueRecipient,
+    ItemValueTimeSplit,
+    ItemValueTimeSplitRecipient,
+    ItemValueTimeSplitRemoteItem,
     LiveItem,
     LiveItemStatus,
     MembershipClaimToken,
