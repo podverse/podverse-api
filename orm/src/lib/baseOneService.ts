@@ -11,13 +11,13 @@ export class BaseOneService<T extends ObjectLiteral, K extends keyof T> {
     this.key = key;
   }
 
-  async get(value: T[K]): Promise<T | null> {
+  async _get(value: T[K]): Promise<T | null> {
     const where: FindOptionsWhere<T> = { [this.key]: value } as FindOptionsWhere<T>;
     return this.repository.findOne({ where });
   }
 
-  async update(value: T[K], dto: Partial<T>): Promise<T> {
-    let entity = await this.get(value);
+  async _update(value: T[K], dto: Partial<T>): Promise<T> {
+    let entity = await this._get(value);
 
     if (!entity) {
       entity = new (this.repository.target as { new (): T })();
@@ -29,8 +29,8 @@ export class BaseOneService<T extends ObjectLiteral, K extends keyof T> {
     return this.repository.save(entity);
   }
 
-  async delete(value: T[K]): Promise<void> {
-    const rowToDelete = await this.get(value);
+  async _delete(value: T[K]): Promise<void> {
+    const rowToDelete = await this._get(value);
     if (rowToDelete) {
       await this.repository.remove(rowToDelete);
     }

@@ -10,6 +10,6 @@ export class ChannelPublisherService extends BaseOneService<ChannelPublisher, 'c
   }
 
   async update(channel: Channel, dto: ChannelPublisherDto): Promise<ChannelPublisher> {
-    return super.update(channel, dto);
+    return super._update(channel, dto);
   }
 }

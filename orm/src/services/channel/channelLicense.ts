@@ -13,6 +13,6 @@ export class ChannelLicenseService extends BaseOneService<ChannelLicense, 'chann
   }
 
   async update(channel: Channel, dto: ChannelLicenseDto): Promise<ChannelLicense> {
-    return super.update(channel, dto);
+    return super._update(channel, dto);
   }
 }

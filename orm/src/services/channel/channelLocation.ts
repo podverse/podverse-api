@@ -14,6 +14,6 @@ export class ChannelLocationService extends BaseOneService<ChannelLocation, 'cha
   }
 
   async update(channel: Channel, dto: ChannelLocationDto): Promise<ChannelLocation> {
-    return super.update(channel, dto);
+    return super._update(channel, dto);
   }
 }

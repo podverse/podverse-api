@@ -83,7 +83,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelDescriptionDto) {
     await channelDescriptionService.update(channel, channelDescriptionDto);
   } else {
-    await channelDescriptionService.delete(channel);
+    await channelDescriptionService._delete(channel);
   }
 
   const channelFundingService = new ChannelFundingService();
@@ -110,7 +110,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelLicenseDto) {
     await channelLicenseService.update(channel, channelLicenseDto);
   } else {
-    await channelLicenseService.delete(channel);
+    await channelLicenseService._delete(channel);
   }
 
   const channelLocationService = new ChannelLocationService();
@@ -119,7 +119,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelLocationDto) {
     await channelLocationService.update(channel, channelLocationDto);
   } else {
-    await channelLocationService.delete(channel);
+    await channelLocationService._delete(channel);
   }
 
   const channelPersonService = new ChannelPersonService();
@@ -140,7 +140,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     const channel_podroll = await channelPodrollService.update(channel, channelPodrollDto);
     await channelPodrollRemoteItemService.updateMany(channel_podroll, channelPodrollRemoteItemDtos);
   } else {
-    await channelPodrollService.delete(channel);
+    await channelPodrollService._delete(channel);
   }
 
   // const channelPublisherService = new ChannelPublisherService();

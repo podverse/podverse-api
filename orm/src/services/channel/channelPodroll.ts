@@ -10,6 +10,6 @@ export class ChannelPodrollService extends BaseOneService<ChannelPodroll, 'chann
   }
 
   async update(channel: Channel, dto: ChannelPodrollDto): Promise<ChannelPodroll> {
-    return super.update(channel, dto);
+    return super._update(channel, dto);
   }
 }

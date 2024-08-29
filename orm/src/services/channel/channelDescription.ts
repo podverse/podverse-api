@@ -12,6 +12,6 @@ export class ChannelDescriptionService extends BaseOneService<ChannelDescription
   }
 
   async update(channel: Channel, dto: ChannelDescriptionDto): Promise<ChannelDescription> {
-    return super.update(channel, dto);
+    return super._update(channel, dto);
   }
 }
