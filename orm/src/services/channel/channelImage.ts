@@ -1,18 +1,17 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelImage } from '@orm/entities/channel/channelImage';
 import { applyProperties } from '@orm/lib/applyProperties';
+import { BaseManyService } from '@orm/lib/baseManyService';
+import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelImageDto = {
   url: string
   image_width_size: number | null
 }
 
-export class ChannelImageService {
-  private repository = AppDataSource.getRepository(ChannelImage);
-
-  async getAll(channel: Channel): Promise<ChannelImage[] | null> {
-    return this.repository.find({ where: { channel } });
+export class ChannelImageService extends BaseManyService<ChannelImage, 'channel'> {
+  constructor() {
+    super(ChannelImage, 'channel');
   }
 
   async get(channel: Channel, url: string): Promise<ChannelImage | null> {
@@ -33,9 +32,6 @@ export class ChannelImageService {
   }
 
   async updateMany(channel: Channel, dtos: ChannelImageDto[]): Promise<ChannelImage[]> {
-    const existingChannelImages = await this.getAll(channel);
-    const updatedChannelImages: ChannelImage[] = [];
-
     // TODO: adding image shrinking if an image < 500px is not found
   
     function filterDtosByHighestWidth(dtos: ChannelImageDto[]): ChannelImageDto[] {
@@ -52,27 +48,14 @@ export class ChannelImageService {
     }
 
     const filteredDtos = filterDtosByHighestWidth(dtos);
-    const dtoUrls = filteredDtos.map(dto => dto.url);
   
-    for (const dto of filteredDtos) {
-      const channel_image = await this.update(channel, dto);
-      updatedChannelImages.push(channel_image);
-    }
-  
-    await this.repository.save(updatedChannelImages);
-  
-    const imagesToDelete = existingChannelImages?.filter(image => !dtoUrls.includes(image.url));
-    if (imagesToDelete && imagesToDelete.length > 0) {
-      await this.repository.remove(imagesToDelete);
-    }
-  
-    return updatedChannelImages;
-  }
-
-  async deleteAll(channel: Channel): Promise<void> {
-    const channel_images = await this.getAll(channel);
-    if (channel_images) {
-      await this.repository.remove(channel_images);
-    }
+    return entityUpdateMany<Channel, ChannelImageDto, ChannelImage>(
+      channel,
+      filteredDtos,
+      this.getAll.bind(this),
+      this.update.bind(this),
+      this.repository,
+      'url'
+    );
   }
 }

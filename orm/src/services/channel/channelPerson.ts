@@ -2,6 +2,7 @@ import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPerson } from '@orm/entities/channel/channelPerson';
 import { applyProperties } from '@orm/lib/applyProperties';
+import { BaseManyService } from '@orm/lib/baseManyService';
 import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelPersonDto = {
@@ -12,19 +13,17 @@ type ChannelPersonDto = {
   href: string | null
 }
 
-export class ChannelPersonService {
-  private repository = AppDataSource.getRepository(ChannelPerson);
-
-  async getAll(channel: Channel): Promise<ChannelPerson[]> {
-    return this.repository.find({ where: { channel } });
+export class ChannelPersonService extends BaseManyService<ChannelPerson, 'channel'> {
+  constructor() {
+    super(ChannelPerson, 'channel');
   }
-
-  async getOne(channel: Channel, name: string): Promise<ChannelPerson | null> {
+  
+  async get(channel: Channel, name: string): Promise<ChannelPerson | null> {
     return this.repository.findOne({ where: { channel, name } });
   }
 
   async update(channel: Channel, dto: ChannelPersonDto): Promise<ChannelPerson> {
-    let channel_person = await this.getOne(channel, dto.name);
+    let channel_person = await this.get(channel, dto.name);
 
     if (!channel_person) {
       channel_person = new ChannelPerson();
@@ -45,12 +44,5 @@ export class ChannelPersonService {
       this.repository,
       'name'
     );
-  }
-
-  async deleteAll(channel: Channel): Promise<void> {
-    const channel_persons = await this.getAll(channel);
-    if (channel_persons) {
-      await this.repository.remove(channel_persons);
-    }
   }
 }

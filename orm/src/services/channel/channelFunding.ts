@@ -1,7 +1,7 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelFunding } from '@orm/entities/channel/channelFunding';
 import { applyProperties } from '@orm/lib/applyProperties';
+import { BaseManyService } from '@orm/lib/baseManyService';
 import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelFundingDto = {
@@ -9,11 +9,9 @@ type ChannelFundingDto = {
   title?: string | null
 }
 
-export class ChannelFundingService {
-  private repository = AppDataSource.getRepository(ChannelFunding);
-
-  async getAll(channel: Channel): Promise<ChannelFunding[]> {
-    return this.repository.find({ where: { channel } });
+export class ChannelFundingService extends BaseManyService<ChannelFunding, 'channel'> {
+  constructor() {
+    super(ChannelFunding, 'channel');
   }
 
   async get(channel: Channel, url: string): Promise<ChannelFunding | null> {
@@ -42,12 +40,5 @@ export class ChannelFundingService {
       this.repository,
       'url'
     );
-  }
-
-  async deleteAll(channel: Channel): Promise<void> {
-    const channel_fundings = await this.getAll(channel);
-    if (channel_fundings) {
-      await this.repository.remove(channel_fundings);
-    }
   }
 }
