@@ -40,9 +40,9 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
       row = new this.targetEntity();
       row[this.parentEntityKey] = parentEntity;
     }
-
+    
     row = applyProperties(row, dto);
-
+    
     return this.repository.save(row);
   }
 

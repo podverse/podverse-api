@@ -18,7 +18,7 @@ export const itemCompat = (item: ItemObject) => {
     itunesEpisodeType: item.itunesEpisodeType,
     itunesSeason: item.podcastSeason?.number || item.itunesSeason,
     link: item.link,
-    pubDate: item.pubDate,
+    pubdate: item.pubDate,
     socialInteraction: item.podcastSocialInteraction ?? [],
     soundbite: item.podcastSoundbites ?? [],
     subtitle: item.subtitle,

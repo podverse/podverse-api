@@ -42,7 +42,7 @@ export const liveItemCompat = (liveItem: ExtendedPhase4PodcastLiveItem) => {
     liveItemEnd: liveItem.end,
     liveItemStart: liveItem.start,
     liveItemStatus: liveItem.status?.toLowerCase(),
-    pubDate: null,
+    pubdate: null,
     socialInteraction: [],
     soundbite: [],
     subtitle: '', // liveItem.subtitle,

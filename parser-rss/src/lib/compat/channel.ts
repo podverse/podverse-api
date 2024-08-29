@@ -6,6 +6,7 @@ import { getMediumValueValueEnumValue } from "@orm/entities/mediumValue"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
 import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
+import { title } from "process"
 
 export const feedCompat = (feed: FeedObject) => {
   return {
@@ -18,7 +19,6 @@ export const feedCompat = (feed: FeedObject) => {
     liveItems: feed.podcastLiveItems ?? [],
     medium: feed.medium ?? Phase4Medium.Podcast,
     owner: feed.owner,
-    pubDate: feed.pubDate,
     subtitle: feed.subtitle,
     summary: feed.summary,
     type: feed.itunesType,
@@ -213,6 +213,24 @@ export const compatChannelSocialInteractDtos = (parsedFeed: FeedObject) => {
         account_id: ps.id || null,
         account_url: ps.name || null,
         priority: ps.priority || null
+      })
+    }
+  }
+
+  return dtos
+}
+
+export const compatChannelTrailerDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+  if (parsedFeed?.trailers?.length) {
+    for (const pt of parsedFeed.trailers) {
+      dtos.push({
+        url: pt.url,
+        title: /* TODO: add pt.title || */ null,
+        pubdate: pt.pubdate,
+        length: pt.length || null,
+        type: pt.type || null,
+        season: pt.season || null
       })
     }
   }

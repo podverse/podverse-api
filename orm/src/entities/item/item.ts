@@ -21,8 +21,8 @@ export class Item {
   @Column({ type: 'varchar', name: 'guid', nullable: true })
   guid?: string | null;
 
-  @Column({ type: 'timestamptz', name: 'pub_date', nullable: true })
-  pub_date?: Date | null;
+  @Column({ type: 'timestamptz', name: 'pubdate', nullable: true })
+  pubdate?: Date | null;
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title?: string | null;
