@@ -28,7 +28,7 @@ export const compatChannelDto = (parsedFeed: FeedObject) => ({
   podcast_guid: parsedFeed.guid,
   title: parsedFeed.title,
   sortable_title: createSortableTitle(parsedFeed.title),
-  medium_value: getMediumValueEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
+  medium: getMediumValueEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
 })
 
 export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({

@@ -37,9 +37,9 @@ export class Channel {
   @Column({ type: 'varchar', nullable: true })
   sortable_title!: string | null;
 
-  @ManyToOne(() => Medium, medium_value => medium_value.id, { nullable: true })
-  @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: MediumValueEnum | null;
+  @ManyToOne(() => Medium, medium => medium.id, { nullable: true })
+  @JoinColumn({ name: 'medium_id' })
+  medium!: MediumValueEnum | null;
 
   @Column({ type: 'boolean', default: false })
   has_podcast_index_value!: boolean;

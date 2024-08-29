@@ -52,7 +52,7 @@ export function getMediumValueEnumValue(input: string | null): MediumValueEnum |
   return (sanitizedInput && mapping[sanitizedInput]) || null;
 }
 
-@Entity({ name: 'medium_value' })
+@Entity({ name: 'medium' })
 export class Medium {
   @PrimaryGeneratedColumn()
   id!: number;

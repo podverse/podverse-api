@@ -35,6 +35,6 @@ export class Playlist {
   item_count!: number;
 
   @ManyToOne(() => Medium, medium => medium.id)
-  @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: Medium;
+  @JoinColumn({ name: 'medium_id' })
+  medium!: Medium;
 }
