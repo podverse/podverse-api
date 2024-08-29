@@ -21,8 +21,6 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
 
   // TODO: add updateMany
 
-  // TODO: add delete
-
   async deleteAll(value: T[K]): Promise<void> {
     const rowsToDelete = await this.getAll(value);
     if (rowsToDelete) {
