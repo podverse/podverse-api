@@ -27,6 +27,20 @@ import { ChannelTrailerService } from '@orm/services/channel/channelTrailer';
 import { ChannelTxtService } from '@orm/services/channel/channelTxt';
 import { ChannelValueService } from '@orm/services/channel/channelValue';
 import { ChannelValueRecipientService } from '@orm/services/channel/channelValueRecipient';
+import { handleParsedChannelValue } from './channel/channelValue';
+import { handleParsedChannelTxt } from './channel/channelTxt';
+import { handleParsedChannelTrailer } from './channel/channelTrailer';
+import { handleParsedChannelSocialInteract } from './channel/channelSocialInteract';
+import { handleParsedChannelRemoteItem } from './channel/channelRemoteItem';
+import { handleParsedChannelPodroll } from './channel/channelPodroll';
+import { handleParsedChannelPerson } from './channel/channelPerson';
+import { handleParsedChannelLocation } from './channel/channelLocation';
+import { handleParsedChannelLicense } from './channel/channelLicense';
+import { handleParsedChannelImage } from './channel/channelImage';
+import { handleParsedChannelFunding } from './channel/channelFunding';
+import { handleParsedChannelDescription } from './channel/channelDescription';
+import { handleParsedChannelAbout } from './channel/channelAbout';
+import { handleParsedChannel } from './channel/channel';
 // import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 
 /*
@@ -75,82 +89,20 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channelService = new ChannelService();
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
 
-  const channelDto = compatChannelDto(parsedFeed);
-  await channelService.update(channel.id, channelDto);
-  
-  const channelAboutService = new ChannelAboutService();
-  const channelAboutDto = compatChannelAboutDto(parsedFeed);
-  await channelAboutService.update(channel, channelAboutDto);
+  await handleParsedChannel(parsedFeed, channel);
+  await handleParsedChannelAbout(parsedFeed, channel);
 
   // TODO: add channelCategory support
 
   // TODO: add channelChat support
 
-  const channelDescriptionService = new ChannelDescriptionService();
-  const channelDescriptionDto = compatChannelDescriptionDto(parsedFeed);
-
-  if (channelDescriptionDto) {
-    await channelDescriptionService.update(channel, channelDescriptionDto);
-  } else {
-    await channelDescriptionService._delete(channel);
-  }
-
-  const channelFundingService = new ChannelFundingService();
-  const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
-
-  if (channelFundingDtos.length > 0) {
-    await channelFundingService.updateMany(channel, channelFundingDtos);
-  } else {
-    await channelFundingService._deleteAll(channel);
-  }
-
-  const channelImageService = new ChannelImageService();
-  const channelImageDtos = compatChannelImageDtos(parsedFeed);
-
-  if (channelImageDtos.length > 0) {
-    await channelImageService.updateMany(channel, channelImageDtos);
-  } else {
-    await channelImageService._deleteAll(channel);
-  }
-
-  const channelLicenseService = new ChannelLicenseService();
-  const channelLicenseDto = compatChannelLicenseDto(parsedFeed);
-
-  if (channelLicenseDto) {
-    await channelLicenseService.update(channel, channelLicenseDto);
-  } else {
-    await channelLicenseService._delete(channel);
-  }
-
-  const channelLocationService = new ChannelLocationService();
-  const channelLocationDto = compatChannelLocationDto(parsedFeed);
-
-  if (channelLocationDto) {
-    await channelLocationService.update(channel, channelLocationDto);
-  } else {
-    await channelLocationService._delete(channel);
-  }
-
-  const channelPersonService = new ChannelPersonService();
-  const channelPersonDtos = compatChannelPersonDtos(parsedFeed);
-
-  if (channelPersonDtos.length > 0) {
-    await channelPersonService.updateMany(channel, channelPersonDtos);
-  } else {
-    await channelPersonService._deleteAll(channel);
-  }
-
-  const channelPodrollService = new ChannelPodrollService();
-  const channelPodrollDto = {};
-  const channelPodrollRemoteItemService = new ChannelPodrollRemoteItemService();
-  const channelPodrollRemoteItemDtos = compatChannelPodrollRemoteItemDtos(parsedFeed);
-
-  if (channelPodrollRemoteItemDtos.length > 0) {
-    const channel_podroll = await channelPodrollService.update(channel, channelPodrollDto);
-    await channelPodrollRemoteItemService.updateMany(channel_podroll, channelPodrollRemoteItemDtos);
-  } else {
-    await channelPodrollService._delete(channel);
-  }
+  await handleParsedChannelDescription(parsedFeed, channel);
+  await handleParsedChannelFunding(parsedFeed, channel);
+  await handleParsedChannelImage(parsedFeed, channel);
+  await handleParsedChannelLicense(parsedFeed, channel);
+  await handleParsedChannelLocation(parsedFeed, channel);
+  await handleParsedChannelPerson(parsedFeed, channel);
+  await handleParsedChannelPodroll(parsedFeed, channel);
 
   // const channelPublisherService = new ChannelPublisherService();
   // const channelPublisherRemoteItemService = new ChannelPublisherRemoteItemService();
@@ -163,15 +115,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   //   await channelPublisherService.delete(channel);
   // }
 
-  // TODO: add channelRemoteItem support
-  const channelRemoteItemService = new ChannelRemoteItemService();
-  const channelRemoteItemDtos = compatChannelRemoteItemDtos(parsedFeed);
-
-  if (channelRemoteItemDtos.length > 0) {
-    await channelRemoteItemService.updateMany(channel, channelRemoteItemDtos);
-  } else {
-    await channelRemoteItemService._deleteAll(channel);
-  }
+  await handleParsedChannelRemoteItem(parsedFeed, channel);
 
   // // TODO: add channelSeason support
   // const channelSeasonService = new ChannelSeasonService();
@@ -183,53 +127,10 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   //   await channelSeasonService.deleteAll(channel);
   // }
 
-  const channelSocialInteractService = new ChannelSocialInteractService();
-  const channelSocialInteractDtos = compatChannelSocialInteractDtos(parsedFeed);
-
-  if (channelSocialInteractDtos.length > 0) {
-    await channelSocialInteractService.updateMany(channel, channelSocialInteractDtos);
-  } else {
-    await channelSocialInteractService._deleteAll(channel);
-  }
-
-  const channelTrailerService = new ChannelTrailerService();
-  const channelTrailerDtos = compatChannelTrailerDtos(parsedFeed);
-
-  if (channelTrailerDtos.length > 0) {
-    await channelTrailerService.updateMany(channel, channelTrailerDtos);
-  } else {
-    await channelTrailerService._deleteAll(channel);
-  }
-
-  const channelTxtService = new ChannelTxtService();
-  const channelTxtDtos = compatChannelTxtDtos(parsedFeed);
-
-  if (channelTxtDtos.length > 0) {
-    await channelTxtService.updateMany(channel, channelTxtDtos);
-  } else {
-    await channelTxtService._deleteAll(channel);
-  }
-
-  const channelValueService = new ChannelValueService();
-  const channelValueDtos = compatChannelValueDtos(parsedFeed);
-
-  if (channelValueDtos.length > 0) {
-    for (const channelValueDto of channelValueDtos) {
-      const channel_value = await channelValueService.update(channel, channelValueDto.channel_value);
-      
-      const channelValueRecipientDtos = channelValueDto.channel_value_recipients;
-      if (channelValueRecipientDtos.length > 0) {
-        for (const channelValueRecipientDto of channelValueRecipientDtos) {
-          const channelValueRecipientService = new ChannelValueRecipientService();
-          await channelValueRecipientService.update(channel_value, channelValueRecipientDto);
-        }
-      } else {
-        await channelValueService._deleteAll(channel);
-      }
-    }
-  } else {
-    await channelValueService._deleteAll(channel);
-  }
+  await handleParsedChannelSocialInteract(parsedFeed, channel);
+  await handleParsedChannelTrailer(parsedFeed, channel);
+  await handleParsedChannelTxt(parsedFeed, channel);
+  await handleParsedChannelValue(parsedFeed, channel);
 
   return feed;
 }
