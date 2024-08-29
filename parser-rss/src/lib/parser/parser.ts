@@ -213,18 +213,22 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channelValueService = new ChannelValueService();
   const channelValueDtos = compatChannelValueDtos(parsedFeed);
 
-  for (const channelValueDto of channelValueDtos) {
-    const channel_value = await channelValueService.update(channel, channelValueDto.channel_value);
-    
-    const channelValueRecipientDtos = channelValueDto.channel_value_recipients;
-    if (channelValueRecipientDtos.length > 0) {
-      for (const channelValueRecipientDto of channelValueRecipientDtos) {
-        const channelValueRecipientService = new ChannelValueRecipientService();
-        await channelValueRecipientService.update(channel_value, channelValueRecipientDto);
+  if (channelValueDtos.length > 0) {
+    for (const channelValueDto of channelValueDtos) {
+      const channel_value = await channelValueService.update(channel, channelValueDto.channel_value);
+      
+      const channelValueRecipientDtos = channelValueDto.channel_value_recipients;
+      if (channelValueRecipientDtos.length > 0) {
+        for (const channelValueRecipientDto of channelValueRecipientDtos) {
+          const channelValueRecipientService = new ChannelValueRecipientService();
+          await channelValueRecipientService.update(channel_value, channelValueRecipientDto);
+        }
+      } else {
+        await channelValueService._deleteAll(channel);
       }
-    } else {
-      await channelValueService._deleteAll(channel);
     }
+  } else {
+    await channelValueService._deleteAll(channel);
   }
 
   return feed;
