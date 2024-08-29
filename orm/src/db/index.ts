@@ -22,7 +22,7 @@ import { Category } from "@orm/entities/category";
 import { Feed } from "@orm/entities/feed/feed";
 import { FeedFlagStatus } from "@orm/entities/feed/feedFlagStatus";
 import { FeedLog } from "@orm/entities/feed/feedLog";
-import { MediumValue } from "@orm/entities/mediumValue";
+import { Medium } from "@orm/entities/medium";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelAbout } from "@orm/entities/channel/channelAbout";
 import { ChannelCategory } from "@orm/entities/channel/channelCategory";
@@ -184,7 +184,7 @@ export const AppDataSource = new DataSource({
     LiveItem,
     LiveItemStatus,
     MembershipClaimToken,
-    MediumValue,
+    Medium,
     Playlist,
     PlaylistResourceBase,
     PlaylistResourceClip,

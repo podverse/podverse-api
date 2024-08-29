@@ -1,15 +1,15 @@
 import { Router, Request, Response } from 'express';
 import { config } from '@router-api/config';
-import { MediumValueService } from '@orm/services/mediumValue';
+import { MediumService } from '@orm/services/medium';
 
-const mediumValueService = new MediumValueService();
+const mediumService = new MediumService();
 
 const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/channel`, router);
 
 router.get('/', async (req: Request, res: Response) => {
-  const result = await mediumValueService.mediumValueGetAll();
+  const result = await mediumService.mediumGetAll();
 
   res.json(result);
 });

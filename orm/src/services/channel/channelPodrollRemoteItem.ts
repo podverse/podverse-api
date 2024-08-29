@@ -1,6 +1,6 @@
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
 import { ChannelPodrollRemoteItem } from '@orm/entities/channel/channelPodrollRemoteItem';
-import { MediumValueValueEnum } from '@orm/entities/mediumValue';
+import { MediumValueEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPodrollRemoteItemDto = {
@@ -8,7 +8,7 @@ type ChannelPodrollRemoteItemDto = {
   feed_url: string | null
   item_guid: string | null
   // title: string | null
-  medium: MediumValueValueEnum | null
+  medium: MediumValueEnum | null
 }
 
 export class ChannelPodrollRemoteItemService extends BaseRemoteItemsService<ChannelPodrollRemoteItem, 'channel_podroll'> {

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
-import { MediumValue } from '@orm/entities/mediumValue';
+import { Medium } from '@orm/entities/medium';
 
 @Entity({ name: 'channel_remote_item' })
 export class ChannelRemoteItem {
@@ -23,7 +23,7 @@ export class ChannelRemoteItem {
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title!: string | null;
 
-  @ManyToOne(() => MediumValue, mediumValue => mediumValue.id, { nullable: true })
+  @ManyToOne(() => Medium, medium => medium.id, { nullable: true })
   @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: MediumValue | null;
+  medium_value!: Medium | null;
 }

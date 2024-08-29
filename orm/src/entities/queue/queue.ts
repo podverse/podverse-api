@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Account } from '@orm/entities/account/account';
-import { MediumValue } from '@orm/entities/mediumValue';
+import { Medium } from '@orm/entities/medium';
 
 @Entity()
 export class Queue {
@@ -11,7 +11,7 @@ export class Queue {
   @JoinColumn({ name: 'account_id' })
   account!: Account;
 
-  @ManyToOne(() => MediumValue, mediumValue => mediumValue.id)
+  @ManyToOne(() => Medium, medium => medium.id)
   @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: MediumValue;
+  medium_value!: Medium;
 }

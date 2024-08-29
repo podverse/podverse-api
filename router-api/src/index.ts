@@ -10,7 +10,7 @@ import { parseAllRSSFeeds } from '@parser-rss/lib/parser/parser';
 import { config } from '@router-api/config';
 import { channelRouter } from '@router-api/routes/channel';
 import { feedRouter } from '@router-api/routes/feed';
-import { mediumValueRouter } from '@router-api/routes/mediumValue';
+import { mediumRouter } from '@router-api/routes/medium';
 
 console.log(`NODE_ENV = ${config.nodeEnv}`);
 
@@ -43,7 +43,7 @@ export const startApp = async () => {
 
     app.use(channelRouter);
     app.use(feedRouter);
-    app.use(mediumValueRouter);
+    app.use(mediumRouter);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

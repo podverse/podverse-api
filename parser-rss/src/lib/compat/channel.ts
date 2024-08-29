@@ -2,7 +2,7 @@ import { FeedObject, Phase4Medium } from "podcast-partytime"
 import { fundingCompat } from "@parser-rss/lib/compat/funding"
 import { compatChannelValue } from "@parser-rss/lib/compat/value"
 import { createSortableTitle } from "@orm/lib/sortableTitle"
-import { getMediumValueValueEnumValue } from "@orm/entities/mediumValue"
+import { getMediumValueEnumValue } from "@orm/entities/medium"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
 import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
@@ -28,7 +28,7 @@ export const compatChannelDto = (parsedFeed: FeedObject) => ({
   podcast_guid: parsedFeed.guid,
   title: parsedFeed.title,
   sortable_title: createSortableTitle(parsedFeed.title),
-  medium_value: getMediumValueValueEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
+  medium_value: getMediumValueEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
 })
 
 export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({
@@ -149,7 +149,7 @@ export const compatChannelPodrollRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueValueEnumValue(ri.medium) : null,
+          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }
@@ -169,7 +169,7 @@ export const compatChannelPublisherRemoteItemDtos = (parsedFeed: FeedObject) => 
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueValueEnumValue(ri.medium) : null,
+          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }
@@ -189,7 +189,7 @@ export const compatChannelRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueValueEnumValue(ri.medium) : null,
+          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }

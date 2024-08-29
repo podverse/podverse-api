@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Account } from '@orm/entities/account/account';
 import { SharableStatus } from '@orm/entities/sharableStatus';
-import { MediumValue } from '@orm/entities/mediumValue';
+import { Medium } from '@orm/entities/medium';
 
 @Entity()
 export class Playlist {
@@ -34,7 +34,7 @@ export class Playlist {
   @Column({ type: 'int', default: 0 })
   item_count!: number;
 
-  @ManyToOne(() => MediumValue, mediumValue => mediumValue.id)
+  @ManyToOne(() => Medium, medium => medium.id)
   @JoinColumn({ name: 'medium_value_id' })
-  medium_value!: MediumValue;
+  medium_value!: Medium;
 }

@@ -1,7 +1,7 @@
 import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { Feed } from '@orm/entities/feed/feed';
-import { MediumValueValueEnum } from '@orm/entities/mediumValue';
+import { MediumValueEnum } from '@orm/entities/medium';
 import { applyProperties } from '@orm/lib/applyProperties';
 
 const shortid = require('shortid');
@@ -16,7 +16,7 @@ type ChannelUpdateDto = {
   podcast_guid?: string | null
   title: string
   sortable_title: string
-  medium_value?: MediumValueValueEnum | null
+  medium_value?: MediumValueEnum | null
   has_podcast_index_value?: boolean
   hidden?: boolean
   marked_for_deletion?: boolean

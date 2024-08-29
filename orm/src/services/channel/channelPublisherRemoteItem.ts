@@ -1,6 +1,6 @@
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
 import { ChannelPublisherRemoteItem } from '@orm/entities/channel/channelPublisherRemoteItem';
-import { MediumValueValueEnum } from '@orm/entities/mediumValue';
+import { MediumValueEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPublisherRemoteItemDto = {
@@ -8,7 +8,7 @@ type ChannelPublisherRemoteItemDto = {
   feed_url: string | null
   item_guid: string | null
   // title: string | null
-  medium: MediumValueValueEnum | null
+  medium: MediumValueEnum | null
 }
 
 export class ChannelPublisherRemoteItemService extends BaseRemoteItemsService<ChannelPublisherRemoteItem, 'channel_publisher'> {
