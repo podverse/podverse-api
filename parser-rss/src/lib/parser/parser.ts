@@ -161,7 +161,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelRemoteItemDtos.length > 0) {
     await channelRemoteItemService.updateMany(channel, channelRemoteItemDtos);
   } else {
-    await channelRemoteItemService.deleteAll(channel);
+    await channelRemoteItemService._deleteAll(channel);
   }
 
   // // TODO: add channelSeason support

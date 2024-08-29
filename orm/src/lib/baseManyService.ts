@@ -4,8 +4,8 @@ import { applyProperties } from "@orm/lib/applyProperties";
 
 export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
   protected repository: Repository<T>;
-  private parentEntityKey: K;
-  private targetEntity: { new (): T };
+  protected parentEntityKey: K;
+  protected targetEntity: { new (): T };
 
   constructor(targetEntity: { new (): T }, parentEntityKey: K) {
     this.targetEntity = targetEntity;
