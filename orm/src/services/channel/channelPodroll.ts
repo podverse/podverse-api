@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
-import { BaseOneService } from '@orm/lib/baseOneService';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelPodrollDto = {}
 

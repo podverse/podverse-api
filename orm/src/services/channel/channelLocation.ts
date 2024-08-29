@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelLocation } from '@orm/entities/channel/channelLocation';
-import { BaseOneService } from '@orm/lib/baseOneService';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelLocationDto = {
   geo: string | null

@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelTxt } from '@orm/entities/channel/channelTxt';
-import { BaseManyService } from '@orm/lib/baseManyService';
+import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ChannelTxtDto = {
   purpose: string | null

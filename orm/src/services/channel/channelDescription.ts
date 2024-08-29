@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelDescription } from '@orm/entities/channel/channelDescription';
-import { BaseOneService } from '@orm/lib/baseOneService';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelDescriptionDto = {
   value: string

@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelLicense } from '@orm/entities/channel/channelLicense';
-import { BaseOneService } from '@orm/lib/baseOneService';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelLicenseDto = {
   identifier: string

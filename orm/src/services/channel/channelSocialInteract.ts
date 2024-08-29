@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelSocialInteract } from '@orm/entities/channel/channelSocialInteract';
-import { BaseManyService } from '@orm/lib/baseManyService';
+import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ChannelSocialInteractDto = {
   protocol: string

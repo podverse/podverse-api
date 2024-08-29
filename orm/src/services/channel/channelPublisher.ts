@@ -1,6 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
-import { BaseOneService } from '@orm/lib/baseOneService';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelPublisherDto = {}
 
