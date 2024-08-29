@@ -1,7 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelFunding } from '@orm/entities/channel/channelFunding';
 import { BaseManyService } from '@orm/lib/baseManyService';
-import { entityUpdateMany } from '@orm/lib/entityUpdateMany';
 
 type ChannelFundingDto = {
   url: string

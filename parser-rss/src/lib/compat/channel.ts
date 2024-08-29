@@ -200,3 +200,22 @@ export const compatChannelRemoteItemDtos = (parsedFeed: FeedObject) => {
 
   return dtos
 }
+
+export const compatChannelSocialInteractDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+
+  if (parsedFeed?.podcastSocial?.length) {
+    for (const ps of parsedFeed.podcastSocial) {
+      dtos.push({
+        // TODO: fix keys mismatch between partytime and podverse
+        protocol: ps.platform,
+        uri: ps.url,
+        account_id: ps.id || null,
+        account_url: ps.name || null,
+        priority: ps.priority || null
+      })
+    }
+  }
+
+  return dtos
+}
