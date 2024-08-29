@@ -1,6 +1,6 @@
 import { AppDataSource } from "@orm/db";
 import { FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
-import { applyProperties } from "./applyProperties";
+import { applyProperties } from "@orm/lib/applyProperties";
 
 export class BaseOneService<T extends ObjectLiteral, K extends keyof T> {
   protected repository: Repository<T>;

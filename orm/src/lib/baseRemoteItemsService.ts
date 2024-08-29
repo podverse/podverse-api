@@ -1,5 +1,5 @@
 import { FindOptionsWhere, ObjectLiteral } from "typeorm";
-import { BaseManyService } from "./baseManyService";
+import { BaseManyService } from "@orm/services/base/baseManyService";
 
 export class BaseRemoteItemsService<T extends ObjectLiteral, K extends keyof T> extends BaseManyService<T, K> {
   async getAll(parentEntity: T[K]): Promise<T[]> {
