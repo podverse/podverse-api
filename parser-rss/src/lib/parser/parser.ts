@@ -92,7 +92,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelFundingDtos.length > 0) {
     await channelFundingService.updateMany(channel, channelFundingDtos);
   } else {
-    await channelFundingService.deleteAll(channel);
+    await channelFundingService._deleteAll(channel);
   }
 
   const channelImageService = new ChannelImageService();
@@ -101,7 +101,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelImageDtos.length > 0) {
     await channelImageService.updateMany(channel, channelImageDtos);
   } else {
-    await channelImageService.deleteAll(channel);
+    await channelImageService._deleteAll(channel);
   }
 
   const channelLicenseService = new ChannelLicenseService();
@@ -128,7 +128,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   if (channelPersonDtos.length > 0) {
     await channelPersonService.updateMany(channel, channelPersonDtos);
   } else {
-    await channelPersonService.deleteAll(channel);
+    await channelPersonService._deleteAll(channel);
   }
 
   const channelPodrollService = new ChannelPodrollService();
