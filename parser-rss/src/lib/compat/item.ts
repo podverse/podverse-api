@@ -1,5 +1,4 @@
 import type { Episode as ItemObject } from 'podcast-partytime'
-import { valueCompat } from "@parser-rss/lib/compat/value"
 
 export const itemCompat = (item: ItemObject) => {
   return {
@@ -24,8 +23,7 @@ export const itemCompat = (item: ItemObject) => {
     subtitle: item.subtitle,
     summary: getLongerSummary(item.content, item.description),
     title: item.title,
-    transcript: item.podcastTranscripts ?? [],
-    value: item.value ? [valueCompat(item.value)] : []
+    transcript: item.podcastTranscripts ?? []
   }
 }
 

@@ -46,9 +46,6 @@ import { ChannelTrailer } from "@orm/entities/channel/channelTrailer";
 import { ChannelTxt } from "@orm/entities/channel/channelTxt";
 import { ChannelValue } from "@orm/entities/channel/channelValue";
 import { ChannelValueReceipient } from "@orm/entities/channel/channelValueRecipient";
-import { ChannelValueTimeSplit } from "@orm/entities/channel/channelValueTimeSplit";
-import { ChannelValueTimeSplitReceipient } from "@orm/entities/channel/channelValueTimeSplitRecipient";
-import { ChannelValueTimeSplitRemoteItem } from "@orm/entities/channel/channelValueTimeSplitRemoteItem";
 import { Item } from "@orm/entities/item/item";
 import { ItemAbout } from "@orm/entities/item/itemAbout";
 import { ItemChapter } from "@orm/entities/item/itemChapter";
@@ -151,9 +148,6 @@ export const AppDataSource = new DataSource({
     ChannelTxt,
     ChannelValue,
     ChannelValueReceipient,
-    ChannelValueTimeSplit,
-    ChannelValueTimeSplitReceipient,
-    ChannelValueTimeSplitRemoteItem,
     Clip,
     Feed,
     FeedFlagStatus,

@@ -12,7 +12,8 @@ import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, c
   compatChannelRemoteItemDtos,
   compatChannelSocialInteractDtos,
   compatChannelTrailerDtos,
-  compatChannelTxt} from '@parser-rss/lib/compat/channel';
+  compatChannelTxtDtos,
+  compatChannelValueDtos} from '@parser-rss/lib/compat/channel';
 import { ChannelFundingService } from '@orm/services/channel/channelFunding';
 import { ChannelImageService } from '@orm/services/channel/channelImage';
 import { ChannelLocationService } from '@orm/services/channel/channelLocation';
@@ -24,6 +25,8 @@ import { ChannelRemoteItemService } from '@orm/services/channel/channelRemoteIte
 import { ChannelSocialInteractService } from '@orm/services/channel/channelSocialInteract';
 import { ChannelTrailerService } from '@orm/services/channel/channelTrailer';
 import { ChannelTxtService } from '@orm/services/channel/channelTxt';
+import { ChannelValueService } from '@orm/services/channel/channelValue';
+import { ChannelValueRecipientService } from '@orm/services/channel/channelValueRecipient';
 // import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 
 /*
@@ -199,7 +202,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   }
 
   const channelTxtService = new ChannelTxtService();
-  const channelTxtDtos = compatChannelTxt(parsedFeed);
+  const channelTxtDtos = compatChannelTxtDtos(parsedFeed);
 
   if (channelTxtDtos.length > 0) {
     await channelTxtService.updateMany(channel, channelTxtDtos);
@@ -207,11 +210,22 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await channelTxtService._deleteAll(channel);
   }
 
-  // TODO: add channelValue support
-  // TODO: add channelValueRecipient support
-  // TODO: add channelValueTimeSplit support
-  // TODO: add channelValueTimeSplitRecipient support
-  // TODO: add channelValueTimeSplitRemoteItem support
+  const channelValueService = new ChannelValueService();
+  const channelValueDtos = compatChannelValueDtos(parsedFeed);
+
+  for (const channelValueDto of channelValueDtos) {
+    const channel_value = await channelValueService.update(channel, channelValueDto.channel_value);
+    
+    const channelValueRecipientDtos = channelValueDto.channel_value_recipients;
+    if (channelValueRecipientDtos.length > 0) {
+      for (const channelValueRecipientDto of channelValueRecipientDtos) {
+        const channelValueRecipientService = new ChannelValueRecipientService();
+        await channelValueRecipientService.update(channel_value, channelValueRecipientDto);
+      }
+    } else {
+      await channelValueService._deleteAll(channel);
+    }
+  }
 
   return feed;
 }

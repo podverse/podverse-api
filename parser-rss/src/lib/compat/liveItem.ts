@@ -1,6 +1,5 @@
 import { Phase4PodcastLiveItem } from "podcast-partytime/dist/parser/phase/phase-4"
 import { PhasePendingChat } from "podcast-partytime/dist/parser/phase/phase-pending"
-import { valueCompat } from "@parser-rss/lib/compat/value"
 
 interface ExtendedPhase4PodcastLiveItem extends Omit<Phase4PodcastLiveItem, 'chat'> {
   chat?: ExtendedChat
@@ -48,7 +47,6 @@ export const liveItemCompat = (liveItem: ExtendedPhase4PodcastLiveItem) => {
     subtitle: '', // liveItem.subtitle,
     summary: '', // liveItem.summary,
     title: liveItem.title,
-    transcript: [],
-    value: liveItem.value ? [valueCompat(liveItem.value)] : []
+    transcript: []
   }
 }

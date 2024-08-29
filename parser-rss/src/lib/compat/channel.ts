@@ -1,12 +1,11 @@
 import { FeedObject, Phase4Medium } from "podcast-partytime"
 import { fundingCompat } from "@parser-rss/lib/compat/funding"
-import { valueCompat } from "@parser-rss/lib/compat/value"
+import { compatChannelValue } from "@parser-rss/lib/compat/value"
 import { createSortableTitle } from "@orm/lib/sortableTitle"
 import { getMediumValueValueEnumValue } from "@orm/entities/mediumValue"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
 import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
-import { title } from "process"
 
 export const feedCompat = (feed: FeedObject) => {
   return {
@@ -21,8 +20,7 @@ export const feedCompat = (feed: FeedObject) => {
     owner: feed.owner,
     subtitle: feed.subtitle,
     summary: feed.summary,
-    type: feed.itunesType,
-    value: feed.value ? [valueCompat(feed.value)] : []
+    type: feed.itunesType
   }
 }
 
@@ -238,7 +236,7 @@ export const compatChannelTrailerDtos = (parsedFeed: FeedObject) => {
   return dtos
 }
 
-export const compatChannelTxt = (parsedFeed: FeedObject) => {
+export const compatChannelTxtDtos = (parsedFeed: FeedObject) => {
   const dtos = []
   if (parsedFeed?.podcastTxt?.length) {
     for (const pt of parsedFeed.podcastTxt) {
@@ -249,5 +247,24 @@ export const compatChannelTxt = (parsedFeed: FeedObject) => {
     }
   }
 
+  return dtos
+}
+
+export const compatChannelValueDtos = (parsedFeed: FeedObject) => {
+  let dtos = []
+  if (parsedFeed.value) {
+    const dto = compatChannelValue(parsedFeed.value)
+
+    const formattedDto = {
+      channel_value: {
+        type: dto.type,
+        method: dto.method,
+        suggested: dto.suggested
+      },
+      channel_value_recipients: dto.channel_value_recipients
+    }
+
+    dtos.push(formattedDto)
+  }
   return dtos
 }
