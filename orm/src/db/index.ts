@@ -43,7 +43,7 @@ import { ChannelRemoteItem } from "@orm/entities/channel/channelRemoteItem";
 import { ChannelSeason } from "@orm/entities/channel/channelSeason";
 import { ChannelSocialInteract } from "@orm/entities/channel/channelSocialInteract";
 import { ChannelTrailer } from "@orm/entities/channel/channelTrailer";
-import { ChannelTxtTag } from "@orm/entities/channel/channelTxt";
+import { ChannelTxt } from "@orm/entities/channel/channelTxt";
 import { ChannelValueTag } from "@orm/entities/channel/channelValueTag";
 import { ChannelValueTagReceipient } from "@orm/entities/channel/channelValueTagRecipient";
 import { ChannelValueTagTimeSplit } from "@orm/entities/channel/channelValueTagTimeSplit";
@@ -72,7 +72,7 @@ import { ItemSeasonEpisode } from "@orm/entities/item/itemSeasonEpisode";
 import { ItemSocialInteract } from "@orm/entities/item/itemSocialInteract";
 import { ItemSoundbite } from "@orm/entities/item/itemSoundbite";
 import { ItemTranscript } from "@orm/entities/item/itemTranscript";
-import { ItemTxtTag } from "@orm/entities/item/itemTxtTag";
+import { ItemTxt } from "@orm/entities/item/itemTxt";
 import { ItemValueTag } from "@orm/entities/item/itemValueTag";
 import { ItemValueTagRecipient } from "@orm/entities/item/itemValueTagRecipient";
 import { ItemValueTagTimeSplit } from "@orm/entities/item/itemValueTagTimeSplit";
@@ -148,7 +148,7 @@ export const AppDataSource = new DataSource({
     ChannelSeason,
     ChannelSocialInteract,
     ChannelTrailer,
-    ChannelTxtTag,
+    ChannelTxt,
     ChannelValueTag,
     ChannelValueTagReceipient,
     ChannelValueTagTimeSplit,
@@ -181,7 +181,7 @@ export const AppDataSource = new DataSource({
     ItemSocialInteract,
     ItemSoundbite,
     ItemTranscript,
-    ItemTxtTag,
+    ItemTxt,
     ItemValueTag,
     ItemValueTagRecipient,
     ItemValueTagTimeSplit,

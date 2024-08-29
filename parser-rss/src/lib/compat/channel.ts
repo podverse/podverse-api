@@ -237,3 +237,17 @@ export const compatChannelTrailerDtos = (parsedFeed: FeedObject) => {
 
   return dtos
 }
+
+export const compatChannelTxt = (parsedFeed: FeedObject) => {
+  const dtos = []
+  if (parsedFeed?.podcastTxt?.length) {
+    for (const pt of parsedFeed.podcastTxt) {
+      dtos.push({
+        purpose: pt.purpose || null,
+        value: pt.value
+      })
+    }
+  }
+
+  return dtos
+}

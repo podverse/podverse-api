@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Item } from '@orm/entities/item/item';
 
 @Entity()
-export class ItemTxtTag {
+export class ItemTxt {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -11,7 +11,7 @@ export class ItemTxtTag {
   item!: Item;
 
   @Column({ type: 'varchar' })
-  verify!: string;
+  purpose!: string;
 
   @Column({ type: 'varchar' })
   value!: string;
