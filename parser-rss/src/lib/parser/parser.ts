@@ -132,11 +132,12 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   }
 
   const channelPodrollService = new ChannelPodrollService();
+  const channelPodrollDto = {};
   const channelPodrollRemoteItemService = new ChannelPodrollRemoteItemService();
   const channelPodrollRemoteItemDtos = compatChannelPodrollRemoteItemDtos(parsedFeed);
 
   if (channelPodrollRemoteItemDtos.length > 0) {
-    const channel_podroll = await channelPodrollService.update(channel);
+    const channel_podroll = await channelPodrollService.update(channel, channelPodrollDto);
     await channelPodrollRemoteItemService.updateMany(channel_podroll, channelPodrollRemoteItemDtos);
   } else {
     await channelPodrollService.delete(channel);

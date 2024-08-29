@@ -1,7 +1,6 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelAbout } from '@orm/entities/channel/channelAbout';
-import { applyProperties } from '@orm/lib/applyProperties';
+import { BaseOneService } from '@orm/lib/baseOneService';
 
 type ChannelAboutDto = {
   author: string | null
@@ -10,23 +9,12 @@ type ChannelAboutDto = {
   website_link_url: string | null
 }
 
-export class ChannelAboutService {
-  private repository = AppDataSource.getRepository(ChannelAbout);
-
-  async get(channel: Channel): Promise<ChannelAbout | null> {
-    return this.repository.findOne({ where: { channel } });
+export class ChannelAboutService extends BaseOneService<ChannelAbout, 'channel'> {
+  constructor() {
+    super(ChannelAbout, 'channel');
   }
 
-  async update(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout | null> {
-    let channel_about = await this.get(channel);
-
-    if (!channel_about) {
-      channel_about = new ChannelAbout();
-      channel_about.channel = channel;
-    }
-
-    channel_about = applyProperties(channel_about, dto);
-
-    return this.repository.save(channel_about);
+  async update(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout> {
+    return super.update(channel, dto);
   }
 }

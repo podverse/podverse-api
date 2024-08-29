@@ -1,15 +1,16 @@
 import { ObjectLiteral, Repository } from "typeorm";
 
-export async function entityUpdateMany<E extends ObjectLiteral, D extends ObjectLiteral, F extends ObjectLiteral>(
-  entity: E,
+// P = parent entity, D = DTO, E = entity
+export async function entityUpdateMany<P extends ObjectLiteral, D extends ObjectLiteral, E extends ObjectLiteral>(
+  entity: P,
   dtos: D[],
-  getAll: (entity: E) => Promise<F[]>,
-  update: (entity: E, dto: D) => Promise<F>,
-  repository: Repository<F>,
+  getAll: (parentEntity: P) => Promise<E[]>,
+  update: (parentEntity: P, dto: D) => Promise<E>,
+  repository: Repository<E>,
   identifier: string
-): Promise<F[]> {
+): Promise<E[]> {
   const existingEntities = await getAll(entity);
-  const updatedEntities: F[] = [];
+  const updatedEntities: E[] = [];
   const dtoIdentifiers = dtos.map((dto: D) => dto[identifier]);
 
   for (const dto of dtos) {

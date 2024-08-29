@@ -1,29 +1,15 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
+import { BaseOneService } from '@orm/lib/baseOneService';
 
-export class ChannelPodrollService {
-  private repository = AppDataSource.getRepository(ChannelPodroll);
+type ChannelPodrollDto = {}
 
-  async get(channel: Channel): Promise<ChannelPodroll | null> {
-    return this.repository.findOne({ where: { channel } });
+export class ChannelPodrollService extends BaseOneService<ChannelPodroll, 'channel'> {
+  constructor() {
+    super(ChannelPodroll, 'channel');
   }
 
-  async update(channel: Channel): Promise<ChannelPodroll> {
-    let channel_podroll = await this.get(channel);
-
-    if (!channel_podroll) {
-      channel_podroll = new ChannelPodroll();
-      channel_podroll.channel = channel;
-    }
-
-    return this.repository.save(channel_podroll);
-  }
-
-  async delete(channel: Channel): Promise<void> {
-    const channel_podroll = await this.get(channel);
-    if (channel_podroll) {
-      await this.repository.remove(channel_podroll);
-    }
+  async update(channel: Channel, dto: ChannelPodrollDto): Promise<ChannelPodroll> {
+    return super.update(channel, dto);
   }
 }

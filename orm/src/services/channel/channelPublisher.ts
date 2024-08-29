@@ -1,29 +1,15 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
+import { BaseOneService } from '@orm/lib/baseOneService';
 
-export class ChannelPublisherService {
-  private repository = AppDataSource.getRepository(ChannelPublisher);
+type ChannelPublisherDto = {}
 
-  async get(channel: Channel): Promise<ChannelPublisher | null> {
-    return this.repository.findOne({ where: { channel } });
+export class ChannelPublisherService extends BaseOneService<ChannelPublisher, 'channel'> {
+  constructor() {
+    super(ChannelPublisher, 'channel');
   }
 
-  async update(channel: Channel): Promise<ChannelPublisher> {
-    let channel_publisher = await this.get(channel);
-
-    if (!channel_publisher) {
-      channel_publisher = new ChannelPublisher();
-      channel_publisher.channel = channel;
-    }
-
-    return this.repository.save(channel_publisher);
-  }
-
-  async delete(channel: Channel): Promise<void> {
-    const channel_publisher = await this.get(channel);
-    if (channel_publisher) {
-      await this.repository.remove(channel_publisher);
-    }
+  async update(channel: Channel, dto: ChannelPublisherDto): Promise<ChannelPublisher> {
+    return super.update(channel, dto);
   }
 }
