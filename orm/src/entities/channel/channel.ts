@@ -42,7 +42,7 @@ export class Channel {
   medium_value!: MediumValueValueEnum | null;
 
   @Column({ type: 'boolean', default: false })
-  has_podcast_index_values!: boolean;
+  has_podcast_index_value!: boolean;
 
   @Column({ type: 'boolean', default: false })
   hidden!: boolean;

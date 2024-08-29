@@ -17,7 +17,7 @@ type ChannelUpdateDto = {
   title: string
   sortable_title: string
   medium_value?: MediumValueValueEnum | null
-  has_podcast_index_values?: boolean
+  has_podcast_index_value?: boolean
   hidden?: boolean
   marked_for_deletion?: boolean
 }
