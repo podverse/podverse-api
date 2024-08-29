@@ -1,7 +1,7 @@
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
 import { ChannelPodrollRemoteItem } from '@orm/entities/channel/channelPodrollRemoteItem';
 import { MediumValueValueEnum } from '@orm/entities/mediumValue';
-import { BaseRemoteItemsService } from '@orm/lib/baseRemoteItemsService';
+import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPodrollRemoteItemDto = {
   feed_guid: string

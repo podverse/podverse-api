@@ -1,7 +1,7 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelRemoteItem } from '@orm/entities/channel/channelRemoteItem';
 import { MediumValueValueEnum } from '@orm/entities/mediumValue';
-import { BaseRemoteItemsService } from '@orm/lib/baseRemoteItemsService';
+import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelRemoteItemDto = {
   feed_guid: string
