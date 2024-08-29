@@ -4,19 +4,6 @@ import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagSta
 import { ChannelService } from '@orm/services/channel/channel';
 import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
-import { handleParsedChannelValue } from '@parser-rss/lib/parser/channel/channelValue';
-import { handleParsedChannelTxt } from '@parser-rss/lib/parser/channel/channelTxt';
-import { handleParsedChannelTrailer } from '@parser-rss/lib/parser/channel/channelTrailer';
-import { handleParsedChannelSocialInteract } from '@parser-rss/lib/parser/channel/channelSocialInteract';
-import { handleParsedChannelRemoteItem } from '@parser-rss/lib/parser/channel/channelRemoteItem';
-import { handleParsedChannelPodroll } from '@parser-rss/lib/parser/channel/channelPodroll';
-import { handleParsedChannelPerson } from '@parser-rss/lib/parser/channel/channelPerson';
-import { handleParsedChannelLocation } from '@parser-rss/lib/parser/channel/channelLocation';
-import { handleParsedChannelLicense } from '@parser-rss/lib/parser/channel/channelLicense';
-import { handleParsedChannelImage } from '@parser-rss/lib/parser/channel/channelImage';
-import { handleParsedChannelFunding } from '@parser-rss/lib/parser/channel/channelFunding';
-import { handleParsedChannelDescription } from '@parser-rss/lib/parser/channel/channelDescription';
-import { handleParsedChannelAbout } from '@parser-rss/lib/parser/channel/channelAbout';
 import { handleParsedChannel } from '@parser-rss/lib/parser/channel/channel';
 
 /*
@@ -57,6 +44,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const feed = await feedService.getOrCreate({ url, podcast_index_id });
 
   // TODO: check if already isParsing
+  // TODO: set isParsing to true
 
   if (!checkIfFeedFlagStatusShouldParse(feed.feed_flag_status.id)) {
     throw new Error(`parseRSSFeedAndSaveToDatabase: feed_flag_status.status is not None or AlwaysAllow for ${url}`);
@@ -66,47 +54,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
 
   await handleParsedChannel(parsedFeed, channel);
-  await handleParsedChannelAbout(parsedFeed, channel);
 
-  // TODO: add channelCategory support
-
-  // TODO: add channelChat support
-
-  await handleParsedChannelDescription(parsedFeed, channel);
-  await handleParsedChannelFunding(parsedFeed, channel);
-  await handleParsedChannelImage(parsedFeed, channel);
-  await handleParsedChannelLicense(parsedFeed, channel);
-  await handleParsedChannelLocation(parsedFeed, channel);
-  await handleParsedChannelPerson(parsedFeed, channel);
-  await handleParsedChannelPodroll(parsedFeed, channel);
-
-  // const channelPublisherService = new ChannelPublisherService();
-  // const channelPublisherRemoteItemService = new ChannelPublisherRemoteItemService();
-
-  // const channelPublisherRemoteItemDtos = compatChannelPublisherRemoteItemDtos(parsedFeed);
-  // if (channelPublisherRemoteItemDtos.length > 0) {
-  //   const channel_publisher = await channelPublisherService.update(channel);
-  //   await channelPublisherRemoteItemService.updateMany(channel_publisher, channelPodrollRemoteItemDtos);
-  // } else {
-  //   await channelPublisherService.delete(channel);
-  // }
-
-  await handleParsedChannelRemoteItem(parsedFeed, channel);
-
-  // // TODO: add channelSeason support
-  // const channelSeasonService = new ChannelSeasonService();
-  // const channelSeasonDtos = compatChannelSeasonDtos(parsedFeed);
-
-  // if (channelSeasonDtos.length > 0) {
-  //   await channelSeasonService.updateMany(channel, channelSeasonDtos);
-  // } else {
-  //   await channelSeasonService.deleteAll(channel);
-  // }
-
-  await handleParsedChannelSocialInteract(parsedFeed, channel);
-  await handleParsedChannelTrailer(parsedFeed, channel);
-  await handleParsedChannelTxt(parsedFeed, channel);
-  await handleParsedChannelValue(parsedFeed, channel);
+  // TODO: set isParsing to false in a finally block
 
   return feed;
 }
