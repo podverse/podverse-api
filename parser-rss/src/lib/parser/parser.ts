@@ -1,47 +1,23 @@
 import { parseFeed } from 'podcast-partytime';
 import { request } from '@helpers/lib/request';
-import { FeedService } from '@orm/services/feed/feed';
-import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
 import { checkIfFeedFlagStatusShouldParse } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
-import { ChannelAboutService } from '@orm/services/channel/channelAbout';
-import { ChannelDescriptionService } from '@orm/services/channel/channelDescription';
-import { compatChannelAboutDto, compatChannelDescriptionDto, compatChannelDto, compatChannelFundingDtos, compatChannelImageDtos,
-  compatChannelLicenseDto, compatChannelLocationDto, compatChannelPersonDtos, 
-  compatChannelPodrollRemoteItemDtos,
-  compatChannelRemoteItemDtos,
-  compatChannelSocialInteractDtos,
-  compatChannelTrailerDtos,
-  compatChannelTxtDtos,
-  compatChannelValueDtos} from '@parser-rss/lib/compat/channel';
-import { ChannelFundingService } from '@orm/services/channel/channelFunding';
-import { ChannelImageService } from '@orm/services/channel/channelImage';
-import { ChannelLocationService } from '@orm/services/channel/channelLocation';
-import { ChannelLicenseService } from '@orm/services/channel/channelLicense';
-import { ChannelPersonService } from '@orm/services/channel/channelPerson';
-import { ChannelPodrollRemoteItemService } from '@orm/services/channel/channelPodrollRemoteItem';
-import { ChannelPodrollService } from '@orm/services/channel/channelPodroll';
-import { ChannelRemoteItemService } from '@orm/services/channel/channelRemoteItem';
-import { ChannelSocialInteractService } from '@orm/services/channel/channelSocialInteract';
-import { ChannelTrailerService } from '@orm/services/channel/channelTrailer';
-import { ChannelTxtService } from '@orm/services/channel/channelTxt';
-import { ChannelValueService } from '@orm/services/channel/channelValue';
-import { ChannelValueRecipientService } from '@orm/services/channel/channelValueRecipient';
-import { handleParsedChannelValue } from './channel/channelValue';
-import { handleParsedChannelTxt } from './channel/channelTxt';
-import { handleParsedChannelTrailer } from './channel/channelTrailer';
-import { handleParsedChannelSocialInteract } from './channel/channelSocialInteract';
-import { handleParsedChannelRemoteItem } from './channel/channelRemoteItem';
-import { handleParsedChannelPodroll } from './channel/channelPodroll';
-import { handleParsedChannelPerson } from './channel/channelPerson';
-import { handleParsedChannelLocation } from './channel/channelLocation';
-import { handleParsedChannelLicense } from './channel/channelLicense';
-import { handleParsedChannelImage } from './channel/channelImage';
-import { handleParsedChannelFunding } from './channel/channelFunding';
-import { handleParsedChannelDescription } from './channel/channelDescription';
-import { handleParsedChannelAbout } from './channel/channelAbout';
-import { handleParsedChannel } from './channel/channel';
-// import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
+import { FeedService } from '@orm/services/feed/feed';
+import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
+import { handleParsedChannelValue } from '@parser-rss/lib/parser/channel/channelValue';
+import { handleParsedChannelTxt } from '@parser-rss/lib/parser/channel/channelTxt';
+import { handleParsedChannelTrailer } from '@parser-rss/lib/parser/channel/channelTrailer';
+import { handleParsedChannelSocialInteract } from '@parser-rss/lib/parser/channel/channelSocialInteract';
+import { handleParsedChannelRemoteItem } from '@parser-rss/lib/parser/channel/channelRemoteItem';
+import { handleParsedChannelPodroll } from '@parser-rss/lib/parser/channel/channelPodroll';
+import { handleParsedChannelPerson } from '@parser-rss/lib/parser/channel/channelPerson';
+import { handleParsedChannelLocation } from '@parser-rss/lib/parser/channel/channelLocation';
+import { handleParsedChannelLicense } from '@parser-rss/lib/parser/channel/channelLicense';
+import { handleParsedChannelImage } from '@parser-rss/lib/parser/channel/channelImage';
+import { handleParsedChannelFunding } from '@parser-rss/lib/parser/channel/channelFunding';
+import { handleParsedChannelDescription } from '@parser-rss/lib/parser/channel/channelDescription';
+import { handleParsedChannelAbout } from '@parser-rss/lib/parser/channel/channelAbout';
+import { handleParsedChannel } from '@parser-rss/lib/parser/channel/channel';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
