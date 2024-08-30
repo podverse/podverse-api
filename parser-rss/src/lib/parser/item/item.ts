@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos, compatItemSoundbiteDtos } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -17,6 +17,7 @@ import { ItemPersonService } from "@orm/services/item/itemPerson";
 import { ItemSeasonService } from "@orm/services/item/itemSeason";
 import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
 import { ItemSocialInteractService } from "@orm/services/item/itemSocialInteract";
+import { ItemSoundbiteService } from "@orm/services/item/itemSoundbite";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -116,4 +117,8 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemSocialInteractService = new ItemSocialInteractService();
   const itemSocialInteractDtos = compatItemSocialInteractDtos(parsedItem);
   await handleParsedManyData(item, itemSocialInteractService, itemSocialInteractDtos);
+
+  const itemSoundbiteService = new ItemSoundbiteService();
+  const itemSoundbiteDtos = compatItemSoundbiteDtos(parsedItem);
+  await handleParsedManyData(item, itemSoundbiteService, itemSoundbiteDtos);
 }

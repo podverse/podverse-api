@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
 import { Account } from '@orm/entities/account/account';
 import { SharableStatus } from '@orm/entities/sharableStatus';
 import { Medium } from '@orm/entities/medium';
+const shortid = require('shortid');
 
 @Entity()
 export class Playlist {
@@ -37,4 +38,9 @@ export class Playlist {
   @ManyToOne(() => Medium, medium => medium.id)
   @JoinColumn({ name: 'medium_id' })
   medium!: Medium;
+
+  @BeforeInsert()
+  generateIdText() {
+    this.id_text = shortid.generate();
+  }
 }

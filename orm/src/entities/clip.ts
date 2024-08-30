@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
 import { Account } from '@orm/entities/account/account';
 import { Item } from '@orm/entities/item/item';
 import { SharableStatus } from '@orm/entities/sharableStatus';
+const shortid = require('shortid');
 
 @Entity()
 export class Clip {
@@ -34,4 +35,9 @@ export class Clip {
   @ManyToOne(() => SharableStatus, sharableStatus => sharableStatus.id)
   @JoinColumn({ name: 'sharable_status_id' })
   sharable_status!: SharableStatus;
+
+  @BeforeInsert()
+  generateIdText() {
+    this.id_text = shortid.generate();
+  }
 }

@@ -46,8 +46,6 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
     return this.repository.save(row);
   }
 
-  // TODO: add updateMany
-
   async _updateMany(parentEntity: T[K], whereKeys: (keyof T)[], dtos: Partial<T>[]): Promise<T[]> {
     const existingEntities = await this._getAll(parentEntity);
     const existingIdentifiers = dtos.map((dto: Partial<T>) => {

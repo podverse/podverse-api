@@ -1,6 +1,7 @@
 import { getItemItunesEpisodeTypeEnumValue } from '@orm/entities/item/itemItunesEpisodeType'
 import type { Episode } from 'podcast-partytime'
 import { Phase4PodcastImage } from 'podcast-partytime/dist/parser/phase/phase-4'
+import { start } from 'repl'
 
 export const itemCompat = (item: Episode) => {
   return {
@@ -212,6 +213,22 @@ export const compatItemSocialInteractDtos = (parsedItem: Episode) => {
         account_id: ps.id || null,
         account_url: ps.profileUrl || null,
         priority: ps.priority || null
+      })
+    }
+  }
+
+  return dtos
+}
+
+export const compatItemSoundbiteDtos = (parsedItem: Episode) => {
+  const dtos = []
+
+  if (parsedItem?.podcastSoundbites?.length) {
+    for (const s of parsedItem.podcastSoundbites) {
+      dtos.push({
+        start_time: s.startTime,
+        duration: s.duration,
+        title: s.title || null
       })
     }
   }

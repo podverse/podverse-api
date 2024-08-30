@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Feed } from '@orm/entities/feed/feed'; 
 import { Medium, MediumValueEnum } from '@orm/entities/medium';
+const shortid = require('shortid');
 
 @Entity('channel')
 @Unique(['id_text'])
@@ -49,6 +50,11 @@ export class Channel {
 
   @Column({ type: 'boolean', default: false })
   marked_for_deletion!: boolean;
+
+  @BeforeInsert()
+  generateIdText() {
+    this.id_text = shortid.generate();
+  }
 
   @BeforeInsert()
   @BeforeUpdate()

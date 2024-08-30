@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, BeforeInsert } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
+const shortid = require('shortid');
 
 @Entity()
 @Unique(['id_text'])
@@ -35,4 +36,9 @@ export class Item {
 
   @Column({ type: 'boolean', name: 'marked_for_deletion', default: false })
   marked_for_deletion!: boolean;
+
+  @BeforeInsert()
+  generateIdText() {
+    this.id_text = shortid.generate();
+  }
 }

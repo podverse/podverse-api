@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
+const shortid = require('shortid');
 
 @Entity()
 export class ItemSoundbite {
@@ -13,9 +14,6 @@ export class ItemSoundbite {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar' })
-  url!: string;
-
   @Column({ type: 'int' })
   start_time!: number;
 
@@ -24,4 +22,9 @@ export class ItemSoundbite {
 
   @Column({ type: 'varchar', nullable: true })
   title?: string | null;
+
+  @BeforeInsert()
+  generateIdText() {
+    this.id_text = shortid.generate();
+  }
 }

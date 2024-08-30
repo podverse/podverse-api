@@ -1,9 +1,8 @@
 import { Channel } from '@orm/entities/channel/channel';
-import { BaseOneTextIdService } from '../base/baseTextIdService';
 import { Item } from '@orm/entities/item/item';
 import { applyProperties } from '@orm/lib/applyProperties';
-
-const shortid = require('shortid');
+import { Repository } from 'typeorm';
+import { AppDataSource } from '@orm/db';
 
 type ItemDto = {
   title: string | null
@@ -17,9 +16,19 @@ type ItemGetByDto = {
   guid_enclosure_url: string
 }
 
-export class ItemService extends BaseOneTextIdService<Item> {
+export class ItemService {
+  protected repository: Repository<Item>;
+
   constructor() {
-    super(Item);
+    this.repository = AppDataSource.getRepository(Item);
+  }
+
+  async get(id: number): Promise<Item | null> {
+    return this.repository.findOne({ where: { id } });
+  }
+
+  async _getByIdText(id_text: string): Promise<Item | null> {
+    return this.repository.findOne({ where: { id_text } });
   }
 
   async getBy(channel: Channel, dto: ItemGetByDto): Promise<Item | null> {
@@ -62,7 +71,6 @@ export class ItemService extends BaseOneTextIdService<Item> {
 
     if (!item) {
       item = new Item();
-      item.id_text = shortid.generate();
       item.guid = dto.guid;
       item.guid_enclosure_url = dto.guid_enclosure_url;
       item.channel = channel;
@@ -71,6 +79,6 @@ export class ItemService extends BaseOneTextIdService<Item> {
 
     item = applyProperties(item, dto);
 
-    return super._update(item.id, dto);
+    return this.repository.save(item);
   }
 }
