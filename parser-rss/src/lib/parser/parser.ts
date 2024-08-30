@@ -5,6 +5,7 @@ import { ChannelService } from '@orm/services/channel/channel';
 import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
 import { handleParsedChannel } from '@parser-rss/lib/parser/channel/channel';
+import { handleParsedItems } from './item/item';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -54,6 +55,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
 
   await handleParsedChannel(parsedFeed, channel);
+
+  await handleParsedItems(parsedFeed.items, channel);
 
   // TODO: set isParsing to false in a finally block
 

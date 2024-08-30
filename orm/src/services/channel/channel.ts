@@ -38,9 +38,10 @@ export class ChannelService extends BaseOneTextIdService<Channel> {
       channel.id_text = shortid.generate();
       channel.feed_id = dto.feed.id;
       channel.podcast_index_id = dto.podcast_index_id;
+      channel = await this.repository.save(channel);
     }
 
-    return await this.repository.save(channel);
+    return channel;
   }
 
   async update(id: number, dto: ChannelDto): Promise<Channel> {

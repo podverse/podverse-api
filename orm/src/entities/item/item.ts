@@ -21,6 +21,9 @@ export class Item {
   @Column({ type: 'varchar', name: 'guid', nullable: true })
   guid?: string | null;
 
+  @Column({ type: 'varchar', name: 'guid_enclosure_url' })
+  guid_enclosure_url!: string;
+
   @Column({ type: 'timestamptz', name: 'pubdate', nullable: true })
   pubdate?: Date | null;
 

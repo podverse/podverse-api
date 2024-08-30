@@ -1,6 +1,6 @@
-import type { Episode as ItemObject } from 'podcast-partytime'
+import type { Episode } from 'podcast-partytime'
 
-export const itemCompat = (item: ItemObject) => {
+export const itemCompat = (item: Episode) => {
   return {
     alternateEnclosures: item.alternativeEnclosures ?? [],
     author: [item.author],
@@ -33,3 +33,10 @@ const getLongerSummary = (content?: string, description?: string) => {
   const longerSummary = contentLength >= descriptionLength ? content : description
   return longerSummary
 }
+
+export const compatItemDto = (parsedItem: Episode) => ({
+  guid: parsedItem.guid || null,
+  guid_enclosure_url: parsedItem.enclosure.url,
+  pubdate: parsedItem.pubDate || null,
+  title: parsedItem.title || null
+})
