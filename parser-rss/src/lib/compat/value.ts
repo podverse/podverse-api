@@ -20,8 +20,8 @@ export const compatItemValue = (value: Phase4Value) => {
         return {
           start_time: valueTimeSplit.startTime,
           duration: valueTimeSplit.duration,
-          remote_start_time: valueTimeSplit.remoteStartTime,
-          remote_percentage: valueTimeSplit.remotePercentage,
+          remote_start_time: valueTimeSplit.remoteStartTime || 0,
+          remote_percentage: valueTimeSplit.remotePercentage || 100,
           item_value_time_splits_recipients: []
         }
       } else {
@@ -29,8 +29,8 @@ export const compatItemValue = (value: Phase4Value) => {
         return {
           start_time: valueTimeSplit.startTime,
           duration: valueTimeSplit.duration,
-          remote_start_time: null,
-          remote_percentage: null,
+          remote_start_time: 0,
+          remote_percentage: 100,
           item_value_time_splits_recipients: compatValueRecipients(valueTimeSplit.recipients)
         }
       }

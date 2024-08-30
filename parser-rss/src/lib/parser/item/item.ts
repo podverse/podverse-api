@@ -23,6 +23,7 @@ import { ItemTxtService } from "@orm/services/item/itemTxt";
 import { ItemValueService } from "@orm/services/item/itemValue";
 import { ItemValueRecipient } from "@orm/entities/item/itemValueRecipient";
 import { ItemValueRecipientService } from "@orm/services/item/itemValueRecipient";
+import { ItemValueTimeSplitService } from "@orm/services/item/itemValueTimeSplit";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -138,6 +139,7 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemValueService = new ItemValueService();
   const itemValueDtos = compatItemValueDtos(parsedItem);
   const itemValueRecipientService = new ItemValueRecipientService();
+  const itemValueTimeSplitService = new ItemValueTimeSplitService();
 
   if (itemValueDtos.length > 0) {
     for (const itemValueDto of itemValueDtos) {
@@ -149,7 +151,14 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
           await itemValueRecipientService.update(item_value, itemValueRecipientDto);
         }
       } else {
-        await itemValueService._deleteAll(item);
+        await itemValueRecipientService._deleteAll(item_value);
+      }
+
+      const itemValueTimeSplitDtos = itemValueDto.item_value_time_splits;
+      if (itemValueTimeSplitDtos.length > 0) {
+        await itemValueTimeSplitService.updateMany(item_value, itemValueTimeSplitDtos);
+      } else {
+        await itemValueTimeSplitService._deleteAll(item_value);
       }
     }
   } else {

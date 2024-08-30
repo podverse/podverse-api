@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { ItemValue } from '@orm/entities/item/itemValue';
 
 @Entity()
@@ -21,4 +21,12 @@ export class ItemValueTimeSplit {
 
   @Column({ type: 'int', default: 100 })
   remote_percentage!: number;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  capRemotePercentage() {
+    if (this.remote_percentage > 100) {
+      this.remote_percentage = 100;
+    }
+  }
 }
