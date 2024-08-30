@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -12,6 +12,7 @@ import { handleParsedOneData } from "../base/handleParsedOneData";
 import { ItemFundingService } from "@orm/services/item/itemFunding";
 import { handleParsedManyData } from "../base/handleParsedManyData";
 import { ItemImageService } from "@orm/services/item/itemImage";
+import { ItemLicenseService } from "@orm/services/item/itemLicense";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -85,4 +86,8 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemImageService = new ItemImageService();
   const itemImageDto = compatItemImageDtos(parsedItem);
   await handleParsedManyData(item, itemImageService, itemImageDto);
+
+  const itemLicenseService = new ItemLicenseService();
+  const itemLicenseDto = compatItemLicenseDto(parsedItem);
+  await handleParsedOneData(item, itemLicenseService, itemLicenseDto);
 }

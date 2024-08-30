@@ -135,3 +135,13 @@ export const compatItemImageDtos = (parsedItem: Episode) => {
 
   return dtos
 }
+
+export const compatItemLicenseDto = (parsedItem: Episode) => {
+  if (!parsedItem?.license?.identifier) {
+    return null
+  }
+  return {
+    identifier: parsedItem.license.identifier,
+    url: parsedItem.license.url || null
+  }
+}
