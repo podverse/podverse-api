@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos, compatItemSoundbiteDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos, compatItemSoundbiteDtos, compatItemTranscriptDtos } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -18,6 +18,7 @@ import { ItemSeasonService } from "@orm/services/item/itemSeason";
 import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
 import { ItemSocialInteractService } from "@orm/services/item/itemSocialInteract";
 import { ItemSoundbiteService } from "@orm/services/item/itemSoundbite";
+import { ItemTranscriptService } from "@orm/services/item/itemTranscript";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -121,4 +122,8 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemSoundbiteService = new ItemSoundbiteService();
   const itemSoundbiteDtos = compatItemSoundbiteDtos(parsedItem);
   await handleParsedManyData(item, itemSoundbiteService, itemSoundbiteDtos);
+
+  const itemTranscriptService = new ItemTranscriptService();
+  const itemTranscriptDtos = compatItemTranscriptDtos(parsedItem);
+  await handleParsedManyData(item, itemTranscriptService, itemTranscriptDtos);
 }

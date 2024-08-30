@@ -235,3 +235,20 @@ export const compatItemSoundbiteDtos = (parsedItem: Episode) => {
 
   return dtos
 }
+
+export const compatItemTranscriptDtos = (parsedItem: Episode) => {
+  const dtos = []
+
+  if (parsedItem?.podcastTranscripts?.length) {
+    for (const t of parsedItem.podcastTranscripts) {
+      dtos.push({
+        url: t.url,
+        type: t.type,
+        language: t.language || null,
+        rel: t.rel || null
+      })
+    }
+  }
+
+  return dtos
+}
