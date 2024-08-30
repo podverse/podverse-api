@@ -57,3 +57,12 @@ export const compatItemChaptersFeedDto = (parsedItem: Episode) => {
     type: parsedItem.podcastChapters?.type
   }
 }
+
+export const compatItemDescriptionDto = (parsedItem: Episode) => {
+  if (!parsedItem.description) {
+    return null
+  }
+  return {
+    value: parsedItem.description
+  }
+}

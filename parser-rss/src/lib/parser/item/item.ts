@@ -1,10 +1,11 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDto } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemContentLinkService } from "@orm/services/item/itemContentLink";
+import { ItemDescriptionService } from "@orm/services/item/itemDescription";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -45,4 +46,11 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   //   await itemContentLinkService._deleteAll(item);
   // }
 
+  const itemDescriptionService = new ItemDescriptionService();
+  const itemDescriptionDto = compatItemDescriptionDto(parsedItem);
+  if (itemDescriptionDto) {
+    await itemDescriptionService.update(item, itemDescriptionDto);
+  } else {
+    await itemDescriptionService._delete(item);
+  }
 }
