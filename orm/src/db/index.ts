@@ -51,7 +51,8 @@ import { ItemAbout } from "@orm/entities/item/itemAbout";
 import { ItemChapter } from "@orm/entities/item/itemChapter";
 import { ItemChapterImage } from "@orm/entities/item/itemChapterImage";
 import { ItemChapterLocation } from "@orm/entities/item/itemChapterLocation";
-import { ItemChapters } from "@orm/entities/item/itemChapters";
+import { ItemChaptersFeed } from "@orm/entities/item/itemChaptersFeed";
+import { ItemChaptersFeedLog } from "@orm/entities/item/itemChaptersFeedLog";
 import { ItemChat } from "@orm/entities/item/itemChat";
 import { ItemContentLink } from "@orm/entities/item/itemContentLink";
 import { ItemDescription } from "@orm/entities/item/itemDescription";
@@ -157,7 +158,8 @@ export const AppDataSource = new DataSource({
     ItemChapter,
     ItemChapterImage,
     ItemChapterLocation,
-    ItemChapters,
+    ItemChaptersFeed,
+    ItemChaptersFeedLog,
     ItemChat,
     ItemContentLink,
     ItemDescription,

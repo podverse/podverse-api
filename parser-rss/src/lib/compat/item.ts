@@ -48,3 +48,8 @@ export const compatItemAboutDto = (parsedItem: Episode) => ({
   website_link_url: parsedItem.link || null,
   item_itunes_episode_type: getItemItunesEpisodeTypeEnumValue(parsedItem.itunesEpisodeType || 'full')
 })
+
+export const compatItemChaptersDto = (parsedItem: Episode) => ({
+  url: parsedItem.enclosure.url,
+  type: parsedItem.enclosure.type
+})

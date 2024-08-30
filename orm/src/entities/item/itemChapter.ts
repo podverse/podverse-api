@@ -10,8 +10,8 @@ export class ItemChapter {
   text_id!: string;
 
   @ManyToOne(() => Item, item => item.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'item_chapters_file_id' })
-  item_chapters_file!: Item;
+  @JoinColumn({ name: 'item_chapters_feed_id' })
+  item_chapters_feed!: Item;
 
   @Column({ type: 'varchar' })
   hash!: string;

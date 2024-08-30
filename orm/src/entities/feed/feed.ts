@@ -15,7 +15,7 @@ export class Feed {
   @JoinColumn({ name: 'feed_flag_status_id' })
   feed_flag_status!: FeedFlagStatus;
 
-  @OneToOne(() => FeedLog, feedLog => feedLog.feed)
+  @OneToOne(() => FeedLog, feed_log => feed_log.feed)
   feed_log!: FeedLog;
 
   @Column({ type: 'timestamp', nullable: true })
