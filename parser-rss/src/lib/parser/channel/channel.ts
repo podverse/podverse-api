@@ -20,7 +20,7 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
   const channelService = new ChannelService();
   const channelDto = compatChannelDto(parsedFeed);
   await channelService.update(channel.id, channelDto);
-
+  
   await handleParsedChannelAbout(parsedFeed, channel);
 
   // TODO: add channelCategory support

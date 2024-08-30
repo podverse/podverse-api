@@ -1,8 +1,7 @@
-import { AppDataSource } from '@orm/db';
 import { Channel } from '@orm/entities/channel/channel';
 import { Feed } from '@orm/entities/feed/feed';
 import { MediumValueEnum } from '@orm/entities/medium';
-import { applyProperties } from '@orm/lib/applyProperties';
+import { BaseOneTextIdService } from '../base/baseTextIdService';
 
 const shortid = require('shortid');
 
@@ -11,26 +10,20 @@ type ChannelInitializeDto = {
   podcast_index_id: number
 }
 
-type ChannelUpdateDto = {
+type ChannelDto = {
   slug?: string | null
   podcast_guid?: string | null
-  title: string
-  sortable_title: string
+  title: string | null
+  sortable_title: string | null
   medium?: MediumValueEnum | null
   has_podcast_index_value?: boolean
   hidden?: boolean
   marked_for_deletion?: boolean
 }
 
-export class ChannelService {
-  private repository = AppDataSource.getRepository(Channel);
-
-  async getById(id: number): Promise<Channel | null> {
-    return this.repository.findOne({ where: { id } });
-  }
-
-  async getByIdText(id_text: string): Promise<Channel | null> {
-    return this.repository.findOne({ where: { id_text } });
+export class ChannelService extends BaseOneTextIdService<Channel> {
+  constructor() {
+    super(Channel);
   }
 
   async getByPodcastIndexId(podcast_index_id: number): Promise<Channel | null> {
@@ -39,26 +32,18 @@ export class ChannelService {
 
   async getOrCreateByPodcastIndexId(dto: ChannelInitializeDto): Promise<Channel> {
     let channel = await this.getByPodcastIndexId(dto.podcast_index_id);
+
     if (!channel) {
       channel = new Channel();
       channel.id_text = shortid.generate();
       channel.feed_id = dto.feed.id;
       channel.podcast_index_id = dto.podcast_index_id;
     }
+
     return await this.repository.save(channel);
   }
 
-  async update(id: number, dto: ChannelUpdateDto): Promise<Channel | null> {
-    let channel = await this.getById(id);
-
-    if (!channel) {
-      throw new Error(`Channel with id ${id} not found`);
-    }
-
-    channel = applyProperties(channel, dto);
-
-    await this.repository.save(channel);
-
-    return await this.getById(id);
+  async update(id: number, dto: ChannelDto): Promise<Channel> {
+    return super._update(id, dto);
   }
 }
