@@ -59,7 +59,7 @@ import { ItemDescription } from "@orm/entities/item/itemDescription";
 import { ItemEnclosure } from "@orm/entities/item/itemEnclosure";
 import { ItemEnclosureIntegrity } from "@orm/entities/item/itemEnclosureIntegrity";
 import { ItemEnclosureSource } from "@orm/entities/item/itemEnclosureSource";
-import { ItemFunding } from "@orm/entities/item/ItemFunding";
+import { ItemFunding } from "@orm/entities/item/itemFunding";
 import { ItemImage } from "@orm/entities/item/itemImage";
 import { ItemItunesEpisodeType } from "@orm/entities/item/itemItunesEpisodeType";
 import { ItemLicense } from "@orm/entities/item/itemLicense";

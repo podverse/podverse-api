@@ -1,5 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelImage } from '@orm/entities/channel/channelImage';
+import { filterDtosByHighestWidth } from '@orm/lib/filterImageDtosByHighestWidth';
 import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ChannelImageDto = {
@@ -25,17 +26,3 @@ export class ChannelImageService extends BaseManyService<ChannelImage, 'channel'
     return super._updateMany(channel, whereKeys, filteredDtos);
   }
 }
-
-function filterDtosByHighestWidth(dtos: ChannelImageDto[]): ChannelImageDto[] {
-  const dtoMap = new Map<string, ChannelImageDto>();
-
-  for (const dto of dtos) {
-    const existingDto = dtoMap.get(dto.url);
-    if (!existingDto || (dto.image_width_size !== null && (existingDto.image_width_size === null || dto.image_width_size > existingDto.image_width_size))) {
-      dtoMap.set(dto.url, dto);
-    }
-  }
-
-  return Array.from(dtoMap.values());
-}
-

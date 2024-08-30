@@ -1,5 +1,6 @@
 import { getItemItunesEpisodeTypeEnumValue } from '@orm/entities/item/itemItunesEpisodeType'
 import type { Episode } from 'podcast-partytime'
+import { Phase4PodcastImage } from 'podcast-partytime/dist/parser/phase/phase-4'
 
 export const itemCompat = (item: Episode) => {
   return {
@@ -68,6 +69,7 @@ export const compatItemDescriptionDto = (parsedItem: Episode) => {
 
 export const compatItemEnclosureDtos = (parsedItem: Episode) => {
   const dtos = []
+
   if (parsedItem.alternativeEnclosures && parsedItem.alternativeEnclosures.length > 0) {
     for (const alternativeEnclosure of parsedItem.alternativeEnclosures) {
       const item_enclosure = {
@@ -99,5 +101,37 @@ export const compatItemEnclosureDtos = (parsedItem: Episode) => {
     }
   }
   
+  return dtos
+}
+
+export const compatItemImageDtos = (parsedItem: Episode) => {
+  const dtos = []
+  if (parsedItem.itunesImage) {
+    dtos.push({
+      url: parsedItem.itunesImage,
+      image_width_size: null
+    })
+  } else if (parsedItem.image) {
+    dtos.push({
+      url: parsedItem.image,
+      image_width_size: null
+    })
+  }
+
+  function hasWidth(image: Phase4PodcastImage['parsed']): image is { url: string; width: number } {
+    return (image as { width: number }).width !== undefined;
+  }
+
+  if (Array.isArray(parsedItem.podcastImages)) {
+    for (const image of parsedItem.podcastImages) {
+      if (image.parsed.url && hasWidth(image.parsed)) {
+        dtos.push({
+          url: image.parsed.url,
+          image_width_size: image.parsed.width
+        })
+      }
+    }
+  }
+
   return dtos
 }

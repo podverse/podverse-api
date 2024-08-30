@@ -1,14 +1,17 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
-import { ItemContentLinkService } from "@orm/services/item/itemContentLink";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
 import { ItemEnclosureService } from "@orm/services/item/itemEnclosure";
 import { ItemEnclosureSourceService } from "@orm/services/item/itemEnclosureSource";
 import { ItemEnclosureIntegrityService } from "@orm/services/item/itemEnclosureIntegrity";
+import { handleParsedOneData } from "../base/handleParsedOneData";
+import { ItemFundingService } from "@orm/services/item/itemFunding";
+import { handleParsedManyData } from "../base/handleParsedManyData";
+import { ItemImageService } from "@orm/services/item/itemImage";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -27,11 +30,7 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
 
   const itemChaptersFeedService = new ItemChaptersFeedService();
   const itemChaptersFeedDto = compatItemChaptersFeedDto(parsedItem);
-  if (itemChaptersFeedDto) {
-    await itemChaptersFeedService.update(item, itemChaptersFeedDto);
-  } else {
-    await itemChaptersFeedService._delete(item);
-  }
+  await handleParsedOneData(item, itemChaptersFeedService, itemChaptersFeedDto);
 
   // // TODO: add itemChatService support after partytime adds chat support
   // const itemChatService = new ItemChatService();
@@ -51,11 +50,7 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
 
   const itemDescriptionService = new ItemDescriptionService();
   const itemDescriptionDto = compatItemDescriptionDto(parsedItem);
-  if (itemDescriptionDto) {
-    await itemDescriptionService.update(item, itemDescriptionDto);
-  } else {
-    await itemDescriptionService._delete(item);
-  }
+  await handleParsedOneData(item, itemDescriptionService, itemDescriptionDto);
 
   const itemEnclosureService = new ItemEnclosureService();
   const itemEnclosureDtos = compatItemEnclosureDtos(parsedItem);
@@ -81,4 +76,13 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   } else {
     await itemEnclosureService._deleteAll(item);
   }
+
+  // // TODO: add item funding support after partytime adds funding support
+  // const itemFundingService = new ItemFundingService();
+  // const itemFundingDto = compatItemFundingDto(parsedItem);
+  // await handleParsedManyData(item, itemFundingService, itemFundingDto);
+
+  const itemImageService = new ItemImageService();
+  const itemImageDto = compatItemImageDtos(parsedItem);
+  await handleParsedManyData(item, itemImageService, itemImageDto);
 }

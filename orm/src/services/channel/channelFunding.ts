@@ -4,7 +4,7 @@ import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ChannelFundingDto = {
   url: string
-  title?: string | null
+  title: string | null
 }
 
 export class ChannelFundingService extends BaseManyService<ChannelFunding, 'channel'> {
