@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ChannelValue } from '@orm/entities/channel/channelValue';
 
-@Entity({ name: 'channel_value_receipient' })
-export class ChannelValueReceipient {
+@Entity({ name: 'channel_value_recipient' })
+export class ChannelValueRecipient {
   @PrimaryGeneratedColumn()
   id!: number;
 

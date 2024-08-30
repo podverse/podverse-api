@@ -13,7 +13,7 @@ export const compatItemValue = (value: Phase4Value) => {
   return {
     type: value.type,
     method: value.method,
-    suggested: value.suggested,
+    suggested: parseFloat(value.suggested ?? '0') || null,
     item_value_recipients: compatValueRecipients(value.recipients),
     item_value_time_splits: value.valueTimeSplits?.map((valueTimeSplit) => {
       if (valueTimeSplit.type === 'remoteItem') {

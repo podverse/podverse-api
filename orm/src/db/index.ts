@@ -45,7 +45,7 @@ import { ChannelSocialInteract } from "@orm/entities/channel/channelSocialIntera
 import { ChannelTrailer } from "@orm/entities/channel/channelTrailer";
 import { ChannelTxt } from "@orm/entities/channel/channelTxt";
 import { ChannelValue } from "@orm/entities/channel/channelValue";
-import { ChannelValueReceipient } from "@orm/entities/channel/channelValueRecipient";
+import { ChannelValueRecipient } from "@orm/entities/channel/channelValueRecipient";
 import { Item } from "@orm/entities/item/item";
 import { ItemAbout } from "@orm/entities/item/itemAbout";
 import { ItemChapter } from "@orm/entities/item/itemChapter";
@@ -148,7 +148,7 @@ export const AppDataSource = new DataSource({
     ChannelTrailer,
     ChannelTxt,
     ChannelValue,
-    ChannelValueReceipient,
+    ChannelValueRecipient,
     Clip,
     Feed,
     FeedFlagStatus,

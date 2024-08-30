@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos, compatItemSoundbiteDtos, compatItemTranscriptDtos, compatItemTxtDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos, compatItemSoundbiteDtos, compatItemTranscriptDtos, compatItemTxtDtos, compatItemValueDtos } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -20,6 +20,9 @@ import { ItemSocialInteractService } from "@orm/services/item/itemSocialInteract
 import { ItemSoundbiteService } from "@orm/services/item/itemSoundbite";
 import { ItemTranscriptService } from "@orm/services/item/itemTranscript";
 import { ItemTxtService } from "@orm/services/item/itemTxt";
+import { ItemValueService } from "@orm/services/item/itemValue";
+import { ItemValueRecipient } from "@orm/entities/item/itemValueRecipient";
+import { ItemValueRecipientService } from "@orm/services/item/itemValueRecipient";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -131,4 +134,25 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemTxtService = new ItemTxtService();
   const itemTxtDtos = compatItemTxtDtos(parsedItem);
   await handleParsedManyData(item, itemTxtService, itemTxtDtos);
+
+  const itemValueService = new ItemValueService();
+  const itemValueDtos = compatItemValueDtos(parsedItem);
+  const itemValueRecipientService = new ItemValueRecipientService();
+
+  if (itemValueDtos.length > 0) {
+    for (const itemValueDto of itemValueDtos) {
+      const item_value = await itemValueService.update(item, itemValueDto.item_value);
+      
+      const itemValueRecipientDtos = itemValueDto.item_value_recipients;
+      if (itemValueRecipientDtos.length > 0) {
+        for (const itemValueRecipientDto of itemValueRecipientDtos) {
+          await itemValueRecipientService.update(item_value, itemValueRecipientDto);
+        }
+      } else {
+        await itemValueService._deleteAll(item);
+      }
+    }
+  } else {
+    await itemValueService._deleteAll(item);
+  }
 }

@@ -259,7 +259,7 @@ export const compatChannelValueDtos = (parsedFeed: FeedObject) => {
       channel_value: {
         type: dto.type,
         method: dto.method,
-        suggested: dto.suggested
+        suggested: dto.suggested || null
       },
       channel_value_recipients: dto.channel_value_recipients
     }

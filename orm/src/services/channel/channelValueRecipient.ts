@@ -1,5 +1,5 @@
 import { ChannelValue } from '@orm/entities/channel/channelValue';
-import { ChannelValueReceipient } from '@orm/entities/channel/channelValueRecipient';
+import { ChannelValueRecipient } from '@orm/entities/channel/channelValueRecipient';
 import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ChannelValueRecipientDto = {
@@ -12,18 +12,18 @@ type ChannelValueRecipientDto = {
   fee: boolean
 }
 
-export class ChannelValueRecipientService extends BaseManyService<ChannelValueReceipient, 'channel_value'> {
+export class ChannelValueRecipientService extends BaseManyService<ChannelValueRecipient, 'channel_value'> {
   constructor() {
-    super(ChannelValueReceipient, 'channel_value');
+    super(ChannelValueRecipient, 'channel_value');
   }
 
-  async update(channel_value: ChannelValue, dto: ChannelValueRecipientDto): Promise<ChannelValueReceipient> {
-    const whereKeys = ['type', 'address', 'custom_key', 'custom_value'] as (keyof ChannelValueReceipient)[];
+  async update(channel_value: ChannelValue, dto: ChannelValueRecipientDto): Promise<ChannelValueRecipient> {
+    const whereKeys = ['type', 'address', 'custom_key', 'custom_value'] as (keyof ChannelValueRecipient)[];
     return super._update(channel_value, whereKeys, dto);
   }
 
-  async updateMany(channel_value: ChannelValue, dtos: ChannelValueRecipientDto[]): Promise<ChannelValueReceipient[]> {
-    const whereKeys = ['type', 'address', 'custom_key', 'custom_value'] as (keyof ChannelValueReceipient)[];
+  async updateMany(channel_value: ChannelValue, dtos: ChannelValueRecipientDto[]): Promise<ChannelValueRecipient[]> {
+    const whereKeys = ['type', 'address', 'custom_key', 'custom_value'] as (keyof ChannelValueRecipient)[];
     return super._updateMany(channel_value, whereKeys, dtos);
   }
 }

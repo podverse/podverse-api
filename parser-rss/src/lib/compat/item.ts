@@ -1,7 +1,7 @@
 import { getItemItunesEpisodeTypeEnumValue } from '@orm/entities/item/itemItunesEpisodeType'
 import type { Episode } from 'podcast-partytime'
 import { Phase4PodcastImage } from 'podcast-partytime/dist/parser/phase/phase-4'
-import { start } from 'repl'
+import { compatItemValue } from './value'
 
 export const itemCompat = (item: Episode) => {
   return {
@@ -265,5 +265,25 @@ export const compatItemTxtDtos = (parsedItem: Episode) => {
     }
   }
 
+  return dtos
+}
+
+export const compatItemValueDtos = (parsedItem: Episode) => {
+  let dtos = []
+  if (parsedItem.value) {
+    const dto = compatItemValue(parsedItem.value)
+
+    const formattedDto = {
+      item_value: {
+        type: dto.type,
+        method: dto.method,
+        suggested: dto.suggested || null
+      },
+      item_value_recipients: dto.item_value_recipients,
+      item_value_time_splits: dto.item_value_time_splits
+    }
+
+    dtos.push(formattedDto)
+  }
   return dtos
 }

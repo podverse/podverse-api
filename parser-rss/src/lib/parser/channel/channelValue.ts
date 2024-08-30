@@ -7,6 +7,7 @@ import { FeedObject } from "podcast-partytime";
 export const handleParsedChannelValue = async (parsedFeed: FeedObject, channel: Channel) => {
   const channelValueService = new ChannelValueService();
   const channelValueDtos = compatChannelValueDtos(parsedFeed);
+  const channelValueRecipientService = new ChannelValueRecipientService();
   
   if (channelValueDtos.length > 0) {
     for (const channelValueDto of channelValueDtos) {
@@ -15,7 +16,6 @@ export const handleParsedChannelValue = async (parsedFeed: FeedObject, channel: 
       const channelValueRecipientDtos = channelValueDto.channel_value_recipients;
       if (channelValueRecipientDtos.length > 0) {
         for (const channelValueRecipientDto of channelValueRecipientDtos) {
-          const channelValueRecipientService = new ChannelValueRecipientService();
           await channelValueRecipientService.update(channel_value, channelValueRecipientDto);
         }
       } else {
