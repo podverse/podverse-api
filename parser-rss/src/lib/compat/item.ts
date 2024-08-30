@@ -145,3 +145,35 @@ export const compatItemLicenseDto = (parsedItem: Episode) => {
     url: parsedItem.license.url || null
   }
 }
+
+export const compatItemLocationDto = (parsedItem: Episode) => {
+  if (!parsedItem?.podcastLocation?.geo && !parsedItem?.podcastLocation?.osm) {
+    return null
+  }
+
+  return {
+    geo: parsedItem.podcastLocation.geo || null,
+    osm: parsedItem.podcastLocation.osm || null,
+    name: parsedItem.podcastLocation.name || null
+  }
+}
+
+export const compatItemPersonDtos = (parsedItem: Episode) => {
+  const dtos = []
+
+  if (Array.isArray(parsedItem.podcastPeople)) {
+    for (const p of parsedItem.podcastPeople) {
+      if (p.name) {
+        dtos.push({
+          name: p.name,
+          role: p.role || null,
+          person_group: p.group || 'cast',
+          img: p.img || null,
+          href: p.href || null
+        })
+      }
+    }
+  }
+
+  return dtos
+}
