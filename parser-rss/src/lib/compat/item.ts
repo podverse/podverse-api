@@ -49,7 +49,11 @@ export const compatItemAboutDto = (parsedItem: Episode) => ({
   item_itunes_episode_type: getItemItunesEpisodeTypeEnumValue(parsedItem.itunesEpisodeType || 'full')
 })
 
-export const compatItemChaptersDto = (parsedItem: Episode) => ({
-  url: parsedItem.enclosure.url,
-  type: parsedItem.enclosure.type
-})
+export const compatItemChaptersFeedDto = (parsedItem: Episode) => {
+  if (!parsedItem.podcastChapters?.url && !parsedItem.podcastChapters?.type) return null
+  
+  return {
+    url: parsedItem.podcastChapters?.url,
+    type: parsedItem.podcastChapters?.type
+  }
+}

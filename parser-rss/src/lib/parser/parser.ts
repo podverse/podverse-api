@@ -58,6 +58,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   await handleParsedItems(parsedFeed.items, channel);
 
+  // TODO: add item_chapters_feed parsing handling to create item_chapter records
+
   // TODO: set isParsing to false in a finally block
 
   return feed;
