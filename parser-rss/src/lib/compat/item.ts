@@ -188,3 +188,14 @@ export const compatItemSeasonDto = (parsedItem: Episode) => {
     name: parsedItem.podcastSeason.name || null
   }
 }
+
+export const compatItemSeasonEpisodeDto = (parsedItem: Episode) => {
+  if (!parsedItem.podcastEpisode) {
+    return null
+  }
+
+  return {
+    display: parsedItem.podcastEpisode.display || null,
+    episode: parsedItem.podcastEpisode.number
+  }
+}

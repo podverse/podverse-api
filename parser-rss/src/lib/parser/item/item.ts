@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -15,6 +15,7 @@ import { ItemLicenseService } from "@orm/services/item/itemLicense";
 import { ItemLocationService } from "@orm/services/item/itemLocation";
 import { ItemPersonService } from "@orm/services/item/itemPerson";
 import { ItemSeasonService } from "@orm/services/item/itemSeason";
+import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -106,5 +107,8 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   // const itemSeasonDto = compatItemSeasonDto(parsedItem);
   // await handleParsedOneData(item, itemSeasonService, itemSeasonDto);
 
-  
+  // // TODO: add itemSeasonEpisodeService support after partytime adds channel season episode support
+  // const itemSeasonEpisodeService = new ItemSeasonEpisodeService();
+  // const itemSeasonEpisodeDto = compatItemSeasonEpisodeDto(parsedItem);
+  // await handleParsedOneData(item, itemSeasonEpisodeService, itemSeasonEpisodeDto);
 }
