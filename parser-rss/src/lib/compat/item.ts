@@ -199,3 +199,22 @@ export const compatItemSeasonEpisodeDto = (parsedItem: Episode) => {
     episode: parsedItem.podcastEpisode.number
   }
 }
+
+export const compatItemSocialInteractDtos = (parsedItem: Episode) => {
+  const dtos = []
+
+  if (parsedItem?.podcastSocialInteraction?.length) {
+    for (const ps of parsedItem.podcastSocialInteraction) {
+      dtos.push({
+        // TODO: fix keys mismatch between partytime and podverse
+        protocol: ps.platform,
+        uri: ps.url,
+        account_id: ps.id || null,
+        account_url: ps.profileUrl || null,
+        priority: ps.priority || null
+      })
+    }
+  }
+
+  return dtos
+}

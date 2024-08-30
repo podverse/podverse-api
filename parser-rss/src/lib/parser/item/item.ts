@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto, compatItemSeasonEpisodeDto, compatItemSocialInteractDtos } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -16,6 +16,7 @@ import { ItemLocationService } from "@orm/services/item/itemLocation";
 import { ItemPersonService } from "@orm/services/item/itemPerson";
 import { ItemSeasonService } from "@orm/services/item/itemSeason";
 import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
+import { ItemSocialInteractService } from "@orm/services/item/itemSocialInteract";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -111,4 +112,8 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   // const itemSeasonEpisodeService = new ItemSeasonEpisodeService();
   // const itemSeasonEpisodeDto = compatItemSeasonEpisodeDto(parsedItem);
   // await handleParsedOneData(item, itemSeasonEpisodeService, itemSeasonEpisodeDto);
+
+  const itemSocialInteractService = new ItemSocialInteractService();
+  const itemSocialInteractDtos = compatItemSocialInteractDtos(parsedItem);
+  await handleParsedManyData(item, itemSocialInteractService, itemSocialInteractDtos);
 }
