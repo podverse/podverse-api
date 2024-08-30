@@ -9,7 +9,6 @@ export const itemCompat = (item: Episode) => {
     contentLinks: [],
     description: item.content || item.description,
     duration: item.duration,
-    enclosure: item.enclosure,
     explicit: item.explicit,
     // funding: Array.isArray(item.podcastFunding) ? item.podcastFunding?.map((f) => fundingCompat(f)) : [],
     guid: item.guid,
@@ -65,4 +64,40 @@ export const compatItemDescriptionDto = (parsedItem: Episode) => {
   return {
     value: parsedItem.description
   }
+}
+
+export const compatItemEnclosureDtos = (parsedItem: Episode) => {
+  const dtos = []
+  if (parsedItem.alternativeEnclosures && parsedItem.alternativeEnclosures.length > 0) {
+    for (const alternativeEnclosure of parsedItem.alternativeEnclosures) {
+      const item_enclosure = {
+        type: alternativeEnclosure.type,
+        length: alternativeEnclosure.length || null,
+        bitrate: alternativeEnclosure.bitrate || null,
+        height: alternativeEnclosure.height || null,
+        language: alternativeEnclosure.lang || null,
+        title: alternativeEnclosure.title || null,
+        rel: alternativeEnclosure.rel || null,
+        codecs: alternativeEnclosure.codecs || null,
+        item_enclosure_default: false
+      }
+
+      const item_enclosure_integrity = alternativeEnclosure.integrity || null
+
+      const item_enclosure_sources = alternativeEnclosure.source.map(source => ({
+        uri: source.uri,
+        content_type: source.contentType
+      }))
+
+      const formattedDto = {
+        item_enclosure,
+        item_enclosure_integrity,
+        item_enclosure_sources
+      }
+
+      dtos.push(formattedDto)
+    }
+  }
+  
+  return dtos
 }
