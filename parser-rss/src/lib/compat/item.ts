@@ -1,3 +1,4 @@
+import { getItemItunesEpisodeTypeEnumValue } from '@orm/entities/item/itemItunesEpisodeType'
 import type { Episode } from 'podcast-partytime'
 
 export const itemCompat = (item: Episode) => {
@@ -39,4 +40,11 @@ export const compatItemDto = (parsedItem: Episode) => ({
   guid_enclosure_url: parsedItem.enclosure.url,
   pubdate: parsedItem.pubDate || null,
   title: parsedItem.title || null
+})
+
+export const compatItemAboutDto = (parsedItem: Episode) => ({
+  duration: parsedItem.duration || null,
+  explicit: parsedItem.explicit || false,
+  website_link_url: parsedItem.link || null,
+  item_itunes_episode_type: getItemItunesEpisodeTypeEnumValue(parsedItem.itunesEpisodeType || 'full')
 })

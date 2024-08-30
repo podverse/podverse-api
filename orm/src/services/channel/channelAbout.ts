@@ -1,5 +1,6 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelAbout } from '@orm/entities/channel/channelAbout';
+import { ChannelItunesTypeItunesTypeEnum } from '@orm/entities/channel/channelItunesType';
 import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ChannelAboutDto = {
@@ -7,6 +8,7 @@ type ChannelAboutDto = {
   explicit: boolean | null
   language: string | null
   website_link_url: string | null
+  itunes_type: ChannelItunesTypeItunesTypeEnum
 }
 
 export class ChannelAboutService extends BaseOneService<ChannelAbout, 'channel'> {

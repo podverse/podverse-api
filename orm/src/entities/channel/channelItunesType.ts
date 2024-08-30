@@ -5,7 +5,7 @@ export enum ChannelItunesTypeItunesTypeEnum {
   Serial = 2
 }
 
-export function getChannelItunesTypeItunesTypeEnumValue(input: string): ChannelItunesTypeItunesTypeEnum | undefined {
+export function getChannelItunesTypeItunesTypeEnumValue(input: string): ChannelItunesTypeItunesTypeEnum {
   const sanitizedInput = input
     .toLowerCase()
     .replace(/\s+/g, '')
@@ -16,7 +16,7 @@ export function getChannelItunesTypeItunesTypeEnumValue(input: string): ChannelI
     serial: ChannelItunesTypeItunesTypeEnum.Serial,
   };
 
-  return mapping[sanitizedInput];
+  return mapping[sanitizedInput] || mapping['episodic'];
 }
 
 @Entity()

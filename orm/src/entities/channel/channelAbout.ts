@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
-import { ChannelItunesType } from '@orm/entities/channel/channelItunesType';
+import { ChannelItunesType, ChannelItunesTypeItunesTypeEnum } from '@orm/entities/channel/channelItunesType';
 
 @Entity()
 export class ChannelAbout {
@@ -22,7 +22,7 @@ export class ChannelAbout {
 
   @ManyToOne(() => ChannelItunesType, channelItunesType => channelItunesType.id, { nullable: true })
   @JoinColumn({ name: 'itunes_type_id' })
-  itunes_type!: ChannelItunesType | null;
+  itunes_type!: ChannelItunesTypeItunesTypeEnum | null;
 
   @Column({ type: 'varchar', nullable: true })
   language!: string | null;

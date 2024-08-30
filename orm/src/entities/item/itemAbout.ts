@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
-import { ItemItunesEpisodeType } from '@orm/entities/item/itemItunesEpisodeType';
+import { ItemItunesEpisodeType, ItemItunesEpisodeTypeEnum } from '@orm/entities/item/itemItunesEpisodeType';
 
 @Entity()
 export class ItemAbout {
@@ -22,5 +22,5 @@ export class ItemAbout {
 
   @ManyToOne(() => ItemItunesEpisodeType, itemItunesEpisodeType => itemItunesEpisodeType.id, { nullable: true })
   @JoinColumn({ name: 'item_itunes_episode_type_id' })
-  item_itunes_episode_type?: ItemItunesEpisodeType | null;
+  item_itunes_episode_type?: ItemItunesEpisodeTypeEnum | null;
 }
