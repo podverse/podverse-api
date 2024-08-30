@@ -10,8 +10,8 @@ export class ItemTxt {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar' })
-  purpose!: string;
+  @Column({ type: 'varchar', nullable: true })
+  purpose!: string | null;
 
   @Column({ type: 'varchar' })
   value!: string;

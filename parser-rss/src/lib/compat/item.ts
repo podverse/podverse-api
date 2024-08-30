@@ -252,3 +252,18 @@ export const compatItemTranscriptDtos = (parsedItem: Episode) => {
 
   return dtos
 }
+
+export const compatItemTxtDtos = (parsedItem: Episode) => {
+  const dtos = []
+
+  if (parsedItem?.podcastTxt?.length) {
+    for (const txt of parsedItem.podcastTxt) {
+      dtos.push({
+        purpose: txt.purpose || null,
+        value: txt.value
+      })
+    }
+  }
+
+  return dtos
+}
