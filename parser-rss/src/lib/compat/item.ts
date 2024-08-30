@@ -177,3 +177,14 @@ export const compatItemPersonDtos = (parsedItem: Episode) => {
 
   return dtos
 }
+
+export const compatItemSeasonDto = (parsedItem: Episode) => {
+  if (!parsedItem.podcastSeason?.number) {
+    return null
+  }
+
+  return {
+    number: parsedItem.podcastSeason.number,
+    name: parsedItem.podcastSeason.name || null
+  }
+}

@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
-import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto, compatItemChaptersFeedDto, compatItemDescriptionDto, compatItemDto, compatItemEnclosureDtos, compatItemImageDtos, compatItemLicenseDto, compatItemLocationDto, compatItemPersonDtos, compatItemSeasonDto } from "@parser-rss/lib/compat/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
 import { ItemChaptersFeedService } from "@orm/services/item/itemChaptersFeed";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
@@ -14,6 +14,7 @@ import { ItemImageService } from "@orm/services/item/itemImage";
 import { ItemLicenseService } from "@orm/services/item/itemLicense";
 import { ItemLocationService } from "@orm/services/item/itemLocation";
 import { ItemPersonService } from "@orm/services/item/itemPerson";
+import { ItemSeasonService } from "@orm/services/item/itemSeason";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
   for (const parsedItem of parsedItems) {
@@ -99,4 +100,11 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemPersonService = new ItemPersonService();
   const itemPersonDtos = compatItemPersonDtos(parsedItem);
   await handleParsedManyData(item, itemPersonService, itemPersonDtos);
+
+  // // TODO: add itemSeasonService support after partytime adds channel season support
+  // const itemSeasonService = new ItemSeasonService();
+  // const itemSeasonDto = compatItemSeasonDto(parsedItem);
+  // await handleParsedOneData(item, itemSeasonService, itemSeasonDto);
+
+  
 }

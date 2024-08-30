@@ -7,7 +7,10 @@ export class ItemSeason {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ChannelSeason, channelSeason => channelSeason.id, { onDelete: 'CASCADE' })
+  @Column({ type: 'integer', name: 'channel_season_id' })
+  channel_season_id!: number;
+
+  @ManyToOne(() => ChannelSeason, channel_season => channel_season.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_season_id' })
   channel_season!: ChannelSeason;
 
