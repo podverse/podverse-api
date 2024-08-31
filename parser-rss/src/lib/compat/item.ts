@@ -197,7 +197,7 @@ export const compatItemSeasonEpisodeDto = (parsedItem: Episode) => {
 
   return {
     display: parsedItem.podcastEpisode.display || null,
-    episode: parsedItem.podcastEpisode.number
+    number: parsedItem.podcastEpisode.number
   }
 }
 

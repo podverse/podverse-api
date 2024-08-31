@@ -25,6 +25,7 @@ import { ItemValueTimeSplitRecipientService } from "@orm/services/item/itemValue
 import { ItemValueTimeSplitRemoteItemService } from "@orm/services/item/itemValueTimeSplitRemoteItem";
 import { ItemSeasonDto, ItemSeasonService } from "@orm/services/item/itemSeason";
 import { ChannelSeasonIndex, ChannelSeasonService } from "@orm/services/channel/channelSeason";
+import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   for (const parsedItem of parsedItems) {
@@ -125,11 +126,9 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel, ch
     }
   }
 
-
-  // // TODO: add itemSeasonEpisodeService support after partytime adds channel season episode support
-  // const itemSeasonEpisodeService = new ItemSeasonEpisodeService();
-  // const itemSeasonEpisodeDto = compatItemSeasonEpisodeDto(parsedItem);
-  // await handleParsedOneData(item, itemSeasonEpisodeService, itemSeasonEpisodeDto);
+  const itemSeasonEpisodeService = new ItemSeasonEpisodeService();
+  const itemSeasonEpisodeDto = compatItemSeasonEpisodeDto(parsedItem);
+  await handleParsedOneData(item, itemSeasonEpisodeService, itemSeasonEpisodeDto);
 
   const itemSocialInteractService = new ItemSocialInteractService();
   const itemSocialInteractDtos = compatItemSocialInteractDtos(parsedItem);
