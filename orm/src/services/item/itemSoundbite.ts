@@ -3,7 +3,8 @@ import { ItemSoundbite } from '@orm/entities/item/itemSoundbite';
 import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ItemSoundbiteDto = {
-  url: string
+  start_time: string
+  duration: string
   title: string | null
 }
 

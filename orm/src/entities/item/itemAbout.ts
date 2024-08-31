@@ -11,8 +11,8 @@ export class ItemAbout {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'int', nullable: true })
-  duration?: number | null;
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  duration?: string | null;
 
   @Column({ type: 'boolean', nullable: true })
   explicit?: boolean | null;

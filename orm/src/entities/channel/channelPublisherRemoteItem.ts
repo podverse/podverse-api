@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
-import { Medium, MediumValueEnum } from '@orm/entities/medium';
 
 @Entity({ name: 'channel_publisher_remote_item' })
 export class ChannelPublisherRemoteItem {
@@ -22,8 +21,4 @@ export class ChannelPublisherRemoteItem {
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title!: string | null;
-
-  @ManyToOne(() => Medium, medium => medium.id, { nullable: true })
-  @JoinColumn({ name: 'medium_id' })
-  medium!: MediumValueEnum | null;
 }

@@ -18,6 +18,6 @@ export class ItemSeason {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'varchar' })
-  title!: string;
+  @Column({ type: 'varchar', nullable: true })
+  title!: string | null;
 }

@@ -1,6 +1,7 @@
-import { FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
+import { FindOneOptions, FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
 import { AppDataSource } from "@orm/db";
 import { applyProperties } from "@orm/lib/applyProperties";
+import { hasDifferentValues } from "@orm/lib/hasDifferentValues";
 
 export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
   protected repository: Repository<T>;
@@ -18,15 +19,15 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
     return this.repository.find({ where });
   }
 
-  async _get(parentEntity: T[K], whereKeyValues: Record<string,unknown>): Promise<T | null> {
+  async _get(parentEntity: T[K], whereKeyValues: Record<string,unknown>, config?: FindOneOptions<T>): Promise<T | null> {
     const where: FindOptionsWhere<T> = {
       [this.parentEntityKey]: parentEntity,
       ...whereKeyValues
     } as FindOptionsWhere<T>;
-    return this.repository.findOne({ where });
+    return this.repository.findOne({ where, ...config });
   }
 
-  async _update(parentEntity: T[K], whereKeys: (keyof T)[], dto: Partial<T>): Promise<T> {
+  async _update(parentEntity: T[K], whereKeys: (keyof T)[], dto: Partial<T>, config?: FindOneOptions<T>) : Promise<T> {
     const whereObject: Partial<T> = {};
     whereKeys.forEach(key => {
       if (key in dto) {
@@ -34,19 +35,27 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
       }
     });
 
-    let row = await this._get(parentEntity, whereObject);
+    let entity = await this._get(parentEntity, whereObject, config);
 
-    if (!row) {
-      row = new this.targetEntity();
-      row[this.parentEntityKey] = parentEntity;
+    if (!entity) {
+      entity = new this.targetEntity();
+      entity[this.parentEntityKey] = parentEntity;
+    } else if (!hasDifferentValues(entity, dto)) {
+      return entity;
     }
+
+    console.log('not skipping entity...', entity)
+    console.log('not skipping dto...', dto)
+    entity = applyProperties(entity, dto);
+    console.log('Updating parent entity', parentEntity);
+    console.log('Updating entity', entity);
+    console.log('With DTO', dto);
+    console.log('SAVE THIS', entity)
     
-    row = applyProperties(row, dto);
-    
-    return this.repository.save(row);
+    return this.repository.save(entity);
   }
 
-  async _updateMany(parentEntity: T[K], whereKeys: (keyof T)[], dtos: Partial<T>[]): Promise<T[]> {
+  async _updateMany(parentEntity: T[K], whereKeys: (keyof T)[], dtos: Partial<T>[], config?: FindOneOptions<T>): Promise<T[]> {
     const existingEntities = await this._getAll(parentEntity);
     const existingIdentifiers = dtos.map((dto: Partial<T>) => {
       let identifier: Partial<T> = {}
@@ -58,10 +67,10 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
     
     const updatedEntities: T[] = [];
     for (const dto of dtos) {
-      const updatedEntity = await this._update(parentEntity, whereKeys, dto);
+      const updatedEntity = await this._update(parentEntity, whereKeys, dto, config);
       updatedEntities.push(updatedEntity);
     }
-  
+    
     await this.repository.save(updatedEntities);
   
     const entitiesToDelete = existingEntities.filter(existingEntity => {

@@ -1,28 +1,10 @@
 import { FeedObject, Phase4Medium } from "podcast-partytime"
-import { fundingCompat } from "@parser-rss/lib/compat/funding"
 import { compatChannelValue } from "@parser-rss/lib/compat/value"
 import { createSortableTitle } from "@orm/lib/sortableTitle"
 import { getMediumValueEnumValue } from "@orm/entities/medium"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
 import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
-
-export const feedCompat = (feed: FeedObject) => {
-  return {
-    blocked: feed.itunesBlock,
-    categories: feed.itunesCategory,
-    funding: Array.isArray(feed.podcastFunding) ? feed.podcastFunding?.map((f) => fundingCompat(f)) : [],
-    generator: feed.generator,
-    imageURL: feed.itunesImage || feed.image?.url,
-    lastBuildDate: feed.lastBuildDate,
-    liveItems: feed.podcastLiveItems ?? [],
-    medium: feed.medium ?? Phase4Medium.Podcast,
-    owner: feed.owner,
-    subtitle: feed.subtitle,
-    summary: feed.summary,
-    type: feed.itunesType
-  }
-}
 
 export const compatChannelDto = (parsedFeed: FeedObject) => ({
   podcast_guid: parsedFeed.guid,
@@ -127,8 +109,8 @@ export const compatChannelPersonDtos = (parsedFeed: FeedObject) => {
       if (p.name) {
         dtos.push({
           name: p.name,
-          role: p.role || null,
-          person_group: p.group || 'cast',
+          role: p.role?.toLowerCase() || null,
+          person_group: p.group?.toLowerCase() || 'cast',
           img: p.img || null,
           href: p.href || null
         })
@@ -149,7 +131,6 @@ export const compatChannelPodrollRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }
@@ -169,7 +150,6 @@ export const compatChannelPublisherRemoteItemDtos = (parsedFeed: FeedObject) => 
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }
@@ -189,7 +169,6 @@ export const compatChannelRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          medium: ri.medium ? getMediumValueEnumValue(ri.medium) : null,
           title: /* TODO: ri.title || */ null
         })
       }
@@ -213,6 +192,34 @@ export const compatChannelSocialInteractDtos = (parsedFeed: FeedObject) => {
         priority: ps.priority || null
       })
     }
+  }
+
+  return dtos
+}
+
+export const compatChannelSeasonDtos = (parsedFeed: FeedObject) => {
+  const dtos = []
+
+  const parsedItems = parsedFeed?.items || []
+
+  const seasonsIndex: { [key: number]: { name: string | null } } = {};
+
+  for (const parsedItem of parsedItems) {
+    const seasonNumber = parsedItem?.podcastSeason?.number || parsedItem?.itunesSeason
+    const seasonName = parsedItem?.podcastSeason?.name || null
+    if (Number.isInteger(seasonNumber)) {
+      const seasonNumberAsNumber = seasonNumber as number;
+      seasonsIndex[seasonNumberAsNumber] = {
+        name: seasonName
+      }
+    }
+  }
+
+  for (const [number, { name }] of Object.entries(seasonsIndex)) {
+    dtos.push({
+      number: parseInt(number),
+      name: name || null
+    })
   }
 
   return dtos

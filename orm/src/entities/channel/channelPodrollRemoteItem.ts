@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
-import { Medium, MediumValueEnum } from '@orm/entities/medium';
 
 @Entity({ name: 'channel_podroll_remote_item' })
 export class ChannelPodrollRemoteItem {
@@ -22,8 +21,4 @@ export class ChannelPodrollRemoteItem {
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title!: string | null;
-
-  @ManyToOne(() => Medium, medium => medium.id, { nullable: true })
-  @JoinColumn({ name: 'medium_id' })
-  medium!: MediumValueEnum | null;
 }

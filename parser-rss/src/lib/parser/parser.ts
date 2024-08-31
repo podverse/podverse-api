@@ -6,6 +6,8 @@ import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/compatFull';
 import { handleParsedChannel } from '@parser-rss/lib/parser/channel/channel';
 import { handleParsedItems } from './item/item';
+import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
+import { compatChannelSeasonDtos } from '../compat/channel';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -41,6 +43,8 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const parsedFeed = await getAndParseRSSFeed(url);
 
+  // TODO: add hashing save and check for full feed md5
+
   const feedService = new FeedService();
   const feed = await feedService.getOrCreate({ url, podcast_index_id });
 
@@ -53,10 +57,26 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
   const channelService = new ChannelService();
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
+  
+  // TODO: add hashing save and check for full channel data
 
-  await handleParsedChannel(parsedFeed, channel);
+  // TODO: move into helper function
+  const channelSeasonService = new ChannelSeasonService();
+  const channelSeasonDtos = compatChannelSeasonDtos(parsedFeed);
 
-  await handleParsedItems(parsedFeed.items, channel);
+  if (channelSeasonDtos.length > 0) {
+    await channelSeasonService.updateMany(channel, channelSeasonDtos);
+  } else {
+    await channelSeasonService._deleteAll(channel);
+  }
+
+  const channelSeasonIndex = await channelSeasonService.getChannelSeasonIndex(channel);
+  
+  await handleParsedChannel(parsedFeed, channel, channelSeasonIndex);
+
+  // TODO: add hashing save and check for full item data
+
+  await handleParsedItems(parsedFeed.items, channel, channelSeasonIndex);
 
   // TODO: add item_chapters_feed parsing handling to create item_chapter records
 

@@ -1,6 +1,6 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
-import { compatChannelDto } from "@parser-rss/lib/compat/channel";
+import { compatChannelDto, compatChannelSeasonDtos } from "@parser-rss/lib/compat/channel";
 import { ChannelService } from "@orm/services/channel/channel";
 import { handleParsedChannelAbout } from "@parser-rss/lib/parser/channel/channelAbout";
 import { handleParsedChannelDescription } from "@parser-rss/lib/parser/channel/channelDescription";
@@ -15,8 +15,9 @@ import { handleParsedChannelSocialInteract } from "@parser-rss/lib/parser/channe
 import { handleParsedChannelTrailer } from "@parser-rss/lib/parser/channel/channelTrailer";
 import { handleParsedChannelTxt } from "@parser-rss/lib/parser/channel/channelTxt";
 import { handleParsedChannelValue } from "@parser-rss/lib/parser/channel/channelValue";
+import { ChannelSeasonIndex, ChannelSeasonService } from "@orm/services/channel/channelSeason";
 
-export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Channel) => {
+export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   const channelService = new ChannelService();
   const channelDto = compatChannelDto(parsedFeed);
   await channelService.update(channel.id, channelDto);
@@ -48,18 +49,8 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
 
   await handleParsedChannelRemoteItem(parsedFeed, channel);
 
-  // // TODO: add channelSeason support
-  // const channelSeasonService = new ChannelSeasonService();
-  // const channelSeasonDtos = compatChannelSeasonDtos(parsedFeed);
-
-  // if (channelSeasonDtos.length > 0) {
-  //   await channelSeasonService.updateMany(channel, channelSeasonDtos);
-  // } else {
-  //   await channelSeasonService.deleteAll(channel);
-  // }
-
   await handleParsedChannelSocialInteract(parsedFeed, channel);
-  await handleParsedChannelTrailer(parsedFeed, channel);
+  await handleParsedChannelTrailer(parsedFeed, channel, channelSeasonIndex);
   await handleParsedChannelTxt(parsedFeed, channel);
   await handleParsedChannelValue(parsedFeed, channel);
 }

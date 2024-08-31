@@ -8,7 +8,6 @@ type ChannelPublisherRemoteItemDto = {
   feed_url: string | null
   item_guid: string | null
   // title: string | null
-  medium: MediumValueEnum | null
 }
 
 export class ChannelPublisherRemoteItemService extends BaseRemoteItemsService<ChannelPublisherRemoteItem, 'channel_publisher'> {

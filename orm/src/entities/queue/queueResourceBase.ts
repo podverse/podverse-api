@@ -16,8 +16,8 @@ export class QueueResourceBase {
   @Column({ type: 'numeric', default: 0 })
   playback_position!: number;
 
-  @Column({ type: 'float', default: 0 })
-  media_file_duration!: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  media_file_duration!: string;
 
   @Column({ type: 'boolean', default: false })
   completed!: boolean;

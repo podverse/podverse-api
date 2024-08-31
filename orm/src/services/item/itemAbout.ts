@@ -4,7 +4,7 @@ import { ItemItunesEpisodeTypeEnum } from '@orm/entities/item/itemItunesEpisodeT
 import { BaseOneService } from '@orm/services/base/baseOneService';
 
 type ItemAboutDto = {
-  duration: number | null
+  duration: string | null
   explicit: boolean | null
   website_link_url: string | null
   item_itunes_episode_type: ItemItunesEpisodeTypeEnum
@@ -16,6 +16,6 @@ export class ItemAboutService extends BaseOneService<ItemAbout, 'item'> {
   }
 
   async update(item: Item, dto: ItemAboutDto): Promise<ItemAbout> {
-    return super._update(item, dto);
+    return super._update(item, dto, { relations: ['item_itunes_episode_type'] });
   }
 }

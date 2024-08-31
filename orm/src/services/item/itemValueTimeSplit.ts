@@ -3,10 +3,10 @@ import { ItemValueTimeSplit } from '@orm/entities/item/itemValueTimeSplit';
 import { BaseManyService } from '@orm/services/base/baseManyService';
 
 type ItemValueTimeSplitDto = {
-  start_time: number
-  duration: number
-  remote_start_time: number
-  remote_percentage: number
+  start_time: string
+  duration: string
+  remote_start_time: string
+  remote_percentage: string
 }
 
 export class ItemValueTimeSplitService extends BaseManyService<ItemValueTimeSplit, 'item_value'> {

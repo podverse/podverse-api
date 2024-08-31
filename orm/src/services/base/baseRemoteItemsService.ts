@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ObjectLiteral } from "typeorm";
+import { FindOneOptions, FindOptionsWhere, ObjectLiteral } from "typeorm";
 import { BaseManyService } from "@orm/services/base/baseManyService";
 
 export class BaseRemoteItemsService<T extends ObjectLiteral, K extends keyof T> extends BaseManyService<T, K> {
@@ -43,13 +43,13 @@ export class BaseRemoteItemsService<T extends ObjectLiteral, K extends keyof T> 
     return null;
   }
 
-  async update(parentEntity: T[K], dto: Partial<T>): Promise<T> {
+  async update(parentEntity: T[K], dto: Partial<T>, config?: FindOneOptions<T>): Promise<T> {
     const whereKeys = ['feed_guid', 'feed_url', 'item_guid'] as (keyof T)[];
-    return super._update(parentEntity, whereKeys, dto);
+    return super._update(parentEntity, whereKeys, dto, config);
   }
 
-  async updateMany(parentEntity: T[K], dtos: Partial<T>[]): Promise<T[]> {
+  async updateMany(parentEntity: T[K], dtos: Partial<T>[], config?: FindOneOptions<T>): Promise<T[]> {
     const whereKeys = ['feed_guid', 'feed_url', 'item_guid'] as (keyof T)[];
-    return super._updateMany(parentEntity, whereKeys, dtos);
+    return super._updateMany(parentEntity, whereKeys, dtos, config);
   }
 }

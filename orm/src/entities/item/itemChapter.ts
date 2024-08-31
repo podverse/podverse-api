@@ -16,10 +16,10 @@ export class ItemChapter {
   @Column({ type: 'varchar' })
   hash!: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   start_time!: string;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   end_time?: string | null;
 
   @Column({ type: 'varchar', nullable: true })

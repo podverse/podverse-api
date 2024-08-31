@@ -1,9 +1,11 @@
 import { Item } from '@orm/entities/item/item';
 import { ItemSeason } from '@orm/entities/item/itemSeason';
 import { BaseOneService } from '../base/baseOneService';
+import { ChannelSeason } from '@orm/entities/channel/channelSeason';
 
-type ItemSeasonDto = {
-  title: string
+export type ItemSeasonDto = {
+  title: string | null
+  channel_season: ChannelSeason
 }
 
 export class ItemSeasonService extends BaseOneService<ItemSeason, 'item'> {
@@ -12,7 +14,6 @@ export class ItemSeasonService extends BaseOneService<ItemSeason, 'item'> {
   }
 
   async update(item: Item, dto: ItemSeasonDto): Promise<ItemSeason> {
-    // TODO: pass in an index for matching the channelseason number
-    return super._update(item, dto);
+    return super._update(item, dto, { relations: ['channel_season'] });
   }
 }

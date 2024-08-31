@@ -14,24 +14,25 @@ import { ItemImageService } from "@orm/services/item/itemImage";
 import { ItemLicenseService } from "@orm/services/item/itemLicense";
 import { ItemLocationService } from "@orm/services/item/itemLocation";
 import { ItemPersonService } from "@orm/services/item/itemPerson";
-import { ItemSeasonService } from "@orm/services/item/itemSeason";
-import { ItemSeasonEpisodeService } from "@orm/services/item/itemSeasonEpisode";
 import { ItemSocialInteractService } from "@orm/services/item/itemSocialInteract";
 import { ItemSoundbiteService } from "@orm/services/item/itemSoundbite";
 import { ItemTranscriptService } from "@orm/services/item/itemTranscript";
 import { ItemTxtService } from "@orm/services/item/itemTxt";
 import { ItemValueService } from "@orm/services/item/itemValue";
-import { ItemValueRecipient } from "@orm/entities/item/itemValueRecipient";
 import { ItemValueRecipientService } from "@orm/services/item/itemValueRecipient";
 import { ItemValueTimeSplitService } from "@orm/services/item/itemValueTimeSplit";
+import { ItemValueTimeSplitRecipientService } from "@orm/services/item/itemValueTimeSplitRecipient";
+import { ItemValueTimeSplitRemoteItemService } from "@orm/services/item/itemValueTimeSplitRemoteItem";
+import { ItemSeasonDto, ItemSeasonService } from "@orm/services/item/itemSeason";
+import { ChannelSeasonIndex, ChannelSeasonService } from "@orm/services/channel/channelSeason";
 
-export const handleParsedItems = async (parsedItems: Episode[], channel: Channel) => {
+export const handleParsedItems = async (parsedItems: Episode[], channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   for (const parsedItem of parsedItems) {
-    await handleParsedItem(parsedItem, channel);
+    await handleParsedItem(parsedItem, channel, channelSeasonIndex);
   }
 }
 
-export const handleParsedItem = async (parsedItem: Episode, channel: Channel) => {
+export const handleParsedItem = async (parsedItem: Episode, channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   const itemService = new ItemService();
   const itemDto = compatItemDto(parsedItem);
   const item = await itemService.update(channel, itemDto);
@@ -110,10 +111,20 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemPersonDtos = compatItemPersonDtos(parsedItem);
   await handleParsedManyData(item, itemPersonService, itemPersonDtos);
 
-  // // TODO: add itemSeasonService support after partytime adds channel season support
-  // const itemSeasonService = new ItemSeasonService();
-  // const itemSeasonDto = compatItemSeasonDto(parsedItem);
-  // await handleParsedOneData(item, itemSeasonService, itemSeasonDto);
+  const itemSeasonService = new ItemSeasonService();
+  const itemSeasonDto = compatItemSeasonDto(parsedItem);
+
+  if (itemSeasonDto) {
+    const channel_season = itemSeasonDto.number ? channelSeasonIndex[itemSeasonDto.number] : null;
+    if (channel_season) {
+      const enrichedItemSeasonDto: ItemSeasonDto = {
+        title: itemSeasonDto.title,
+        channel_season
+      }
+      await handleParsedOneData(item, itemSeasonService, enrichedItemSeasonDto);
+    }
+  }
+
 
   // // TODO: add itemSeasonEpisodeService support after partytime adds channel season episode support
   // const itemSeasonEpisodeService = new ItemSeasonEpisodeService();
@@ -140,11 +151,13 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
   const itemValueDtos = compatItemValueDtos(parsedItem);
   const itemValueRecipientService = new ItemValueRecipientService();
   const itemValueTimeSplitService = new ItemValueTimeSplitService();
+  const itemValueTimeSplitRecipientService = new ItemValueTimeSplitRecipientService();
+  const itemValueTimeSplitRemoteItemService = new ItemValueTimeSplitRemoteItemService();
 
   if (itemValueDtos.length > 0) {
     for (const itemValueDto of itemValueDtos) {
       const item_value = await itemValueService.update(item, itemValueDto.item_value);
-      
+
       const itemValueRecipientDtos = itemValueDto.item_value_recipients;
       if (itemValueRecipientDtos.length > 0) {
         for (const itemValueRecipientDto of itemValueRecipientDtos) {
@@ -156,7 +169,25 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel) =>
 
       const itemValueTimeSplitDtos = itemValueDto.item_value_time_splits;
       if (itemValueTimeSplitDtos.length > 0) {
-        await itemValueTimeSplitService.updateMany(item_value, itemValueTimeSplitDtos);
+        for (const itemValueTimeSplitDto of itemValueTimeSplitDtos) {
+          const item_value_time_split = await itemValueTimeSplitService.update(item_value, itemValueTimeSplitDto.meta);
+
+          const itemValueTimeSplitRecipientDtos = itemValueTimeSplitDto.item_value_time_splits_recipients;
+          if (itemValueTimeSplitRecipientDtos.length > 0) {
+            for (const itemValueTimeSplitRecipientDto of itemValueTimeSplitRecipientDtos) {
+              await itemValueTimeSplitRecipientService.update(item_value_time_split, itemValueTimeSplitRecipientDto);
+            }
+          } else {
+            await itemValueTimeSplitRecipientService._deleteAll(item_value_time_split);
+          }
+
+          const itemValueTimeSplitRemoteItemDto = itemValueTimeSplitDto.item_value_time_splits_remote_item;
+          if (itemValueTimeSplitRemoteItemDto) {
+            await itemValueTimeSplitRemoteItemService.update(item_value_time_split, itemValueTimeSplitRemoteItemDto);
+          } else {
+            await itemValueTimeSplitRemoteItemService._deleteAll(item_value_time_split);
+          }
+        }
       } else {
         await itemValueTimeSplitService._deleteAll(item_value);
       }

@@ -44,7 +44,7 @@ export const compatItemDto = (parsedItem: Episode) => ({
 })
 
 export const compatItemAboutDto = (parsedItem: Episode) => ({
-  duration: parsedItem.duration || null,
+  duration: parsedItem.duration?.toFixed(2) || null,
   explicit: parsedItem.explicit || false,
   website_link_url: parsedItem.link || null,
   item_itunes_episode_type: getItemItunesEpisodeTypeEnumValue(parsedItem.itunesEpisodeType || 'full')
@@ -167,8 +167,8 @@ export const compatItemPersonDtos = (parsedItem: Episode) => {
       if (p.name) {
         dtos.push({
           name: p.name,
-          role: p.role || null,
-          person_group: p.group || 'cast',
+          role: p.role?.toLowerCase() || null,
+          person_group: p.group?.toLowerCase() || 'cast',
           img: p.img || null,
           href: p.href || null
         })
@@ -186,7 +186,7 @@ export const compatItemSeasonDto = (parsedItem: Episode) => {
 
   return {
     number: parsedItem.podcastSeason.number,
-    name: parsedItem.podcastSeason.name || null
+    title: parsedItem.podcastSeason.name || null
   }
 }
 
@@ -226,8 +226,8 @@ export const compatItemSoundbiteDtos = (parsedItem: Episode) => {
   if (parsedItem?.podcastSoundbites?.length) {
     for (const s of parsedItem.podcastSoundbites) {
       dtos.push({
-        start_time: s.startTime,
-        duration: s.duration,
+        start_time: s.startTime.toFixed(2),
+        duration: s.duration.toFixed(2),
         title: s.title || null
       })
     }
@@ -272,7 +272,6 @@ export const compatItemValueDtos = (parsedItem: Episode) => {
   let dtos = []
   if (parsedItem.value) {
     const dto = compatItemValue(parsedItem.value)
-
     const formattedDto = {
       item_value: {
         type: dto.type,

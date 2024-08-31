@@ -14,11 +14,11 @@ export class ItemSoundbite {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'int' })
-  start_time!: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  start_time!: string;
 
-  @Column({ type: 'int' })
-  duration!: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  duration!: string;
 
   @Column({ type: 'varchar', nullable: true })
   title?: string | null;

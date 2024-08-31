@@ -8,7 +8,6 @@ type ChannelPodrollRemoteItemDto = {
   feed_url: string | null
   item_guid: string | null
   // title: string | null
-  medium: MediumValueEnum | null
 }
 
 export class ChannelPodrollRemoteItemService extends BaseRemoteItemsService<ChannelPodrollRemoteItem, 'channel_podroll'> {

@@ -18,20 +18,31 @@ export const compatItemValue = (value: Phase4Value) => {
     item_value_time_splits: value.valueTimeSplits?.map((valueTimeSplit) => {
       if (valueTimeSplit.type === 'remoteItem') {
         return {
-          start_time: valueTimeSplit.startTime,
-          duration: valueTimeSplit.duration,
-          remote_start_time: valueTimeSplit.remoteStartTime || 0,
-          remote_percentage: valueTimeSplit.remotePercentage || 100,
-          item_value_time_splits_recipients: []
+          meta: {
+            start_time: valueTimeSplit.startTime.toFixed(2),
+            duration: valueTimeSplit.duration.toFixed(2),
+            remote_start_time: valueTimeSplit.remoteStartTime?.toFixed(2) || (0).toFixed(2),
+            remote_percentage: valueTimeSplit.remotePercentage?.toFixed(2) || (100).toFixed(2),
+          },
+          item_value_time_splits_recipients: [],
+          item_value_time_splits_remote_item: valueTimeSplit.remoteItem ? {
+            feed_guid: valueTimeSplit.remoteItem.feedGuid,
+            feed_url: valueTimeSplit.remoteItem.feedUrl || null,
+            item_guid: valueTimeSplit.remoteItem.itemGuid || null,
+            title: /* TODO: ri.title || */ null
+          } : null
         }
       } else {
         // else: valueTimeSplit.type === 'recipients'
         return {
-          start_time: valueTimeSplit.startTime,
-          duration: valueTimeSplit.duration,
-          remote_start_time: 0,
-          remote_percentage: 100,
-          item_value_time_splits_recipients: compatValueRecipients(valueTimeSplit.recipients)
+          meta: {
+            start_time: valueTimeSplit.startTime.toFixed(2),
+            duration: valueTimeSplit.duration.toFixed(2),
+            remote_start_time: (0).toFixed(2),
+            remote_percentage: (100).toFixed(2),
+          },
+          item_value_time_splits_recipients: compatValueRecipients(valueTimeSplit.recipients),
+          item_value_time_splits_remote_item: null
         }
       }
     }) || []

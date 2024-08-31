@@ -1,11 +1,32 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
-import { ChannelTrailerService } from "@orm/services/channel/channelTrailer";
+import { ChannelTrailerDto, ChannelTrailerService } from "@orm/services/channel/channelTrailer";
 import { compatChannelTrailerDtos } from "@parser-rss/lib/compat/channel";
-import { handleParsedManyData } from "../base/handleParsedManyData";
+import { ChannelSeason } from "@orm/entities/channel/channelSeason";
 
-export const handleParsedChannelTrailer = async (parsedFeed: FeedObject, channel: Channel) => {
+export const handleParsedChannelTrailer = async (
+  parsedFeed: FeedObject,
+  channel: Channel,
+  channelSeasonIndex: Record<number, ChannelSeason>
+) => {
   const channelTrailerService = new ChannelTrailerService();
   const channelTrailerDtos = compatChannelTrailerDtos(parsedFeed);
-  await handleParsedManyData(channel, channelTrailerService, channelTrailerDtos);
+
+  const enrichedChannelTrailerDtos: ChannelTrailerDto[] = channelTrailerDtos.map((channelTrailerDto) => {
+    const channel_season = channelTrailerDto.season ? channelSeasonIndex[channelTrailerDto.season] : null;
+    return {
+      url: channelTrailerDto.url,
+      pubdate: channelTrailerDto.pubdate,
+      title: channelTrailerDto.title,
+      length: channelTrailerDto.length,
+      type: channelTrailerDto.type,
+      channel_season
+    }
+  })
+
+  if (channelTrailerDtos.length > 0) {
+    await channelTrailerService.updateMany(channel, enrichedChannelTrailerDtos);
+  } else {
+    await channelTrailerService._deleteAll(channel);
+  }
 }

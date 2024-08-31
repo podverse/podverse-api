@@ -20,11 +20,11 @@ export class Clip {
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
-  @Column({ type: 'float' })
-  start_time!: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  start_time!: string;
   
-  @Column({ type: 'float', nullable: true })
-  end_time?: number | null;
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  end_time?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
   title?: string | null;

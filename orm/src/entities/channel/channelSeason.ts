@@ -17,6 +17,6 @@ export class ChannelSeason {
   @Column({ type: 'integer', name: 'number' })
   number!: number;
 
-  @Column({ type: 'varchar', name: 'name' })
-  name!: string;
+  @Column({ type: 'varchar', name: 'name', nullable: true })
+  name!: string | null;
 }

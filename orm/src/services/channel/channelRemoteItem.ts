@@ -1,6 +1,5 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelRemoteItem } from '@orm/entities/channel/channelRemoteItem';
-import { MediumValueEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelRemoteItemDto = {
@@ -8,7 +7,6 @@ type ChannelRemoteItemDto = {
   feed_url: string | null
   item_guid: string | null
   // title: string | null
-  medium: MediumValueEnum | null
 }
 
 export class ChannelRemoteItemService extends BaseRemoteItemsService<ChannelRemoteItem, 'channel'> {

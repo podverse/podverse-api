@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
+import { ChannelSeason } from './channelSeason';
 
 @Entity({ name: 'channel_trailer' })
 export class ChannelTrailer {
@@ -24,7 +25,8 @@ export class ChannelTrailer {
 
   @Column({ type: 'varchar', name: 'type', nullable: true })
   type!: string | null;
-
-  @Column({ type: 'integer', name: 'season', nullable: true })
-  season!: number | null;
+  
+  @ManyToOne(() => ChannelSeason, channel_season => channel_season.id, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'channel_season_id' })
+  channel_season!: ChannelSeason | null;
 }
