@@ -15,6 +15,6 @@ export class LiveItemService extends BaseOneService<LiveItem, 'item'> {
   }
 
   async update(item: Item, dto: LiveItemDto): Promise<LiveItem> {
-    return super._update(item, dto);
+    return super._update(item, dto, { relations: ['live_item_status'] });
   }
 }
