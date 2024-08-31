@@ -26,6 +26,18 @@ export const compatItemChaptersFeedDto = (parsedItem: Episode) => {
   }
 }
 
+export const compatItemChatDto = (parsedItem: Episode) => {
+  if (!parsedItem.chat) {
+    return null
+  }
+  return {
+    server: parsedItem.chat.server,
+    protocol: parsedItem.chat.protocol,
+    account_id: parsedItem.chat.accountId || null,
+    space: parsedItem.chat.space || null
+  }
+}
+
 export const compatItemDescriptionDto = (parsedItem: Episode) => {
   if (!parsedItem.description) {
     return null

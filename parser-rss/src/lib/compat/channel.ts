@@ -21,6 +21,18 @@ export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({
   itunes_type: getChannelItunesTypeItunesTypeEnumValue(parsedFeed.itunesType || 'episodic')
 })
 
+export const compatChannelChatDto = (parsedFeed: FeedObject) => {
+  if (!parsedFeed.chat) {
+    return null
+  }
+  return {
+    server: parsedFeed.chat.server,
+    protocol: parsedFeed.chat.protocol,
+    account_id: parsedFeed.chat.accountId || null,
+    space: parsedFeed.chat.space || null
+  }
+}
+
 export const compatChannelDescriptionDto = (parsedFeed: FeedObject) => {
   if (!parsedFeed.description) {
     return null

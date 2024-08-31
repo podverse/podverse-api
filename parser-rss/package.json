@@ -15,6 +15,6 @@
     "@router-api": "../router-api/src"
   },
   "dependencies": {
-    "podcast-partytime": "^4.8.0"
+    "podcast-partytime": "^4.8.1"
   }
 }

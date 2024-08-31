@@ -16,6 +16,7 @@ import { handleParsedChannelTrailer } from "@parser-rss/lib/parser/channel/chann
 import { handleParsedChannelTxt } from "@parser-rss/lib/parser/channel/channelTxt";
 import { handleParsedChannelValue } from "@parser-rss/lib/parser/channel/channelValue";
 import { ChannelSeasonIndex, ChannelSeasonService } from "@orm/services/channel/channelSeason";
+import { handleParsedChannelChat } from "./channelChat";
 
 export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   const channelService = new ChannelService();
@@ -26,8 +27,7 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
 
   // TODO: add channelCategory support
 
-  // TODO: add channelChat support
-
+  await handleParsedChannelChat(parsedFeed, channel);
   await handleParsedChannelDescription(parsedFeed, channel);
   await handleParsedChannelFunding(parsedFeed, channel);
   await handleParsedChannelImage(parsedFeed, channel);

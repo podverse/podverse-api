@@ -13,8 +13,8 @@ export class ChannelChat {
   @Column({ type: 'varchar' })
   server!: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  protocol!: string | null;
+  @Column({ type: 'varchar' })
+  protocol!: string;
 
   @Column({ type: 'varchar', nullable: true })
   account_id!: string | null;
