@@ -1,6 +1,6 @@
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
 import { ChannelPublisherRemoteItem } from '@orm/entities/channel/channelPublisherRemoteItem';
-import { MediumValueEnum } from '@orm/entities/medium';
+import { MediumEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPublisherRemoteItemDto = {

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, Index, OneToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Feed } from '@orm/entities/feed/feed'; 
-import { Medium, MediumValueEnum } from '@orm/entities/medium';
+import { Medium, MediumEnum } from '@orm/entities/medium';
 const shortid = require('shortid');
 
 @Entity('channel')
@@ -40,7 +40,7 @@ export class Channel {
 
   @ManyToOne(() => Medium, medium => medium.id, { nullable: true })
   @JoinColumn({ name: 'medium_id' })
-  medium!: MediumValueEnum | null;
+  medium!: MediumEnum | null;
 
   @Column({ type: 'boolean', default: false })
   has_podcast_index_value!: boolean;

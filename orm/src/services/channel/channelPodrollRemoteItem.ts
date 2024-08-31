@@ -1,6 +1,6 @@
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
 import { ChannelPodrollRemoteItem } from '@orm/entities/channel/channelPodrollRemoteItem';
-import { MediumValueEnum } from '@orm/entities/medium';
+import { MediumEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPodrollRemoteItemDto = {

@@ -1,7 +1,7 @@
 import { FeedObject, Phase4Medium } from "podcast-partytime"
 import { compatChannelValue } from "@parser-rss/lib/compat/value"
 import { createSortableTitle } from "@orm/lib/sortableTitle"
-import { getMediumValueEnumValue } from "@orm/entities/medium"
+import { getMediumEnumValue } from "@orm/entities/medium"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"
 import { getBooleanOrNull } from "@helpers/lib/boolean"
 import { Phase4PodcastImage } from "podcast-partytime/dist/parser/phase/phase-4"
@@ -10,7 +10,7 @@ export const compatChannelDto = (parsedFeed: FeedObject) => ({
   podcast_guid: parsedFeed.guid,
   title: parsedFeed.title,
   sortable_title: createSortableTitle(parsedFeed.title),
-  medium: getMediumValueEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
+  medium: getMediumEnumValue(parsedFeed.medium ?? Phase4Medium.Podcast)
 })
 
 export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({

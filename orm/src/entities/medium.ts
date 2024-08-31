@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export enum MediumValueEnum {
+export enum MediumEnum {
   Publisher = 1,
   Podcast = 2,
   Music = 3,
@@ -22,31 +22,31 @@ export enum MediumValueEnum {
   CourseL = 19
 }
 
-export function getMediumValueEnumValue(input: string | null): MediumValueEnum | null {
+export function getMediumEnumValue(input: string | null): MediumEnum | null {
   const sanitizedInput = input?.toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[^a-z0-9]/g, '');
 
-  const mapping: { [key: string]: MediumValueEnum } = {
-    publisher: MediumValueEnum.Publisher,
-    podcast: MediumValueEnum.Podcast,
-    music: MediumValueEnum.Music,
-    video: MediumValueEnum.Video,
-    film: MediumValueEnum.Film,
-    audiobook: MediumValueEnum.Audiobook,
-    newsletter: MediumValueEnum.Newsletter,
-    blog: MediumValueEnum.Blog,
-    course: MediumValueEnum.Course,
-    mixed: MediumValueEnum.Mixed,
-    podcastl: MediumValueEnum.PodcastL,
-    musicl: MediumValueEnum.MusicL,
-    videol: MediumValueEnum.VideoL,
-    filml: MediumValueEnum.FilmL,
-    audiobookl: MediumValueEnum.AudiobookL,
-    newsletterl: MediumValueEnum.NewsletterL,
-    blogl: MediumValueEnum.BlogL,
-    publisherl: MediumValueEnum.PublisherL,
-    coursel: MediumValueEnum.CourseL
+  const mapping: { [key: string]: MediumEnum } = {
+    publisher: MediumEnum.Publisher,
+    podcast: MediumEnum.Podcast,
+    music: MediumEnum.Music,
+    video: MediumEnum.Video,
+    film: MediumEnum.Film,
+    audiobook: MediumEnum.Audiobook,
+    newsletter: MediumEnum.Newsletter,
+    blog: MediumEnum.Blog,
+    course: MediumEnum.Course,
+    mixed: MediumEnum.Mixed,
+    podcastl: MediumEnum.PodcastL,
+    musicl: MediumEnum.MusicL,
+    videol: MediumEnum.VideoL,
+    filml: MediumEnum.FilmL,
+    audiobookl: MediumEnum.AudiobookL,
+    newsletterl: MediumEnum.NewsletterL,
+    blogl: MediumEnum.BlogL,
+    publisherl: MediumEnum.PublisherL,
+    coursel: MediumEnum.CourseL
   };
 
   return (sanitizedInput && mapping[sanitizedInput]) || null;
@@ -59,7 +59,7 @@ export class Medium {
 
   @Column({
     type: 'enum',
-    enum: MediumValueEnum
+    enum: MediumEnum
   })
-  value!: MediumValueEnum;
+  value!: MediumEnum;
 }

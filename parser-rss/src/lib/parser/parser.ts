@@ -9,6 +9,7 @@ import { handleParsedItems } from './item/item';
 import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 import { compatChannelSeasonDtos } from '../compat/channel';
 import { handleParsedChannelSeasons } from './channel/channelSeason';
+import { handleParsedLiveItems } from './liveItem/liveItem';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -73,6 +74,10 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   // TODO: add hashing save and check for full item data
 
   await handleParsedItems(parsedFeed.items, channel, channelSeasonIndex);
+
+  if (parsedFeed.podcastLiveItems) {
+    await handleParsedLiveItems(parsedFeed.podcastLiveItems, channel, channelSeasonIndex);
+  }
 
   // TODO: add item_chapters_feed parsing handling to create item_chapter records
 
