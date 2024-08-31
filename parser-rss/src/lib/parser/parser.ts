@@ -8,6 +8,7 @@ import { handleParsedChannel } from '@parser-rss/lib/parser/channel/channel';
 import { handleParsedItems } from './item/item';
 import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 import { compatChannelSeasonDtos } from '../compat/channel';
+import { handleParsedChannelSeasons } from './channel/channelSeason';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -60,16 +61,11 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
   // TODO: add hashing save and check for full channel data
 
-  // TODO: move into helper function
+
+  // ChannelSeason must be parsed before anything else, because the channel season rows
+  // need to be created for other data to have a foreign key to them.
+  await handleParsedChannelSeasons(parsedFeed, channel);
   const channelSeasonService = new ChannelSeasonService();
-  const channelSeasonDtos = compatChannelSeasonDtos(parsedFeed);
-
-  if (channelSeasonDtos.length > 0) {
-    await channelSeasonService.updateMany(channel, channelSeasonDtos);
-  } else {
-    await channelSeasonService._deleteAll(channel);
-  }
-
   const channelSeasonIndex = await channelSeasonService.getChannelSeasonIndex(channel);
   
   await handleParsedChannel(parsedFeed, channel, channelSeasonIndex);
