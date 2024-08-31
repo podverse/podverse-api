@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, BeforeInsert, OneToOne } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
+import { LiveItem } from '../liveItem/liveItem';
 const shortid = require('shortid');
 
 @Entity()
@@ -18,7 +19,7 @@ export class Item {
   @ManyToOne(() => Channel, channel => channel.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })
   channel!: Channel;
-
+  
   @Column({ type: 'varchar', name: 'guid', nullable: true })
   guid?: string | null;
 
@@ -30,6 +31,9 @@ export class Item {
 
   @Column({ type: 'varchar', name: 'title', nullable: true })
   title?: string | null;
+
+  @OneToOne(() => LiveItem, liveItem => liveItem.item, { nullable: true })
+  live_item!: LiveItem | null;
 
   @Column({ type: 'boolean', name: 'hidden', default: false })
   hidden!: boolean;

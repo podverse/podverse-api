@@ -1,7 +1,7 @@
 import { Channel } from '@orm/entities/channel/channel';
 import { Item } from '@orm/entities/item/item';
 import { applyProperties } from '@orm/lib/applyProperties';
-import { Repository } from 'typeorm';
+import { FindManyOptions, IsNull, Not, Repository } from 'typeorm';
 import { AppDataSource } from '@orm/db';
 
 type ItemDto = {
@@ -63,6 +63,30 @@ export class ItemService {
     });
   }
 
+  async getAllItemsByChannel(channel: Channel, options?: FindManyOptions<Item>): Promise<Item[]> {
+    return this.repository.find({
+      where: {
+        channel,
+        live_item: {
+          id: IsNull()
+        }
+      },
+      ...options
+    });
+  }
+
+  async getAllItemsWithLiveItemByChannel(channel: Channel, options?: FindManyOptions<Item>): Promise<Item[]> {
+    return this.repository.find({
+      where: {
+        channel,
+        live_item: {
+          id: Not(IsNull())
+        }
+      },
+      ...options
+    });
+  }
+
   async update(channel: Channel, dto: ItemDto): Promise<Item> {
     let item = await this.getBy(channel, {
       guid_enclosure_url: dto.guid_enclosure_url,
@@ -80,5 +104,15 @@ export class ItemService {
     item = applyProperties(item, dto);
 
     return this.repository.save(item);
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.repository.delete(id);
+  }
+
+  async deleteMany(ids: number[]): Promise<void> {
+    if (ids.length) {
+      await this.repository.delete(ids);
+    }
   }
 }

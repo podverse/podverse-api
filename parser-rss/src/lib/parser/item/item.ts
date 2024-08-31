@@ -21,9 +21,18 @@ import { compatItemDto } from "@parser-rss/lib/compat/item";
 import { handleParsedItemChat } from "./itemChat";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
+  const itemService = new ItemService();
+  const existingItems = await itemService.getAllItemsByChannel(channel, { select: ['id'] });
+  const existingItemIds = existingItems.map(item => item.id);
+  const updatedItemIds: number[] = [];
+
   for (const parsedItem of parsedItems) {
-    await handleParsedItem(parsedItem, channel, channelSeasonIndex);
+    const item = await handleParsedItem(parsedItem, channel, channelSeasonIndex);
+    updatedItemIds.push(item.id);
   }
+
+  const itemIdsToDelete = existingItemIds.filter(id => !updatedItemIds.includes(id));
+  await itemService.deleteMany(itemIdsToDelete);
 }
 
 export const handleParsedItem = async (parsedItem: Episode, channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {

@@ -47,6 +47,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
 
   // TODO: add hashing save and check for full feed md5
 
+  // TODO: add feed log updates
+
   const feedService = new FeedService();
   const feed = await feedService.getOrCreate({ url, podcast_index_id });
 
@@ -59,9 +61,6 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
   const channelService = new ChannelService();
   const channel = await channelService.getOrCreateByPodcastIndexId({ feed, podcast_index_id });
-  
-  // TODO: add hashing save and check for full channel data
-
 
   // ChannelSeason must be parsed before anything else, because the channel season rows
   // need to be created for other data to have a foreign key to them.
@@ -71,7 +70,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
   await handleParsedChannel(parsedFeed, channel, channelSeasonIndex);
 
-  // TODO: add hashing save and check for full item data
+  // TODO: if publisher feed, handle publisher remote item data
+  // else handle parsed items
 
   await handleParsedItems(parsedFeed.items, channel, channelSeasonIndex);
 
@@ -79,6 +79,10 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     await handleParsedLiveItems(parsedFeed.podcastLiveItems, channel, channelSeasonIndex);
   }
 
+  // TODO: handle new item notifications
+  
+  // TODO: handle new live_item notifications
+  
   // TODO: add item_chapters_feed parsing handling to create item_chapter records
 
   // TODO: set isParsing to false in a finally block

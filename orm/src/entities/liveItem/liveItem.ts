@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { LiveItemStatus, LiveItemStatusEnum } from '@orm/entities/liveItem/liveItemStatus';
 
@@ -7,7 +7,7 @@ export class LiveItem {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Item, item => item.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Item, item => item.live_item, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_id' })
   item!: Item;
 
