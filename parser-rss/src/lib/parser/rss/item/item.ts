@@ -3,7 +3,7 @@ import { Channel } from "@orm/entities/channel/channel";
 import { ItemService } from "@orm/services/item/item";
 import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
 import { handleParsedItemAbout } from "./itemAbout";
-import { handleParsedItemChaptersFeed } from "./itemChapters";
+import { handleParsedItemChaptersFeed } from "./itemChaptersFeed";
 import { handleParsedItemDescription } from "./itemDescription";
 import { handleParsedItemEnclosure } from "./itemEnclosure";
 import { handleParsedItemImage } from "./itemImage";
