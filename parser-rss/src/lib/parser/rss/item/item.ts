@@ -19,7 +19,6 @@ import { handleParsedItemTxt } from "./itemTxt";
 import { handleParsedItemValue } from "./itemValue";
 import { compatItemDto } from "@parser-rss/lib/compat/partytime/item";
 import { handleParsedItemChat } from "./itemChat";
-import { parseChapters } from "../../chapters/chapters";
 
 export const handleParsedItems = async (parsedItems: Episode[], channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   const itemService = new ItemService();
@@ -67,11 +66,6 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel, ch
   await handleParsedItemTranscript(parsedItem, item);
   await handleParsedItemTxt(parsedItem, item);
   await handleParsedItemValue(parsedItem, item);
-
-  const tempItem = await itemService.get(item.id);
-  if (tempItem) {
-    await parseChapters(tempItem);
-  }
 
   return item;
 }
