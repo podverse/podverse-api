@@ -4,6 +4,7 @@ import { FeedFlagStatusStatusEnum } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
 import { FeedLogService } from '@orm/services/feed/feedLog';
 import { FeedFlagStatusService } from './feedFlagStatus';
+import { applyProperties } from '@orm/lib/applyProperties';
 
 const channelService = new ChannelService();
 const feedLogService = new FeedLogService();
@@ -13,8 +14,21 @@ type FeedCreateDto = {
   podcast_index_id: number
 }
 
+type FeedUpdateDto = {
+  url?: string
+  feed_flag_status_id?: number
+  is_parsing?: Date | null
+  parsing_priority?: number
+  last_parsed_file_hash?: string | null
+  container_id?: string | null
+}
+
 export class FeedService {
   private repository = AppDataSource.getRepository(Feed);
+
+  async get(id: number): Promise<Feed | null> {
+    return this.repository.findOne({ where: { id } });
+  }
 
   async getAll(): Promise<Feed[]> {
     return await this.repository.find({
@@ -45,7 +59,7 @@ export class FeedService {
       feed.feed_flag_status = feed_flag_status;
     }
 
-    feed.is_parsing = new Date();
+    feed.is_parsing = null;
     feed.parsing_priority = 1;
     feed.container_id = '';
 
@@ -59,5 +73,17 @@ export class FeedService {
     
     newFeed.channel = channel;
     return this.repository.save(newFeed);
+  }
+
+  async update(id: number, dto: FeedUpdateDto): Promise<Feed> {
+    let feed = await this.get(id);
+
+    if (!feed) {
+      throw new Error(`FeedService.update: feed ${id} not found`);
+    }
+
+    feed = applyProperties(feed, dto);
+
+    return this.repository.save(feed);
   }
 }

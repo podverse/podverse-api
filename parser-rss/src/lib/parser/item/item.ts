@@ -55,19 +55,12 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel, ch
 
   await handleParsedItemDescription(parsedItem, item);  
   await handleParsedItemEnclosure(parsedItem, item);
-
-  // // TODO: add item funding support after partytime adds funding support
-  // const itemFundingService = new ItemFundingService();
-  // const itemFundingDto = compatItemFundingDto(parsedItem);
-  // await handleParsedManyData(item, itemFundingService, itemFundingDto);
-
   await handleParsedItemImage(parsedItem, item);
   await handleParsedItemLicense(parsedItem, item);
   await handleParsedItemLocation(parsedItem, item);
   await handleParsedItemPerson(parsedItem, item);
   await handleParsedItemSeason(parsedItem, item, channelSeasonIndex);
   await handleParsedItemSeasonEpisode(parsedItem, item);
-
   await handleParsedItemSocialInteract(parsedItem, item);
   await handleParsedItemSoundbite(parsedItem, item);
   await handleParsedItemTranscript(parsedItem, item);

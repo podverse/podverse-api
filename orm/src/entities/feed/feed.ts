@@ -24,6 +24,9 @@ export class Feed {
   @Column({ type: 'int', default: 0 })
   parsing_priority!: number;
 
+  @Column({ type: 'varchar', length: 32, nullable: true })
+  last_parsed_file_hash!: string | null;
+
   @Column({ type: 'varchar', nullable: true })
   container_id!: string | null;
 
