@@ -1,4 +1,15 @@
-export const compatParsedChapters = (chapters: any[]) => {
+import { ItemChapterDto } from '@orm/services/item/itemChapter';
+
+type PIChapter = {
+  startTime: string
+  endTime: string | null
+  title: string | null
+  img: string | null
+  url: string | null
+  toc: boolean
+}
+
+export const compatParsedChapters = (chapters: PIChapter[]): ItemChapterDto[] => {
   return chapters.map(chapter => {
     return {
       start_time: chapter.startTime,

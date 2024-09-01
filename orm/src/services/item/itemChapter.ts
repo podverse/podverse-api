@@ -2,7 +2,7 @@ import { ItemChapter } from '@orm/entities/item/itemChapter';
 import { ItemChaptersFeed } from '@orm/entities/item/itemChaptersFeed';
 import { BaseManyService } from '@orm/services/base/baseManyService';
 
-type ItemChapterDto = {
+export type ItemChapterDto = {
   start_time: string
   end_time: string | null
   title: string | null
@@ -23,5 +23,11 @@ export class ItemChapterService extends BaseManyService<ItemChapter, 'item_chapt
   async updateMany(item_chapters_feed: ItemChaptersFeed, dtos: ItemChapterDto[]): Promise<ItemChapter[]> {
     const whereKeys = ['start_time', 'end_time', 'table_of_contents'] as (keyof ItemChapter)[];
     return super._updateMany(item_chapters_feed, whereKeys, dtos);
+  }
+
+  async deleteMany(ids: number[]): Promise<void> {
+    if (ids.length) {
+      await this.repository.delete(ids);
+    }
   }
 }
