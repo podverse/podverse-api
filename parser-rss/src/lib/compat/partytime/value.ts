@@ -29,7 +29,7 @@ export const compatItemValue = (value: Phase4Value) => {
             feed_guid: valueTimeSplit.remoteItem.feedGuid,
             feed_url: valueTimeSplit.remoteItem.feedUrl || null,
             item_guid: valueTimeSplit.remoteItem.itemGuid || null,
-            title: /* TODO: ri.title || */ null
+            title: /* PTDO: ri.title || */ null
           } : null
         }
       } else {

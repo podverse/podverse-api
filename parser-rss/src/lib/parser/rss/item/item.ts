@@ -44,7 +44,7 @@ export const handleParsedItem = async (parsedItem: Episode, channel: Channel, ch
   await handleParsedItemChaptersFeed(parsedItem, item);
   await handleParsedItemChat(parsedItem, item);
 
-  // // TODO: add itemContentLinkService support after partytime adds chat support
+  // // PTDO: add itemContentLinkService support after partytime adds chat support
   // const itemContentLinkService = new ItemContentLinkService();
   // const itemContentLinkDtos = compatItemContentLinkDtos(parsedItem);
   // if (itemContentLinkDtos.length) {

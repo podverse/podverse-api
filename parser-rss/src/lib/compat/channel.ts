@@ -143,7 +143,7 @@ export const compatChannelPodrollRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          title: /* TODO: ri.title || */ null
+          title: /* PTDO: ri.title || */ null
         })
       }
     }
@@ -162,7 +162,7 @@ export const compatChannelPublisherRemoteItemDtos = (parsedFeed: FeedObject) => 
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          title: /* TODO: ri.title || */ null
+          title: /* PTDO: ri.title || */ null
         })
       }
     }
@@ -181,7 +181,7 @@ export const compatChannelRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          title: /* TODO: ri.title || */ null
+          title: /* PTDO: ri.title || */ null
         })
       }
     }
@@ -196,7 +196,7 @@ export const compatChannelSocialInteractDtos = (parsedFeed: FeedObject) => {
   if (parsedFeed?.podcastSocial?.length) {
     for (const ps of parsedFeed.podcastSocial) {
       dtos.push({
-        // TODO: fix keys mismatch between partytime and podverse
+        // PTDO: fix keys mismatch between partytime and podverse
         protocol: ps.platform,
         uri: ps.url,
         account_id: ps.id || null,
@@ -243,7 +243,7 @@ export const compatChannelTrailerDtos = (parsedFeed: FeedObject) => {
     for (const pt of parsedFeed.trailers) {
       dtos.push({
         url: pt.url,
-        title: /* TODO: add pt.title || */ null,
+        title: /* PTDO: add pt.title || */ null,
         pubdate: pt.pubdate,
         length: pt.length || null,
         type: pt.type || null,

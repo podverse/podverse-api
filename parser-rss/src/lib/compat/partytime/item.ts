@@ -186,7 +186,7 @@ export const compatItemSocialInteractDtos = (parsedItem: Episode) => {
   if (parsedItem?.podcastSocialInteraction?.length) {
     for (const ps of parsedItem.podcastSocialInteraction) {
       dtos.push({
-        // TODO: fix keys mismatch between partytime and podverse
+        // PTDO: fix keys mismatch between partytime and podverse
         protocol: ps.platform,
         uri: ps.url,
         account_id: ps.id || null,

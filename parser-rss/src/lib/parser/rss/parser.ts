@@ -63,7 +63,7 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     
     await handleParsedChannel(parsedFeed, channel, channelSeasonIndex);
   
-    // TODO: if publisher feed, handle publisher remote item data
+    // PTDO: if publisher feed, handle publisher remote item data
     // else handle parsed items
   
     await handleParsedItems(parsedFeed.items, channel, channelSeasonIndex);
@@ -75,8 +75,6 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     // TODO: handle new item notifications
     
     // TODO: handle new live_item notifications
-    
-    // TODO: add item_chapters_feed parsing handling to create item_chapter records
   } finally {
     await feedService.update(feed.id, { is_parsing: null });
   }

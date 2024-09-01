@@ -14,7 +14,7 @@ export const handleParsedLiveItems = async (parsedLiveItems: Phase4PodcastLiveIt
   const liveItemObjDtos = compatLiveItemsDtos(parsedLiveItems);
 
   for (const liveItemObjDto of liveItemObjDtos) {
-    // TODO: how to make any unnecessary?
+    // PTDO: how to make any unnecessary?
     const itemDto = liveItemObjDto.item as any;
 
     const item = await handleParsedItem(itemDto, channel, channelSeasonIndex);
