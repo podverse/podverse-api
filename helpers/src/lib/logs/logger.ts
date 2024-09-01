@@ -1,3 +1,4 @@
+import { config } from '@router-api/config';
 import { createLogger, format, transports } from 'winston';
 import * as TransportStream from 'winston-transport';
 
@@ -8,7 +9,7 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 });
 
 const logger = createLogger({
-  level: 'info',
+  level: config.logLevel,
   format: combine(
     timestamp(),
     logFormat

@@ -12,18 +12,28 @@ const getParsedChapters = async (url: string) => {
 }
 
 export const parseChapters = async (item: Item): Promise<void> => {
-  if (!item.item_chapters_feed) {
+  const item_chapters_feed = item.item_chapters_feed
+
+  if (!item_chapters_feed) {
     return
   }
 
-  const url = item.item_chapters_feed.url
+  const url = item_chapters_feed.url
   const parsedChapters = await getParsedChapters(url);
   
-  console.log('parsedChapters', parsedChapters)
-
   const itemChapterService = new ItemChapterService()
-  await itemChapterService.updateMany(item.item_chapters_feed, parsedChapters)
+
+  const existingChapters = await itemChapterService._getAll(item_chapters_feed, { select: ['id'] });
+  const existingChaptersIds = existingChapters.map(item_chapter => item_chapter.id);
+  const updatedChaptersIds: number[] = [];
+
+  for (const parsedChapter of parsedChapters) {
+    await itemChapterService.update(item_chapters_feed, parsedChapter);
+    updatedChaptersIds.push(item_chapters_feed.id);
+  }
+
+  const itemChapterIdsToDelete = existingChaptersIds.filter(id => !updatedChaptersIds.includes(id));
+  await itemChapterService.deleteMany(itemChapterIdsToDelete);
   
-  // TODO: get and delete the old chapters
   // TODO: handle chapter feed logging
 }

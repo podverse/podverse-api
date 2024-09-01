@@ -1,7 +1,8 @@
-import { FindOneOptions, FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, ObjectLiteral, Repository } from "typeorm";
 import { AppDataSource } from "@orm/db";
 import { applyProperties } from "@orm/lib/applyProperties";
 import { hasDifferentValues } from "@orm/lib/hasDifferentValues";
+import logger from "@helpers/lib/logs/logger";
 
 export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
   protected repository: Repository<T>;
@@ -14,9 +15,9 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
     this.parentEntityKey = parentEntityKey;
   }
 
-  async _getAll(parentEntity: T[K]): Promise<T[]> {
+  async _getAll(parentEntity: T[K], config?: FindManyOptions<T>): Promise<T[]> {
     const where: FindOptionsWhere<T> = { [this.parentEntityKey]: parentEntity } as FindOptionsWhere<T>;
-    return this.repository.find({ where });
+    return this.repository.find({ where, ...config });
   }
 
   async _get(parentEntity: T[K], whereKeyValues: Record<string,unknown>, config?: FindOneOptions<T>): Promise<T | null> {
@@ -44,13 +45,9 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
       return entity;
     }
 
-    console.log('not skipping entity...', entity)
-    console.log('not skipping dto...', dto)
     entity = applyProperties(entity, dto);
-    console.log('Updating parent entity', parentEntity);
-    console.log('Updating entity', entity);
-    console.log('With DTO', dto);
-    console.log('SAVE THIS', entity)
+    logger.debug(`Updating entity ${JSON.stringify(entity)}`);
+    logger.debug(`With DTO ${JSON.stringify(dto)}`);
     
     return this.repository.save(entity);
   }

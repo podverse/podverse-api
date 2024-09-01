@@ -2,6 +2,7 @@ import { FindOneOptions, FindOptionsWhere, ObjectLiteral, Repository } from "typ
 import { AppDataSource } from "@orm/db";
 import { applyProperties } from "@orm/lib/applyProperties";
 import { hasDifferentValues } from "@orm/lib/hasDifferentValues";
+import logger from "@helpers/lib/logs/logger";
 
 export class BaseOneService<T extends ObjectLiteral, K extends keyof T> {
   protected repository: Repository<T>;
@@ -27,13 +28,9 @@ export class BaseOneService<T extends ObjectLiteral, K extends keyof T> {
       return entity;
     }
 
-    console.log('not skipping entity...', entity)
-    console.log('not skipping dto...', dto)
     entity = applyProperties(entity, dto);
-    console.log('Updating parent entity', parentEntity);
-    console.log('Updating entity', entity);
-    console.log('With DTO', dto);
-    console.log('SAVE THIS', entity)
+    logger.debug('Updating entity', entity);
+    logger.debug('With DTO', dto);
 
     return this.repository.save(entity);
   }

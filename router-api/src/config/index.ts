@@ -1,5 +1,6 @@
 export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
+  logLevel: process.env.LOG_LEVEL || 'info',
   auth: {
     jwtSecret: process.env.AUTH_JWT_SECRET || '',
   },

@@ -13,19 +13,17 @@ export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podc
   }
 
   checkIfFeedIsParsing(feed);
-
+ 
   const currentFeedFileHash = getParsedFeedMd5Hash(parsedFeed);
 
-  // if (feed.last_parsed_file_hash === currentFeedFileHash) {
-  //   throw new Error(`Feed ${feed.id} has no changes since last parsed.`);
-  // }
+  if (feed.last_parsed_file_hash === currentFeedFileHash) {
+    throw new Error(`Feed ${feed.id} has no changes since last parsed.`);
+  }
 
-  await feedService.update(feed.id, { last_parsed_file_hash: currentFeedFileHash });
-
-  return feed
+  return feedService.update(feed.id, { last_parsed_file_hash: currentFeedFileHash });
 }
 
-const checkIfFeedIsParsing = async (feed: Feed): Promise<void> => {
+const checkIfFeedIsParsing = (feed: Feed): void => {
   if (feed.is_parsing) {
     const parsingDate = new Date(feed.is_parsing);
     const currentDate = new Date();
