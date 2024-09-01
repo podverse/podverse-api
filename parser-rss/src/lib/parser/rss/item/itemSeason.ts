@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemSeasonDto, ItemSeasonService } from "@orm/services/item/itemSeason";
-import { compatItemSeasonDto } from "@parser-rss/lib/compat/item";
+import { compatItemSeasonDto } from "@parser-rss/lib/compat/partytime/item";
 import { handleParsedOneData } from "../base/handleParsedOneData";
 import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
 

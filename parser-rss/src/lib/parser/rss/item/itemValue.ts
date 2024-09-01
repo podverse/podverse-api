@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemValueService } from "@orm/services/item/itemValue";
-import { compatItemValueDtos } from "@parser-rss/lib/compat/item";
+import { compatItemValueDtos } from "@parser-rss/lib/compat/partytime/item";
 import { ItemValueRecipientService } from "@orm/services/item/itemValueRecipient";
 import { ItemValueTimeSplitService } from "@orm/services/item/itemValueTimeSplit";
 import { ItemValueTimeSplitRecipientService } from "@orm/services/item/itemValueTimeSplitRecipient";

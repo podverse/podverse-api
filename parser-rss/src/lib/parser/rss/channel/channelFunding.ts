@@ -1,7 +1,7 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelFundingService } from "@orm/services/channel/channelFunding";
-import { compatChannelFundingDtos } from "@parser-rss/lib/compat/channel";
+import { compatChannelFundingDtos } from "@parser-rss/lib/compat/partytime/channel";
 import { handleParsedManyData } from "../base/handleParsedManyData";
 
 export const handleParsedChannelFunding = async (parsedFeed: FeedObject, channel: Channel) => {

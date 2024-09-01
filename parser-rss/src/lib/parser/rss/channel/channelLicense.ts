@@ -1,7 +1,7 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelLicenseService } from "@orm/services/channel/channelLicense";
-import { compatChannelLicenseDto } from "@parser-rss/lib/compat/channel";
+import { compatChannelLicenseDto } from "@parser-rss/lib/compat/partytime/channel";
 import { handleParsedOneData } from "../base/handleParsedOneData";
 
 export const handleParsedChannelLicense = async (parsedFeed: FeedObject, channel: Channel) => {

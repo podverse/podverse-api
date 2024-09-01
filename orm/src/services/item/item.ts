@@ -24,7 +24,7 @@ export class ItemService {
   }
 
   async get(id: number): Promise<Item | null> {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({ where: { id }, relations: ['item_chapters_feed'] });
   }
 
   async _getByIdText(id_text: string): Promise<Item | null> {

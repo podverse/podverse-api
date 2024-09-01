@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemDescriptionService } from "@orm/services/item/itemDescription";
-import { compatItemDescriptionDto } from "@parser-rss/lib/compat/item";
+import { compatItemDescriptionDto } from "@parser-rss/lib/compat/partytime/item";
 import { handleParsedOneData } from "../base/handleParsedOneData";
 
 export const handleParsedItemDescription = async (parsedItem: Episode, item: Item) => {

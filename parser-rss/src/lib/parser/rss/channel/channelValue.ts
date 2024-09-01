@@ -1,7 +1,7 @@
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelValueService } from "@orm/services/channel/channelValue";
 import { ChannelValueRecipientService } from "@orm/services/channel/channelValueRecipient";
-import { compatChannelValueDtos } from "@parser-rss/lib/compat/channel";
+import { compatChannelValueDtos } from "@parser-rss/lib/compat/partytime/channel";
 import { FeedObject } from "podcast-partytime";
 
 export const handleParsedChannelValue = async (parsedFeed: FeedObject, channel: Channel) => {

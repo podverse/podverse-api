@@ -16,9 +16,9 @@ export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podc
 
   const currentFeedFileHash = getParsedFeedMd5Hash(parsedFeed);
 
-  if (feed.last_parsed_file_hash === currentFeedFileHash) {
-    throw new Error(`Feed ${feed.id} has no changes since last parsed.`);
-  }
+  // if (feed.last_parsed_file_hash === currentFeedFileHash) {
+  //   throw new Error(`Feed ${feed.id} has no changes since last parsed.`);
+  // }
 
   await feedService.update(feed.id, { last_parsed_file_hash: currentFeedFileHash });
 

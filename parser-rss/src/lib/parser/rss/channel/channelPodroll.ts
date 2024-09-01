@@ -1,7 +1,7 @@
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelPodrollService } from "@orm/services/channel/channelPodroll";
 import { ChannelPodrollRemoteItemService } from "@orm/services/channel/channelPodrollRemoteItem";
-import { compatChannelPodrollRemoteItemDtos } from "@parser-rss/lib/compat/channel";
+import { compatChannelPodrollRemoteItemDtos } from "@parser-rss/lib/compat/partytime/channel";
 import { FeedObject } from "podcast-partytime";
 
 export const handleParsedChannelPodroll = async (parsedFeed: FeedObject, channel: Channel) => {

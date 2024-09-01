@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemEnclosureService } from "@orm/services/item/itemEnclosure";
-import { compatItemEnclosureDtos } from "@parser-rss/lib/compat/item";
+import { compatItemEnclosureDtos } from "@parser-rss/lib/compat/partytime/item";
 import { ItemEnclosureSourceService } from "@orm/services/item/itemEnclosureSource";
 import { ItemEnclosureIntegrityService } from "@orm/services/item/itemEnclosureIntegrity";
 

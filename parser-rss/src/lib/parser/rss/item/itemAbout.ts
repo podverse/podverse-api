@@ -1,7 +1,7 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemAboutService } from "@orm/services/item/itemAbout";
-import { compatItemAboutDto } from "@parser-rss/lib/compat/item";
+import { compatItemAboutDto } from "@parser-rss/lib/compat/partytime/item";
 
 export const handleParsedItemAbout = async (parsedItem: Episode, item: Item) => {
   const itemAboutService = new ItemAboutService();

@@ -49,7 +49,6 @@ import { ChannelValueRecipient } from "@orm/entities/channel/channelValueRecipie
 import { Item } from "@orm/entities/item/item";
 import { ItemAbout } from "@orm/entities/item/itemAbout";
 import { ItemChapter } from "@orm/entities/item/itemChapter";
-import { ItemChapterImage } from "@orm/entities/item/itemChapterImage";
 import { ItemChapterLocation } from "@orm/entities/item/itemChapterLocation";
 import { ItemChaptersFeed } from "@orm/entities/item/itemChaptersFeed";
 import { ItemChaptersFeedLog } from "@orm/entities/item/itemChaptersFeedLog";
@@ -156,7 +155,6 @@ export const AppDataSource = new DataSource({
     Item,
     ItemAbout,
     ItemChapter,
-    ItemChapterImage,
     ItemChapterLocation,
     ItemChaptersFeed,
     ItemChaptersFeedLog,

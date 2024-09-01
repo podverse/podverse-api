@@ -1,18 +1,18 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, BeforeInsert, OneToOne } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { LiveItem } from '../liveItem/liveItem';
+import { ItemChaptersFeed } from './itemChaptersFeed';
 const shortid = require('shortid');
 
 @Entity()
-@Unique(['id_text'])
 @Index('item_slug', ['slug'], { unique: true, where: 'slug IS NOT NULL' })
 export class Item {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'varchar', name: 'id_text' })
+  @Column({ type: 'varchar', unique: true })
   id_text!: string;
-
+  
   @Column({ type: 'varchar', name: 'slug', nullable: true })
   slug?: string | null;
 
@@ -34,6 +34,9 @@ export class Item {
 
   @OneToOne(() => LiveItem, liveItem => liveItem.item, { nullable: true })
   live_item!: LiveItem | null;
+
+  @OneToOne(() => ItemChaptersFeed, item_chapters_feed => item_chapters_feed.item, { nullable: true })
+  item_chapters_feed!: ItemChaptersFeed | null;
 
   @Column({ type: 'boolean', name: 'hidden', default: false })
   hidden!: boolean;

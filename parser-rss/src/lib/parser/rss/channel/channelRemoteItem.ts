@@ -1,7 +1,7 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelRemoteItemService } from "@orm/services/channel/channelRemoteItem";
-import { compatChannelRemoteItemDtos } from "@parser-rss/lib/compat/channel";
+import { compatChannelRemoteItemDtos } from "@parser-rss/lib/compat/partytime/channel";
 import { handleParsedManyData } from "../base/handleParsedManyData";
 
 export const handleParsedChannelRemoteItem = async (parsedFeed: FeedObject, channel: Channel) => {

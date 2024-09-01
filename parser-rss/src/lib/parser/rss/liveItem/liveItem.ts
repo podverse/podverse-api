@@ -2,7 +2,7 @@ import { Channel } from "@orm/entities/channel/channel";
 import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
 import { Phase4PodcastLiveItem } from "podcast-partytime/dist/parser/phase/phase-4";
 import { LiveItemService } from "@orm/services/liveItem/liveItem";
-import { compatLiveItemsDtos } from "@parser-rss/lib/compat/liveItem";
+import { compatLiveItemsDtos } from "@parser-rss/lib/compat/partytime/liveItem";
 import { handleParsedItem } from "../item/item";
 import { ItemService } from "@orm/services/item/item";
 

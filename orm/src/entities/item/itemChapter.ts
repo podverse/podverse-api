@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Item } from '@orm/entities/item/item';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
+import { ItemChaptersFeed } from './itemChaptersFeed';
+
+const shortid = require('shortid');
 
 @Entity()
 export class ItemChapter {
@@ -7,14 +9,11 @@ export class ItemChapter {
   id!: number;
 
   @Column({ type: 'varchar', unique: true })
-  text_id!: string;
+  id_text!: string;
 
-  @ManyToOne(() => Item, item => item.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ItemChaptersFeed, item_chapters_feed => item_chapters_feed.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'item_chapters_feed_id' })
-  item_chapters_feed!: Item;
-
-  @Column({ type: 'varchar' })
-  hash!: string;
+  item_chapters_feed!: ItemChaptersFeed;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   start_time!: string;
@@ -26,8 +25,16 @@ export class ItemChapter {
   title?: string | null;
 
   @Column({ type: 'varchar', nullable: true })
+  img?: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
   web_url?: string | null;
 
   @Column({ type: 'boolean', default: true })
   table_of_contents!: boolean;
+
+  @BeforeInsert()
+  setIdText() {
+    this.id_text = shortid.generate();
+  }
 }
