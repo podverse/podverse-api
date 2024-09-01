@@ -7,8 +7,10 @@ type ChannelAboutDto = {
   author: string | null
   explicit: boolean | null
   language: string | null
+  last_pub_date: Date | null
   website_link_url: string | null
   itunes_type: ChannelItunesTypeItunesTypeEnum
+  episode_count: number
 }
 
 export class ChannelAboutService extends BaseOneService<ChannelAbout, 'channel'> {

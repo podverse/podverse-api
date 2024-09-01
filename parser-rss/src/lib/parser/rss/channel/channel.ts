@@ -1,8 +1,10 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
-import { compatChannelDto } from "@parser-rss/lib/compat/partytime/channel";
 import { ChannelService } from "@orm/services/channel/channel";
+import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
+import { compatChannelDto } from "@parser-rss/lib/compat/partytime/channel";
 import { handleParsedChannelAbout } from "@parser-rss/lib/parser/rss/channel/channelAbout";
+import { handleParsedChannelChat } from "@parser-rss/lib/parser/rss/channel/channelChat";
 import { handleParsedChannelDescription } from "@parser-rss/lib/parser/rss/channel/channelDescription";
 import { handleParsedChannelFunding } from "@parser-rss/lib/parser/rss/channel/channelFunding";
 import { handleParsedChannelImage } from "@parser-rss/lib/parser/rss/channel/channelImage";
@@ -15,8 +17,6 @@ import { handleParsedChannelSocialInteract } from "@parser-rss/lib/parser/rss/ch
 import { handleParsedChannelTrailer } from "@parser-rss/lib/parser/rss/channel/channelTrailer";
 import { handleParsedChannelTxt } from "@parser-rss/lib/parser/rss/channel/channelTxt";
 import { handleParsedChannelValue } from "@parser-rss/lib/parser/rss/channel/channelValue";
-import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
-import { handleParsedChannelChat } from "./channelChat";
 
 export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Channel, channelSeasonIndex: ChannelSeasonIndex) => {
   const channelService = new ChannelService();
@@ -49,7 +49,6 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
   // }
 
   await handleParsedChannelRemoteItem(parsedFeed, channel);
-
   await handleParsedChannelSocialInteract(parsedFeed, channel);
   await handleParsedChannelTrailer(parsedFeed, channel, channelSeasonIndex);
   await handleParsedChannelTxt(parsedFeed, channel);

@@ -27,6 +27,9 @@ export class ChannelAbout {
   @Column({ type: 'varchar', nullable: true })
   language!: string | null;
 
+  @Column({ type: 'timestamp', nullable: true })
+  last_pub_date!: Date | null;
+
   @Column({ type: 'varchar', nullable: true })
   website_link_url!: string | null;
 }

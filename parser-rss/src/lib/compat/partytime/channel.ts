@@ -17,8 +17,10 @@ export const compatChannelAboutDto = (parsedFeed: FeedObject) => ({
   author: (Array.isArray(parsedFeed.author) ? parsedFeed.author : parsedFeed.author ? [parsedFeed.author] : [])?.join(', ') || null,
   explicit: getBooleanOrNull(parsedFeed.explicit),
   language: parsedFeed.language || null,
+  last_pub_date: parsedFeed.pubDate || null,
   website_link_url: parsedFeed.link || null,
-  itunes_type: getChannelItunesTypeItunesTypeEnumValue(parsedFeed.itunesType || 'episodic')
+  itunes_type: getChannelItunesTypeItunesTypeEnumValue(parsedFeed.itunesType || 'episodic'),
+  episode_count: (parsedFeed.items?.length || 0) + (parsedFeed.podcastLiveItems?.length || 0),
 })
 
 export const compatChannelChatDto = (parsedFeed: FeedObject) => {

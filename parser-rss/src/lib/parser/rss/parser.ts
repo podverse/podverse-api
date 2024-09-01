@@ -1,5 +1,5 @@
-import { parseFeed } from 'podcast-partytime';
-import { request } from '@helpers/lib/request';
+import { FeedObject, parseFeed } from 'podcast-partytime';
+import { throwRequestError, request } from '@helpers/lib/request';
 import { ChannelService } from '@orm/services/channel/channel';
 import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/partytime/compatFull';
@@ -9,6 +9,7 @@ import { ChannelSeasonService } from '@orm/services/channel/channelSeason';
 import { handleParsedChannelSeasons } from './channel/channelSeason';
 import { handleParsedLiveItems } from './liveItem/liveItem';
 import { handleParsedFeed } from './feed/feed';
+import { FeedLogService } from '@orm/services/feed/feedLog';
 
 /*
   NOTE: All RSS feeds that have a podcast_index_id will be saved to the database.
@@ -42,13 +43,47 @@ export const parseRSSAddByRSSFeed = async (url: string) => {
 }
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
-  const parsedFeed = await getAndParseRSSFeed(url);
- 
+  const feedService = new FeedService();
+  const feedLogService = new FeedLogService();
+  let feed = await feedService.getBy({ url, podcast_index_id });
+
+  if (!feed) {
+    throw new Error(`parseRSSFeedAndSaveToDatabase: feed not found for ${url}`);
+  }
+
+  let parsedFeed: FeedObject | null = null
+  try {
+    parsedFeed = await getAndParseRSSFeed(url);
+    await feedLogService.update(feed, {
+      last_http_status: 200,
+      last_good_http_status_time: new Date()
+    });
+  } catch (error) {
+    const statusCode = (error as any).statusCode as number;
+    const feedLog = await feedLogService._get(feed);
+    if (statusCode) {
+      await feedLogService.update(feed, {
+        last_http_status: statusCode,
+        parse_errors: (feedLog?.parse_errors || 0) + 1,
+      });
+    }
+    return throwRequestError(error);
+  }
+  
+  if (!parsedFeed) {
+    const feedLog = await feedLogService._get(feed);
+    await feedLogService.update(feed, {
+      last_http_status: 200,
+      last_finished_parse_time: new Date(),
+      parse_errors: (feedLog?.parse_errors || 0) + 1,
+    });
+    return throwRequestError('parsedFeed no data found');
+  }
+
   // TODO: add feed log updates
   
-  const feed = await handleParsedFeed(parsedFeed, url, podcast_index_id);
+  feed = await handleParsedFeed(parsedFeed, url, podcast_index_id);
   
-  const feedService = new FeedService();
   try {
     await feedService.update(feed.id, { is_parsing: new Date() });
 
@@ -75,6 +110,8 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
     // TODO: handle new item notifications
     
     // TODO: handle new live_item notifications
+    
+    await feedLogService.update(feed, { last_finished_parse_time: new Date() });
   } finally {
     await feedService.update(feed.id, { is_parsing: null });
   }

@@ -1,26 +1,20 @@
-import { AppDataSource } from '@orm/db';
 import { Feed } from '@orm/entities/feed/feed';
 import { FeedLog } from '@orm/entities/feed/feedLog';
+import { BaseOneService } from '@orm/services/base/baseOneService';
 
-type FeedLogCreateOrUpdateDto = {
-  feed: Feed
+type FeedLogDto = {
+  last_http_status?: number | null
+  last_good_http_status_time?: Date | null
+  last_finished_parse_time?: Date | null
+  parse_errors?: number
 }
 
-export class FeedLogService {
-  private repository = AppDataSource.getRepository(FeedLog);
-
-  async get(feed_id: number): Promise<FeedLog | null> {
-    return await this.repository.findOne({
-      where: { feed: { id: feed_id } },
-    });
+export class FeedLogService extends BaseOneService<FeedLog, 'feed'> {
+  constructor() {
+    super(FeedLog, 'feed');
   }
 
-  async update({ feed }: FeedLogCreateOrUpdateDto): Promise<FeedLog> {
-    let feed_log: FeedLog | null = feed.feed_log
-    if (!feed_log) {
-      feed_log = new FeedLog();
-      feed_log.feed = feed;
-    }
-    return await this.repository.save(feed_log);
+  async update(feed: Feed, dto: FeedLogDto): Promise<FeedLog> {
+    return super._update(feed, dto);
   }
 }

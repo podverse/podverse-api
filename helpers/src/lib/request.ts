@@ -41,3 +41,16 @@ export const request = async (
     }
   }
 }
+
+export const throwRequestError = (error: unknown) => {
+  if (error instanceof Error) {
+    const statusCode = (error as any).statusCode;
+    if (statusCode) {
+      throw new Error(`HTTP Error: ${statusCode} - ${error.message}`);
+    } else {
+      throw new Error(`Unknown Error: ${error.message}`);
+    }
+  } else {
+    throw new Error('An unexpected error occurred');
+  }
+}
