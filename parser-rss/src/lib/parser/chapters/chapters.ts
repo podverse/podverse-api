@@ -1,11 +1,30 @@
-import { request } from "@helpers/lib/request"
+import { request, throwRequestError } from "@helpers/lib/request"
 import { Item } from "@orm/entities/item/item";
+import { ItemChaptersFeed } from "@orm/entities/item/itemChaptersFeed";
 import { ItemChapterService } from "@orm/services/item/itemChapter";
+import { ItemChaptersFeedLogService } from "@orm/services/item/itemChaptersFeedLog";
 import { compatParsedChapters } from "@parser-rss/lib/compat/chapters/chapters";
 
-const getParsedChapters = async (url: string) => {
-  const response = await request(url);
-  return compatParsedChapters(response.chapters)
+const getParsedChapters = async (item_chapters_feed: ItemChaptersFeed) => {
+  const itemChaptersFeedLogService = new ItemChaptersFeedLogService();
+  try {
+    const response = await request(item_chapters_feed.url);
+    await itemChaptersFeedLogService.update(item_chapters_feed, {
+      last_http_status: 200,
+      last_good_http_status_time: new Date()
+    });
+    return compatParsedChapters(response.chapters)
+  } catch (error) {
+    const statusCode = (error as any).statusCode as number;
+    const item_chapters_feed_log = await itemChaptersFeedLogService._get(item_chapters_feed);
+    if (statusCode) {
+      await itemChaptersFeedLogService.update(item_chapters_feed, {
+        last_http_status: statusCode,
+        parse_errors: (item_chapters_feed_log?.parse_errors || 0) + 1,
+      });
+    }
+    return throwRequestError(error);
+  }
 }
 
 export const parseChapters = async (item: Item): Promise<void> => {
@@ -15,8 +34,7 @@ export const parseChapters = async (item: Item): Promise<void> => {
     return
   }
 
-  const url = item_chapters_feed.url
-  const parsedChapters = await getParsedChapters(url);
+  const parsedChapters = await getParsedChapters(item_chapters_feed);
   
   const itemChapterService = new ItemChapterService()
 
@@ -31,6 +49,7 @@ export const parseChapters = async (item: Item): Promise<void> => {
 
   const itemChapterIdsToDelete = existingChaptersIds.filter(id => !updatedChaptersIds.includes(id));
   await itemChapterService.deleteMany(itemChapterIdsToDelete);
-  
-  // TODO: handle chapter feed logging
+
+  const itemChaptersFeedLogService = new ItemChaptersFeedLogService();
+  await itemChaptersFeedLogService.update(item_chapters_feed, { last_finished_parse_time: new Date() });
 }
