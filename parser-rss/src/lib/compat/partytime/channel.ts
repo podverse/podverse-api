@@ -143,7 +143,7 @@ export const compatChannelPodrollRemoteItemDtos = (parsedFeed: FeedObject) => {
           feed_guid: ri.feedGuid,
           feed_url: ri.feedUrl || null,
           item_guid: null,
-          title: /* TODO: ri.title || */ null
+          title: /* PTDO: ri.title || */ null
         })
       }
     }
