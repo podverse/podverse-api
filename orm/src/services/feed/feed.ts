@@ -2,12 +2,10 @@ import { AppDataSource } from '@orm/db';
 import { Feed } from '@orm/entities/feed/feed';
 import { FeedFlagStatusStatusEnum } from '@orm/entities/feed/feedFlagStatus';
 import { ChannelService } from '@orm/services/channel/channel';
-import { FeedLogService } from '@orm/services/feed/feedLog';
 import { FeedFlagStatusService } from './feedFlagStatus';
 import { applyProperties } from '@orm/lib/applyProperties';
 
 const channelService = new ChannelService();
-const feedLogService = new FeedLogService();
 
 type FeedCreateDto = {
   url: string,

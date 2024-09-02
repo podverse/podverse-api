@@ -4,7 +4,6 @@ import { Medium, MediumEnum } from '@orm/entities/medium';
 const shortid = require('shortid');
 
 @Entity('channel')
-@Unique(['podcast_index_id'])
 @Unique(['podcast_guid'])
 @Index('channel_podcast_guid_unique', ['podcast_guid'], { where: 'podcast_guid IS NOT NULL' })
 @Index('channel_slug', ['slug'], { where: 'slug IS NOT NULL' })
@@ -25,7 +24,7 @@ export class Channel {
   @Column({ type: 'int', nullable: false })
   feed_id!: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', unique: true })
   podcast_index_id!: number;
 
   @Column({ type: 'uuid', nullable: true })
