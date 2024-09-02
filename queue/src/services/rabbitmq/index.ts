@@ -1,7 +1,7 @@
 import amqp, { Connection, Channel } from "amqplib";
 import logger from '@helpers/lib/logs/logger';
-import { request } from "@helpers/lib/request";
 import { config } from '@queue/config';
+import { rabbitMQRequest } from '@queue/services/rabbitmq/rabbitMQRequest';
 
 const connectionUri = `amqp://${config.rabbitmq.username}:${config.rabbitmq.password}@${config.rabbitmq.host}:${config.rabbitmq.port}${config.rabbitmq.vhost}`;
 
@@ -9,6 +9,8 @@ type ParserRSSMessage = {
   url: string;
   podcast_index_id: number | null;
 }
+
+type Message = ParserRSSMessage;
 
 export class RabbitMQService {
   private connection: Connection | null = null;
@@ -37,7 +39,7 @@ export class RabbitMQService {
       try {
         await this.assertQueue(queueName);
       } catch (error) {
-        logger.error(`Failed to create queue ${queueName}`, error);
+        throw new Error(`Failed to create queue ${queueName} ${error}`);
       }
     }
   }
@@ -55,8 +57,8 @@ export class RabbitMQService {
       logger.error('Channel is not initialized');
     }
   }
-
-  async sendMessageParserRSS(queueName: string, message: ParserRSSMessage) {
+ 
+  async sendMessage(queueName: string, message: Message) {
     if (this.channel) {
       const messageString = JSON.stringify(message);
       const messageBuffer = Buffer.from(messageString);
@@ -67,13 +69,13 @@ export class RabbitMQService {
     }
   }
 
-  async getMessageParserRSS(queueName: string): Promise<ParserRSSMessage | null> {
+  async getMessage(queueName: string): Promise<Message | null> {
     if (this.channel) {
       const msg = await this.channel.get(queueName, { noAck: false });
       if (msg) {
-        const messageString = msg.content.toString();
-        const message: ParserRSSMessage = JSON.parse(messageString);
         this.channel.ack(msg);
+        const messageString = msg.content.toString();
+        const message: Message = JSON.parse(messageString);
         logger.info(`Message received from queue ${queueName}: ${messageString}`);
         return message;
       } else {
@@ -87,23 +89,8 @@ export class RabbitMQService {
   }
   
   async listAllQueues(): Promise<string[]> {
-    const managementUri = `http://${config.rabbitmq.host}:15672/api/queues`;
-
-    const username = config.rabbitmq.username;
-    const password = config.rabbitmq.password;
-
-    if (!username || !password) {
-      logger.error('RabbitMQ username and password are required');
-      return [];
-    }
-
-    const auth = {
-      username,
-      password
-    };
-
     try {
-      const response = await request(managementUri, { auth });
+      const response = await rabbitMQRequest('/queues');
       return response.map((queue: { name: string }) => queue.name);
     } catch (error) {
       logger.error('Failed to list queues', error);

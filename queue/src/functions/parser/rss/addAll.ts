@@ -19,6 +19,6 @@ export const parserRSSAddAll = async (config: ParserRSSFeedsAddAllConfig) => {
       podcast_index_id: feed.channel.podcast_index_id
     };
 
-    await rabbitMQService.sendMessageParserRSS(config.queueName, message);
+    await rabbitMQService.sendMessage(config.queueName, message);
   }
 };
