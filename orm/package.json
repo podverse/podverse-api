@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "pg": "^8.12.0",
     "shortid": "^2.2.16",
     "typeorm": "^0.3.20",
     "typeorm-naming-strategies": "^4.1.0"
@@ -24,6 +25,7 @@
     "@helpers": "../helpers/src",
     "@orm": "src",
     "@parser-rss": "../parser-rss/src",
+    "@queue": "../queue/src",
     "@router-api": "../router-api/src"
   }
 }

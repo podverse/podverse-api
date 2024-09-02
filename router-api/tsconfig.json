@@ -13,6 +13,7 @@
     "rootDir": "../",
     "baseUrl": ".",
     "paths": {
+      "@queue/*": ["../queue/src/*"],
       "@helpers/*": ["../helpers/src/*"],
       "@orm/*": ["../orm/src/*"],
       "@parser-rss/*": ["../parser-rss/src/*"],
@@ -23,6 +24,7 @@
     "../helpers/src/**/*.ts",
     "../orm/src/**/*.ts",
     "../parser-rss/src/**/*.ts",
+    "../queue/src/**/*.ts",
     "./src/**/*.ts"
   ],
   "exclude": ["node_modules"]

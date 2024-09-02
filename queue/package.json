@@ -1,0 +1,35 @@
+{
+  "name": "podverse-queue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "parserRSSAddAll": "ts-node ./src/index.ts parserRSSAddAll",
+    "start": "ts-node ./src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.12.1",
+    "@types/amqplib": "^0.10.5",
+    "amqplib": "^0.10.4",
+    "module-alias": "^2.2.3"
+  },
+  "devDependencies": {
+    "@eslint/config-array": "^0.18.0",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.8.0",
+    "@types/node": "^22.5.2",
+    "eslint": "^9.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1"
+  },
+  "_moduleAliases": {
+    "@helpers": "../helpers/src",
+    "@orm": "../orm/src",
+    "@parser-rss": "../parser-rss/src",
+    "@queue": "src",
+    "@router-api": "../router-api/src"
+  }
+}

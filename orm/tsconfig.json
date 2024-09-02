@@ -16,6 +16,7 @@
       "@helpers/*": ["../helpers/src/*"],
       "@orm/*": ["src/*"],
       "@parser-rss/*": ["../parser-rss/src/*"],
+      "@queue/*": ["../queue/src/*"],
       "@router-api/*": ["../router-api/src/*"]
     }
   },
@@ -23,6 +24,7 @@
     "../helpers/src/**/*.ts",
     "./src/**/*.ts",
     "../parser-rss/src/**/*.ts",
+    "../queue/src/**/*.ts",
     "../router-api/src/**/*.ts"
   ],
   "exclude": ["node_modules"]

@@ -1,5 +1,5 @@
-import { FeedObject, parseFeed } from 'podcast-partytime';
-import { throwRequestError, request } from '@helpers/lib/request';
+import { parseFeed } from 'podcast-partytime';
+import { request } from '@helpers/lib/request';
 import { ChannelService } from '@orm/services/channel/channel';
 import { FeedService } from '@orm/services/feed/feed';
 import { convertParsedRSSFeedToCompat } from '@parser-rss/lib/compat/partytime/compatFull';
