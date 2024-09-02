@@ -15,7 +15,7 @@
     "paths": {
       "@helpers/*": ["../helpers/src/*"],
       "@orm/*": ["src/*"],
-      "@parser-rss/*": ["../parser-rss/src/*"],
+      "@parser/*": ["../parser/src/*"],
       "@queue/*": ["../queue/src/*"],
       "@router-api/*": ["../router-api/src/*"]
     }
@@ -23,7 +23,7 @@
   "include": [
     "../helpers/src/**/*.ts",
     "./src/**/*.ts",
-    "../parser-rss/src/**/*.ts",
+    "../parser/src/**/*.ts",
     "../queue/src/**/*.ts",
     "../router-api/src/**/*.ts"
   ],

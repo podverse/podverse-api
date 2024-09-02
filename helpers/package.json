@@ -11,7 +11,7 @@
   "_moduleAliases": {
     "@helpers": "src",
     "@orm": "../orm/src",
-    "@parser-rss": "../parser-rss/src",
+    "@parser": "../parser/src",
     "@queue": "../queue/src",
     "@router-api": "../router-api/src"
   },

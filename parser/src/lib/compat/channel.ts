@@ -1,5 +1,5 @@
 import { FeedObject, Phase4Medium } from "podcast-partytime"
-import { compatChannelValue } from "@parser-rss/lib/compat/partytime/value"
+import { compatChannelValue } from "@parser/lib/compat/partytime/value"
 import { createSortableTitle } from "@orm/lib/sortableTitle"
 import { getMediumEnumValue } from "@orm/entities/medium"
 import { getChannelItunesTypeItunesTypeEnumValue } from "@orm/entities/channel/channelItunesType"

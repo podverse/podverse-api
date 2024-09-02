@@ -1,7 +1,7 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelSocialInteractService } from "@orm/services/channel/channelSocialInteract";
-import { compatChannelSocialInteractDtos } from "@parser-rss/lib/compat/partytime/channel";
+import { compatChannelSocialInteractDtos } from "@parser/lib/compat/partytime/channel";
 import { handleParsedManyData } from "../base/handleParsedManyData";
 
 export const handleParsedChannelSocialInteract = async (parsedFeed: FeedObject, channel: Channel) => {

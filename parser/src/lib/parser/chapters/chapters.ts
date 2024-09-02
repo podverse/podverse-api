@@ -3,7 +3,7 @@ import { Item } from "@orm/entities/item/item";
 import { ItemChaptersFeed } from "@orm/entities/item/itemChaptersFeed";
 import { ItemChapterService } from "@orm/services/item/itemChapter";
 import { ItemChaptersFeedLogService } from "@orm/services/item/itemChaptersFeedLog";
-import { compatParsedChapters } from "@parser-rss/lib/compat/chapters/chapters";
+import { compatParsedChapters } from "@parser/lib/compat/chapters/chapters";
 
 const getParsedChapters = async (item_chapters_feed: ItemChaptersFeed) => {
   const itemChaptersFeedLogService = new ItemChaptersFeedLogService();

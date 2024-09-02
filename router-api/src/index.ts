@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import express, { NextFunction, Request, Response } from "express";
 import logger, { logError } from '@helpers/lib/logs/logger';
 import { AppDataSource } from "@orm/db";
-import { parseAllRSSFeeds } from '@parser-rss/lib/parser/rss/parser';
+import { parseAllRSSFeeds } from '@parser/lib/parser/rss/parser';
 import { config } from '@router-api/config';
 import { channelRouter } from '@router-api/routes/channel';
 import { feedRouter } from '@router-api/routes/feed';

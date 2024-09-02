@@ -1,7 +1,7 @@
 import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelTrailerDto, ChannelTrailerService } from "@orm/services/channel/channelTrailer";
-import { compatChannelTrailerDtos } from "@parser-rss/lib/compat/partytime/channel";
+import { compatChannelTrailerDtos } from "@parser/lib/compat/partytime/channel";
 import { ChannelSeason } from "@orm/entities/channel/channelSeason";
 
 export const handleParsedChannelTrailer = async (

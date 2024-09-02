@@ -16,14 +16,14 @@
       "@queue/*": ["../queue/src/*"],
       "@helpers/*": ["../helpers/src/*"],
       "@orm/*": ["../orm/src/*"],
-      "@parser-rss/*": ["../parser-rss/src/*"],
+      "@parser/*": ["../parser/src/*"],
       "@router-api/*": ["src/*"]
     }
   },
   "include": [
     "../helpers/src/**/*.ts",
     "../orm/src/**/*.ts",
-    "../parser-rss/src/**/*.ts",
+    "../parser/src/**/*.ts",
     "../queue/src/**/*.ts",
     "./src/**/*.ts"
   ],
