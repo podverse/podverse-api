@@ -46,6 +46,7 @@ export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podc
   const feedService = new FeedService();
   const feed = await feedService.getOrCreate({ url, podcast_index_id });
   
+  // TODO: move before partytime parsing
   if (!checkIfFeedFlagStatusShouldParse(feed.feed_flag_status.id)) {
     throw new Error(`parseRSSFeedAndSaveToDatabase: feed_flag_status.status is not None or AlwaysAllow for ${url}`);
   }
@@ -62,6 +63,7 @@ export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podc
 }
 
 const checkIfFeedIsParsing = (feed: Feed): void => {
+  // TODO: handle with caching db / redis instead of database?
   if (feed.is_parsing) {
     const parsingDate = new Date(feed.is_parsing);
     const currentDate = new Date();
