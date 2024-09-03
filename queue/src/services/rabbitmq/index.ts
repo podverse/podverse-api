@@ -26,6 +26,7 @@ export class RabbitMQService {
         logger.info('RabbitMQ connection closed');
       });
       this.channel = await this.connection.createChannel();
+      await this.deleteAllQueues();
       await this.createQueues();
     } catch (error) {
       logger.error('Failed to initialize RabbitMQ connection', error);
@@ -90,7 +91,8 @@ export class RabbitMQService {
   
   async listAllQueues(): Promise<string[]> {
     try {
-      const response = await rabbitMQRequest('/queues');
+      const response: any = await rabbitMQRequest('/queues');
+      console.log('response', response);
       return response.map((queue: { name: string }) => queue.name);
     } catch (error) {
       logger.error('Failed to list queues', error);

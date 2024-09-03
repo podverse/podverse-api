@@ -3,7 +3,7 @@ require('@dotenvx/dotenvx').config();
 
 import logger from '@helpers/lib/logs/logger';
 import { AppDataSource } from '@orm/db';
-import commands from '@queue/commands';
+import commands from '@workers/commands';
 import { parseArgs } from './commands/parseArgs';
 
 const args = parseArgs();

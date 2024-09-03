@@ -20,7 +20,11 @@ export async function rabbitMQRequest<T>(path: string): Promise<T> {
 
   try {
     const response: string = await request(managementUri, { auth });
-    return JSON.parse(response) as T;
+    if (typeof response === 'string') {
+      return JSON.parse(response) as T;
+    } else {
+      return response as T;
+    }
   } catch (error) {
     logger.error(`Failed to make request to ${path}`, error);
     throw error;

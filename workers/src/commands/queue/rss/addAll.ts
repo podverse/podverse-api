@@ -1,8 +1,8 @@
-import { CommandLineArgs } from "@queue/commands";
+import { CommandLineArgs } from "@workers/commands";
 import { parserRSSAddAll as parserRSSAddAllFunction } from '@queue/functions/parser/rss/addAll';
 import { _parserRSS, ParserRSSQueueName } from "@queue/lib/parser/rss";
 
-export const parserRSSAddAll = async (args: CommandLineArgs) => {
+export const queueParserRSSAddAll = async (args: CommandLineArgs) => {
   const queueName = Array.isArray(args.q) ? args.q[0] : args.q;
   if (!queueName) {
     throw new Error('queueName (-q) parameter is required');
