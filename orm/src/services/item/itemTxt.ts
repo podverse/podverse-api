@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemTxt } from '@orm/entities/item/itemTxt';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -8,8 +9,8 @@ type ItemTxtDto = {
 }
 
 export class ItemTxtService extends BaseManyService<ItemTxt, 'item'> {
-  constructor() {
-    super(ItemTxt, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemTxt, 'item', transactionalEntityManager);
   }
 
   async update(channel: Item, dto: ItemTxtDto): Promise<ItemTxt> {

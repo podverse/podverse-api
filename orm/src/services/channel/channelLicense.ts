@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelLicense } from '@orm/entities/channel/channelLicense';
 import { BaseOneService } from '@orm/services/base/baseOneService';
@@ -8,8 +9,8 @@ type ChannelLicenseDto = {
 }
 
 export class ChannelLicenseService extends BaseOneService<ChannelLicense, 'channel'> {
-  constructor() {
-    super(ChannelLicense, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelLicense, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelLicenseDto): Promise<ChannelLicense> {

@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { ChannelValue } from '@orm/entities/channel/channelValue';
 import { ChannelValueRecipient } from '@orm/entities/channel/channelValueRecipient';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -13,8 +14,8 @@ type ChannelValueRecipientDto = {
 }
 
 export class ChannelValueRecipientService extends BaseManyService<ChannelValueRecipient, 'channel_value'> {
-  constructor() {
-    super(ChannelValueRecipient, 'channel_value');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelValueRecipient, 'channel_value', transactionalEntityManager);
   }
 
   async update(channel_value: ChannelValue, dto: ChannelValueRecipientDto): Promise<ChannelValueRecipient> {

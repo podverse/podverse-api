@@ -1,6 +1,7 @@
 import { ItemEnclosure } from '@orm/entities/item/itemEnclosure';
 import { ItemEnclosureIntegrity } from '@orm/entities/item/itemEnclosureIntegrity';
 import { BaseOneService } from '@orm/services/base/baseOneService';
+import { EntityManager } from 'typeorm';
 
 type ItemEnclosureIntegrityDto = {
   type: "sri" | "pgp-signature"
@@ -8,8 +9,8 @@ type ItemEnclosureIntegrityDto = {
 }
 
 export class ItemEnclosureIntegrityService extends BaseOneService<ItemEnclosureIntegrity, 'item_enclosure'> {
-  constructor() {
-    super(ItemEnclosureIntegrity, 'item_enclosure');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemEnclosureIntegrity, 'item_enclosure', transactionalEntityManager);
   }
 
   async update(item_enclosure: ItemEnclosure, dto: ItemEnclosureIntegrityDto): Promise<ItemEnclosureIntegrity> {

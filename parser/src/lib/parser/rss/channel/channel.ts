@@ -1,4 +1,5 @@
 import { FeedObject } from "podcast-partytime";
+import { AppDataSource } from "@orm/db";
 import { Channel } from "@orm/entities/channel/channel";
 import { ChannelService } from "@orm/services/channel/channel";
 import { ChannelSeasonIndex } from "@orm/services/channel/channelSeason";
@@ -23,34 +24,35 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
   const channelDto = compatChannelDto(parsedFeed);
   await channelService.update(channel.id, channelDto);
   
-  await handleParsedChannelAbout(parsedFeed, channel);
-
   // TODO: add channelCategory support
-
-  await handleParsedChannelChat(parsedFeed, channel);
-  await handleParsedChannelDescription(parsedFeed, channel);
-  await handleParsedChannelFunding(parsedFeed, channel);
-  await handleParsedChannelImage(parsedFeed, channel);
-  await handleParsedChannelLicense(parsedFeed, channel);
-  await handleParsedChannelLocation(parsedFeed, channel);
-  await handleParsedChannelPerson(parsedFeed, channel);
-  await handleParsedChannelPodroll(parsedFeed, channel);
-
-  // PTDO: add channelPublisher support
-  // const channelPublisherService = new ChannelPublisherService();
-  // const channelPublisherRemoteItemService = new ChannelPublisherRemoteItemService();
-
-  // const channelPublisherRemoteItemDtos = compatChannelPublisherRemoteItemDtos(parsedFeed);
-  // if (channelPublisherRemoteItemDtos.length > 0) {
-  //   const channel_publisher = await channelPublisherService.update(channel);
-  //   await channelPublisherRemoteItemService.updateMany(channel_publisher, channelPodrollRemoteItemDtos);
-  // } else {
-  //   await channelPublisherService.delete(channel);
-  // }
-
-  await handleParsedChannelRemoteItem(parsedFeed, channel);
-  await handleParsedChannelSocialInteract(parsedFeed, channel);
-  await handleParsedChannelTrailer(parsedFeed, channel, channelSeasonIndex);
-  await handleParsedChannelTxt(parsedFeed, channel);
-  await handleParsedChannelValue(parsedFeed, channel);
+  
+  await AppDataSource.manager.transaction(async transactionalEntityManager => {
+    await handleParsedChannelAbout(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelChat(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelDescription(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelFunding(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelImage(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelLicense(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelLocation(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelPerson(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelPodroll(parsedFeed, channel, transactionalEntityManager);
+  
+    // PTDO: add channelPublisher support
+    // const channelPublisherService = new ChannelPublisherService();
+    // const channelPublisherRemoteItemService = new ChannelPublisherRemoteItemService();
+  
+    // const channelPublisherRemoteItemDtos = compatChannelPublisherRemoteItemDtos(parsedFeed);
+    // if (channelPublisherRemoteItemDtos.length > 0) {
+    //   const channel_publisher = await channelPublisherService.update(channel);
+    //   await channelPublisherRemoteItemService.updateMany(channel_publisher, channelPodrollRemoteItemDtos);
+    // } else {
+    //   await channelPublisherService.delete(channel);
+    // }
+  
+    await handleParsedChannelRemoteItem(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelSocialInteract(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelTrailer(parsedFeed, channel, channelSeasonIndex, transactionalEntityManager);
+    await handleParsedChannelTxt(parsedFeed, channel, transactionalEntityManager);
+    await handleParsedChannelValue(parsedFeed, channel, transactionalEntityManager);
+  });
 }

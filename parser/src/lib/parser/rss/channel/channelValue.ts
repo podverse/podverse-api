@@ -1,13 +1,18 @@
+import { FeedObject } from "podcast-partytime";
 import { Channel } from "@orm/entities/channel/channel";
+import { EntityManager } from "@orm/lib/typeORMTypes";
 import { ChannelValueService } from "@orm/services/channel/channelValue";
 import { ChannelValueRecipientService } from "@orm/services/channel/channelValueRecipient";
 import { compatChannelValueDtos } from "@parser/lib/compat/partytime/channel";
-import { FeedObject } from "podcast-partytime";
 
-export const handleParsedChannelValue = async (parsedFeed: FeedObject, channel: Channel) => {
-  const channelValueService = new ChannelValueService();
+export const handleParsedChannelValue = async (
+  parsedFeed: FeedObject,
+  channel: Channel,
+  transactionalEntityManager: EntityManager
+) => {
+  const channelValueService = new ChannelValueService(transactionalEntityManager);
   const channelValueDtos = compatChannelValueDtos(parsedFeed);
-  const channelValueRecipientService = new ChannelValueRecipientService();
+  const channelValueRecipientService = new ChannelValueRecipientService(transactionalEntityManager);
   
   if (channelValueDtos.length > 0) {
     for (const channelValueDto of channelValueDtos) {

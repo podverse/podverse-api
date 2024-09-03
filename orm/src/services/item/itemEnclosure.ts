@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemEnclosure } from '@orm/entities/item/itemEnclosure';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -15,8 +16,8 @@ type ItemEnclosureDto = {
 }
 
 export class ItemEnclosureService extends BaseManyService<ItemEnclosure, 'item'> {
-  constructor() {
-    super(ItemEnclosure, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemEnclosure, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemEnclosureDto): Promise<ItemEnclosure> {

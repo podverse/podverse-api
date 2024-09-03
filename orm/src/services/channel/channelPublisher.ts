@@ -2,7 +2,7 @@ import { Channel } from '@orm/entities/channel/channel';
 import { ChannelPublisher } from '@orm/entities/channel/channelPublisher';
 import { BaseOneService } from '@orm/services/base/baseOneService';
 
-type ChannelPublisherDto = {}
+type ChannelPublisherDto = object
 
 export class ChannelPublisherService extends BaseOneService<ChannelPublisher, 'channel'> {
   constructor() {

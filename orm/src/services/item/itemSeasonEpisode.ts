@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemSeasonEpisode } from '@orm/entities/item/itemSeasonEpisode';
 import { BaseOneService } from '../base/baseOneService';
@@ -8,8 +9,8 @@ type ItemSeasonEpisodeDto = {
 }
 
 export class ItemSeasonEpisodeService extends BaseOneService<ItemSeasonEpisode, 'item'> {
-  constructor() {
-    super(ItemSeasonEpisode, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemSeasonEpisode, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemSeasonEpisodeDto): Promise<ItemSeasonEpisode> {

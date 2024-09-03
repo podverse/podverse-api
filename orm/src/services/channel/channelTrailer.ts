@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelSeason } from '@orm/entities/channel/channelSeason';
 import { ChannelTrailer } from '@orm/entities/channel/channelTrailer';
@@ -13,8 +14,8 @@ export type ChannelTrailerDto = {
 }
 
 export class ChannelTrailerService extends BaseManyService<ChannelTrailer, 'channel'> {
-  constructor() {
-    super(ChannelTrailer, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelTrailer, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelTrailerDto): Promise<ChannelTrailer> {

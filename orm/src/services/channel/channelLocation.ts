@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelLocation } from '@orm/entities/channel/channelLocation';
 import { BaseOneService } from '@orm/services/base/baseOneService';
@@ -9,8 +10,8 @@ type ChannelLocationDto = {
 }
 
 export class ChannelLocationService extends BaseOneService<ChannelLocation, 'channel'> {
-  constructor() {
-    super(ChannelLocation, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelLocation, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelLocationDto): Promise<ChannelLocation> {

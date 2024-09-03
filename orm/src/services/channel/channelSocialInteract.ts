@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelSocialInteract } from '@orm/entities/channel/channelSocialInteract';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -11,8 +12,8 @@ type ChannelSocialInteractDto = {
 }
 
 export class ChannelSocialInteractService extends BaseManyService<ChannelSocialInteract, 'channel'> {
-  constructor() {
-    super(ChannelSocialInteract, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelSocialInteract, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelSocialInteractDto): Promise<ChannelSocialInteract> {

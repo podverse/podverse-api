@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelAbout } from '@orm/entities/channel/channelAbout';
 import { ChannelItunesTypeItunesTypeEnum } from '@orm/entities/channel/channelItunesType';
@@ -14,8 +15,8 @@ type ChannelAboutDto = {
 }
 
 export class ChannelAboutService extends BaseOneService<ChannelAbout, 'channel'> {
-  constructor() {
-    super(ChannelAbout, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelAbout, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelAboutDto): Promise<ChannelAbout> {

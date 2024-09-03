@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemImage } from '@orm/entities/item/itemImage';
 import { filterDtosByHighestWidth } from '@orm/lib/filterImageDtosByHighestWidth';
@@ -9,8 +10,8 @@ type ItemImageDto = {
 }
 
 export class ItemImageService extends BaseManyService<ItemImage, 'item'> {
-  constructor() {
-    super(ItemImage, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemImage, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemImageDto): Promise<ItemImage> {

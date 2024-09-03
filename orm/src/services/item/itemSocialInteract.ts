@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemSocialInteract } from '@orm/entities/item/itemSocialInteract';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -11,8 +12,8 @@ type ItemSocialInteractDto = {
 }
 
 export class ItemSocialInteractService extends BaseManyService<ItemSocialInteract, 'item'> {
-  constructor() {
-    super(ItemSocialInteract, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemSocialInteract, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemSocialInteractDto): Promise<ItemSocialInteract> {

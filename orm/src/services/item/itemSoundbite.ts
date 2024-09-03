@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemSoundbite } from '@orm/entities/item/itemSoundbite';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -9,8 +10,8 @@ type ItemSoundbiteDto = {
 }
 
 export class ItemSoundbiteService extends BaseManyService<ItemSoundbite, 'item'> {
-  constructor() {
-    super(ItemSoundbite, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemSoundbite, 'item', transactionalEntityManager);
   }
 
   async _getByIdText(id_text: string): Promise<ItemSoundbite | null> {

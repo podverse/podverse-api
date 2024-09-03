@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemAbout } from '@orm/entities/item/itemAbout';
 import { ItemItunesEpisodeTypeEnum } from '@orm/entities/item/itemItunesEpisodeType';
@@ -11,8 +12,8 @@ type ItemAboutDto = {
 }
 
 export class ItemAboutService extends BaseOneService<ItemAbout, 'item'> {
-  constructor() {
-    super(ItemAbout, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemAbout, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemAboutDto): Promise<ItemAbout> {

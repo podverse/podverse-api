@@ -1,19 +1,24 @@
 import { Episode } from "podcast-partytime";
 import { Item } from "@orm/entities/item/item";
 import { ItemValueService } from "@orm/services/item/itemValue";
-import { compatItemValueDtos } from "@parser/lib/compat/partytime/item";
+import { EntityManager } from "@orm/lib/typeORMTypes";
 import { ItemValueRecipientService } from "@orm/services/item/itemValueRecipient";
 import { ItemValueTimeSplitService } from "@orm/services/item/itemValueTimeSplit";
 import { ItemValueTimeSplitRecipientService } from "@orm/services/item/itemValueTimeSplitRecipient";
 import { ItemValueTimeSplitRemoteItemService } from "@orm/services/item/itemValueTimeSplitRemoteItem";
+import { compatItemValueDtos } from "@parser/lib/compat/partytime/item";
 
-export const handleParsedItemValue = async (parsedItem: Episode, item: Item) => {
-  const itemValueService = new ItemValueService();
+export const handleParsedItemValue = async (
+  parsedItem: Episode,
+  item: Item,
+  transactionalEntityManager: EntityManager
+) => {
+  const itemValueService = new ItemValueService(transactionalEntityManager);
   const itemValueDtos = compatItemValueDtos(parsedItem);
-  const itemValueRecipientService = new ItemValueRecipientService();
-  const itemValueTimeSplitService = new ItemValueTimeSplitService();
-  const itemValueTimeSplitRecipientService = new ItemValueTimeSplitRecipientService();
-  const itemValueTimeSplitRemoteItemService = new ItemValueTimeSplitRemoteItemService();
+  const itemValueRecipientService = new ItemValueRecipientService(transactionalEntityManager);
+  const itemValueTimeSplitService = new ItemValueTimeSplitService(transactionalEntityManager);
+  const itemValueTimeSplitRecipientService = new ItemValueTimeSplitRecipientService(transactionalEntityManager);
+  const itemValueTimeSplitRemoteItemService = new ItemValueTimeSplitRemoteItemService(transactionalEntityManager);
 
   if (itemValueDtos.length > 0) {
     for (const itemValueDto of itemValueDtos) {

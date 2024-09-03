@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemChaptersFeed } from '@orm/entities/item/itemChaptersFeed';
 import { BaseOneService } from '@orm/services/base/baseOneService';
@@ -8,8 +9,8 @@ type ItemChaptersFeedDto = {
 }
 
 export class ItemChaptersFeedService extends BaseOneService<ItemChaptersFeed, 'item'> {
-  constructor() {
-    super(ItemChaptersFeed, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemChaptersFeed, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemChaptersFeedDto): Promise<ItemChaptersFeed> {

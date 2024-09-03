@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { ItemValue } from '@orm/entities/item/itemValue';
 import { ItemValueRecipient } from '@orm/entities/item/itemValueRecipient';
 import { BaseManyService } from '@orm/services/base/baseManyService';
@@ -13,8 +14,8 @@ type ItemValueRecipientDto = {
 }
 
 export class ItemValueRecipientService extends BaseManyService<ItemValueRecipient, 'item_value'> {
-  constructor() {
-    super(ItemValueRecipient, 'item_value');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemValueRecipient, 'item_value', transactionalEntityManager);
   }
 
   async update(item_value: ItemValue, dto: ItemValueRecipientDto): Promise<ItemValueRecipient> {

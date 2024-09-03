@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { ChannelImage } from '@orm/entities/channel/channelImage';
 import { filterDtosByHighestWidth } from '@orm/lib/filterImageDtosByHighestWidth';
@@ -9,8 +10,8 @@ type ChannelImageDto = {
 }
 
 export class ChannelImageService extends BaseManyService<ChannelImage, 'channel'> {
-  constructor() {
-    super(ChannelImage, 'channel');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelImage, 'channel', transactionalEntityManager);
   }
 
   async update(channel: Channel, dto: ChannelImageDto): Promise<ChannelImage> {

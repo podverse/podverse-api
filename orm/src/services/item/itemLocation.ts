@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { Item } from '@orm/entities/item/item';
 import { ItemLocation } from '@orm/entities/item/itemLocation';
 import { BaseOneService } from '@orm/services/base/baseOneService';
@@ -9,8 +10,8 @@ type ItemLocationDto = {
 }
 
 export class ItemLocationService extends BaseOneService<ItemLocation, 'item'> {
-  constructor() {
-    super(ItemLocation, 'item');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ItemLocation, 'item', transactionalEntityManager);
   }
 
   async update(item: Item, dto: ItemLocationDto): Promise<ItemLocation> {

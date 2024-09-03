@@ -1,6 +1,6 @@
+import { EntityManager } from 'typeorm';
 import { ChannelPodroll } from '@orm/entities/channel/channelPodroll';
 import { ChannelPodrollRemoteItem } from '@orm/entities/channel/channelPodrollRemoteItem';
-import { MediumEnum } from '@orm/entities/medium';
 import { BaseRemoteItemsService } from '@orm/services/base/baseRemoteItemsService';
 
 type ChannelPodrollRemoteItemDto = {
@@ -11,8 +11,8 @@ type ChannelPodrollRemoteItemDto = {
 }
 
 export class ChannelPodrollRemoteItemService extends BaseRemoteItemsService<ChannelPodrollRemoteItem, 'channel_podroll'> {
-  constructor() {
-    super(ChannelPodrollRemoteItem, 'channel_podroll');
+  constructor(transactionalEntityManager?: EntityManager) {
+    super(ChannelPodrollRemoteItem, 'channel_podroll', transactionalEntityManager);
   }
 
   async update(channel_podroll: ChannelPodroll, dto: ChannelPodrollRemoteItemDto): Promise<ChannelPodrollRemoteItem> {
