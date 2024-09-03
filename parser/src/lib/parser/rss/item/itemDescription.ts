@@ -13,4 +13,4 @@ export const handleParsedItemDescription = async (
   const itemDescriptionService = new ItemDescriptionService(transactionalEntityManager);
   const itemDescriptionDto = compatItemDescriptionDto(parsedItem);
   await handleParsedOneData(item, itemDescriptionService, itemDescriptionDto);
-}
+};

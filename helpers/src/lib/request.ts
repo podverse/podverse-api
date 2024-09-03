@@ -1,14 +1,15 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { config } from '@helpers/config';
 
-export const request = async (
+export const request = async <T>(
   url: string,
   requestConfig?: AxiosRequestConfig,
   abort?: {
     controller: AbortController
     timeoutMs: number
   }
-): Promise<any> => {
+): Promise<T> => {
+  // eslint-disable-next-line no-undef
   let timeoutId: NodeJS.Timeout | undefined;
   if (abort) {
     timeoutId = setTimeout(() => {
@@ -17,7 +18,7 @@ export const request = async (
   }
   
   try {
-    const response = await axios.request({
+    const response: AxiosResponse<T> = await axios.request<T>({
       url,
       method: 'GET',
       headers: {
@@ -40,17 +41,21 @@ export const request = async (
       clearTimeout(timeoutId);
     }
   }
+};
+
+interface ErrorWithStatusCode extends Error {
+  statusCode?: number;
 }
 
-export const throwRequestError = (error: unknown) => {
+export const throwRequestError = (error: unknown): never => {
   if (error instanceof Error) {
-    const statusCode = (error as any).statusCode;
-    if (statusCode) {
-      throw new Error(`HTTP Error: ${statusCode} - ${error.message}`);
+    const errorWithStatusCode = error as ErrorWithStatusCode;
+    if (errorWithStatusCode.statusCode) {
+      throw new Error(`HTTP Error: ${errorWithStatusCode.statusCode} - ${error.message}`);
     } else {
       throw new Error(`Unknown Error: ${error.message}`);
     }
   } else {
     throw new Error('An unexpected error occurred');
   }
-}
+};

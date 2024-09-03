@@ -22,10 +22,12 @@ export function hasDifferentValues<T>(entity: T, dto: Partial<T>): boolean {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isNumeric(value: any): boolean {
   return !isNaN(value) && value !== null && value !== '';
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isObjectWithId(value: any): value is { id: number } {
   return value && typeof value === 'object' && 'id' in value;
 }

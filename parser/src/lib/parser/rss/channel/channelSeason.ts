@@ -12,4 +12,4 @@ export const handleParsedChannelSeasons = async (parsedFeed: FeedObject, channel
   } else {
     await channelSeasonService._deleteAll(channel);
   }
-}
+};

@@ -13,4 +13,4 @@ export const handleParsedChannelPerson = async (
   const channelPersonService = new ChannelPersonService(transactionalEntityManager);
   const channelPersonDtos = compatChannelPersonDtos(parsedFeed);
   await handleParsedManyData(channel, channelPersonService, channelPersonDtos);
-}
+};

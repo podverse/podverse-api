@@ -13,4 +13,4 @@ export const handleParsedItemTranscript = async (
   const itemTranscriptService = new ItemTranscriptService(transactionalEntityManager);
   const itemTranscriptDtos = compatItemTranscriptDtos(parsedItem);
   await handleParsedManyData(item, itemTranscriptService, itemTranscriptDtos);
-}
+};

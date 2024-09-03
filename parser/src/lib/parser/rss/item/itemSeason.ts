@@ -21,8 +21,8 @@ export const handleParsedItemSeason = async (
       const enrichedItemSeasonDto: ItemSeasonDto = {
         title: itemSeasonDto.title,
         channel_season
-      }
+      };
       await handleParsedOneData(item, itemSeasonService, enrichedItemSeasonDto);
     }
   }
-}
+};

@@ -7,14 +7,14 @@ export enum FeedFlagStatusStatusEnum {
   Takedown = 3,
   Other = 4,
   AlwaysAllow = 5,
-}
+};
 
 export const checkIfFeedFlagStatusShouldParse = (status: FeedFlagStatusStatusEnum) => {
   if (status === FeedFlagStatusStatusEnum.None || status === FeedFlagStatusStatusEnum.AlwaysAllow) {
     return true;
   }
   return false;
-}
+};
 
 @Entity('feed_flag_status')
 export class FeedFlagStatus {

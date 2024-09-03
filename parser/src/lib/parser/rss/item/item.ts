@@ -46,7 +46,7 @@ export const handleParsedItems = async (parsedItems: Episode[], channel: Channel
 
   const itemIdsToDelete = existingItemIds.filter(id => !updatedItemIds.includes(id));
   await itemService.deleteMany(itemIdsToDelete);
-}
+};
 
 export const handleParsedItem = async (
   parsedItem: Episode,
@@ -86,4 +86,4 @@ export const handleParsedItem = async (
   await handleParsedItemValue(parsedItem, item, transactionalEntityManager);
 
   return item;
-}
+};

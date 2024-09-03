@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint 'src/**/*.{ts,js}'",
     "parserRSSAddAll": "ts-node ./src/index.ts parserRSSAddAll",
     "start": "ts-node ./src/index.ts"
   },
@@ -11,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.12.1",
-    "@types/amqplib": "^0.10.5",
     "amqplib": "^0.10.4",
     "module-alias": "^2.2.3"
   },
@@ -19,6 +19,7 @@
     "@eslint/config-array": "^0.18.0",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.8.0",
+    "@types/amqplib": "^0.10.5",
     "@types/node": "^22.5.2",
     "eslint": "^9.9.0",
     "ts-node": "^10.9.2",

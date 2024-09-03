@@ -13,4 +13,4 @@ export const handleParsedItemChat = async (
   const itemChatService = new ItemChatService(transactionalEntityManager);
   const itemChatDto = compatItemChatDto(parsedItem);
   await handleParsedOneData(item, itemChatService, itemChatDto);
-}
+};

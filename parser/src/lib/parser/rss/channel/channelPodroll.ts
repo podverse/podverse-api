@@ -21,4 +21,4 @@ export const handleParsedChannelPodroll = async (
   } else {
     await channelPodrollService._delete(channel);
   }
-}
+};

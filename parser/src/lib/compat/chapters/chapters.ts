@@ -1,6 +1,6 @@
 import { ItemChapterDto } from '@orm/services/item/itemChapter';
 
-type PIChapter = {
+export type PIChapter = {
   startTime: string
   endTime: string | null
   title: string | null
@@ -18,6 +18,6 @@ export const compatParsedChapters = (chapters: PIChapter[]): ItemChapterDto[] =>
       img: chapter.img || null,
       web_url: chapter.url || null,
       table_of_contents: chapter.toc || true
-    }
-  })
-}
+    };
+  });
+};

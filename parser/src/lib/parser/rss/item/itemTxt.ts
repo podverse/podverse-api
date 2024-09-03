@@ -13,4 +13,4 @@ export const handleParsedItemTxt = async (
   const itemTxtService = new ItemTxtService(transactionalEntityManager);
   const itemTxtDtos = compatItemTxtDtos(parsedItem);
   await handleParsedManyData(item, itemTxtService, itemTxtDtos);
-}
+};

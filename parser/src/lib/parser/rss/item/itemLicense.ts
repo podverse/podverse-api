@@ -13,4 +13,4 @@ export const handleParsedItemLicense = async (
   const itemLicenseService = new ItemLicenseService(transactionalEntityManager);
   const itemLicenseDto = compatItemLicenseDto(parsedItem);
   await handleParsedOneData(item, itemLicenseService, itemLicenseDto);
-}
+};

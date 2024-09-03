@@ -13,4 +13,4 @@ export const handleParsedItemLocation = async (
   const itemLocationService = new ItemLocationService(transactionalEntityManager);
   const itemLocationDto = compatItemLocationDto(parsedItem);
   await handleParsedOneData(item, itemLocationService, itemLocationDto);
-}
+};

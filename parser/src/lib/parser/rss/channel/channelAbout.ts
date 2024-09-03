@@ -12,4 +12,4 @@ export const handleParsedChannelAbout = async (
   const channelAboutService = new ChannelAboutService(transactionalEntityManager);
   const channelAboutDto = compatChannelAboutDto(parsedFeed);
   await channelAboutService.update(channel, channelAboutDto);
-}
+};

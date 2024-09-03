@@ -13,4 +13,4 @@ export const handleParsedChannelLicense = async (
   const channelLicenseService = new ChannelLicenseService(transactionalEntityManager);
   const channelLicenseDtos = compatChannelLicenseDto(parsedFeed);
   await handleParsedOneData(channel, channelLicenseService, channelLicenseDtos);
-}
+};

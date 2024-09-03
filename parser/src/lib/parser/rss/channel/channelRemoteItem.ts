@@ -13,4 +13,4 @@ export const handleParsedChannelRemoteItem = async (
   const channelRemoteItemService = new ChannelRemoteItemService(transactionalEntityManager);
   const channelRemoteItemDtos = compatChannelRemoteItemDtos(parsedFeed);
   await handleParsedManyData(channel, channelRemoteItemService, channelRemoteItemDtos);
-}
+};

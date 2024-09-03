@@ -13,4 +13,4 @@ export const handleParsedChannelFunding = async (
   const channelFundingService = new ChannelFundingService(transactionalEntityManager);
   const channelFundingDtos = compatChannelFundingDtos(parsedFeed);
   await handleParsedManyData(channel, channelFundingService, channelFundingDtos);
-}
+};

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { FeedFlagStatus } from '@orm/entities/feed/feedFlagStatus';
 import { FeedLog } from './feedLog';

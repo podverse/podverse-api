@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, Index, BeforeInsert, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index, BeforeInsert, OneToOne } from 'typeorm';
 import { Channel } from '@orm/entities/channel/channel';
 import { LiveItem } from '../liveItem/liveItem';
 import { ItemChaptersFeed } from './itemChaptersFeed';

@@ -1,8 +1,8 @@
-import { getLiveItemStatusEnumValue, LiveItemStatusEnum } from "@orm/entities/liveItem/liveItemStatus"
-import { Phase4PodcastLiveItem } from "podcast-partytime/dist/parser/phase/phase-4"
+import { getLiveItemStatusEnumValue, LiveItemStatusEnum } from "@orm/entities/liveItem/liveItemStatus";
+import { Phase4PodcastLiveItem } from "podcast-partytime/dist/parser/phase/phase-4";
 
 export const compatLiveItemsDtos = (parsedLiveItems: Phase4PodcastLiveItem[]) => {
-  const dtos = []
+  const dtos = [];
   for (const parsedLiveItem of parsedLiveItems) {    
     dtos.push({
       liveItem: {
@@ -11,8 +11,8 @@ export const compatLiveItemsDtos = (parsedLiveItems: Phase4PodcastLiveItem[]) =>
         end_time: parsedLiveItem.end || null
       },
       item: parsedLiveItem
-    })
+    });
   }
 
-  return dtos
-}
+  return dtos;
+};

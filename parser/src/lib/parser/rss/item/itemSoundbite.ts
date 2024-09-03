@@ -13,4 +13,4 @@ export const handleParsedItemSoundbite = async (
   const itemSoundbiteService = new ItemSoundbiteService(transactionalEntityManager);
   const itemSoundbiteDtos = compatItemSoundbiteDtos(parsedItem);
   await handleParsedManyData(item, itemSoundbiteService, itemSoundbiteDtos);
-}
+};

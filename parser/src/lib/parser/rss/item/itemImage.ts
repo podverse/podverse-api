@@ -13,4 +13,4 @@ export const handleParsedItemImage = async (
   const itemImageService = new ItemImageService(transactionalEntityManager);
   const itemImageDtos = compatItemImageDtos(parsedItem);
   await handleParsedManyData(item, itemImageService, itemImageDtos);
-}
+};

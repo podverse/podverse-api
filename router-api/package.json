@@ -32,8 +32,7 @@
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
-    "reflect-metadata": "^0.2.2",
-    "typeorm-naming-strategies": "^4.1.0"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.18.0",

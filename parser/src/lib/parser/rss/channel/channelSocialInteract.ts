@@ -13,4 +13,4 @@ export const handleParsedChannelSocialInteract = async (
   const channelSocialInteractService = new ChannelSocialInteractService(transactionalEntityManager);
   const channelSocialInteractDtos = compatChannelSocialInteractDtos(parsedFeed);
   await handleParsedManyData(channel, channelSocialInteractService, channelSocialInteractDtos);
-}
+};

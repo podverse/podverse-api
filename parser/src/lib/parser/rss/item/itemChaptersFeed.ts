@@ -13,4 +13,4 @@ export const handleParsedItemChaptersFeed = async (
   const itemChaptersFeedService = new ItemChaptersFeedService(transactionalEntityManager);
   const itemChaptersFeedDto = compatItemChaptersFeedDto(parsedItem);
   await handleParsedOneData(item, itemChaptersFeedService, itemChaptersFeedDto);
-}
+};

@@ -30,4 +30,4 @@ export const handleParsedChannelValue = async (
   } else {
     await channelValueService._deleteAll(channel);
   }
-}
+};

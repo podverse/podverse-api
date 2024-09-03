@@ -23,12 +23,12 @@ export const handleParsedChannelTrailer = async (
       length: channelTrailerDto.length,
       type: channelTrailerDto.type,
       channel_season
-    }
-  })
+    };
+  });
 
   if (channelTrailerDtos.length > 0) {
     await channelTrailerService.updateMany(channel, enrichedChannelTrailerDtos);
   } else {
     await channelTrailerService._deleteAll(channel);
   }
-}
+};

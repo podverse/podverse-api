@@ -20,6 +20,7 @@ export const handleParsedLiveItems = async (parsedLiveItems: Phase4PodcastLiveIt
     await AppDataSource.manager.transaction(async transactionalEntityManager => {
       for (const liveItemObjDto of liveItemObjDtosBatch) {
         // PTDO: how to make any unnecessary?
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const itemDto = liveItemObjDto.item as any;
     
         const item = await handleParsedItem(itemDto, channel, channelSeasonIndex, transactionalEntityManager);
@@ -34,5 +35,4 @@ export const handleParsedLiveItems = async (parsedLiveItems: Phase4PodcastLiveIt
 
   const itemIdsToDelete = existingLiveItemIds.filter(id => !updatedLiveItemIds.includes(id));
   await itemService.deleteMany(itemIdsToDelete);
-}
-
+};

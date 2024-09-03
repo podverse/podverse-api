@@ -55,4 +55,4 @@ export const handleParsedChannel = async (parsedFeed: FeedObject, channel: Chann
     await handleParsedChannelTxt(parsedFeed, channel, transactionalEntityManager);
     await handleParsedChannelValue(parsedFeed, channel, transactionalEntityManager);
   });
-}
+};

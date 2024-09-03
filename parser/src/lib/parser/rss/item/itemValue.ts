@@ -61,4 +61,4 @@ export const handleParsedItemValue = async (
   } else {
     await itemValueService._deleteAll(item);
   }
-}
+};

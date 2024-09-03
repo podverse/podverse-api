@@ -13,4 +13,4 @@ export const handleParsedChannelLocation = async (
   const channelLocationService = new ChannelLocationService(transactionalEntityManager);
   const channelLocationDtos = compatChannelLocationDto(parsedFeed);
   await handleParsedOneData(channel, channelLocationService, channelLocationDtos);
-}
+};

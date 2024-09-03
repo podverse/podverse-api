@@ -13,4 +13,4 @@ export const handleParsedItemSocialInteract = async (
   const itemSocialInteractService = new ItemSocialInteractService(transactionalEntityManager);
   const itemSocialInteractDtos = compatItemSocialInteractDtos(parsedItem);
   await handleParsedManyData(item, itemSocialInteractService, itemSocialInteractDtos);
-}
+};

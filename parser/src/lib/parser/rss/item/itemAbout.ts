@@ -12,4 +12,4 @@ export const handleParsedItemAbout = async (
   const itemAboutService = new ItemAboutService(transactionalEntityManager);
   const itemAboutDto = compatItemAboutDto(parsedItem);
   await itemAboutService.update(item, itemAboutDto);
-}
+};

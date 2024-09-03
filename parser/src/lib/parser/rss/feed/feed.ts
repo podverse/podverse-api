@@ -1,15 +1,15 @@
-import { Feed } from "@orm/entities/feed/feed";
-import { FeedService } from "@orm/services/feed/feed";
 import { FeedObject } from "podcast-partytime";
-import { getParsedFeedMd5Hash } from "../hash/parsedFeed";
-import { checkIfFeedFlagStatusShouldParse } from "@orm/entities/feed/feedFlagStatus";
-import { FeedLogService } from "@orm/services/feed/feedLog";
-import { getAndParseRSSFeed } from "../parser";
 import { throwRequestError } from "@helpers/lib/request";
+import { Feed } from "@orm/entities/feed/feed";
+import { checkIfFeedFlagStatusShouldParse } from "@orm/entities/feed/feedFlagStatus";
+import { FeedService } from "@orm/services/feed/feed";
+import { FeedLogService } from "@orm/services/feed/feedLog";
+import { getParsedFeedMd5Hash } from "../hash/parsedFeed";
+import { getAndParseRSSFeed } from "../parser";
 
 export const handleGetRSSFeed = async (feed: Feed): Promise<FeedObject> => {
   const feedLogService = new FeedLogService();
-  let parsedFeed: FeedObject | null = null
+  let parsedFeed: FeedObject | null = null;
   
   try {
     parsedFeed = await getAndParseRSSFeed(feed.url);
@@ -18,6 +18,8 @@ export const handleGetRSSFeed = async (feed: Feed): Promise<FeedObject> => {
       last_good_http_status_time: new Date()
     });
   } catch (error) {
+    // TODO: how to handle errors?
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const statusCode = (error as any).statusCode as number;
     const feedLog = await feedLogService._get(feed);
     if (statusCode) {
@@ -40,7 +42,7 @@ export const handleGetRSSFeed = async (feed: Feed): Promise<FeedObject> => {
   }
 
   return parsedFeed;
-}
+};
 
 export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podcast_index_id: number): Promise<Feed> => {
   const feedService = new FeedService();
@@ -60,7 +62,7 @@ export const handleParsedFeed = async (parsedFeed: FeedObject, url: string, podc
   }
 
   return feedService.update(feed.id, { last_parsed_file_hash: currentFeedFileHash });
-}
+};
 
 const checkIfFeedIsParsing = (feed: Feed): void => {
   // TODO: handle with caching db / redis instead of database?
@@ -77,4 +79,4 @@ const checkIfFeedIsParsing = (feed: Feed): void => {
       throw new Error(`Feed ${feed.id} is already parsing`);
     }
   }
-}
+};

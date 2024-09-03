@@ -13,4 +13,4 @@ export const handleParsedItemSeasonEpisode = async (
   const itemSeasonEpisodeService = new ItemSeasonEpisodeService(transactionalEntityManager);
   const itemSeasonEpisodeDto = compatItemSeasonEpisodeDto(parsedItem);
   await handleParsedOneData(item, itemSeasonEpisodeService, itemSeasonEpisodeDto);
-}
+};

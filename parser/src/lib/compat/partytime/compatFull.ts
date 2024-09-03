@@ -1,9 +1,7 @@
-import { FeedObject } from "podcast-partytime";
-
-export const convertParsedRSSFeedToCompat = (parsedFeed: FeedObject) => {
+export const convertParsedRSSFeedToCompat = () => {
   return {
     channel: {},
     items: [],
     liveItems: []
-  }
-}
+  };
+};

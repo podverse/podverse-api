@@ -23,10 +23,10 @@ export const parseAllRSSFeeds = async () => {
   for (const feed of feeds) {
     return await parseRSSFeedAndSaveToDatabase(feed.url, feed?.channel?.podcast_index_id);
   }
-}
+};
 
 export const getAndParseRSSFeed = async (url: string) => {
-  const xml = await request(url);
+  const xml: string = await request(url);
   const parsedFeed = parseFeed(xml, { allowMissingGuid: true });
 
   if (!parsedFeed) {
@@ -34,13 +34,13 @@ export const getAndParseRSSFeed = async (url: string) => {
   }
 
   return parsedFeed;
-}
+};
 
 export const parseRSSAddByRSSFeed = async (url: string) => {
   const parsedFeed = await getAndParseRSSFeed(url);
   const compatData = convertParsedRSSFeedToCompat(parsedFeed);
-  return compatData
-}
+  return compatData;
+};
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const feedService = new FeedService();
@@ -87,4 +87,4 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   }
 
   return feed;
-}
+};

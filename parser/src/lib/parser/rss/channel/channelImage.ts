@@ -13,4 +13,4 @@ export const handleParsedChannelImage = async (
   const channelImageService = new ChannelImageService(transactionalEntityManager);
   const channelImageDtos = compatChannelImageDtos(parsedFeed);
   await handleParsedManyData(channel, channelImageService, channelImageDtos);
-}
+};

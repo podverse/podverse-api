@@ -35,4 +35,4 @@ export const handleParsedItemEnclosure = async (
   } else {
     await itemEnclosureService._deleteAll(item);
   }
-}
+};

@@ -44,7 +44,7 @@ export class BaseManyService<T extends ObjectLiteral, K extends keyof T> {
       }
     });
 
-    let entity: T | null = existingEntity || null
+    let entity: T | null = existingEntity || null;
     
     if (!entity) {
       entity = await this._get(parentEntity, whereObject, config);

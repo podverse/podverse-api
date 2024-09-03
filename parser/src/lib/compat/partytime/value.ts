@@ -1,4 +1,4 @@
-import { Phase4Value, Phase4ValueRecipient } from "podcast-partytime"
+import { Phase4Value, Phase4ValueRecipient } from "podcast-partytime";
 
 export const compatChannelValue = (value: Phase4Value) => {
   return {
@@ -6,8 +6,8 @@ export const compatChannelValue = (value: Phase4Value) => {
     method: value.method,
     suggested: parseFloat(value.suggested ?? '0') || null,
     channel_value_recipients: compatValueRecipients(value.recipients)
-  }
-}
+  };
+};
 
 export const compatItemValue = (value: Phase4Value) => {
   return {
@@ -31,7 +31,7 @@ export const compatItemValue = (value: Phase4Value) => {
             item_guid: valueTimeSplit.remoteItem.itemGuid || null,
             title: /* PTDO: ri.title || */ null
           } : null
-        }
+        };
       } else {
         // else: valueTimeSplit.type === 'recipients'
         return {
@@ -43,11 +43,11 @@ export const compatItemValue = (value: Phase4Value) => {
           },
           item_value_time_splits_recipients: compatValueRecipients(valueTimeSplit.recipients),
           item_value_time_splits_remote_item: null
-        }
+        };
       }
     }) || []
-  }
-}
+  };
+};
 
 const compatValueRecipients = (recipients: Phase4ValueRecipient[]) => {
   return recipients.map((recipient) => {
@@ -59,6 +59,6 @@ const compatValueRecipients = (recipients: Phase4ValueRecipient[]) => {
       custom_key: recipient.customKey || null,
       custom_value: recipient.customValue || null,
       fee: recipient.fee || false
-    }
-  }) || []
-}
+    };
+  }) || [];
+};
