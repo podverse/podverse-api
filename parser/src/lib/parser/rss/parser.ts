@@ -36,11 +36,11 @@ export const getAndParseRSSFeed = async (url: string) => {
   return parsedFeed;
 };
 
-export const parseRSSAddByRSSFeed = async (url: string) => {
-  const parsedFeed = await getAndParseRSSFeed(url);
-  const compatData = convertParsedRSSFeedToCompat(parsedFeed);
-  return compatData;
-};
+// export const parseRSSAddByRSSFeed = async (url: string) => {
+//   const parsedFeed = await getAndParseRSSFeed(url);
+//   const compatData = convertParsedRSSFeedToCompat(parsedFeed);
+//   return compatData;
+// };
 
 export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_id: number) => {
   const feedService = new FeedService();
