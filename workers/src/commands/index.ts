@@ -1,7 +1,9 @@
-import { queueParserRSSAddAll } from "@workers/commands/queue/rss/addAll";
+import { queueDeleteAll } from "@workers/commands/queue/deleteAll";
+import { queueRSSAddAll } from "@workers/commands/queue/rss/addAll";
 
 export type CommandLineArgs = { [key: string]: string | string[] };
 
 export default {
-  queueParserRSSAddAll
+  queueDeleteAll,
+  queueRSSAddAll
 } as { [key: string]: (args: CommandLineArgs) => void };

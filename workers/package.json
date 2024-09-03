@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "queueParserRSSAddAll": "ts-node ./src/index.ts queueParserRSSAddAll",
+    "queueDeleteAll": "ts-node ./src/index.ts queueDeleteAll",
+    "queueRSSAddAll": "ts-node ./src/index.ts queueRSSAddAll",
     "lint": "eslint 'src/**/*.{ts,js}'"
   },
   "author": "",

@@ -5,12 +5,12 @@ import { rabbitMQRequest } from '@queue/services/rabbitmq/rabbitMQRequest';
 
 const connectionUri = `amqp://${config.rabbitmq.username}:${config.rabbitmq.password}@${config.rabbitmq.host}:${config.rabbitmq.port}${config.rabbitmq.vhost}`;
 
-type ParserRSSMessage = {
+type QueueRSSMessage = {
   url: string;
   podcast_index_id: number | null;
 }
 
-type Message = ParserRSSMessage;
+type Message = QueueRSSMessage;
 
 export class RabbitMQService {
   private connection: Connection | null = null;
@@ -26,7 +26,6 @@ export class RabbitMQService {
         logger.info('RabbitMQ connection closed');
       });
       this.channel = await this.connection.createChannel();
-      await this.deleteAllQueues();
       await this.createQueues();
     } catch (error) {
       logger.error('Failed to initialize RabbitMQ connection', error);
@@ -91,8 +90,7 @@ export class RabbitMQService {
   
   async listAllQueues(): Promise<string[]> {
     try {
-      const response: any = await rabbitMQRequest('/queues');
-      console.log('response', response);
+      const response: never[] = await rabbitMQRequest('/queues');
       return response.map((queue: { name: string }) => queue.name);
     } catch (error) {
       logger.error('Failed to list queues', error);

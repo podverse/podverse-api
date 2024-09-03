@@ -1,12 +1,12 @@
 import { FeedService } from "@orm/services/feed/feed";
-import { ParserRSSQueueName } from "@queue/lib/parser/rss";
+import { QueueRSSQueueName } from "@queue/lib/rss";
 import { RabbitMQService } from "@queue/services/rabbitmq";
 
-type ParserRSSFeedsAddAllConfig = {
-  queueName: ParserRSSQueueName;
+type QueueRSSAddAllConfig = {
+  queueName: QueueRSSQueueName;
 }
 
-export const parserRSSAddAll = async (config: ParserRSSFeedsAddAllConfig) => {
+export const queueRSSAddAll = async (config: QueueRSSAddAllConfig) => {
   const feedService = new FeedService();  
   const feeds = await feedService.getAll();
   

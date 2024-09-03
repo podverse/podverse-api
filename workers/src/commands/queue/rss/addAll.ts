@@ -1,16 +1,16 @@
 import { CommandLineArgs } from "@workers/commands";
-import { parserRSSAddAll as parserRSSAddAllFunction } from '@queue/functions/parser/rss/addAll';
-import { _parserRSS, ParserRSSQueueName } from "@queue/lib/parser/rss";
+import { queueRSSAddAll as queueRSSAddAllFunction } from '@queue/functions/queue/rss/addAll';
+import { _parserRSS, QueueRSSQueueName } from "@queue/lib/rss";
 
-export const queueParserRSSAddAll = async (args: CommandLineArgs) => {
+export const queueRSSAddAll = async (args: CommandLineArgs) => {
   const queueName = Array.isArray(args.q) ? args.q[0] : args.q;
   if (!queueName) {
     throw new Error('queueName (-q) parameter is required');
   }
 
-  if (!_parserRSS.allowedQueueNames.includes(queueName as ParserRSSQueueName)) {
+  if (!_parserRSS.allowedQueueNames.includes(queueName as QueueRSSQueueName)) {
     throw new Error(`Invalid queueName. Allowed values are: ${_parserRSS.allowedQueueNames.join(', ')}`);
   }
 
-  await parserRSSAddAllFunction({ queueName: queueName as ParserRSSQueueName });  
+  await queueRSSAddAllFunction({ queueName: queueName as QueueRSSQueueName });  
 };
