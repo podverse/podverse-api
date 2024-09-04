@@ -9,9 +9,9 @@ type ItemChaptersFeedLogDto = {
   parse_errors?: number
 }
 
-export class ItemChaptersFeedLogService extends BaseOneService<ItemChaptersFeedLog, 'itemChaptersFeed'> {
+export class ItemChaptersFeedLogService extends BaseOneService<ItemChaptersFeedLog, 'item_chapters_feed'> {
   constructor() {
-    super(ItemChaptersFeedLog, 'itemChaptersFeed');
+    super(ItemChaptersFeedLog, 'item_chapters_feed');
   }
 
   async update(itemChaptersFeed: ItemChaptersFeed, dto: ItemChaptersFeedLogDto): Promise<ItemChaptersFeedLog> {
