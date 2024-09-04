@@ -1,4 +1,4 @@
-import { config } from '@router-api/config';
+import { config } from '@helpers/config';
 import { createLogger, format, transports } from 'winston';
 import * as TransportStream from 'winston-transport';
 
