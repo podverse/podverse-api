@@ -68,7 +68,6 @@ export const parseRSSFeedAndSaveToDatabase = async (url: string, podcast_index_i
   
     // PTDO: if publisher feed, handle publisher remote item data
     // else handle parsed items
-  
     await handleParsedItems(parsedFeed.items, channel, channelSeasonIndex);
   
     if (parsedFeed.podcastLiveItems) {

@@ -4,7 +4,6 @@ export const config = {
     port: process.env.RABBITMQ_PORT,
     username: process.env.RABBITMQ_USERNAME,
     password: process.env.RABBITMQ_PASSWORD,
-    vhost: process.env.RABBITMQ_VHOST,
-    queueNames: process.env.RABBITMQ_QUEUE_NAMES?.split(',') || [],
+    vhost: process.env.RABBITMQ_VHOST
   }
 };

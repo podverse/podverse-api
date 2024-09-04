@@ -1,9 +1,8 @@
 import { FeedService } from "@orm/services/feed/feed";
-import { QueueRSSQueueName } from "@queue/lib/rss";
-import { RabbitMQService } from "@queue/services/rabbitmq";
+import { QueueName, RabbitMQService } from "@queue/services/rabbitmq";
 
 type QueueRSSAddAllConfig = {
-  queueName: QueueRSSQueueName;
+  queueName: QueueName;
 }
 
 export const queueRSSAddAll = async (config: QueueRSSAddAllConfig) => {
