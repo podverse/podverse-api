@@ -15,19 +15,17 @@
     "paths": {
       "@helpers/*": ["../helpers/src/*"],
       "@orm/*": ["../orm/src/*"],
-      "@parser/*": ["../parser/src/*"],
-      "@queue/*": ["../queue/src/*"],
-      "@router-api/*": ["../router-api/src/*"],
-      "@workers/*": ["src/*"]
+      "@parser/*": ["../parser/*"],
+      "@queue/*": ["src/*"],
+      "@router-api/*": ["../router-api/src/*"]
     }
   },
   "include": [
     "../helpers/src/**/*.ts",
     "../orm/src/**/*.ts",
-    "../parser/src/**/*.ts",
-    "../queue/src/**/*.ts",
+    "../parser/**/*.ts",
+    "./src/**/*.ts",
     "../router-api/src/**/*.ts",
-    "./src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

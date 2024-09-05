@@ -14,20 +14,18 @@
     "baseUrl": ".",
     "paths": {
       "@helpers/*": ["../helpers/src/*"],
-      "@orm/*": ["../orm/src/*"],
+      "@orm/*": ["src/*"],
       "@parser/*": ["../parser/src/*"],
       "@queue/*": ["../queue/src/*"],
-      "@router-api/*": ["../router-api/src/*"],
-      "@workers/*": ["src/*"]
+      "@router-api/*": ["../router-api/src/*"]
     }
   },
   "include": [
     "../helpers/src/**/*.ts",
-    "../orm/src/**/*.ts",
+    "./src/**/*.ts",
     "../parser/src/**/*.ts",
     "../queue/src/**/*.ts",
-    "../router-api/src/**/*.ts",
-    "./src/**/*.ts"
+    "../router-api/src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
