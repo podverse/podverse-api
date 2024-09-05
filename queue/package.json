@@ -24,12 +24,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
-  },
-  "_moduleAliases": {
-    "@helpers": "../helpers/src",
-    "@orm": "../orm/src",
-    "@parser": "../parser/src",
-    "@queue": "src",
-    "@router-api": "../router-api/src"
   }
 }

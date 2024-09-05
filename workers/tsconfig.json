@@ -17,7 +17,6 @@
       "@orm/*": ["../orm/src/*"],
       "@parser/*": ["../parser/src/*"],
       "@queue/*": ["../queue/src/*"],
-      "@router-api/*": ["../router-api/src/*"],
       "@workers/*": ["src/*"]
     }
   },
@@ -26,7 +25,6 @@
     "../orm/src/**/*.ts",
     "../parser/src/**/*.ts",
     "../queue/src/**/*.ts",
-    "../router-api/src/**/*.ts",
     "./src/**/*.ts"
   ],
   "exclude": ["node_modules"]

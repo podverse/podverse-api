@@ -4,34 +4,35 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "queueDeleteAll": "ts-node ./src/index.ts queueDeleteAll",
     "queueRSSAddAll": "ts-node ./src/index.ts queueRSSAddAll",
     "queueRSSRunParser": "ts-node ./src/index.ts queueRSSRunParser",
-    "lint": "eslint 'src/**/*.{ts,js}'"
+    "lint": "eslint 'src/**/*.{ts,js}'",
+    "start": "ts-node ./dist/workers/src/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.6.4",
+    "amqplib": "^0.10.4",
+    "axios": "^1.7.7",
     "module-alias": "^2.2.3",
-    "podcast-partytime": "^4.8.1"
+    "pg": "^8.12.0",
+    "podcast-partytime": "^4.8.1",
+    "shortid": "^2.2.16",
+    "typeorm": "^0.3.20",
+    "typeorm-naming-strategies": "^4.1.0",
+    "winston": "^3.14.2"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.18.0",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.8.0",
     "@types/node": "^22.1.0",
-    "ts-node": "^10.9.2",
     "eslint": "^9.9.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
-  },
-  "_moduleAliases": {
-    "@helpers": "../helpers/src",
-    "@orm": "../orm/src",
-    "@parser": "../parser/src",
-    "@queue": "../queue/src",
-    "@router-api": "../router-api/src",
-    "@workers": "src"
   }
 }
