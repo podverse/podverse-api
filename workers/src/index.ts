@@ -1,6 +1,8 @@
 import './module-alias-config';
 require('@dotenvx/dotenvx').config();
 
+console.log('process.env', process.env);
+
 import logger from '@helpers/lib/logs/logger';
 import { AppDataSource } from '@orm/db';
 import commands from '@workers/commands';
