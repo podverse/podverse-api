@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint 'src/**/*.{ts,js}'",
-    "start": "ts-node ./src/index.ts"
+    "lint": "eslint 'src/**/*.{ts,js}'"
   },
   "author": "",
   "license": "ISC",

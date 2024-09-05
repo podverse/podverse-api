@@ -1,10 +1,10 @@
-import 'module-alias/register';
+import './module-alias-config';
 require('@dotenvx/dotenvx').config();
 
 import logger from '@helpers/lib/logs/logger';
 import { AppDataSource } from '@orm/db';
 import commands from '@workers/commands';
-import { parseArgs } from './commands/parseArgs';
+import { parseArgs } from '@workers/commands/parseArgs';
 
 const args = parseArgs();
 const commandName = (args._ as string[])[0];

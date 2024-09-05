@@ -1,4 +1,4 @@
-import 'module-alias/register';
+import './module-alias-config';
 require('@dotenvx/dotenvx').config();
 
 import "reflect-metadata";

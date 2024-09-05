@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "queueDeleteAll": "ts-node ./src/index.ts queueDeleteAll",
     "queueRSSAddAll": "ts-node ./src/index.ts queueRSSAddAll",
     "queueRSSRunParser": "ts-node ./src/index.ts queueRSSRunParser",
-    "lint": "eslint 'src/**/*.{ts,js}'"
+    "lint": "eslint 'src/**/*.{ts,js}'",
+    "start": "ts-node ./src/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -25,13 +27,5 @@
     "eslint": "^9.9.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
-  },
-  "_moduleAliases": {
-    "@helpers": "../helpers/src",
-    "@orm": "../orm/src",
-    "@parser": "../parser/src",
-    "@queue": "../queue/src",
-    "@router-api": "../router-api/src",
-    "@workers": "src"
   }
 }
