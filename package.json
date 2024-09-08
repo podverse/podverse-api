@@ -34,6 +34,9 @@
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
+    "podverse-helpers": "^5.0.4",
+    "podverse-orm": "^5.0.3",
+    "podverse-parser": "^5.0.3",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
