@@ -47,7 +47,7 @@ export const startApp = async () => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-      logger.error(err.stack);
+      logError('API Router Error', err);
       res.status(500).json({ message: err.message });
     });
 
@@ -55,7 +55,7 @@ export const startApp = async () => {
       logger.info(`The server is running on port ${port}`);
     });
   } catch (error) {
-    logError(error as Error);
+    logError('API Top Level Router Error', error as Error);
   }
 };
 
