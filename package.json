@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "main": "./src/index.js",
   "repository": "https://github.com/podverse/podverse-api.git",
