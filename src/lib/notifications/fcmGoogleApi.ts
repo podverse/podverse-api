@@ -115,7 +115,7 @@ export const sendFCMGoogleApiNotification = async (
             },
             android: {
               notification: {
-                imageUrl
+                image: imageUrl
               }
             },
             apns: {
@@ -128,11 +128,12 @@ export const sendFCMGoogleApiNotification = async (
                 image: imageUrl
               }
             },
-            webpush: {
-              headers: {
-                image: imageUrl
-              }
-            }
+            // webpush apparently does not support image
+            // webpush: {
+            //   headers: {
+            //     image: imageUrl
+            //   }
+            // }
           }
         },
         json: true
