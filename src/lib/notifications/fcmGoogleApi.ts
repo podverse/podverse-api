@@ -7,18 +7,13 @@ import { config } from '~/config';
 const fs = require('fs');
 
 const keyFilePath = config.fcmGoogleApiPathToAuthJson;
-console.log('keyFilePath', keyFilePath)
 const key = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
-console.log('key', key)
 
 const fcmGoogleApiPath = `https://fcm.googleapis.com/v1/projects/${key.project_id}/messages:send`
-console.log('fcmGoogleApiPath', fcmGoogleApiPath)
 
 export const sendFcmNewEpisodeDetectedNotification = async (options: SendNotificationOptions) => {
-  console.log('sendFcmNewEpisodeDetectedNotification', options)
   const { podcastId, podcastShrunkImageUrl, podcastFullImageUrl, episodeFullImageUrl, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  console.log('sendFcmNewEpisodeDetectedNotification fcmTokens', fcmTokens.length)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Untitled Episode'
   const title = podcastTitle
@@ -42,10 +37,8 @@ export const sendFcmNewEpisodeDetectedNotification = async (options: SendNotific
 }
 
 export const sendFcmLiveItemLiveDetectedNotification = async (options: SendNotificationOptions) => {
-  console.log('sendFcmLiveItemLiveDetectedNotification', options)
   const { podcastId, podcastShrunkImageUrl, podcastFullImageUrl, episodeFullImageUrl, episodeId } = options
   const fcmTokens = await getFCMTokensForPodcastId(podcastId)
-  console.log('sendFcmLiveItemLiveDetectedNotification fcmTokens', fcmTokens.length)
   const podcastTitle = options.podcastTitle || 'Untitled Podcast'
   const episodeTitle = options.episodeTitle || 'Livestream starting'
   const title = `LIVE: ${podcastTitle}`
@@ -80,13 +73,11 @@ export const sendFCMGoogleApiNotification = async (
   episodeImage?: string,
   episodeId?: string
 ) => {
-  console.log('sendFCMGoogleApiNotification', fcmTokens.length, title, podcastId)
   const accessToken = await generateAccessToken()
 
   if (!fcmTokens || fcmTokens.length === 0) return
 
   for (const fcmToken of fcmTokens) {
-    console.log('fcmToken', fcmToken)
     const imageUrl = episodeImage || podcastImage
     try {
       await request(fcmGoogleApiPath, {
