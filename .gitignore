@@ -12,7 +12,7 @@
 .env
 .env-old
 .env-old-removing
-
+.env-new
 
 # Dependency directory
 node_modules
