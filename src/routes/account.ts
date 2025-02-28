@@ -11,7 +11,7 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/account`, router);
 
-router.get('/', asyncHandler(AccountController.getMany));
+router.get('/', asyncHandler(AccountController.getManyPublic));
 router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
 router.post('/', asyncHandler(AccountController.create));

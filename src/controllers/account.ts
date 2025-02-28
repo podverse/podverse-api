@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
-import { ERROR_MESSAGES } from 'podverse-helpers';
+import { ERROR_MESSAGES, SharableStatusEnum } from 'podverse-helpers';
 import { AccountResetPasswordService, AccountService, AccountVerificationService } from 'podverse-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '@api/config';
@@ -95,15 +95,18 @@ class AccountController {
     });
   }
 
-  static async getMany(req: Request, res: Response): Promise<void> {
+  static async getManyPublic(req: Request, res: Response): Promise<void> {
     try {
       const { page, limit, offset } = getPaginationParams(req);
       const channels = await AccountController.accountService.getMany({
         skip: offset,
         take: limit,
-        relations: publicRelations
+        relations: publicRelations,
+        where: {
+          sharable_status: { id: SharableStatusEnum.Public }
+        }
       });
-
+  
       res.json({
         data: channels,
         meta: {
