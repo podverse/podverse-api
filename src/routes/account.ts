@@ -15,6 +15,7 @@ router.get('/', asyncHandler(AccountController.getManyPublic));
 router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
 router.post('/', asyncHandler(AccountController.create));
+router.put('/', asyncHandler(AccountController.update));
 router.post('/send-verification-email', asyncHandler(AccountController.sendVerificationEmail));
 router.post('/send-reset-password-email', asyncHandler(AccountController.sendResetPasswordEmail));
 router.post('/verify-email', asyncHandler(AccountController.verifyEmail));

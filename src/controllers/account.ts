@@ -17,6 +17,12 @@ const createAccountSchema = Joi.object({
   password: Joi.string().min(8).required()
 });
 
+const updateAccountSchema = Joi.object({
+  display_name: Joi.string().optional(),
+  bio: Joi.string().optional(),
+  sharable_status: Joi.number().valid(...Object.values(SharableStatusEnum)).optional()
+});
+
 const sendVerificationEmailSchema = Joi.object({
   email: Joi.string().email().required()
 });
@@ -136,6 +142,22 @@ class AccountController {
           handleGenericErrorResponse(res, error);
         }
       }
+    });
+  }
+
+  static async update(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateBodyObject(updateAccountSchema, req, res, async () => {
+        try {
+          const account_id = req.user!.id;
+          const dto = req.body;
+
+          const updatedAccount = await AccountController.accountService.update(account_id, dto);
+          res.json(updatedAccount);
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
     });
   }
 
