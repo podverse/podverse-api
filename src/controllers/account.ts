@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { ERROR_MESSAGES, SharableStatusEnum } from 'podverse-helpers';
-import { AccountResetPasswordService, AccountService, AccountVerificationService } from 'podverse-orm';
+import { AccountCredentialsService, AccountEmailChangeVerificationService,
+  AccountResetPasswordService, AccountService, AccountVerificationService } from 'podverse-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '@api/config';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
@@ -11,6 +12,7 @@ import { ensureAuthenticated } from '@api/lib/auth/';
 import { sendVerificationEmail } from '@api/lib/mailer/sendVerificationEmail';
 import { sendResetPasswordEmail } from '@api/lib/mailer/sendResetPasswordEmail';
 import { validateBodyObject } from '@api/lib/validation';
+import { sendEmailChangeVerificationEmail } from '@api/lib/mailer/sendChangeEmailVerificationEmail';
 
 const createAccountSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -29,6 +31,14 @@ const sendVerificationEmailSchema = Joi.object({
 
 const verifyEmailSchema = Joi.object({
   token: Joi.string().required()
+});
+
+const verifyEmailChangeSchema = Joi.object({
+  token: Joi.string().required()
+});
+
+const sendEmailChangeVerificationSchema = Joi.object({
+  new_email: Joi.string().email().required()
 });
 
 const sendResetPasswordEmailSchema = Joi.object({
@@ -65,6 +75,8 @@ const privateRelations = [
 
 class AccountController {
   private static accountService = new AccountService();
+  private static accountCredentialsService = new AccountCredentialsService();
+  private static accountEmailChangeVerificationService = new AccountEmailChangeVerificationService();
   private static accountResetPasswordService = new AccountResetPasswordService();
   private static accountVerificationService = new AccountVerificationService();
 
@@ -207,6 +219,73 @@ class AccountController {
         await AccountController.accountService.verifyEmail(accountVerification.account.id);
 
         res.json({ message: 'Email verified successfully' });
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    });
+  }
+
+  static async sendEmailChangeVerificationEmail(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateBodyObject(sendEmailChangeVerificationSchema, req, res, async () => {
+        try {
+          const account_id = req.user!.id;
+          const { new_email } = req.body;
+          await AccountController.sendEmailChangeVerificationEmailHelper(account_id, new_email);
+          res.json({
+            message: 'Email change verification email sent'
+          });
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  private static async sendEmailChangeVerificationEmailHelper(account_id: number, pending_email_address: string): Promise<void> {
+    const account = await AccountController.accountService.get(account_id, { relations: ['account_credentials'] });
+  
+    if (!account) {
+      throw new Error('Account not found.');
+    }
+  
+    const verificationToken = uuidv4();
+    const verificationTokenExpiresAt = new Date(Date.now() + config.emailChangeVerification.tokenExpiration);
+  
+    await AccountController.accountEmailChangeVerificationService.create(account, {
+      verification_token: verificationToken,
+      verification_token_expires_at: verificationTokenExpiresAt,
+      pending_email_address
+    });
+
+    await sendEmailChangeVerificationEmail(account.account_credentials.email, pending_email_address, verificationToken);
+  }
+
+  static async verifyEmailChange(req: Request, res: Response): Promise<void> {
+    validateBodyObject(verifyEmailChangeSchema, req, res, async () => {
+      try {
+        const { token } = req.body;
+        const accountEmailChangeVerification = await AccountController
+          .accountEmailChangeVerificationService.getByToken(token);
+  
+        if (!accountEmailChangeVerification) {
+          res.status(400).json({ message: 'Invalid or expired verification token' });
+          return;
+        }
+
+        const dto = {
+          email: accountEmailChangeVerification.pending_email_address
+        };
+  
+        await AccountController.accountCredentialsService.update(
+          accountEmailChangeVerification.account,
+          dto
+        );
+
+        await AccountController.accountEmailChangeVerificationService.deleteByAccountId(
+          accountEmailChangeVerification.account.id);
+  
+        res.json({ message: 'Email change verified successfully' });
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }

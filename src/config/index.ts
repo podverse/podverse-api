@@ -27,6 +27,10 @@ type Config = {
       imagueUrl: string;
     };
   };
+  emailChangeVerification: {
+    pagePath: string;
+    tokenExpiration: number;
+  },
   legal: {
     name: string;
     address: string;
@@ -82,6 +86,10 @@ export const config: Config = {
     header: {
       imagueUrl: process.env.EMAIL_HEADER_IMAGE_URL || '',
     }
+  },
+  emailChangeVerification: {
+    pagePath: process.env.EMAIL_CHANGE_VERIFICATION_PAGE_PATH || '/',
+    tokenExpiration: parseInt(process.env.EMAIL_CHANGE_VERIFICATION_TOKEN_EXPIRATION || '31540000', 10),
   },
   legal: {
     name: process.env.LEGAL_NAME || '',
