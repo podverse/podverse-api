@@ -13,11 +13,12 @@ import { accountRouter } from '@api/routes/account';
 import { authRouter } from '@api/routes/auth';
 import { categoryRouter } from '@api/routes/category';
 import { channelRouter } from '@api/routes/channel';
+import { clipRouter } from './routes/clip';
 import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
 import { mediumRouter } from '@api/routes/medium';
+import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
 import { playlistRouter } from './routes/playlist';
-import { clipRouter } from './routes/clip';
 import { queueRouter } from './routes/queue';
 
 logger.info(`NODE_ENV = ${config.nodeEnv}`);
@@ -56,6 +57,7 @@ export const startApp = async () => {
     app.use(feedRouter);
     app.use(itemRouter);
     app.use(mediumRouter);
+    app.use(membershipClaimTokenRouter);
     app.use(playlistRouter);
     app.use(queueRouter);
 

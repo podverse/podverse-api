@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { verifyPassword } from 'podverse-helpers';
+import { ERROR_MESSAGES, verifyPassword } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 
@@ -25,6 +25,11 @@ passport.use(new LocalStrategy(
         return done(null, false, { message: 'Incorrect email.' });
       }
 
+      const isVerified = account.verified;
+      if (!isVerified) {
+        return done(null, false, { message: ERROR_MESSAGES.ACCOUNT.NOT_VERIFIED });
+      }
+
       const accountCredentials = account.account_credentials;
       if (!accountCredentials) {
         return done(null, false, { message: 'Credentials missing.' });
@@ -34,6 +39,7 @@ passport.use(new LocalStrategy(
       if (!isMatch) {
         return done(null, false, { message: 'Incorrect password.' });
       }
+      
       return done(null, account);
     } catch (error) {
       return done(error);
@@ -76,12 +82,16 @@ passport.deserializeUser(async (id: number, done) => {
 export const initializePassport = () => passport.initialize();
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {    
-  passport.authenticate('local', { session: false }, (err: Error, user: globalThis.Express.User) => {
+  passport.authenticate('local', { session: false }, (err: Error, user: globalThis.Express.User, info: { message: string }) => {
     if (err) {
       return next(err);
     }
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      if (info.message === ERROR_MESSAGES.ACCOUNT.NOT_VERIFIED) {
+        return res.status(403).json({ message: info.message });
+      } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
     }
 
     const token = jwt.sign({ id: user.id }, config.auth.jwtSecret, { expiresIn: '365d' });
