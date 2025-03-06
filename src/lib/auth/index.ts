@@ -111,13 +111,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   })(req, res, next);
 };
 
-export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
-  const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
+const verifyTokenAndMembership = async (req: Request, res: Response, next: NextFunction, token: string, options?: { skipMembershipStatus?: boolean }) => {
   // TODO: how to replace the any with specific types?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: any) => {
@@ -147,23 +141,24 @@ export const ensureAuthenticated = (req: Request, res: Response, next: NextFunct
   });
 };
 
-export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
+  const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  verifyTokenAndMembership(req, res, next, token, options);
+};
+
+export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
   const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return next();
   }
-  
-  // TODO: how to replace the any with specific types?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  jwt.verify(token, config.auth.jwtSecret, (err: jwt.VerifyErrors | null, decoded: any) => {
-    if (err) {
-      return next();
-    }
 
-    req.user = decoded;
-    next();
-  });
+  verifyTokenAndMembership(req, res, next, token, options);
 };
 
 export const logout = (req: Request, res: Response) => {
