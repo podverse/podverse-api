@@ -258,7 +258,7 @@ class AccountController {
       pending_email_address
     });
 
-    await sendEmailChangeVerificationEmail(account.account_credentials.email, pending_email_address, verificationToken);
+    await sendEmailChangeVerificationEmail(pending_email_address, verificationToken);
   }
 
   static async verifyEmailChange(req: Request, res: Response): Promise<void> {
