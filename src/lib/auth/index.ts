@@ -111,21 +111,38 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   })(req, res, next);
 };
 
-export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
   const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  
+
   // TODO: how to replace the any with specific types?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  jwt.verify(token, config.auth.jwtSecret, (err: any, decoded: any) => {
-    if (err) {
+  jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: any) => {
+    if (err || !decoded) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
     req.user = decoded;
+
+    if (!req?.user?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!options?.skipMembershipStatus) {
+      const account = await accountService.get(req.user.id, { relations: ['account_membership_status'] });
+      if (!account) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const membershipStatus = account.account_membership_status;
+      if (!membershipStatus || !membershipStatus.membership_expires_at || new Date(membershipStatus.membership_expires_at) < new Date()) {
+        return res.status(403).json({ message: 'Membership expired' });
+      }
+    }
+
     next();
   });
 };
