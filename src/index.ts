@@ -18,6 +18,7 @@ import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
 import { mediumRouter } from '@api/routes/medium';
 import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
+import { accountPayPalOrderRouter } from './routes/paypal';
 import { playlistRouter } from './routes/playlist';
 import { queueRouter } from './routes/queue';
 
@@ -50,6 +51,7 @@ export const startApp = async () => {
     });
 
     app.use(accountRouter);
+    app.use(accountPayPalOrderRouter);
     app.use(authRouter);
     app.use(categoryRouter);
     app.use(channelRouter);
