@@ -6,6 +6,7 @@ import { AccountFollowingAddByRSSChannelController } from '@api/controllers/acco
 import { AccountFollowingChannelController } from '@api/controllers/accountFollowingChannel';
 import { asyncHandler } from '@api/middleware/asyncHandler';
 import { AccountFollowingPlaylistController } from '@api/controllers/accountFollowingPlaylist';
+import { AccountNotificationChannelController } from '@api/controllers/accountNotificationChannel';
 
 const router = Router();
 
@@ -38,5 +39,10 @@ router.get('/:account_id_text/followed/channels', asyncHandler(AccountFollowingC
 router.post('/follow/playlist', asyncHandler(AccountFollowingPlaylistController.followPlaylist));
 router.post('/unfollow/playlist', asyncHandler(AccountFollowingPlaylistController.unfollowPlaylist));
 router.get('/:account_id_text/followed/playlists', asyncHandler(AccountFollowingPlaylistController.getFollowedPlaylists));
+
+router.get('/notification/channel/:channel_id_text', asyncHandler(AccountNotificationChannelController.getByAccountAndChannel));
+router.get('/notification/channels', asyncHandler(AccountNotificationChannelController.getAllByAccount));
+router.post('/notification/channel', asyncHandler(AccountNotificationChannelController.create));
+router.delete('/notification/channel', asyncHandler(AccountNotificationChannelController.delete));
 
 export const accountRouter = router;

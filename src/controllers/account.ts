@@ -66,7 +66,7 @@ const privateRelations = [
   // 'account_google_play_purchases',
   'account_membership_status',
   'account_membership_status.account_membership',
-  'account_notifications',
+  'account_notification_channels',
   // 'account_paypal_orders',
   // 'account_reset_password',
   // 'account_up_devices',

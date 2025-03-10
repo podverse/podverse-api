@@ -111,6 +111,8 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   })(req, res, next);
 };
 
+// export type RequestWithUser = Request & { user: { id: number } };
+
 const verifyTokenAndMembership = async (req: Request, res: Response, next: NextFunction, token: string, options?: { skipMembershipStatus?: boolean }) => {
   // TODO: how to replace the any with specific types?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
