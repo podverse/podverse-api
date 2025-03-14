@@ -6,6 +6,7 @@ type SocialConfig = {
 type Config = {
   nodeEnv: string;
   logLevel: string;
+  userAgent: string;
   auth: {
     jwtSecret: string;
   };
@@ -13,7 +14,6 @@ type Config = {
     port: string;
     prefix: string;
     version: string;
-    userAgent: string;
     cookie: {
       domain: string;
       secure: boolean;
@@ -66,6 +66,7 @@ type Config = {
 export const config: Config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   logLevel: process.env.LOG_LEVEL || 'info',
+  userAgent: process.env.USER_AGENT || '',
   auth: {
     jwtSecret: process.env.AUTH_JWT_SECRET || '',
   },
@@ -73,7 +74,6 @@ export const config: Config = {
     port: process.env.API_PORT || '1234',
     prefix: process.env.API_PREFIX || '/api',
     version: process.env.API_VERSION || '/v2',
-    userAgent: process.env.USER_AGENT || '',
     cookie: {
       domain: process.env.COOKIE_DOMAIN || 'localhost',
       secure: process.env.COOKIE_SECURE === 'true',
