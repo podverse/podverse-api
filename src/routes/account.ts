@@ -7,6 +7,7 @@ import { AccountFollowingChannelController } from '@api/controllers/accountFollo
 import { asyncHandler } from '@api/middleware/asyncHandler';
 import { AccountFollowingPlaylistController } from '@api/controllers/accountFollowingPlaylist';
 import { AccountNotificationChannelController } from '@api/controllers/accountNotificationChannel';
+import { AccountFCMDeviceController } from '@api/controllers/accountFCMDevice';
 
 const router = Router();
 
@@ -23,6 +24,10 @@ router.post('/send-email-change-verification-email', asyncHandler(AccountControl
 router.post('/verify-email-change', asyncHandler(AccountController.verifyEmailChange));
 router.post('/send-reset-password-email', asyncHandler(AccountController.sendResetPasswordEmail));
 router.post('/reset-password', asyncHandler(AccountController.resetPassword));
+
+router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create));
+router.put('/fcm-device/update', asyncHandler(AccountFCMDeviceController.update));
+router.delete('/fcm-device/delete', asyncHandler(AccountFCMDeviceController.delete));
 
 router.post('/follow/account', asyncHandler(AccountFollowingAccountController.followAccount));
 router.post('/unfollow/account', asyncHandler(AccountFollowingAccountController.unfollowAccount));
