@@ -24,6 +24,7 @@ router.post('/send-email-change-verification-email', asyncHandler(AccountControl
 router.post('/verify-email-change', asyncHandler(AccountController.verifyEmailChange));
 router.post('/send-reset-password-email', asyncHandler(AccountController.sendResetPasswordEmail));
 router.post('/reset-password', asyncHandler(AccountController.resetPassword));
+router.delete('/delete', asyncHandler(AccountController.delete));
 
 router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create));
 router.put('/fcm-device/update', asyncHandler(AccountFCMDeviceController.update));

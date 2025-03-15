@@ -343,6 +343,18 @@ class AccountController {
       }
     });
   }
+
+  static async delete(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      try {
+        const account_id = req.user!.id;
+        await AccountController.accountService.delete(account_id);
+        res.json({ message: 'Account deleted successfully' });
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    });
+  }
 }
 
 export { AccountController };
