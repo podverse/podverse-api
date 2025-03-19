@@ -13,14 +13,15 @@ import { accountRouter } from '@api/routes/account';
 import { authRouter } from '@api/routes/auth';
 import { categoryRouter } from '@api/routes/category';
 import { channelRouter } from '@api/routes/channel';
-import { clipRouter } from './routes/clip';
+import { clipRouter } from '@api/routes/clip';
 import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
 import { mediumRouter } from '@api/routes/medium';
 import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
-import { accountPayPalOrderRouter } from './routes/paypal';
-import { playlistRouter } from './routes/playlist';
-import { queueRouter } from './routes/queue';
+import { accountPayPalOrderRouter } from '@api/routes/paypal';
+import { playlistRouter } from '@api/routes/playlist';
+import { queueRouter } from '@api/routes/queue';
+import { statsRouter } from '@api/routes/stats';
 
 logger.info(`NODE_ENV = ${config.nodeEnv}`);
 
@@ -62,6 +63,7 @@ export const startApp = async () => {
     app.use(membershipClaimTokenRouter);
     app.use(playlistRouter);
     app.use(queueRouter);
+    app.use(statsRouter);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
