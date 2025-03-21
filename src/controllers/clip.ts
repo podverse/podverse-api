@@ -6,12 +6,20 @@ import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth'
 import { handleGenericErrorResponse } from './helpers/error';
 import { validateBodyObject } from '@api/lib/validation';
 
-const clipSchema = Joi.object({
+const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
   end_time: Joi.number().greater(0).allow(null, ''),
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
   item_id_text: Joi.string().required(),
+  sharable_status: Joi.number().min(1).required(),
+});
+
+const clipUpdateSchema = Joi.object({
+  start_time: Joi.number().min(0).required(),
+  end_time: Joi.number().greater(0).allow(null, ''),
+  title: Joi.string().allow(null, ''),
+  description: Joi.string().allow(null, ''),
   sharable_status: Joi.number().min(1).required(),
 });
 
@@ -69,7 +77,7 @@ const verifyPrivateClipOwnership = () => {
 class ClipController {
   static async createClip(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateBodyObject(clipSchema, req, res, async () => {
+      validateBodyObject(clipCreateSchema, req, res, async () => {
         const account = req.user!;
         const dto = req.body;
 
@@ -86,7 +94,7 @@ class ClipController {
   static async updateClip(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       verifyClipOwnership()(req, res, () => {
-        validateBodyObject(clipSchema, req, res, async () => {
+        validateBodyObject(clipUpdateSchema, req, res, async () => {
           const account = req.user!;
           const { clip_id_text } = req.params;
           const dto = req.body;
