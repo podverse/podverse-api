@@ -16,7 +16,8 @@
     "dev:watch": "tsc --watch & nodemon --watch 'src' --watch $(realpath node_modules/podverse-helpers) --watch $(realpath node_modules/podverse-orm) --watch 'dist' dist/index.js",
     "lint": "eslint 'src/**/*.{ts,js}'",
     "prepublishOnly": "npm run build",
-    "start": "ts-node ./dist/index.js"
+    "start": "ts-node ./dist/index.js",
+    "test:e2e": "jest --config jest.e2e.config.js --runInBand --detectOpenHandles"
   },
   "license": "AGPLv3",
   "keywords": [
@@ -56,14 +57,19 @@
     "@eslint/js": "^9.8.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.1.0",
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
+    "@types/supertest": "^6.0.3",
     "eslint": "^9.9.0",
     "globals": "^15.9.0",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.4",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1"
