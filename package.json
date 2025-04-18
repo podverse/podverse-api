@@ -17,7 +17,7 @@
     "lint": "eslint 'src/**/*.{ts,js}'",
     "prepublishOnly": "npm run build",
     "start": "ts-node ./dist/index.js",
-    "test:e2e": "jest --config jest.e2e.config.js --runInBand --detectOpenHandles"
+    "test:e2e": "jest --config jest.e2e.config.js --runInBand"
   },
   "license": "AGPLv3",
   "keywords": [
