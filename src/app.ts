@@ -20,8 +20,6 @@ import { playlistRouter } from '@api/routes/playlist';
 import { queueRouter } from '@api/routes/queue';
 import { statsRouter } from '@api/routes/stats';
 
-logger.info(`NODE_ENV = ${config.nodeEnv}`);
-
 export const app = express();
 const port = 1234;
 
@@ -36,8 +34,6 @@ const baseUrl = `${config.api.prefix}${config.api.version}`;
 
 export const startApp = async () => {
   try {
-
-
     const categoryService = new CategoryService();
     await categoryService.setCategoryCache();
 

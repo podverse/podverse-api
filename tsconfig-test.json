@@ -22,7 +22,8 @@
   "include": [
     "./src/**/*.ts",
     "./src/@types/**/*.d.ts",
-    "./tests/**/*.ts"
+    "./tests/**/*.ts",
+    "./tests/e2e/global.d.ts"
   ],
   "exclude": ["node_modules"]
 }
