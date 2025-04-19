@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ItemService } from 'podverse-orm';
+import { itemGetOneRelations, itemGetManyRelations, ItemService } from 'podverse-orm';
 import { fetchChannel } from '@api/controllers/helpers/channel';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -7,46 +7,16 @@ import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { parseChapters } from 'podverse-parser';
 import { ItemChapterService } from 'podverse-orm';
 
-const allRelations = [
-  'item_about',
-  'item_about.item_itunes_episode_type',
-  'item_chapters_feed',
-  'item_chapters_feed.item_chapters',
-  'item_chapters_feed.item_chapters_feed_log',
-  'item_chat',
-  'item_content_links',
-  'item_description',
-  'item_enclosures',
-  'item_enclosures.item_enclosure_integrity',
-  'item_enclosures.item_enclosure_sources',
-  'item_fundings',
-  'item_images',
-  'item_license',
-  'item_location',
-  'item_persons',
-  'item_season',
-  'item_season.channel_season',
-  'item_social_interacts',
-  'item_soundbites',
-  'item_transcripts',
-  'item_txts',
-  'item_values',
-  'item_values.item_value_recipients',
-  'item_values.item_value_time_splits',
-  'item_values.item_value_time_splits.item_value_time_split_recipients',
-  'item_values.item_value_time_splits.item_value_time_split_remote_item',
-  'live_item'
-];
+
 
 export class ItemController {
   private static itemService = new ItemService();
   private static itemChapterService = new ItemChapterService();
 
   static async getByIdOrIdText(req: Request, res: Response): Promise<void> {
-    const { idOrIdText } = req.params;
-    const config = { relations: allRelations };
     try {
-      const data = await ItemController.itemService.getByIdOrIdText(idOrIdText, config);
+      const { idOrIdText } = req.params;
+      const data = await ItemController.itemService.getByIdOrIdText(idOrIdText, itemGetOneRelations);
       handleReturnDataOrNotFound(res, data, 'Item');
     } catch (error) {
       handleGenericErrorResponse(res, error);
@@ -59,7 +29,7 @@ export class ItemController {
       const options = {
         skip: offset,
         take: limit,
-        relations: allRelations
+        relations: itemGetManyRelations
       };
       const items = await ItemController.itemService.getMany(options);
       res.json({
@@ -80,7 +50,7 @@ export class ItemController {
         const options = {
           skip: offset,
           take: limit,
-          relations: allRelations,
+          relations: itemGetManyRelations,
           where: { channel }
         };
         const items = await ItemController.itemService.getManyByChannel(channel, options);
@@ -103,7 +73,7 @@ export class ItemController {
         const options = {
           skip: offset,
           take: limit,
-          relations: allRelations
+          relations: itemGetManyRelations
         };
         const items = await ItemController.itemService.getManyWithLiveItemByChannel(channel, options);
         res.json({
@@ -119,7 +89,7 @@ export class ItemController {
   static async parseAndGetChapters(req: Request, res: Response): Promise<void> {
     const { item_id_text } = req.params;
     try {
-      const item = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: allRelations });
+      const item = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: itemGetManyRelations });
       if (!item) {
         res.status(404).json({ message: 'Item not found' });
         return;
@@ -127,7 +97,7 @@ export class ItemController {
 
       await parseChapters(item);
 
-      const updatedItem = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: allRelations });
+      const updatedItem = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: itemGetManyRelations });
       const chapters = await ItemController.itemChapterService.getAll(updatedItem.item_chapters_feed, {
         order: { start_time: 'ASC' }
       });
