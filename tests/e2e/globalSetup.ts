@@ -11,6 +11,7 @@ export default async function globalSetup(): Promise<void> {
 
     const apiServer = await startApp();
     globalThis.__API_SERVER__ = apiServer;
+    globalThis.__APP_DATA_SOURCE__ = AppDataSourceReadWrite;
   } catch (error) {
     console.error('Error during global setup:', error);
     throw error;
