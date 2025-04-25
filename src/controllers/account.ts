@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
-import { ERROR_MESSAGES, SharableStatusEnum } from 'podverse-helpers';
+import { ERROR_MESSAGES, SharableStatusEnum, generateGuidV4 } from 'podverse-helpers';
 import { AccountCredentialsService, AccountEmailChangeVerificationService,
   AccountResetPasswordService, AccountService, AccountVerificationService } from 'podverse-orm';
-import { v4 as uuidv4 } from 'uuid';
 import { config } from '@api/config';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -194,7 +193,7 @@ class AccountController {
       throw new Error('Account not found.');
     }
 
-    const verificationToken = uuidv4();
+    const verificationToken = generateGuidV4();
     const verificationTokenExpiresAt = new Date(Date.now() + config.verifyEmail.tokenExpiration);
 
     await AccountController.accountVerificationService.update(account, {
@@ -249,7 +248,7 @@ class AccountController {
       throw new Error('Account not found.');
     }
   
-    const verificationToken = uuidv4();
+    const verificationToken = generateGuidV4();
     const verificationTokenExpiresAt = new Date(Date.now() + config.emailChangeVerification.tokenExpiration);
   
     await AccountController.accountEmailChangeVerificationService.create(account, {
@@ -313,7 +312,7 @@ class AccountController {
       throw new Error('Account not found.');
     }
 
-    const resetToken = uuidv4();
+    const resetToken = generateGuidV4();
     const resetTokenExpiresAt = new Date(Date.now() + config.resetPassword.tokenExpiration);
 
     await AccountController.accountResetPasswordService.update(account, {
