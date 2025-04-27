@@ -12,6 +12,7 @@ BEGIN
           'medium',
           'feed_flag_status',
           'channel_itunes_type',
+          'item_flag_status',
           'item_itunes_episode_type',
           'live_item_status',
           'sharable_status',
