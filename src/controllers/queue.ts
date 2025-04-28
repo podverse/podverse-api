@@ -3,10 +3,14 @@ import Joi from 'joi';
 import { QueueService } from 'podverse-orm';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from './helpers/error';
-import { validateBodyObject } from '@api/lib/validation';
+import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 
 const queueSchema = Joi.object({
   medium: Joi.number().min(1).required()
+});
+
+const queueIdSchema = Joi.object({
+  queue_id_text: Joi.string().required()
 });
 
 const queueService = new QueueService();
@@ -41,7 +45,7 @@ class QueueController {
       validateBodyObject(queueSchema, req, res, async () => {
         const account = req.user!;
         const dto = req.body;
-  
+
         try {
           const queue = await QueueController.queueService.create(account.id, dto);
           res.status(201).json(queue);
@@ -54,25 +58,26 @@ class QueueController {
 
   static async delete(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      verifyQueueOwnership()(req, res, async () => {
-        const account = req.user!;
-        const { queue_id } = req.params;
+      validateParamsObject(queueIdSchema, req, res, async () => {
+        verifyQueueOwnership()(req, res, async () => {
+          const account = req.user!;
+          const { queue_id_text } = req.params;
 
-        try {
-          await QueueController.queueService.delete(account.id, queue_id);
-          res.status(204).end();
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
+          try {
+            await QueueController.queueService.delete(account.id, queue_id_text);
+            res.status(204).end();
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
+          }
+        });
       });
     });
   }
 
   static async getAllPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      const account = req.user!;
-
       try {
+        const account = req.user!;
         const queues = await QueueController.queueService.getAllPrivate(account.id, { relations: ['medium'] });
         res.status(200).json(queues);
       } catch (err) {

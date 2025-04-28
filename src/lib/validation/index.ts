@@ -18,3 +18,21 @@ export function validateBodyObject(schema: Joi.ObjectSchema, req: Request, res: 
     next();
   }
 }
+
+export function validateParamsObject(schema: Joi.ObjectSchema, req: Request, res: Response, next: NextFunction): void {
+  const { error } = schema.validate(req.params);
+  if (error) {
+    res.status(400).json({ message: error.details[0].message });
+  } else {
+    next();
+  }
+}
+
+export function validateQueryObject(schema: Joi.ObjectSchema, req: Request, res: Response, next: NextFunction): void {
+  const { error } = schema.validate(req.query);
+  if (error) {
+    res.status(400).json({ message: error.details[0].message });
+  } else {
+    next();
+  }
+}

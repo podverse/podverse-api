@@ -4,7 +4,7 @@ import { SharableStatusEnum } from 'podverse-helpers';
 import { PlaylistService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from './helpers/error';
-import { validateBodyObject } from '@api/lib/validation';
+import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getPaginationParams } from './helpers/pagination';
 
 const playlistSchema = Joi.object({
@@ -13,6 +13,15 @@ const playlistSchema = Joi.object({
   medium: Joi.number().min(1).required(),
   sharable_status: Joi.number().min(1).required(),
   is_default_favorites: Joi.boolean().required()
+});
+
+const playlistIdSchema = Joi.object({
+  playlist_id_text: Joi.string().required()
+});
+
+const paginationSchema = Joi.object({
+  page: Joi.number().integer().min(1).optional(),
+  limit: Joi.number().integer().min(1).optional()
 });
 
 const playlistService = new PlaylistService();
@@ -87,15 +96,35 @@ class PlaylistController {
 
   static async updatePlaylist(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      verifyPlaylistOwnership()(req, res, async () => {
-        validateBodyObject(playlistSchema, req, res, async () => {
+      validateParamsObject(playlistIdSchema, req, res, async () => {
+        verifyPlaylistOwnership()(req, res, async () => {
+          validateBodyObject(playlistSchema, req, res, async () => {
+            const account = req.user!;
+            const { playlist_id_text } = req.params;
+            const dto = req.body;
+
+            try {
+              const playlist = await PlaylistController.playlistService.update(account.id, playlist_id_text, dto);
+              res.status(200).json(playlist);
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  static async deletePlaylist(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateParamsObject(playlistIdSchema, req, res, async () => {
+        verifyPlaylistOwnership()(req, res, async () => {
           const account = req.user!;
           const { playlist_id_text } = req.params;
-          const dto = req.body;
 
           try {
-            const playlist = await PlaylistController.playlistService.update(account.id, playlist_id_text, dto);
-            res.status(200).json(playlist);
+            await PlaylistController.playlistService.delete(account.id, playlist_id_text);
+            res.status(204).end();
           } catch (err) {
             handleGenericErrorResponse(res, err);
           }
@@ -104,68 +133,58 @@ class PlaylistController {
     });
   }
 
-  static async deletePlaylist(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      verifyPlaylistOwnership()(req, res, async () => {
-        const account = req.user!;
-        const { playlist_id_text } = req.params;
-  
-        try {
-          await PlaylistController.playlistService.delete(account.id, playlist_id_text);
-          res.status(204).end();
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
-      });
-    });
-  }
-
   static async getManyPublic(req: Request, res: Response): Promise<void> {
-    try {
-      const { page, limit, offset } = getPaginationParams(req);
-      const options = {
-        where: { sharable_status: { id: SharableStatusEnum.Public } },
-        skip: offset,
-        take: limit,
-        relations: ['account']
-      };
-      const playlists = await PlaylistController.playlistService.getMany(options);
-      res.status(200).json({
-        data: playlists,
-        meta: { page }
-      });
-    } catch (err) {
-      handleGenericErrorResponse(res, err);
-    }
-  }
-
-  static async getManyPrivate(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      const account = req.user!;
-
+    validateQueryObject(paginationSchema, req, res, async () => {
       try {
-        const playlists = await PlaylistController.playlistService.getManyByAccount(account.id);
-        res.status(200).json(playlists);
+        const { page, limit, offset } = getPaginationParams(req);
+        const options = {
+          where: { sharable_status: { id: SharableStatusEnum.Public } },
+          skip: offset,
+          take: limit,
+          relations: ['account']
+        };
+        const playlists = await PlaylistController.playlistService.getMany(options);
+        res.status(200).json({
+          data: playlists,
+          meta: { page }
+        });
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
     });
   }
 
-  static async getPlaylistById(req: Request, res: Response): Promise<void> {
-    optionalEnsureAuthenticated(req, res, async () => {
-      verifyPrivatePlaylistOwnership()(req, res, async () => {
+  static async getManyPrivate(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(paginationSchema, req, res, async () => {
+        const account = req.user!;
+
         try {
-          const { playlist_id_text } = req.params;
-          const playlist = await PlaylistController.playlistService.getByIdText(playlist_id_text);
-          if (playlist) {
-            res.status(200).json(playlist);
-          } else {
-            res.status(404).json({ message: 'Playlist not found' });
-          }
+          const playlists = await PlaylistController.playlistService.getManyByAccount(account.id);
+          res.status(200).json(playlists);
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
+      });
+    });
+  }
+
+  static async getPlaylistById(req: Request, res: Response): Promise<void> {
+    validateParamsObject(playlistIdSchema, req, res, async () => {
+      optionalEnsureAuthenticated(req, res, async () => {
+        verifyPrivatePlaylistOwnership()(req, res, async () => {
+          try {
+            const { playlist_id_text } = req.params;
+            const playlist = await PlaylistController.playlistService.getByIdText(playlist_id_text);
+            if (playlist) {
+              res.status(200).json(playlist);
+            } else {
+              res.status(404).json({ message: 'Playlist not found' });
+            }
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
+          }
+        });
       });
     });
   }

@@ -2,10 +2,18 @@ import { Request, Response } from 'express';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { AccountNotificationChannelService } from 'podverse-orm';
 import { handleGenericErrorResponse } from './helpers/error';
-import { validateBodyObject } from '@api/lib/validation';
+import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
 
 const createNotificationChannelSchema = Joi.object({
+  channel_id_text: Joi.string().required()
+});
+
+const deleteNotificationChannelSchema = Joi.object({
+  channel_id_text: Joi.string().required()
+});
+
+const getByAccountAndChannelSchema = Joi.object({
   channel_id_text: Joi.string().required()
 });
 
@@ -13,19 +21,21 @@ class AccountNotificationChannelController {
   private static accountNotificationChannelService = new AccountNotificationChannelService();
 
   static async getByAccountAndChannel(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      try {
-        const jwtUser = req.user!;
-        const { channel_id_text } = req.params;
-        const notificationChannel = await AccountNotificationChannelController.accountNotificationChannelService.getByAccountIdAndChannelIdText(jwtUser.id, channel_id_text);
-        if (!notificationChannel) {
-          res.status(404).json({ message: 'Notification channel not found' });
-          return;
+    validateParamsObject(getByAccountAndChannelSchema, req, res, async () => {
+      ensureAuthenticated(req, res, async () => {
+        try {
+          const jwtUser = req.user!;
+          const { channel_id_text } = req.params;
+          const notificationChannel = await AccountNotificationChannelController.accountNotificationChannelService.getByAccountIdAndChannelIdText(jwtUser.id, channel_id_text);
+          if (!notificationChannel) {
+            res.status(404).json({ message: 'Notification channel not found' });
+            return;
+          }
+          res.json(notificationChannel);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
         }
-        res.json(notificationChannel);
-      } catch (err) {
-        handleGenericErrorResponse(res, err);
-      }
+      });
     });
   }
 
@@ -58,14 +68,16 @@ class AccountNotificationChannelController {
 
   static async delete(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      try {
-        const jwtUser = req.user!;
-        const { channel_id_text } = req.body;
-        await AccountNotificationChannelController.accountNotificationChannelService.delete(jwtUser.id, channel_id_text);
-        res.status(204).end();
-      } catch (err) {
-        handleGenericErrorResponse(res, err);
-      }
+      validateBodyObject(deleteNotificationChannelSchema, req, res, async () => {
+        try {
+          const jwtUser = req.user!;
+          const { channel_id_text } = req.body;
+          await AccountNotificationChannelController.accountNotificationChannelService.delete(jwtUser.id, channel_id_text);
+          res.status(204).end();
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
     });
   }
 }
