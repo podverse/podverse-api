@@ -52,7 +52,7 @@ BEGIN
         url, feed_flag_status_id, parsing_priority, created_at, updated_at
     ) VALUES (
         'https://samplechannel.com/feed', 
-        (SELECT id FROM feed_flag_status WHERE status = 'none'), 
+        (SELECT id FROM feed_flag_status WHERE status = 'active'),
         0, 
         TIMESTAMP '2025-01-01 13:00:00+00',
         TIMESTAMP '2025-01-01 13:00:00+00'
@@ -68,12 +68,12 @@ BEGIN
     -- Insert a sample row into the channel table and capture the id
     INSERT INTO channel (
         id_text, slug, feed_id, podcast_index_id, podcast_guid, title, sortable_title, medium_id, 
-        has_podcast_index_value, has_value_time_splits, hidden, marked_for_deletion
+        has_podcast_index_value, has_value_time_splits
     ) VALUES (
         'sample123', 'sample-channel', 
         feed_id, 
         1001, '550e8400-e29b-41d4-a716-446655440000', 
-        'Sample Channel', 'sample channel', 1, FALSE, FALSE, FALSE, FALSE
+        'Sample Channel', 'sample channel', 1, FALSE, FALSE
     ) RETURNING id INTO channel_id;
 
     -- Use the captured channel_id for subsequent inserts
@@ -243,10 +243,10 @@ BEGIN
 
     -- Insert a row into item
     INSERT INTO item (
-        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, hidden, marked_for_deletion
+        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, item_flag_status_id
     ) VALUES (
         'item123', 'sample-item', channel_id, 'item-guid-123', 'https://samplechannel.com/item.mp3', TIMESTAMP '2025-01-01 13:00:00+00', 
-        'Sample Item', FALSE, FALSE
+        'Sample Item', (SELECT id FROM item_flag_status WHERE status = 'active')
     ) RETURNING id INTO item_id_1;
 
     -- Insert a row into item_about
@@ -513,10 +513,10 @@ BEGIN
 
     -- Insert a row into item
     INSERT INTO item (
-        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, hidden, marked_for_deletion
+        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, item_flag_status_id
     ) VALUES (
         'item124', 'sample-item-2', channel_id, 'item-guid-124', 'https://samplechannel.com/item2.mp3', TIMESTAMP '2025-01-01 13:00:00+00',
-        'Sample Item 2', FALSE, FALSE
+        'Sample Item 2', (SELECT id FROM item_flag_status WHERE status = 'active')
     ) RETURNING id INTO item_id_2;
 
     -- Insert a row into item_about
@@ -783,10 +783,10 @@ BEGIN
 
     -- Insert a row into item
     INSERT INTO item (
-        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, hidden, marked_for_deletion
+        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, item_flag_status_id
     ) VALUES (
         'liveitem1', 'live-item-1', channel_id, 'live-item-guid-1', 'https://samplechannel.com/live-item1.mp3', TIMESTAMP '2025-01-01 13:00:00+00',
-        'Live Item 1', FALSE, FALSE
+        'Live Item 1', (SELECT id FROM item_flag_status WHERE status = 'active')
     ) RETURNING id INTO item_id_live_1;
 
     -- Insert a row into item_about
@@ -886,10 +886,10 @@ BEGIN
 
     -- Insert a row into item
     INSERT INTO item (
-        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, hidden, marked_for_deletion
+        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, item_flag_status_id
     ) VALUES (
         'liveitem2', 'live-item-2', channel_id, 'live-item-guid-2', 'https://samplechannel.com/live-item2.mp3', TIMESTAMP '2025-01-01 13:00:00+00',
-        'Live Item 2', FALSE, FALSE
+        'Live Item 2', (SELECT id FROM item_flag_status WHERE status = 'active')
     ) RETURNING id INTO item_id_live_2;
 
     -- Insert a row into item_about
@@ -989,10 +989,10 @@ BEGIN
 
     -- Insert a row into item
     INSERT INTO item (
-        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, hidden, marked_for_deletion
+        id_text, slug, channel_id, guid, guid_enclosure_url, pub_date, title, item_flag_status_id
     ) VALUES (
         'liveitem3', 'live-item-3', channel_id, 'live-item-guid-3', 'https://samplechannel.com/live-item3.mp3', TIMESTAMP '2025-01-01 13:00:00+00',
-        'Live Item 3', FALSE, FALSE
+        'Live Item 3', (SELECT id FROM item_flag_status WHERE status = 'active')
     ) RETURNING id INTO item_id_live_3;
 
     -- Insert a row into item_about

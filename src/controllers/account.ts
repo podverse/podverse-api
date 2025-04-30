@@ -10,7 +10,7 @@ import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { ensureAuthenticated } from '@api/lib/auth/';
 import { sendVerificationEmail } from '@api/lib/mailer/sendVerificationEmail';
 import { sendResetPasswordEmail } from '@api/lib/mailer/sendResetPasswordEmail';
-import { validateBodyObject } from '@api/lib/validation';
+import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { sendEmailChangeVerificationEmail } from '@api/lib/mailer/sendChangeEmailVerificationEmail';
 
 const createAccountSchema = Joi.object({
@@ -49,6 +49,10 @@ const resetPasswordSchema = Joi.object({
   password: Joi.string().min(8).required()
 });
 
+const getByIdTextSchema = Joi.object({
+  id_text: Joi.string().required()
+});
+
 const publicRelations = [
   'account_following_channels',
   'account_profile',
@@ -72,7 +76,7 @@ const privateRelations = [
   // 'account_verification'
 ];
 
-class AccountController {
+export class AccountController {
   private static accountService = new AccountService();
   private static accountCredentialsService = new AccountCredentialsService();
   private static accountEmailChangeVerificationService = new AccountEmailChangeVerificationService();
@@ -80,15 +84,17 @@ class AccountController {
   private static accountVerificationService = new AccountVerificationService();
 
   static async getByIdText(req: Request, res: Response): Promise<void> {
-    try {
-      const { id_text } = req.params;
-      const config = { relations: publicRelations };
-      // TODO: get if not a private account / not sharable
-      const data = await AccountController.accountService.getByIdText(id_text, config);
-      handleReturnDataOrNotFound(res, data, 'Account');
-    } catch (error) {
-      handleGenericErrorResponse(res, error);
-    }
+    validateParamsObject(getByIdTextSchema, req, res, async () => {
+      try {
+        const { id_text } = req.params;
+        // TODO: Only return if is a public account
+        const config = { relations: publicRelations };
+        const data = await AccountController.accountService.getByIdText(id_text, config);
+        handleReturnDataOrNotFound(res, data, 'Account');
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    });
   }
 
   static async getLoggedInAccount(req: Request, res: Response): Promise<void> {
@@ -113,26 +119,33 @@ class AccountController {
   }
 
   static async getManyPublic(req: Request, res: Response): Promise<void> {
-    try {
-      const { page, limit, offset } = getPaginationParams(req);
-      const channels = await AccountController.accountService.getMany({
-        skip: offset,
-        take: limit,
-        relations: publicRelations,
-        where: {
-          sharable_status: { id: SharableStatusEnum.Public }
-        }
-      });
-  
-      res.json({
-        data: channels,
-        meta: {
-          page
-        }
-      });
-    } catch (error) {
-      handleGenericErrorResponse(res, error);
-    }
+    const getManyPublicSchema = Joi.object({
+      page: Joi.number().integer().min(1).optional(),
+      limit: Joi.number().integer().min(1).optional()
+    });
+
+    validateQueryObject(getManyPublicSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const channels = await AccountController.accountService.getMany({
+          skip: offset,
+          take: limit,
+          relations: publicRelations,
+          where: {
+            sharable_status: { id: SharableStatusEnum.Public }
+          }
+        });
+
+        res.json({
+          data: channels,
+          meta: {
+            page
+          }
+        });
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    });
   }
 
   static async create(req: Request, res: Response): Promise<void> {
@@ -355,5 +368,3 @@ class AccountController {
     });
   }
 }
-
-export { AccountController };
