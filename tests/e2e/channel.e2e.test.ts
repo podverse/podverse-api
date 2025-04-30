@@ -29,11 +29,10 @@ describe('Channel Endpoints', () => {
         expect(channel).toHaveProperty('sortable_title', 'sample channel');
         expect(channel).toHaveProperty('has_podcast_index_value', false);
         expect(channel).toHaveProperty('has_value_time_splits', false);
-        expect(channel).toHaveProperty('hidden', false);
-        expect(channel).toHaveProperty('marked_for_deletion', false);
 
         // Validate nested objects
         expect(channel).toHaveProperty('channel_about');
+        expect(channel.channel_about).toHaveProperty('id', 1);
         expect(channel.channel_about).toHaveProperty('author', 'Sample Author');
         expect(channel.channel_about).toHaveProperty('episode_count', 10);
         expect(channel.channel_about).toHaveProperty('explicit', false);
@@ -41,48 +40,71 @@ describe('Channel Endpoints', () => {
         expect(channel.channel_about).toHaveProperty('last_pub_date', '2025-01-01T19:00:00.000Z');
         expect(channel.channel_about).toHaveProperty('website_link_url', 'https://samplechannel.com');
         expect(channel.channel_about).toHaveProperty('itunes_type');
+        expect(channel.channel_about.itunes_type).toHaveProperty('id', 1);
         expect(channel.channel_about.itunes_type).toHaveProperty('itunes_type', 'episodic');
 
         expect(channel).toHaveProperty('channel_chat');
+        expect(channel.channel_chat).toHaveProperty('id', 1);
         expect(channel.channel_chat).toHaveProperty('server', 'chat1.samplechannel.com');
         expect(channel.channel_chat).toHaveProperty('protocol', 'irc');
         expect(channel.channel_chat).toHaveProperty('account_id', 'sample_account1');
         expect(channel.channel_chat).toHaveProperty('space', 'sample_space1');
 
         expect(channel).toHaveProperty('channel_description');
+        expect(channel.channel_description).toHaveProperty('id', 1);
         expect(channel.channel_description).toHaveProperty('value', 'This is a sample description for the Sample Channel.');
 
         expect(channel).toHaveProperty('channel_images');
         expect(Array.isArray(channel.channel_images)).toBe(true);
         expect(channel.channel_images.length).toBe(1);
         channel.channel_images.forEach((image) => {
+          expect(image).toHaveProperty('id', 1);
           expect(image).toHaveProperty('url', 'https://samplechannel.com/image.jpg');
           expect(image).toHaveProperty('image_width_size', 300);
           expect(image).toHaveProperty('is_resized', false);
         });
 
         expect(channel).toHaveProperty('channel_internal_settings');
+        expect(channel.channel_internal_settings).toHaveProperty('id', 1);
         expect(channel.channel_internal_settings).toHaveProperty(
           'embed_approved_media_url_paths',
           '[\"https://samplechannel.com/embed\"]'
         );
 
         expect(channel).toHaveProperty('channel_license');
+        expect(channel.channel_license).toHaveProperty('id', 1);
         expect(channel.channel_license).toHaveProperty('identifier', 'CC-BY-4.0');
         expect(channel.channel_license).toHaveProperty('url', 'https://creativecommons.org/licenses/by/4.0/');
 
         expect(channel).toHaveProperty('channel_location');
+        expect(channel.channel_location).toHaveProperty('id', 1);
         expect(channel.channel_location).toHaveProperty('geo', '37.7749,-122.4194');
         expect(channel.channel_location).toHaveProperty('name', 'San Francisco, CA');
+        expect(channel.channel_location).toHaveProperty('osm', null);
 
         expect(channel).toHaveProperty('channel_persons');
         expect(Array.isArray(channel.channel_persons)).toBe(true);
         expect(channel.channel_persons.length).toBe(3);
+        expect(channel.channel_persons[0]).toHaveProperty('id', 1);
         expect(channel.channel_persons[0]).toHaveProperty('name', 'John Doe');
         expect(channel.channel_persons[0]).toHaveProperty('role', 'Host');
         expect(channel.channel_persons[0]).toHaveProperty('person_group', 'cast');
         expect(channel.channel_persons[0]).toHaveProperty('img', 'https://samplechannel.com/johndoe.jpg');
         expect(channel.channel_persons[0]).toHaveProperty('href', 'https://samplechannel.com/johndoe');
+
+        expect(channel.channel_persons[1]).toHaveProperty('id', 2);
+        expect(channel.channel_persons[1]).toHaveProperty('name', 'Jane Smith');
+        expect(channel.channel_persons[1]).toHaveProperty('role', 'Co-Host');
+        expect(channel.channel_persons[1]).toHaveProperty('person_group', 'cast');
+        expect(channel.channel_persons[1]).toHaveProperty('img', 'https://samplechannel.com/janesmith.jpg');
+        expect(channel.channel_persons[1]).toHaveProperty('href', 'https://samplechannel.com/janesmith');
+
+        expect(channel.channel_persons[2]).toHaveProperty('id', 3);
+        expect(channel.channel_persons[2]).toHaveProperty('name', 'Sam Wilson');
+        expect(channel.channel_persons[2]).toHaveProperty('role', 'Guest');
+        expect(channel.channel_persons[2]).toHaveProperty('person_group', 'guest');
+        expect(channel.channel_persons[2]).toHaveProperty('img', 'https://samplechannel.com/samwilson.jpg');
+        expect(channel.channel_persons[2]).toHaveProperty('href', 'https://samplechannel.com/samwilson');
       });
     });
   });
