@@ -3,7 +3,7 @@
 ## Initialize test & log response data
 @workspace
 
-router.get('/channel/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannel));
+router.something____;
 
 Create a test for the endpoint above. Make the test only test a successful response and then console log the response.body. Use JSON.stringify to make sure the whole body is logged.
 
