@@ -377,4 +377,288 @@ describe('Item Endpoints', () => {
       });
     });
   });
+
+  describe('GET /channel/:channelIdOrIdText', () => {
+    it('should return a successful response and validate the exact values of the first item', async () => {
+      const channelIdOrIdText = 'sample123'; // Replace with a valid channel ID or ID text from your test database
+
+      const response = await request(globalThis.__API_SERVER__)
+        .get(`${config.api.prefix}${config.api.version}/item/channel/${channelIdOrIdText}`)
+        .expect(200);
+
+      const { data, meta } = response.body;
+
+      // Validate meta structure and values
+      expect(meta).toHaveProperty('page', 1);
+
+      // Validate data structure and values
+      expect(Array.isArray(data)).toBe(true);
+      expect(data.length).toBeGreaterThan(0);
+
+      // Sort arrays in the first item for consistent validation
+      const firstItem = data[0];
+      firstItem.item_enclosures.sort((a, b) => a.id - b.id);
+      firstItem.item_enclosures.forEach((enclosure) =>
+        enclosure.item_enclosure_sources.sort((a, b) => a.id - b.id)
+      );
+      firstItem.item_images.sort((a, b) => a.id - b.id);
+      firstItem.item_persons.sort((a, b) => a.id - b.id);
+
+      // Validate the first item
+      expect(firstItem).toHaveProperty('id', 1);
+      expect(firstItem).toHaveProperty('id_text', 'item123');
+      expect(firstItem).toHaveProperty('slug', 'sample-item');
+      expect(firstItem).toHaveProperty('guid', 'item-guid-123');
+      expect(firstItem).toHaveProperty('guid_enclosure_url', 'https://samplechannel.com/item.mp3');
+      expect(firstItem).toHaveProperty('pub_date', '2025-01-01T13:00:00.000Z');
+      expect(firstItem).toHaveProperty('title', 'Sample Item');
+
+      // Validate `item_about`
+      expect(firstItem).toHaveProperty('item_about');
+      expect(firstItem.item_about).toHaveProperty('id', 1);
+      expect(firstItem.item_about).toHaveProperty('duration', '3600.00');
+      expect(firstItem.item_about).toHaveProperty('explicit', false);
+      expect(firstItem.item_about).toHaveProperty('website_link_url', 'https://samplechannel.com/item');
+      expect(firstItem.item_about.item_itunes_episode_type).toHaveProperty('id', 1);
+      expect(firstItem.item_about.item_itunes_episode_type).toHaveProperty('itunes_episode_type', 'full');
+
+      // Validate `item_chat`
+      expect(firstItem).toHaveProperty('item_chat');
+      expect(firstItem.item_chat).toHaveProperty('id', 1);
+      expect(firstItem.item_chat).toHaveProperty('server', 'chat.samplechannel.com');
+      expect(firstItem.item_chat).toHaveProperty('protocol', 'irc');
+      expect(firstItem.item_chat).toHaveProperty('account_id', 'sample_account');
+      expect(firstItem.item_chat).toHaveProperty('space', 'sample_space');
+
+      // Validate `item_description`
+      expect(firstItem).toHaveProperty('item_description');
+      expect(firstItem.item_description).toHaveProperty('id', 1);
+      expect(firstItem.item_description).toHaveProperty('value', 'This is a sample description for the item.');
+
+      // Validate `item_enclosures`
+      expect(Array.isArray(firstItem.item_enclosures)).toBe(true);
+      expect(firstItem.item_enclosures).toHaveLength(2);
+
+      const firstEnclosure = firstItem.item_enclosures[0];
+      expect(firstEnclosure).toHaveProperty('id', 1);
+      expect(firstEnclosure).toHaveProperty('type', 'audio/mpeg');
+      expect(firstEnclosure).toHaveProperty('length', 12345678);
+      expect(firstEnclosure).toHaveProperty('bitrate', 128);
+      expect(firstEnclosure).toHaveProperty('height', null);
+      expect(firstEnclosure).toHaveProperty('language', 'en');
+      expect(firstEnclosure).toHaveProperty('title', 'Sample Enclosure');
+      expect(firstEnclosure).toHaveProperty('rel', 'alternate');
+      expect(firstEnclosure).toHaveProperty('codecs', 'mp3');
+      expect(firstEnclosure).toHaveProperty('item_enclosure_default', true);
+      expect(firstEnclosure.item_enclosure_integrity).toHaveProperty('id', 1);
+      expect(firstEnclosure.item_enclosure_integrity).toHaveProperty('type', 'sri');
+      expect(firstEnclosure.item_enclosure_integrity).toHaveProperty(
+        'value',
+        'sha256-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz567'
+      );
+
+      const firstEnclosureSource = firstEnclosure.item_enclosure_sources[0];
+      expect(firstEnclosureSource).toHaveProperty('id', 1);
+      expect(firstEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/audio-source1.mp3');
+      expect(firstEnclosureSource).toHaveProperty('content_type', 'audio/mpeg');
+
+      const secondEnclosureSource = firstEnclosure.item_enclosure_sources[1];
+      expect(secondEnclosureSource).toHaveProperty('id', 2);
+      expect(secondEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/audio-source2.mp3');
+      expect(secondEnclosureSource).toHaveProperty('content_type', 'audio/mpeg');
+
+      // Validate `item_images`
+      expect(Array.isArray(firstItem.item_images)).toBe(true);
+      expect(firstItem.item_images).toHaveLength(2);
+
+      const firstImage = firstItem.item_images[0];
+      expect(firstImage).toHaveProperty('id', 1);
+      expect(firstImage).toHaveProperty('url', 'https://samplechannel.com/item-image1.jpg');
+      expect(firstImage).toHaveProperty('image_width_size', 300);
+      expect(firstImage).toHaveProperty('is_resized', false);
+
+      const secondImage = firstItem.item_images[1];
+      expect(secondImage).toHaveProperty('id', 2);
+      expect(secondImage).toHaveProperty('url', 'https://samplechannel.com/item-image2.jpg');
+      expect(secondImage).toHaveProperty('image_width_size', 500);
+      expect(secondImage).toHaveProperty('is_resized', true);
+
+      // Validate `item_persons`
+      expect(Array.isArray(firstItem.item_persons)).toBe(true);
+      expect(firstItem.item_persons).toHaveLength(2);
+
+      const firstPerson = firstItem.item_persons[0];
+      expect(firstPerson).toHaveProperty('id', 1);
+      expect(firstPerson).toHaveProperty('name', 'John Doe');
+      expect(firstPerson).toHaveProperty('role', 'Host');
+      expect(firstPerson).toHaveProperty('person_group', 'cast');
+      expect(firstPerson).toHaveProperty('img', 'https://samplechannel.com/johndoe.jpg');
+      expect(firstPerson).toHaveProperty('href', 'https://samplechannel.com/johndoe');
+
+      const secondPerson = firstItem.item_persons[1];
+      expect(secondPerson).toHaveProperty('id', 2);
+      expect(secondPerson).toHaveProperty('name', 'Jane Smith');
+      expect(secondPerson).toHaveProperty('role', 'Guest');
+      expect(secondPerson).toHaveProperty('person_group', 'guest');
+      expect(secondPerson).toHaveProperty('img', 'https://samplechannel.com/janesmith.jpg');
+      expect(secondPerson).toHaveProperty('href', 'https://samplechannel.com/janesmith');
+
+      // Validate `item_season`
+      expect(firstItem).toHaveProperty('item_season');
+      expect(firstItem.item_season).toHaveProperty('id', 1);
+      expect(firstItem.item_season).toHaveProperty('channel_season_id', 1);
+      expect(firstItem.item_season).toHaveProperty('title', 'Season 1 Title');
+      expect(firstItem.item_season.channel_season).toHaveProperty('id', 1);
+      expect(firstItem.item_season.channel_season).toHaveProperty('channel_id', 1);
+      expect(firstItem.item_season.channel_season).toHaveProperty('number', 1);
+      expect(firstItem.item_season.channel_season).toHaveProperty('name', 'Season 1');
+
+      // Validate `live_item`
+      expect(firstItem).toHaveProperty('live_item', null);
+
+      // Now validate the second item
+      const secondItem = data[1];
+      secondItem.item_enclosures.sort((a, b) => a.id - b.id);
+      secondItem.item_enclosures.forEach((enclosure) =>
+        enclosure.item_enclosure_sources.sort((a, b) => a.id - b.id)
+      );
+      secondItem.item_images.sort((a, b) => a.id - b.id);
+      secondItem.item_persons.sort((a, b) => a.id - b.id);
+
+      // Validate the second item
+      expect(secondItem).toHaveProperty('id', 2);
+      expect(secondItem).toHaveProperty('id_text', 'item124');
+      expect(secondItem).toHaveProperty('slug', 'sample-item-2');
+      expect(secondItem).toHaveProperty('guid', 'item-guid-124');
+      expect(secondItem).toHaveProperty('guid_enclosure_url', 'https://samplechannel.com/item2.mp3');
+      expect(secondItem).toHaveProperty('pub_date', '2025-01-01T13:00:00.000Z');
+      expect(secondItem).toHaveProperty('title', 'Sample Item 2');
+
+      // Validate `item_about`
+      expect(secondItem).toHaveProperty('item_about');
+      expect(secondItem.item_about).toHaveProperty('id', 2);
+      expect(secondItem.item_about).toHaveProperty('duration', '20000.00');
+      expect(secondItem.item_about).toHaveProperty('explicit', false);
+      expect(secondItem.item_about).toHaveProperty('website_link_url', 'https://samplechannel.com/item2');
+      expect(secondItem.item_about.item_itunes_episode_type).toHaveProperty('id', 1);
+      expect(secondItem.item_about.item_itunes_episode_type).toHaveProperty('itunes_episode_type', 'full');
+
+      // Validate `item_chat`
+      expect(secondItem).toHaveProperty('item_chat');
+      expect(secondItem.item_chat).toHaveProperty('id', 2);
+      expect(secondItem.item_chat).toHaveProperty('server', 'chat.samplechannel.com');
+      expect(secondItem.item_chat).toHaveProperty('protocol', 'irc');
+      expect(secondItem.item_chat).toHaveProperty('account_id', 'sample_account');
+      expect(secondItem.item_chat).toHaveProperty('space', 'sample_space');
+
+      // Validate `item_description`
+      expect(secondItem).toHaveProperty('item_description');
+      expect(secondItem.item_description).toHaveProperty('id', 2);
+      expect(secondItem.item_description).toHaveProperty('value', 'This is a sample description for item 2.');
+
+      // Validate `item_enclosures`
+      expect(Array.isArray(secondItem.item_enclosures)).toBe(true);
+      expect(secondItem.item_enclosures).toHaveLength(2);
+
+      const secondFirstEnclosure = secondItem.item_enclosures[0];
+      expect(secondFirstEnclosure).toHaveProperty('id', 3);
+      expect(secondFirstEnclosure).toHaveProperty('type', 'audio/mpeg');
+      expect(secondFirstEnclosure).toHaveProperty('length', 12345678);
+      expect(secondFirstEnclosure).toHaveProperty('bitrate', 128);
+      expect(secondFirstEnclosure).toHaveProperty('height', null);
+      expect(secondFirstEnclosure).toHaveProperty('language', 'en');
+      expect(secondFirstEnclosure).toHaveProperty('title', 'Sample Enclosure');
+      expect(secondFirstEnclosure).toHaveProperty('rel', 'alternate');
+      expect(secondFirstEnclosure).toHaveProperty('codecs', 'mp3');
+      expect(secondFirstEnclosure).toHaveProperty('item_enclosure_default', true);
+      expect(secondFirstEnclosure.item_enclosure_integrity).toHaveProperty('id', 2);
+      expect(secondFirstEnclosure.item_enclosure_integrity).toHaveProperty('type', 'sri');
+      expect(secondFirstEnclosure.item_enclosure_integrity).toHaveProperty(
+        'value',
+        'sha256-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz789'
+      );
+
+      const secondFirstEnclosureSource = secondFirstEnclosure.item_enclosure_sources[0];
+      expect(secondFirstEnclosureSource).toHaveProperty('id', 5);
+      expect(secondFirstEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/audio-source3.mp3');
+      expect(secondFirstEnclosureSource).toHaveProperty('content_type', 'audio/mpeg');
+
+      const secondSecondEnclosureSource = secondFirstEnclosure.item_enclosure_sources[1];
+      expect(secondSecondEnclosureSource).toHaveProperty('id', 6);
+      expect(secondSecondEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/audio-source4.mp3');
+      expect(secondSecondEnclosureSource).toHaveProperty('content_type', 'audio/mpeg');
+
+      const secondSecondEnclosure = secondItem.item_enclosures[1];
+      expect(secondSecondEnclosure).toHaveProperty('id', 4);
+      expect(secondSecondEnclosure).toHaveProperty('type', 'video/mp4');
+      expect(secondSecondEnclosure).toHaveProperty('length', 98765432);
+      expect(secondSecondEnclosure).toHaveProperty('bitrate', 256);
+      expect(secondSecondEnclosure).toHaveProperty('height', 720);
+      expect(secondSecondEnclosure).toHaveProperty('language', 'en');
+      expect(secondSecondEnclosure).toHaveProperty('title', 'Sample Video Enclosure');
+      expect(secondSecondEnclosure).toHaveProperty('rel', 'alternate');
+      expect(secondSecondEnclosure).toHaveProperty('codecs', 'mp4');
+      expect(secondSecondEnclosure).toHaveProperty('item_enclosure_default', false);
+      expect(secondSecondEnclosure.item_enclosure_integrity).toBeNull();
+
+      const secondThirdEnclosureSource = secondSecondEnclosure.item_enclosure_sources[0];
+      expect(secondThirdEnclosureSource).toHaveProperty('id', 7);
+      expect(secondThirdEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/video-source3.mp4');
+      expect(secondThirdEnclosureSource).toHaveProperty('content_type', 'video/mp4');
+
+      const secondFourthEnclosureSource = secondSecondEnclosure.item_enclosure_sources[1];
+      expect(secondFourthEnclosureSource).toHaveProperty('id', 8);
+      expect(secondFourthEnclosureSource).toHaveProperty('uri', 'https://samplechannel.com/video-source4.mp4');
+      expect(secondFourthEnclosureSource).toHaveProperty('content_type', 'video/mp4');
+
+      // Validate `item_images`
+      expect(Array.isArray(secondItem.item_images)).toBe(true);
+      expect(secondItem.item_images).toHaveLength(2);
+
+      const secondFirstImage = secondItem.item_images[0];
+      expect(secondFirstImage).toHaveProperty('id', 3);
+      expect(secondFirstImage).toHaveProperty('url', 'https://samplechannel.com/item-image3.jpg');
+      expect(secondFirstImage).toHaveProperty('image_width_size', 300);
+      expect(secondFirstImage).toHaveProperty('is_resized', false);
+
+      const secondSecondImage = secondItem.item_images[1];
+      expect(secondSecondImage).toHaveProperty('id', 4);
+      expect(secondSecondImage).toHaveProperty('url', 'https://samplechannel.com/item-image4.jpg');
+      expect(secondSecondImage).toHaveProperty('image_width_size', 500);
+      expect(secondSecondImage).toHaveProperty('is_resized', true);
+
+      // Validate `item_persons`
+      expect(Array.isArray(secondItem.item_persons)).toBe(true);
+      expect(secondItem.item_persons).toHaveLength(2);
+
+      const secondFirstPerson = secondItem.item_persons[0];
+      expect(secondFirstPerson).toHaveProperty('id', 3);
+      expect(secondFirstPerson).toHaveProperty('name', 'John Doe');
+      expect(secondFirstPerson).toHaveProperty('role', 'Host');
+      expect(secondFirstPerson).toHaveProperty('person_group', 'cast');
+      expect(secondFirstPerson).toHaveProperty('img', 'https://samplechannel.com/johndoe.jpg');
+      expect(secondFirstPerson).toHaveProperty('href', 'https://samplechannel.com/johndoe');
+
+      const secondSecondPerson = secondItem.item_persons[1];
+      expect(secondSecondPerson).toHaveProperty('id', 4);
+      expect(secondSecondPerson).toHaveProperty('name', 'Jane Smith');
+      expect(secondSecondPerson).toHaveProperty('role', 'Guest');
+      expect(secondSecondPerson).toHaveProperty('person_group', 'guest');
+      expect(secondSecondPerson).toHaveProperty('img', 'https://samplechannel.com/janesmith.jpg');
+      expect(secondSecondPerson).toHaveProperty('href', 'https://samplechannel.com/janesmith');
+
+      // Validate `item_season`
+      expect(secondItem).toHaveProperty('item_season');
+      expect(secondItem.item_season).toHaveProperty('id', 2);
+      expect(secondItem.item_season).toHaveProperty('channel_season_id', 1);
+      expect(secondItem.item_season).toHaveProperty('title', 'Season 1 Title');
+      expect(secondItem.item_season.channel_season).toHaveProperty('id', 1);
+      expect(secondItem.item_season.channel_season).toHaveProperty('channel_id', 1);
+      expect(secondItem.item_season.channel_season).toHaveProperty('number', 1);
+      expect(secondItem.item_season.channel_season).toHaveProperty('name', 'Season 1');
+
+      // Validate `live_item`
+      expect(secondItem).toHaveProperty('live_item', null);
+    });
+  });
 });
