@@ -32,24 +32,22 @@ jobs:
 
       - name: Clean install dependencies
         run: npm clean-install
-
-      - name: Set up GitHub CLI
-        uses: cli/cli@v3
-
+      
       - name: Determine next alpha version
         id: version
         env:
-          GH_TOKEN: ${{ secrets.GHCR_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BASE_VERSION=$(node -p "require('./package.json').version")
           BASE_VERSION=$(echo "$BASE_VERSION" | sed 's/-.*//')
           IMAGE_NAME=ghcr.io/${{ github.repository }}/podverse-api
 
-          # Use GitHub CLI to get tags
+          # Use gh CLI to list tags for the container image
           TAGS_JSON=$(gh api -H "Accept: application/vnd.github+json" \
-            /orgs/${GITHUB_REPOSITORY%/*}/packages/container/podverse-api/versions)
+            "/repos/${{ github.repository }}/packages/container/podverse-api/versions" \
+            --jq '[.[] | .metadata.container.tags[]] | unique')
           echo "Raw tags JSON: $TAGS_JSON"
-          TAGS=$(echo "$TAGS_JSON" | jq -r '.[].metadata.container.tags[]' | grep "alpha" || true)
+          TAGS=$(echo "$TAGS_JSON" | jq -r '.[]' | grep "alpha" || true)
           echo "Filtered alpha tags: $TAGS"
 
           # Try to get the current alpha version (e.g., 5.1.1-alpha.3)
