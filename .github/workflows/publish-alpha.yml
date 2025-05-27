@@ -33,6 +33,13 @@ jobs:
       - name: Clean install dependencies
         run: npm clean-install
 
+      - name: Debug GHCR_PAT
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+        shell: bash
+        run: |
+          echo "Token length: ${#GHCR_PAT}"
+
       - name: Determine next alpha version
         id: version
         run: |
