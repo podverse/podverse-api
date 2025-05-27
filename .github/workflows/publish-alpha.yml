@@ -42,11 +42,15 @@ jobs:
 
           # Use a PAT with read:packages scope
           TOKEN="${{ secrets.GHCR_PAT }}"
-          TAGS=$(curl -s -H "Authorization: Bearer $TOKEN" \
-            "https://ghcr.io/v2/${{ github.repository }}/podverse-api/tags/list" | jq -r '.tags[]' | grep "alpha" || true)
+          TAGS_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            "https://ghcr.io/v2/${{ github.repository }}/podverse-api/tags/list")
+          echo "Raw tags JSON: $TAGS_JSON"
+          TAGS=$(echo "$TAGS_JSON" | jq -r '.tags[]' | grep "alpha" || true)
+          echo "Filtered alpha tags: $TAGS"
 
           # Try to get the current alpha version (e.g., 5.1.1-alpha.3)
           ALPHA_VERSION=$(echo "$TAGS" | grep "^${BASE_VERSION}-alpha\." | sort -V | tail -n1)
+          echo "Latest alpha version for base $BASE_VERSION: $ALPHA_VERSION"
 
           if [[ -z "$ALPHA_VERSION" ]]; then
             echo "No alpha version found. Starting with: $BASE_VERSION-alpha.0"
