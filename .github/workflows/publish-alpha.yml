@@ -40,8 +40,8 @@ jobs:
           BASE_VERSION=$(echo "$BASE_VERSION" | sed 's/-.*//')
           IMAGE_NAME=ghcr.io/${{ github.repository }}/podverse-api
 
-          # Get the latest alpha tag from GHCR
-          TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          # Use a PAT with read:packages scope
+          TOKEN="${{ secrets.GHCR_PAT }}"
           TAGS=$(curl -s -H "Authorization: Bearer $TOKEN" \
             "https://ghcr.io/v2/${{ github.repository }}/podverse-api/tags/list" | jq -r '.tags[]' | grep "alpha" || true)
 
