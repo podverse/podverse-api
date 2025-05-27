@@ -32,33 +32,20 @@ jobs:
 
       - name: Clean install dependencies
         run: npm clean-install
-      
+
       - name: Determine next alpha version
         id: version
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Ensure package.json exists and extract BASE_VERSION
-          if [[ ! -f package.json ]]; then
-            echo "Error: package.json not found in the repository"
-            exit 1
-          fi
-          BASE_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "")
-          if [[ -z "$BASE_VERSION" ]]; then
-            echo "Error: Failed to extract version from package.json"
-            exit 1
-          fi
+          BASE_VERSION=$(node -p "require('./package.json').version")
           BASE_VERSION=$(echo "$BASE_VERSION" | sed 's/-.*//')
           IMAGE_NAME=ghcr.io/${{ github.repository }}/podverse-api
-          echo "Base version: $BASE_VERSION"
-          echo "Image name: $IMAGE_NAME"
 
-          # Use gh CLI to list tags for the container image
-          TAGS_JSON=$(gh api -H "Accept: application/vnd.github+json" \
-            "/repos/${{ github.repository }}/packages/container/podverse-api/versions" \
-            --jq '[.[] | .metadata.container.tags[]] | unique' 2>/dev/null || echo "[]")
+          # Use a PAT with read:packages scope
+          TOKEN="${{ secrets.GHCR_PAT }}"
+          TAGS_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            "https://ghcr.io/v2/${{ github.repository }}/podverse-api/tags/list")
           echo "Raw tags JSON: $TAGS_JSON"
-          TAGS=$(echo "$TAGS_JSON" | jq -r '.[] | select(test("alpha"))' || true)
+          TAGS=$(echo "$TAGS_JSON" | jq -r '.tags[]' | grep "alpha" || true)
           echo "Filtered alpha tags: $TAGS"
 
           # Try to get the current alpha version (e.g., 5.1.1-alpha.3)
@@ -74,7 +61,6 @@ jobs:
 
             if [[ -z "$CURRENT_ALPHA_NUM" ]]; then
               NEXT_VERSION="$BASE_VERSION-alpha.0"
-              echo "No valid alpha number found. Setting to: $NEXT_VERSION"
             elif [[ "$CURRENT_BASE" == "$BASE_VERSION" ]]; then
               NEXT_INDEX=$((CURRENT_ALPHA_NUM + 1))
               NEXT_VERSION="$BASE_VERSION-alpha.$NEXT_INDEX"
