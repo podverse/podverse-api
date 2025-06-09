@@ -41,7 +41,7 @@ jobs:
           IMAGE_NAME=ghcr.io/${{ github.repository }}/podverse-api
 
           # Use a PAT with read:packages scope
-          TOKEN="${{ secrets.GHCR_PAT }}"
+          TOKEN="${{ secrets.GHCR_REGISTRY_TOKEN }}"
           TAGS_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" \
             "https://ghcr.io/v2/${{ github.repository }}/podverse-api/tags/list")
           echo "Raw tags JSON: $TAGS_JSON"
