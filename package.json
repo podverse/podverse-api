@@ -1,6 +1,6 @@
 {
   "name": "podverse-api",
-  "version": "5.0.3",
+  "version": "5.1.0-develop",
   "description": "Data API, database migration scripts, and backend services for all Podverse models.",
   "private": true,
   "main": "./src/index.js",
@@ -15,7 +15,6 @@
     "dev": "ts-node ./src/index.ts",
     "dev:watch": "tsc --watch & nodemon --watch 'src' --watch $(realpath node_modules/podverse-helpers) --watch $(realpath node_modules/podverse-orm) --watch 'dist' dist/index.js",
     "lint": "eslint 'src/**/*.{ts,js}'",
-    "prepublishOnly": "npm run build",
     "start": "ts-node ./dist/index.js",
     "test:e2e": "jest --config jest.e2e.config.js --runInBand"
   },
@@ -48,7 +47,8 @@
     "podverse-helpers": "^5.0.4",
     "podverse-orm": "^5.0.3",
     "podverse-parser": "^5.0.9",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.18.0",

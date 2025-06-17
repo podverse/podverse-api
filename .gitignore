@@ -9,10 +9,8 @@
 /image_storage
 
 # API keys and secrets
-.env
-.env-old
-.env-old-removing
-.env-new
+**/.env*
+!**/.env.example
 
 # Dependency directory
 node_modules
@@ -33,7 +31,5 @@ dist/**/*
 *.log
 
 temp
-
-package-lock.json
 
 tsconfig.tsbuildinfo
