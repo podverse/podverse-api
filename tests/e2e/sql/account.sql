@@ -28,7 +28,7 @@ VALUES (
 
 -- Insert into account_credentials table
 INSERT INTO account_credentials (account_id, email, password)
-VALUES (1, 'basic-valid@example.com', '$2b$10$zQl/SdV.Jab8BW47fHCB0.AQK1aZ5AYF.22eCOQVKovKWLViLJIr.');
+VALUES (1, 'basic-valid@example.com', '$2b$10$rb6HRIy7huV.M1E93WEUuOYABZrIaiiyVM038tpEV3MjYOlRMvLIy');
 
 -- Insert into account_email_change_verification table
 INSERT INTO account_email_change_verification (account_id, verification_token, verification_token_expires_at, pending_email_address)
@@ -96,7 +96,7 @@ VALUES (
 
 -- Insert into account_credentials table
 INSERT INTO account_credentials (account_id, email, password)
-VALUES (2, 'trial-valid@example.com', '$2b$10$zQl/SdV.Jab8BW47fHCB0.AQK1aZ5AYF.22eCOQVKovKWLViLJIr.');
+VALUES (2, 'trial-valid@example.com', '$2b$10$rb6HRIy7huV.M1E93WEUuOYABZrIaiiyVM038tpEV3MjYOlRMvLIy');
 
 -- Insert into account_email_change_verification table
 INSERT INTO account_email_change_verification (account_id, verification_token, verification_token_expires_at, pending_email_address)
@@ -112,7 +112,7 @@ VALUES (2, 'trial-transaction-id', 'trial-product-id', 'trial-purchase-token');
 
 -- Insert into account_membership_status table
 INSERT INTO account_membership_status (account_id, account_membership_id, membership_expires_at)
-VALUES (2, 1, TIMESTAMP '2023-02-01 12:00:00+00');
+VALUES (2, 1, TIMESTAMP '2030-02-01 12:00:00+00');
 
 -- Insert into account_paypal_order table
 INSERT INTO account_paypal_order (account_id, payment_id, state)
@@ -164,7 +164,7 @@ VALUES (
 
 -- Insert into account_credentials table
 INSERT INTO account_credentials (account_id, email, password)
-VALUES (3, 'trial-expired@example.com', '$2b$10$zQl/SdV.Jab8BW47fHCB0.AQK1aZ5AYF.22eCOQVKovKWLViLJIr.');
+VALUES (3, 'trial-expired@example.com', '$2b$10$rb6HRIy7huV.M1E93WEUuOYABZrIaiiyVM038tpEV3MjYOlRMvLIy');
 
 -- Insert into account_email_change_verification table
 INSERT INTO account_email_change_verification (account_id, verification_token, verification_token_expires_at, pending_email_address)
@@ -232,7 +232,7 @@ VALUES (
 
 -- Insert into account_credentials table
 INSERT INTO account_credentials (account_id, email, password)
-VALUES (4, 'basic-expired@example.com', '$2b$10$zQl/SdV.Jab8BW47fHCB0.AQK1aZ5AYF.22eCOQVKovKWLViLJIr.');
+VALUES (4, 'basic-expired@example.com', '$2b$10$rb6HRIy7huV.M1E93WEUuOYABZrIaiiyVM038tpEV3MjYOlRMvLIy');
 
 -- Insert into account_email_change_verification table
 INSERT INTO account_email_change_verification (account_id, verification_token, verification_token_expires_at, pending_email_address)
@@ -300,7 +300,7 @@ VALUES (
 
 -- Insert into account_credentials table
 INSERT INTO account_credentials (account_id, email, password)
-VALUES (5, 'admin-valid@example.com', '$2b$10$hashedpasswordforadminuser');
+VALUES (5, 'admin-valid@example.com', '$2b$10$rb6HRIy7huV.M1E93WEUuOYABZrIaiiyVM038tpEV3MjYOlRMvLIy');
 
 -- Insert into account_email_change_verification table
 INSERT INTO account_email_change_verification (account_id, verification_token, verification_token_expires_at, pending_email_address)
