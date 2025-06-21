@@ -32,7 +32,6 @@
     "podverse"
   ],
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.6.4",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.7",
     "express": "^4.19.2",
@@ -51,6 +50,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.6.4",
     "@eslint/config-array": "^0.18.0",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.8.0",
