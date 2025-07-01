@@ -112,7 +112,7 @@ VALUES (2, 'trial-transaction-id', 'trial-product-id', 'trial-purchase-token');
 
 -- Insert into account_membership_status table
 INSERT INTO account_membership_status (account_id, account_membership_id, membership_expires_at)
-VALUES (2, 1, TIMESTAMP '2023-02-01 12:00:00+00');
+VALUES (2, 1, TIMESTAMP '2030-01-01 13:00:00+00');
 
 -- Insert into account_paypal_order table
 INSERT INTO account_paypal_order (account_id, payment_id, state)
