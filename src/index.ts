@@ -1,7 +1,7 @@
 import './module-alias-config';
 
 if (process.env.NODE_ENV !== 'production') {
-  require('@dotenvx/dotenvx').config();
+  require('@dotenvx/dotenvx').config({ path: '.env' });
 }
 
 import { logger } from 'podverse-helpers';
