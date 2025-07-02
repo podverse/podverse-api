@@ -9,8 +9,8 @@ router.use(`${config.api.prefix}${config.api.version}/clip`, router);
 router.post('/', asyncHandler(ClipController.createClip));
 router.get('/private', asyncHandler(ClipController.getClipsPrivate));
 router.get('/public', asyncHandler(ClipController.getClipsPublic));
+router.get('/:clip_id_text', asyncHandler(ClipController.getClipById));
 router.patch('/:clip_id_text', asyncHandler(ClipController.updateClip));
 router.delete('/:clip_id_text', asyncHandler(ClipController.deleteClip));
-router.get('/:clip_id_text', asyncHandler(ClipController.getClipById));
 
 export const clipRouter = router;

@@ -3,6 +3,8 @@ import { config } from '../../src/config';
 
 describe('Clip Endpoints', () => {
   let authToken: string;
+  let clipIdText: string;
+
   beforeAll(async () => {
     // Perform login to obtain auth token
     const loginData = {
@@ -40,10 +42,11 @@ describe('Clip Endpoints', () => {
         .expect(201);
 
       const clip = response.body;
+      clipIdText = clip.id_text; // Store the clip ID for later use
 
       // Validate top-level properties
       expect(clip).toHaveProperty('id', 1);
-      expect(clip).toHaveProperty('id_text');
+      expect(clip).toHaveProperty('id_text', clipIdText);
       expect(clip).toHaveProperty('title', 'Sample Clip');
       expect(clip).toHaveProperty('description', 'This is a sample clip description.');
       expect(clip).toHaveProperty('start_time', 0);
@@ -85,7 +88,7 @@ describe('Clip Endpoints', () => {
       // Validate the first item
       const firstClip = sortedClips[0];
       expect(firstClip).toHaveProperty('id', 1);
-      expect(firstClip).toHaveProperty('id_text');
+      expect(firstClip).toHaveProperty('id_text', clipIdText);
       expect(firstClip).toHaveProperty('start_time', '0.00');
       expect(firstClip).toHaveProperty('end_time', '60.00');
       expect(firstClip).toHaveProperty('title', 'Sample Clip');
@@ -109,7 +112,7 @@ describe('Clip Endpoints', () => {
       // Validate the first item
       const firstClip = sortedClips[0];
       expect(firstClip).toHaveProperty('id', 1);
-      expect(firstClip).toHaveProperty('id_text');
+      expect(firstClip).toHaveProperty('id_text', clipIdText);
       expect(firstClip).toHaveProperty('start_time', '0.00');
       expect(firstClip).toHaveProperty('end_time', '60.00');
       expect(firstClip).toHaveProperty('title', 'Sample Clip');
@@ -119,6 +122,24 @@ describe('Clip Endpoints', () => {
       expect(firstClip).toHaveProperty('sharable_status');
       expect(firstClip.sharable_status).toHaveProperty('id', 1);
       expect(firstClip.sharable_status).toHaveProperty('status', 'public');
+    });
+  });
+
+  describe('GET /clip/:clip_id_text', () => {
+    it('should return a successful response and validate the exact values of the response body', async () => {
+      const response = await request(globalThis.__API_SERVER__)
+        .get(`${config.api.prefix}${config.api.version}/clip/${clipIdText}`)
+        .set('Authorization', `Bearer ${authToken}`) // Pass the auth token with the request
+        .expect(200);
+
+      // Validate the response body
+      const clip = response.body;
+      expect(clip).toHaveProperty('id', 1);
+      expect(clip).toHaveProperty('id_text', clipIdText);
+      expect(clip).toHaveProperty('start_time', '0.00');
+      expect(clip).toHaveProperty('end_time', '60.00');
+      expect(clip).toHaveProperty('title', 'Sample Clip');
+      expect(clip).toHaveProperty('description', 'This is a sample clip description.');
     });
   });
 });
