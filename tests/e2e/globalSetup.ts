@@ -1,5 +1,5 @@
 import '../../src/module-alias-config';
-require('@dotenvx/dotenvx').config();
+require('@dotenvx/dotenvx').config({ path: '.env-local-test' });
 
 import { AppDataSourceRead, AppDataSourceReadWrite } from 'podverse-orm';
 import { startApp } from '../../src/app';

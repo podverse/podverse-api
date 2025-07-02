@@ -1,11 +1,8 @@
 import './module-alias-config';
 
 if (process.env.NODE_ENV !== 'production') {
-  require('@dotenvx/dotenvx').config();
+  require('@dotenvx/dotenvx').config({ path: '.env' });
 }
-
-console.log('Starting Podverse Api...');
-console.log('Api Environment Variables:', JSON.stringify(process.env));
 
 import { logger } from 'podverse-helpers';
 import { AppDataSourceRead, AppDataSourceReadWrite } from "podverse-orm";
