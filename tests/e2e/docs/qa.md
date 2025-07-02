@@ -1,14 +1,14 @@
 # e2e AI Prompts
 
 ## Initialize test & log response data
-Context: e2e test + e2e example test + route + controller 
+Context: e2e test + channel.e2e.test.ts + route + controller 
 
 router.something____;
 
-Create a test for the endpoint above. Make the test only test a successful response and then console log the response.body. Use JSON.stringify to make sure the whole body is logged. Include necessary imports.
+Create a test for the endpoint above. Do not remove the previous tests. Make the test only test a successful response and then console log the response.body. Use JSON.stringify to make sure the whole body is logged. Include necessary imports.
 
 ## Instruct AI to make test that matches response data (Repeat for each item)
-@workspace
+Context: e2e test + channel.e2e.test.ts + route + controller 
 
 check the exact values of all properties in the body. Do each expect statement individually. Do not use toMatchObject on the entire data object.
 
