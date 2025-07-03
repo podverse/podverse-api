@@ -20,6 +20,7 @@ const clipUpdateSchema = Joi.object({
   end_time: Joi.number().greater(0).allow(null, ''),
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
+  item_id_text: Joi.string().required(),
   sharable_status: Joi.number().min(1).required(),
 });
 

@@ -142,4 +142,34 @@ describe('Clip Endpoints', () => {
       expect(clip).toHaveProperty('description', 'This is a sample clip description.');
     });
   });
+
+  describe('PATCH /clip/:clip_id_text', () => {
+    it('should return a successful response and log the entire response body', async () => {
+      const updatedClipData = {
+        start_time: 10,
+        end_time: 70,
+        title: 'Updated Sample Clip',
+        description: 'This is an updated sample clip description.',
+        item_id_text: 'item123',
+        sharable_status: 1, // Example sharable status
+      };
+
+      const response = await request(globalThis.__API_SERVER__)
+        .patch(`${config.api.prefix}${config.api.version}/clip/${clipIdText}`)
+        .set('Authorization', `Bearer ${authToken}`) // Pass the auth token with the request
+        .set('Content-Type', 'application/json') // Explicitly set Content-Type
+        .send(updatedClipData)
+        .expect(200);
+
+      // Validate the response body
+      const clip = response.body;
+      expect(clip).toHaveProperty('id_text', clipIdText);
+      expect(clip).toHaveProperty('start_time', 10);
+      expect(clip).toHaveProperty('end_time', 70);
+      expect(clip).toHaveProperty('title', 'Updated Sample Clip');
+      expect(clip).toHaveProperty('description', 'This is an updated sample clip description.');
+      expect(clip).toHaveProperty('sharable_status', 1);
+    });
+  });
+  
 });
