@@ -3,9 +3,10 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { ERROR_MESSAGES, verifyPassword } from 'podverse-helpers';
+import { ERROR_MESSAGES } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
+import { verifyPassword } from './password';
 
 const accountService = new AccountService();
 
