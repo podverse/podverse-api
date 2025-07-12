@@ -60,7 +60,6 @@ const publicRelations = [
 ];
 
 const privateRelations = [
-  'account_admin_roles',
   // 'account_app_store_purchases',
   'account_credentials',
   // 'account_fcm_devices',

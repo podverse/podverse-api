@@ -4,10 +4,6 @@
 INSERT INTO account (id, id_text, verified, sharable_status_id)
 VALUES (1, 'basic-valid', TRUE, 1);
 
--- Insert into account_admin_roles table
-INSERT INTO account_admin_roles (account_id, dev_admin, podping_admin)
-VALUES (1, FALSE, FALSE);
-
 -- Insert into account_app_store_purchase table
 INSERT INTO account_app_store_purchase (
     account_id, 
@@ -71,10 +67,6 @@ VALUES (1, 'sample-verification-token', TIMESTAMP '2030-01-01 13:00:00+00');
 -- Insert into account table
 INSERT INTO account (id, id_text, verified, sharable_status_id)
 VALUES (2, 'trial-valid', TRUE, 1);
-
--- Insert into account_admin_roles table
-INSERT INTO account_admin_roles (account_id, dev_admin, podping_admin)
-VALUES (2, FALSE, FALSE);
 
 -- Insert into account_app_store_purchase table
 INSERT INTO account_app_store_purchase (
@@ -140,10 +132,6 @@ VALUES (2, 'trial-verification-token', TIMESTAMP '2030-01-01 13:00:00+00');
 INSERT INTO account (id, id_text, verified, sharable_status_id)
 VALUES (3, 'trial-expired', TRUE, 1);
 
--- Insert into account_admin_roles table
-INSERT INTO account_admin_roles (account_id, dev_admin, podping_admin)
-VALUES (3, FALSE, FALSE);
-
 -- Insert into account_app_store_purchase table
 INSERT INTO account_app_store_purchase (
     account_id, 
@@ -208,10 +196,6 @@ VALUES (3, 'expired-verification-token', TIMESTAMP '2030-01-01 13:00:00+00');
 INSERT INTO account (id, id_text, verified, sharable_status_id)
 VALUES (4, 'basic-expired', TRUE, 1);
 
--- Insert into account_admin_roles table
-INSERT INTO account_admin_roles (account_id, dev_admin, podping_admin)
-VALUES (4, FALSE, FALSE);
-
 -- Insert into account_app_store_purchase table
 INSERT INTO account_app_store_purchase (
     account_id, 
@@ -275,10 +259,6 @@ VALUES (4, 'expired-premium-verification-token', TIMESTAMP '2030-01-01 13:00:00+
 -- Insert into account table
 INSERT INTO account (id, id_text, verified, sharable_status_id)
 VALUES (5, 'admin-valid', TRUE, 1);
-
--- Insert into account_admin_roles table
-INSERT INTO account_admin_roles (account_id, dev_admin, podping_admin)
-VALUES (5, TRUE, TRUE);
 
 -- Insert into account_app_store_purchase table
 INSERT INTO account_app_store_purchase (
