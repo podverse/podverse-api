@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { PayPalService } from 'podverse-external-services';
 import { AccountPayPalOrderService } from 'podverse-orm';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { config } from '@api/config';
-import { AccountController } from '@api/controllers/account';
+import { AccountController } from '@api/controllers/account/account';
 import { authenticate, logout } from '@api/lib/auth';
 import { asyncHandler } from '@api/middleware/asyncHandler';
 

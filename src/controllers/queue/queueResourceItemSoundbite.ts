@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { QueueResourceService } from 'podverse-orm';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
-import { verifyQueueOwnership } from '@api/controllers/queue';
+import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
 

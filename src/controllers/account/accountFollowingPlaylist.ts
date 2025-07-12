@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Joi from "joi";
 import { AccountFollowingPlaylistService, AccountService } from "podverse-orm";
 import { ensureAuthenticated, optionalEnsureAuthenticated } from "@api/lib/auth";
-import { handleGenericErrorResponse } from "./helpers/error";
+import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject } from "@api/lib/validation";
 import { SharableStatusEnum } from "podverse-helpers";
 

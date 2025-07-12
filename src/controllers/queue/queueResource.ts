@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { QueueResourceService } from 'podverse-orm';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
-import { verifyQueueOwnership } from '@api/controllers/queue';
+import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateParamsObject } from '@api/lib/validation';
 
 const queueIdSchema = Joi.object({

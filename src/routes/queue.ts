@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { QueueController } from '@api/controllers/queue';
+import { QueueController } from '@api/controllers/queue/queue';
 import { asyncHandler } from '@api/middleware/asyncHandler';
 import { config } from '@api/config';
-import { QueueResourceController } from '@api/controllers/queueResource';
-import { QueueResourceItemController } from '@api/controllers/queueResourceItem';
-import { QueueResourceClipController } from '@api/controllers/queueResourceClip';
-import { QueueResourceItemAddByRSSController } from '@api/controllers/queueResourceItemAddByRSS';
-import { QueueResourceItemChapterController } from '@api/controllers/queueResourceItemChapter';
-import { QueueResourceItemSoundbiteController } from '@api/controllers/queueResourceItemSoundbite';
+import { QueueResourceController } from '@api/controllers/queue/queueResource';
+import { QueueResourceItemController } from '@api/controllers/queue/queueResourceItem';
+import { QueueResourceClipController } from '@api/controllers/queue/queueResourceClip';
+import { QueueResourceItemAddByRSSController } from '@api/controllers/queue/queueResourceItemAddByRSS';
+import { QueueResourceItemChapterController } from '@api/controllers/queue/queueResourceItemChapter';
+import { QueueResourceItemSoundbiteController } from '@api/controllers/queue/queueResourceItemSoundbite';
 
 const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/queue`, router);
