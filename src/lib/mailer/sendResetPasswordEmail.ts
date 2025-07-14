@@ -1,16 +1,17 @@
-import { convertSecondsToDaysText, logError, logger } from 'podverse-helpers';
+import { convertSecondsToDaysText } from 'podverse-helpers';
 import { config } from '@api/config';
 import { emailTemplate } from '@api/lib/mailer/emailTemplate';
 import { createTransporter } from '@api/lib/mailer/transporter';
+import { loggerService } from '@api/factories/loggerService';
 
 export const sendResetPasswordEmail = async (email: string, name: string, token: string): Promise<void> => {
   if (config.mailer.disabled) {
-    logger.info('Mailer has been disabled, password reset email will be skipped');
+    loggerService.info('Mailer has been disabled, password reset email will be skipped');
     return Promise.resolve();
   }
 
   if (!config.mailer.host) {
-    logError('Mailer host is not configured, password reset email will be skipped');
+    loggerService.logError('Mailer host is not configured, password reset email will be skipped');
     return Promise.resolve();
   }
 
@@ -35,7 +36,7 @@ export const sendResetPasswordEmail = async (email: string, name: string, token:
       text: `Reset your Podverse password by visiting the following: ${emailFields.buttonLink}`
     });
   } catch (error) {
-    logError('Failed to send reset password email', error as Error);
+    loggerService.logError('Failed to send reset password email', error as Error);
     throw new Error('Internal Server Error');
   }
 };

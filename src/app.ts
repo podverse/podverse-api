@@ -2,7 +2,6 @@ import "reflect-metadata";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express, { NextFunction, Request, Response } from "express";
-import { logger, logError } from 'podverse-helpers';
 import { CategoryService } from "podverse-orm";
 import { config } from '@api/config';
 import { initializePassport } from '@api/lib/auth';
@@ -19,6 +18,7 @@ import { accountPayPalOrderRouter } from '@api/routes/paypal';
 import { playlistRouter } from '@api/routes/playlist';
 import { queueRouter } from '@api/routes/queue';
 import { statsRouter } from '@api/routes/stats';
+import { loggerService } from "./factories/loggerService";
 
 export const app = express();
 const port = 1234;
@@ -57,16 +57,16 @@ export const startApp = async () => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-      logError('API Router Error', err);
+      loggerService.logError('API Router Error', err);
       res.status(500).json({ message: err.message });
     });
 
     const server = app.listen(port, () => {
-      logger.info(`The server is running on port ${port}`);
+      loggerService.info(`The server is running on port ${port}`);
     });
 
     return server;
   } catch (error) {
-    logError('API Top Level Router Error', error as Error);
+    loggerService.logError('API Top Level Router Error', error as Error);
   }
 };

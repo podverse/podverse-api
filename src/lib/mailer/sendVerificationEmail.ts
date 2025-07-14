@@ -1,16 +1,16 @@
-import { logError, logger } from 'podverse-helpers';
 import { config } from '@api/config';
+import { loggerService } from '@api/factories/loggerService';
 import { emailTemplate } from '@api/lib/mailer/emailTemplate';
 import { createTransporter } from '@api/lib/mailer/transporter';
 
 export const sendVerificationEmail = async (email: string, name: string, token: string): Promise<void> => {
   if (config.mailer.disabled) {
-    logger.info('Mailer has been disabled, verification email will be skipped');
+    loggerService.info('Mailer has been disabled, verification email will be skipped');
     return Promise.resolve();
   }
 
   if (!config.mailer.host) {
-    logError('Mailer host is not configured, verification email will be skipped');
+    loggerService.logError('Mailer host is not configured, verification email will be skipped');
     return Promise.resolve();
   }
 
