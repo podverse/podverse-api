@@ -1,5 +1,5 @@
 import { config } from '@api/config';
-import { LoggerService } from 'podverse-helpers';
+import { LoggerService } from 'podverse-helpers/dist/lib/backend/logger';
 
 export const loggerService = new LoggerService({
   logDir: config.log.dir,
