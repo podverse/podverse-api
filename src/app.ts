@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express, { NextFunction, Request, Response } from "express";
 import { CategoryService } from "podverse-orm";
 import { config } from '@api/config';
@@ -22,6 +23,11 @@ import { loggerService } from "./factories/loggerService";
 
 export const app = express();
 const port = 1234;
+
+app.use(cors({
+  origin: config.api.allowedCORSOrigins,
+  credentials: true
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

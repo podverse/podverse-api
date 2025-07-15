@@ -22,6 +22,7 @@ type Config = {
       domain: string;
       secure: boolean;
     };
+    allowedCORSOrigins: string[];
   };
   email: {
     styles: {
@@ -90,6 +91,7 @@ export const config: Config = {
       domain: process.env.COOKIE_DOMAIN || 'localhost',
       secure: process.env.COOKIE_SECURE === 'true',
     },
+    allowedCORSOrigins: (process.env.API_ALLOWED_CORS_ORIGINS || '').split(',').map(origin => origin.trim()),
   },
   email: {
     styles: {
