@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.16.0'
+          node-version: '22'
 
       - name: Install podverse-helpers latest alpha version
         run: npm i podverse-helpers@alpha --save

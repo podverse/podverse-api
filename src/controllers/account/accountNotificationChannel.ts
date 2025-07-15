@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { AccountNotificationChannelService } from 'podverse-orm';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
 

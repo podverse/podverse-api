@@ -5,8 +5,12 @@ type SocialConfig = {
 
 type Config = {
   nodeEnv: string;
-  logLevel: string;
   userAgent: string;
+  log: {
+    level: string;
+    dir: string;
+    timer: boolean;
+  };
   auth: {
     jwtSecret: string;
   };
@@ -18,6 +22,7 @@ type Config = {
       domain: string;
       secure: boolean;
     };
+    allowedCORSOrigins: string[];
   };
   email: {
     styles: {
@@ -43,6 +48,10 @@ type Config = {
     password: string;
     from: string;
   };
+  paypal: {
+    clientId: string;
+    clientSecret: string;
+  };
   resetPassword: {
     tokenExpiration: number;
     pagePath: string;
@@ -65,8 +74,12 @@ type Config = {
 
 export const config: Config = {
   nodeEnv: process.env.NODE_ENV || 'development',
-  logLevel: process.env.LOG_LEVEL || 'info',
   userAgent: process.env.USER_AGENT || '',
+  log: {
+    level: process.env.LOG_LEVEL || 'info',
+    dir: process.env.LOG_DIR || 'logs',
+    timer: process.env.LOG_TIMER === 'true',
+  },
   auth: {
     jwtSecret: process.env.AUTH_JWT_SECRET || '',
   },
@@ -78,6 +91,7 @@ export const config: Config = {
       domain: process.env.COOKIE_DOMAIN || 'localhost',
       secure: process.env.COOKIE_SECURE === 'true',
     },
+    allowedCORSOrigins: (process.env.API_ALLOWED_CORS_ORIGINS || '').split(',').map(origin => origin.trim()),
   },
   email: {
     styles: {
@@ -102,6 +116,10 @@ export const config: Config = {
     username: process.env.MAILER_USERNAME || '',
     password: process.env.MAILER_PASSWORD || '',
     from: process.env.MAILER_FROM || '',
+  },
+  paypal: {
+    clientId: process.env.PAYPAL_CLIENT_ID || '',
+    clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
   },
   resetPassword: {
     tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),

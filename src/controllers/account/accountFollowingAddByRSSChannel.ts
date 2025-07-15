@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Joi from "joi";
 import { AccountFollowingAddByRSSChannelService, AccountService } from "podverse-orm";
 import { ensureAuthenticated } from "@api/lib/auth";
-import { handleGenericErrorResponse } from "./helpers/error";
+import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject } from "@api/lib/validation";
 
 const addRSSChannelSchema = Joi.object({

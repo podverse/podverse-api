@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { PlaylistResourceService } from 'podverse-orm';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
-import { verifyPlaylistOwnership } from '@api/controllers/playlist';
+import { verifyPlaylistOwnership } from '@api/controllers/playlist/playlist';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 

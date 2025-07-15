@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
-import { PayPalService } from 'podverse-external-services';
 import { AccountPayPalOrderService } from 'podverse-orm';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { paypalService } from '@api/factories/paypalService';
 
 const getPayPalOrderSchema = Joi.object({
   payment_id: Joi.string().required()
@@ -25,7 +25,6 @@ const completePayPalOrderSchema = Joi.object({
 });
 
 class AccountPayPalOrderController {
-  private static payPalService = new PayPalService();
   private static accountPayPalOrderService = new AccountPayPalOrderService();
 
   static async get(req: Request, res: Response): Promise<void> {
@@ -74,13 +73,13 @@ class AccountPayPalOrderController {
 
           if (resource_version === '2.0') {
             const paymentID = resource.id;
-            const capture = await this.payPalService.getCaptureInfo(paymentID);
+            const capture = await paypalService.getCaptureInfo(paymentID);
             const { state } = capture;
             const isV2 = true;
             await this.accountPayPalOrderService.completePayPalOrder(paymentID, state, isV2);
           } else if (event_version === '1.0') {
             const paymentID = resource.parent_payment;
-            const order = await this.payPalService.getPaymentInfo(paymentID);
+            const order = await paypalService.getPaymentInfo(paymentID);
             const { state } = order;
             const isV2 = false;
             await this.accountPayPalOrderService.completePayPalOrder(paymentID, state, isV2);

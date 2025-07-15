@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { config } from '@api/config';
-import { PlaylistController } from '@api/controllers/playlist';
-import { PlaylistResourceController } from '@api/controllers/playlistResource';
-import { PlaylistResourceClipController } from '@api/controllers/playlistResourceClip';
-import { PlaylistResourceItemController } from '@api/controllers/playlistResourceItem';
+import { PlaylistController } from '@api/controllers/playlist/playlist';
+import { PlaylistResourceController } from '@api/controllers/playlist/playlistResource';
+import { PlaylistResourceClipController } from '@api/controllers/playlist/playlistResourceClip';
+import { PlaylistResourceItemController } from '@api/controllers/playlist/playlistResourceItem';
 import { asyncHandler } from '@api/middleware/asyncHandler';
-import { PlaylistResourceItemAddByRSSController } from '@api/controllers/playlistResourceItemAddByRSS';
-import { PlaylistResourceItemChapterController } from '@api/controllers/playlistResourceItemChapter';
-import { PlaylistResourceItemSoundbiteController } from '@api/controllers/playlistResourceItemSoundbite';
+import { PlaylistResourceItemAddByRSSController } from '@api/controllers/playlist/playlistResourceItemAddByRSS';
+import { PlaylistResourceItemChapterController } from '@api/controllers/playlist/playlistResourceItemChapter';
+import { PlaylistResourceItemSoundbiteController } from '@api/controllers/playlist/playlistResourceItemSoundbite';
 
 const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/playlist`, router);

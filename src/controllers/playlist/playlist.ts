@@ -3,9 +3,9 @@ import Joi from 'joi';
 import { SharableStatusEnum } from 'podverse-helpers';
 import { PlaylistService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
-import { getPaginationParams } from './helpers/pagination';
+import { getPaginationParams } from '../helpers/pagination';
 
 const playlistSchema = Joi.object({
   title: Joi.string().allow(null, ''),

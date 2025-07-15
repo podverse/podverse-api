@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { config } from '@api/config';
-import { AccountController } from '@api/controllers/account';
-import { AccountFollowingAccountController } from '@api/controllers/accountFollowingAccount';
-import { AccountFollowingAddByRSSChannelController } from '@api/controllers/accountFollowingAddByRSSChannel';
-import { AccountFollowingChannelController } from '@api/controllers/accountFollowingChannel';
+import { AccountController } from '@api/controllers/account/account';
+import { AccountFollowingAccountController } from '@api/controllers/account/accountFollowingAccount';
+import { AccountFollowingAddByRSSChannelController } from '@api/controllers/account/accountFollowingAddByRSSChannel';
+import { AccountFollowingChannelController } from '@api/controllers/account/accountFollowingChannel';
 import { asyncHandler } from '@api/middleware/asyncHandler';
-import { AccountFollowingPlaylistController } from '@api/controllers/accountFollowingPlaylist';
-import { AccountNotificationChannelController } from '@api/controllers/accountNotificationChannel';
-import { AccountFCMDeviceController } from '@api/controllers/accountFCMDevice';
+import { AccountFollowingPlaylistController } from '@api/controllers/account/accountFollowingPlaylist';
+import { AccountNotificationChannelController } from '@api/controllers/account/accountNotificationChannel';
+import { AccountFCMDeviceController } from '@api/controllers/account/accountFCMDevice';
 
 const router = Router();
 

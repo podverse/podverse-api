@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { PlaylistResourceService } from 'podverse-orm';
-import { handleGenericErrorResponse } from './helpers/error';
+import { handleGenericErrorResponse } from '../helpers/error';
 import { validateParamsObject } from '@api/lib/validation';
 
 const playlistIdSchema = Joi.object({
