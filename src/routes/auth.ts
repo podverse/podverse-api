@@ -12,5 +12,6 @@ router.post('/login', authenticate);
 router.post('/logout', logout);
 
 router.get('/me', asyncHandler(AccountController.getLoggedInAccount));
+router.get('/check-session', asyncHandler(AccountController.checkIfValidAuthSession));
 
 export const authRouter = router;

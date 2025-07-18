@@ -118,6 +118,14 @@ export class AccountController {
     });
   }
 
+  static async checkIfValidAuthSession(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      res.json({
+        message: 'Valid auth session'
+      });
+    });
+  }
+
   static async getManyPublic(req: Request, res: Response): Promise<void> {
     const getManyPublicSchema = Joi.object({
       page: Joi.number().integer().min(1).optional(),
