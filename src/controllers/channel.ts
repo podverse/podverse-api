@@ -2,13 +2,15 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { channelGetManyRelations, channelGetOneRelations, Channel, ChannelService,
   FindManyOptions, FindOptionsOrder, FindOptionsWhere, AccountFollowingChannelService, 
-  StatsAggregatedChannelService, AccountFollowingChannel } from 'podverse-orm';
+  StatsAggregatedChannelService, AccountFollowingChannel, 
+  StatsAggregatedChannel,
+  subChannelGetManyRelations} from 'podverse-orm';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
-import { getCategoryEnumValue, categoryMappingKeys, QUERY_PARAM_CHANNEL_SORT_VALUES,
-  QUERY_PARAM_CHANNEL_TYPE_VALUES, QUERY_PARAM_CHANNEL_RANGE_VALUES } from 'podverse-helpers';
+import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT_VALUES,
+  QUERY_PARAMS_STATS_RANGE_VALUES } from 'podverse-helpers';
 import { ensureAuthenticated } from '@api/lib/auth';
 
 const getByIdOrIdTextSchema = Joi.object({
@@ -19,22 +21,22 @@ const getManyAllSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   sort: Joi.string().valid("top").optional(),
   type: Joi.string().valid("all").optional(),
-  range: Joi.string().valid(...QUERY_PARAM_CHANNEL_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
 });
 
 const getManyCategorySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   sort: Joi.string().valid("top").optional(),
   type: Joi.string().valid("category").optional(),
-  range: Joi.string().valid(...QUERY_PARAM_CHANNEL_RANGE_VALUES).optional(),
-  category: Joi.string().valid(...categoryMappingKeys).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
+  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional()
 });
 
 const getManySubscribedSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
-  sort: Joi.string().valid(...QUERY_PARAM_CHANNEL_SORT_VALUES).optional(),
+  sort: Joi.string().valid(...QUERY_PARAMS_CHANNELS_SORT_VALUES).optional(),
   type: Joi.string().valid("subscribed").optional(),
-  range: Joi.string().valid(...QUERY_PARAM_CHANNEL_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
 });
 
 export class ChannelController {
@@ -57,20 +59,9 @@ export class ChannelController {
     validateQueryObject(getManyAllSchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { sort, range } = req.query as { sort?: string; range?: string };
-        const order = ChannelController.getChannelOrder(sort);
+        const { range } = req.query as { range?: string };
         const sendResponse = (channels: Channel[]) => res.json({ data: channels, meta: { page } });
-        if (sort === 'top') {
-          await ChannelController.handleTopSort({ range, offset, limit, sendResponse });
-        } else {
-          const channels = await ChannelController.channelService.getMany({
-            skip: offset,
-            take: limit,
-            relations: channelGetManyRelations,
-            ...(order && { order }),
-          });
-          sendResponse(channels);
-        }
+        await ChannelController.handleTopSort({ range, offset, limit, sendResponse });
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -124,7 +115,8 @@ export class ChannelController {
       const channels = await ChannelController._getTopSubscribedChannels(channel_ids, range, offset, limit);
       return sendResponse(channels);
     }
-    const channels = await ChannelController._getSortedSubscribedChannels(account_id, sort, offset, limit);
+    const accountFollowingChannels = await ChannelController._getSortedSubscribedChannels(account_id, sort, offset, limit);
+    const channels = accountFollowingChannels.map((account_following_channel: { channel: Channel }) => account_following_channel.channel).filter(Boolean);
     sendResponse(channels);
   }
 
@@ -135,9 +127,9 @@ export class ChannelController {
   }
 
   private static async _getTopSubscribedChannels(channel_ids: number[], range?: string, offset?: number, limit?: number): Promise<Channel[]> {
-    const orderBy = ChannelController.getStatsOrderBy(range);
-    const config = {
-      order: { [orderBy]: 'DESC' },
+    const order = ChannelController.getStatsOrder(range);
+    const config: FindManyOptions<StatsAggregatedChannel> = {
+      order: { [order]: 'DESC' },
       skip: offset,
       take: limit,
       relations: ['channel']
@@ -146,25 +138,25 @@ export class ChannelController {
     return statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
   }
 
-  private static async _getSortedSubscribedChannels(account_id: number, sort?: string, offset?: number, limit?: number): Promise<Channel[]> {
+  private static async _getSortedSubscribedChannels(account_id: number, sort?: string, offset?: number, limit?: number): Promise<AccountFollowingChannel[]> {
     const accountFollowingChannelService = new AccountFollowingChannelService();
     const order = ChannelController.getSubscribedOrder(sort);
     const config: FindManyOptions<AccountFollowingChannel> = {
       skip: offset,
       take: limit,
-      relations: ['channel'],
+      relations: subChannelGetManyRelations,
       ...(order && { order }),
     };
     return await accountFollowingChannelService.getFollowedChannels(Number(account_id), config);
   }
 
   private static async handleTopSort({ range, offset, limit, sendResponse }: TopSortParams) {
-    const orderBy = ChannelController.getStatsOrderBy(range);
-    const config = {
-      order: { [orderBy]: 'DESC' },
+    const order = ChannelController.getStatsOrder(range);
+    const config: FindManyOptions<StatsAggregatedChannel> = {
+      order: { [order]: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['channel'],
+      relations: subChannelGetManyRelations
     };
 
     const statsResults = await ChannelController.statsAggregatedChannelService.getMany([], config);
@@ -172,15 +164,16 @@ export class ChannelController {
     sendResponse(channels);
   }
 
-  private static getStatsOrderBy(range?: string): string {
+  private static getStatsOrder(range?: string): string {
     switch (range) {
+    case 'day':
+      return 'day_current_count';
     case 'week':
       return 'week_current_count';
     case 'month':
       return 'month_current_count';
     case 'all-time':
       return 'all_time_count';
-    case 'day':
     default:
       return 'day_current_count';
     }
