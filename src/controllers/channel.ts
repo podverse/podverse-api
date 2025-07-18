@@ -224,7 +224,7 @@ export class ChannelController {
 // --- Types ---
 
 interface SubscribedParams {
-  account_id?: number;
+  account_id: number;
   sort?: string;
   range?: string;
   offset: number;
