@@ -171,7 +171,7 @@ export class ChannelController {
       order: { [order]: 'DESC' },
       skip: offset,
       take: limit,
-      relations: ['channel']
+      relations: subChannelGetManyRelations
     };
     const statsResults = await ChannelController.statsAggregatedChannelService.getMany(channel_ids, config);
     return statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
