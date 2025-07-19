@@ -7,11 +7,31 @@ import { channelGetManyRelations, channelGetOneRelations, Channel, ChannelServic
   subChannelGetManyRelations} from 'podverse-orm';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
-import { getPaginationParams } from '@api/controllers/helpers/pagination';
+import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT_VALUES,
-  QUERY_PARAMS_STATS_RANGE_VALUES } from 'podverse-helpers';
+  QUERY_PARAMS_STATS_RANGE_VALUES, ApiListResponse } from 'podverse-helpers';
 import { ensureAuthenticated } from '@api/lib/auth';
+
+interface SubscribedParams {
+  account_id: number;
+  sort?: string;
+  range?: string;
+  offset: number;
+  limit: number;
+  sendResponse: (data: PaginatedData<Channel>) => void;
+}
+
+interface TopSortParams {
+  range?: string;
+  offset: number;
+  limit: number;
+  sendResponse: (data: PaginatedData<Channel>) => void;
+}
+
+type ChannelWhere = FindOptionsWhere<Channel>;
+type ChannelOrder = FindOptionsOrder<Channel>;
+type AccountFollowingChannelOrder = FindOptionsOrder<AccountFollowingChannel>;
 
 const getByIdOrIdTextSchema = Joi.object({
   idOrIdText: Joi.string().required()
@@ -60,7 +80,13 @@ export class ChannelController {
       try {
         const { page, limit, offset } = getPaginationParams(req);
         const { range } = req.query as { range?: string };
-        const sendResponse = (channels: Channel[]) => res.json({ data: channels, meta: { page } });
+        const sendResponse = (data: PaginatedData<Channel>) => {
+          const response: ApiListResponse<Channel> = {
+            data: data.results,
+            meta: { page, count: data.count, limit }
+          };
+          res.json(response);
+        };
         await ChannelController.handleTopSort({ range, offset, limit, sendResponse });
       } catch (error) {
         handleGenericErrorResponse(res, error);
@@ -75,7 +101,6 @@ export class ChannelController {
         const { category, sort } = req.query as { category?: string; sort?: string };
         const order = ChannelController.getChannelOrder(sort);
         const where = ChannelController.buildChannelWhere(category as string);
-        const sendResponse = (channels: Channel[]) => res.json({ data: channels, meta: { page } });
         const channels = await ChannelController.channelService.getMany({
           skip: offset,
           take: limit,
@@ -83,7 +108,15 @@ export class ChannelController {
           ...(where && { where }),
           ...(order && { order }),
         });
-        sendResponse(channels);
+
+        const sendResponse = (data: PaginatedData<Channel>) => {
+          const response: ApiListResponse<Channel> = {
+            data: data.results,
+            meta: { page, count: data.count, limit }
+          };
+          res.json(response);
+        };
+        sendResponse({ results: channels, count: null });
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -97,7 +130,13 @@ export class ChannelController {
           const { page, limit, offset } = getPaginationParams(req);
           const { sort, range } = req.query as { sort?: string; range?: string };
           const account_id = req.user!.id;
-          const sendResponse = (channels: Channel[]) => res.json({ data: channels, meta: { page } });
+          const sendResponse = (data: PaginatedData<Channel>) => {
+            const response: ApiListResponse<Channel> = {
+              data: data.results,
+              meta: { page, count: data.count, limit }
+            };
+            res.json(response);
+          };
           await ChannelController.handleSubscribed({ account_id, sort, range, offset, limit, sendResponse });
         } catch (error) {
           handleGenericErrorResponse(res, error);
@@ -110,20 +149,20 @@ export class ChannelController {
 
   private static async handleSubscribed({ account_id, sort, range, offset, limit, sendResponse }: SubscribedParams) {
     const channel_ids = await ChannelController._getFollowedChannelIds(account_id);
-    if (!channel_ids.length) return sendResponse([]);
+    if (!channel_ids.length) return sendResponse({ results: [], count: 0 });
     if (sort === 'top') {
       const channels = await ChannelController._getTopSubscribedChannels(channel_ids, range, offset, limit);
-      return sendResponse(channels);
+      return sendResponse({ results: channels, count: channel_ids.length });
     }
-    const accountFollowingChannels = await ChannelController._getSortedSubscribedChannels(account_id, sort, offset, limit);
+    const { results: accountFollowingChannels, count } = await ChannelController._getSortedSubscribedChannels(account_id, sort, offset, limit);
     const channels = accountFollowingChannels.map((account_following_channel: { channel: Channel }) => account_following_channel.channel).filter(Boolean);
-    sendResponse(channels);
+    sendResponse({ results: channels, count });
   }
 
   private static async _getFollowedChannelIds(account_id: number): Promise<number[]> {
     const accountFollowingChannelService = new AccountFollowingChannelService();
-    const followed = await accountFollowingChannelService.getFollowedChannels(Number(account_id));
-    return followed.map((f: { channel_id: number }) => f.channel_id);
+    const { results } = await accountFollowingChannelService.getFollowedChannelsWithCount(Number(account_id));
+    return results.map((f: { channel_id: number }) => f.channel_id);
   }
 
   private static async _getTopSubscribedChannels(channel_ids: number[], range?: string, offset?: number, limit?: number): Promise<Channel[]> {
@@ -138,7 +177,7 @@ export class ChannelController {
     return statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
   }
 
-  private static async _getSortedSubscribedChannels(account_id: number, sort?: string, offset?: number, limit?: number): Promise<AccountFollowingChannel[]> {
+  private static async _getSortedSubscribedChannels(account_id: number, sort?: string, offset?: number, limit?: number): Promise<{ count: number, results: AccountFollowingChannel[]}> {
     const accountFollowingChannelService = new AccountFollowingChannelService();
     const order = ChannelController.getSubscribedOrder(sort);
     const config: FindManyOptions<AccountFollowingChannel> = {
@@ -147,7 +186,7 @@ export class ChannelController {
       relations: subChannelGetManyRelations,
       ...(order && { order }),
     };
-    return await accountFollowingChannelService.getFollowedChannels(Number(account_id), config);
+    return await accountFollowingChannelService.getFollowedChannelsWithCount(Number(account_id), config);
   }
 
   private static async handleTopSort({ range, offset, limit, sendResponse }: TopSortParams) {
@@ -161,7 +200,7 @@ export class ChannelController {
 
     const statsResults = await ChannelController.statsAggregatedChannelService.getMany([], config);
     const channels = statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
-    sendResponse(channels);
+    sendResponse({ results: channels, count: null });
   }
 
   private static getStatsOrder(range?: string): string {
@@ -186,7 +225,7 @@ export class ChannelController {
     case 'oldest':
       return { channel: { channel_about: { last_pub_date: 'ASC' } } };
     case 'alphabetical':
-      return { channel: { title: 'ASC' } };
+      return { channel: { sortable_title: 'ASC' } };
     default:
       return undefined;
     }
@@ -199,7 +238,7 @@ export class ChannelController {
     case 'oldest':
       return { channel_about: { last_pub_date: 'ASC' } };
     case 'alphabetical':
-      return { title: 'ASC' };
+      return { sortable_title: 'ASC' };
     default:
       return undefined;
     }
@@ -213,25 +252,3 @@ export class ChannelController {
     return undefined;
   }
 }
-
-// --- Types ---
-
-interface SubscribedParams {
-  account_id: number;
-  sort?: string;
-  range?: string;
-  offset: number;
-  limit: number;
-  sendResponse: (channels: Channel[]) => void;
-}
-
-interface TopSortParams {
-  range?: string;
-  offset: number;
-  limit: number;
-  sendResponse: (channels: Channel[]) => void;
-}
-
-type ChannelWhere = FindOptionsWhere<Channel>;
-type ChannelOrder = FindOptionsOrder<Channel>;
-type AccountFollowingChannelOrder = FindOptionsOrder<AccountFollowingChannel>;

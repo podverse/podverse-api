@@ -6,3 +6,8 @@ export function getPaginationParams(req: Request) {
   const offset = (page - 1) * limit;
   return { page, limit, offset };
 }
+
+export type PaginatedData<T> = {
+  results: T[];
+  count: number | null;
+};
