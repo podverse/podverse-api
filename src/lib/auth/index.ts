@@ -100,6 +100,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      ...(config.api.cookie.domain !== 'localhost' ? { domain: config.api.cookie.domain } : {}),
       maxAge: 31536000000 // 1 year in milliseconds
     });
 
