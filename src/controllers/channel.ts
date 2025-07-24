@@ -12,6 +12,7 @@ import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT_VALUES,
   QUERY_PARAMS_STATS_RANGE_VALUES, ApiListResponse } from 'podverse-helpers';
 import { ensureAuthenticated } from '@api/lib/auth';
+import { calculateTotalCount, calculateTotalCountWithIds } from '@api/lib/totalCount';
 
 interface SubscribedParams {
   account_id: number;
@@ -101,13 +102,21 @@ export class ChannelController {
         const { category, sort } = req.query as { category?: string; sort?: string };
         const order = ChannelController.getChannelOrder(sort);
         const where = ChannelController.buildChannelWhere(category as string);
-        const channels = await ChannelController.channelService.getMany({
+        const config = {
           skip: offset,
           take: limit,
           relations: channelGetManyRelations,
           ...(where && { where }),
           ...(order && { order }),
-        });
+        };
+        const channels = await ChannelController.channelService.getMany(config);
+
+        const totalCount = await calculateTotalCount(
+          ChannelController.channelService.getMany.bind(ChannelController.channelService),
+          config,
+          offset,
+          limit
+        );
 
         const sendResponse = (data: PaginatedData<Channel>) => {
           const response: ApiListResponse<Channel> = {
@@ -116,7 +125,7 @@ export class ChannelController {
           };
           res.json(response);
         };
-        sendResponse({ results: channels, count: null });
+        sendResponse({ results: channels, count: totalCount });
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -197,10 +206,18 @@ export class ChannelController {
       take: limit,
       relations: subChannelGetManyRelations
     };
-
+    
     const statsResults = await ChannelController.statsAggregatedChannelService.getMany([], config);
+    
+    const totalCount = await calculateTotalCountWithIds(
+      ChannelController.statsAggregatedChannelService.getMany.bind(ChannelController.statsAggregatedChannelService),
+      config,
+      offset,
+      limit
+    );
+    
     const channels = statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
-    sendResponse({ results: channels, count: null });
+    sendResponse({ results: channels, count: totalCount });
   }
 
   private static getStatsOrder(range?: string): string {
