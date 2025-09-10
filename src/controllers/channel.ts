@@ -74,7 +74,7 @@ export class ChannelController {
   static async getByIdOrIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdOrIdTextSchema, req, res, async () => {
       try {
-        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(1, channelGetOneRelations);
+        const data: Channel | null = await ChannelController.channelService.getByIdOrIdText(req.params.idOrIdText, channelGetOneRelations);
         handleReturnDataOrNotFound(res, data, 'Channel');
       } catch (error) {
         handleGenericErrorResponse(res, error);
