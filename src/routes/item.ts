@@ -7,11 +7,19 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/item`, router);
 
-router.get('/channel/:channelIdOrIdText/live-items', asyncHandler(ItemController.getManyWithLiveItemByChannel));
-router.get('/channel/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannel));
-router.get('/:idOrIdText', asyncHandler(ItemController.getByIdOrIdText));
-router.get('/', asyncHandler(ItemController.getMany));
-
 router.get('/chapters/:item_id_text', asyncHandler(ItemController.parseAndGetChapters));
+
+router.get('/channel/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannel));
+
+router.get('/:idOrIdText', asyncHandler(ItemController.getByIdOrIdText));
+
+router.get('/', asyncHandler((req, res) => {
+  if (req.query.type === 'subscribed') {
+    return ItemController.getManySubscribed(req, res);
+  } else {
+    return ItemController.getMany(req, res);
+  }
+}));
+
 
 export const itemRouter = router;
