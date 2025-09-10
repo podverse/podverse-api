@@ -11,10 +11,8 @@ router.get('/:idOrIdText', asyncHandler(ChannelController.getByIdOrIdText));
 router.get('/', asyncHandler((req, res) => {
   if (req.query.type === 'subscribed') {
     return ChannelController.getManySubscribed(req, res);
-  } else if (req.query.type === 'category') {
-    return ChannelController.getManyCategory(req, res);
   } else {
-    return ChannelController.getManyAll(req, res);
+    return ChannelController.getMany(req, res);
   }
 }));
 
