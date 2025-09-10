@@ -115,9 +115,13 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
 // export type RequestWithUser = Request & { user: { id: number } };
 
-const verifyTokenAndMembership = async (req: Request, res: Response, next: NextFunction, token: string, options?: { skipMembershipStatus?: boolean }) => {
-  // TODO: how to replace the any with specific types?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const verifyTokenAndMembership = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  token: string,
+  options?: { skipMembershipStatus?: boolean }
+) => {
   jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: any) => {
     if (err || !decoded) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -136,7 +140,11 @@ const verifyTokenAndMembership = async (req: Request, res: Response, next: NextF
       }
 
       const membershipStatus = account.account_membership_status;
-      if (!membershipStatus || !membershipStatus.membership_expires_at || new Date(membershipStatus.membership_expires_at) < new Date()) {
+      if (
+        !membershipStatus ||
+        !membershipStatus.membership_expires_at ||
+        new Date(membershipStatus.membership_expires_at) < new Date()
+      ) {
         return res.status(403).json({ message: 'Membership expired' });
       }
     }
