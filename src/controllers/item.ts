@@ -6,7 +6,7 @@ import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
-import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
+import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue, QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_CHANNEL_TYPE_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getFollowedChannelIds } from '@api/lib/subscribed';
@@ -63,7 +63,7 @@ const getManyByChannelParmsSchema = Joi.object({
 });
 
 const getManyByChannelQuerySchema = Joi.object({
-  sort: Joi.string().valid(...QUERY_PARAMS_ITEMS_SORT_VALUES).optional(),
+  sort: Joi.string().valid(...QUERY_PARAMS_CHANNEL_SORT_VALUES).optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   page: Joi.number().integer().min(1).optional(),
 });
@@ -127,7 +127,10 @@ export class ItemController {
             range?: QueryParamsStatsRange;
           };
 
-          const channel = await ItemController.channelService.getByIdOrIdText(channelIdOrIdText);
+          const channel = await ItemController.channelService.getByIdOrIdText(
+            channelIdOrIdText,
+            { channel_about: true }
+          );
 
           let items: Item[] = [];
           if (sort === 'top') {
@@ -149,10 +152,10 @@ export class ItemController {
               relations: itemGetManyRelations,
               ...(order && { order })
             };
-            let items = await ItemController.itemService.getManyByChannel(channel, config);
+            items = await ItemController.itemService.getManyByChannel(channel, config);
           }
 
-          res.json({ data: items, meta: { page, count: items.length, limit } });
+          res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
