@@ -63,7 +63,8 @@ class AccountFollowingAccountController {
 
         try {
           await AccountFollowingAccountController.accountFollowingAccountService.followAccount(account.id, { following_account_id_text });
-          res.status(204).end();
+          res.status(201)
+            .json({ message: 'Successfully followed account' });
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }

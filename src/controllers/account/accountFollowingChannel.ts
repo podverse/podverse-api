@@ -54,7 +54,8 @@ class AccountFollowingChannelController {
 
         try {
           await AccountFollowingChannelController.accountFollowingChannelService.followChannel(account.id, channel_id_text);
-          res.status(204).end();
+          res.status(201)
+            .json({ message: 'Successfully followed channel' });
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }

@@ -57,7 +57,8 @@ class AccountFollowingAddByRSSChannelController {
 
         try {
           await AccountFollowingAddByRSSChannelController.accountFollowingAddByRSSChannelService.addOrUpdateRSSChannel(account.id, dto);
-          res.status(204).end();
+          res.status(201)
+            .json({ message: 'RSS channel added/updated successfully' });
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }

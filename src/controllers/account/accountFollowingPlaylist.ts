@@ -61,7 +61,8 @@ class AccountFollowingPlaylistController {
 
         try {
           await AccountFollowingPlaylistController.accountFollowingPlaylistService.followPlaylist(account.id, playlist_id_text);
-          res.status(204).end();
+          res.status(201)
+            .json({ message: 'Successfully followed playlist' });
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
