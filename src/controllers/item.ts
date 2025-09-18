@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
-import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemService, Item, FindOptionsOrder, FindOptionsWhere, AccountFollowingChannel, StatsAggregatedItem, FindManyOptions, subItemGetManyRelations, StatsAggregatedItemService, Category, AccountFollowingChannelService, subChannelGetManyRelations, Channel, ChannelService, IChannelService } from 'podverse-orm';
+import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemService, Item,
+  FindOptionsOrder, FindOptionsWhere, StatsAggregatedItem, FindManyOptions, subItemGetManyRelations,
+  StatsAggregatedItemService, ChannelService } from 'podverse-orm';
 import { parseChapters } from 'podverse-parser';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
-import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue, QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_CHANNEL_TYPE_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
+import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue,
+  QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES,
+  QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getFollowedChannelIds } from '@api/lib/subscribed';
