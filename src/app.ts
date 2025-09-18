@@ -5,6 +5,7 @@ import cors from 'cors';
 import express, { NextFunction, Request, Response } from "express";
 import { CategoryService } from "podverse-orm";
 import { config } from '@api/config';
+import { loggerService } from "@api/factories/loggerService";
 import { initializePassport } from '@api/lib/auth';
 import { accountRouter } from '@api/routes/account';
 import { authRouter } from '@api/routes/auth';
@@ -17,9 +18,9 @@ import { mediumRouter } from '@api/routes/medium';
 import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
 import { accountPayPalOrderRouter } from '@api/routes/paypal';
 import { playlistRouter } from '@api/routes/playlist';
+import { podrollRouter } from "@api/routes/podroll";
 import { queueRouter } from '@api/routes/queue';
 import { statsRouter } from '@api/routes/stats';
-import { loggerService } from "./factories/loggerService";
 
 export const app = express();
 const port = 1234;
@@ -58,6 +59,7 @@ export const startApp = async () => {
     app.use(mediumRouter);
     app.use(membershipClaimTokenRouter);
     app.use(playlistRouter);
+    app.use(podrollRouter);
     app.use(queueRouter);
     app.use(statsRouter);
 
