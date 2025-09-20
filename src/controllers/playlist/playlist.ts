@@ -193,6 +193,7 @@ class PlaylistController {
       try {
         const options = {
           select: {
+            id: true,
             id_text: true,
             medium: {
               id: true,
