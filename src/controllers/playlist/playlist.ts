@@ -20,6 +20,7 @@ const playlistIdSchema = Joi.object({
 });
 
 const paginationSchema = Joi.object({
+  medium: Joi.number().integer().min(1).optional(),
   page: Joi.number().integer().min(1).optional(),
   limit: Joi.number().integer().min(1).optional()
 });
@@ -136,12 +137,16 @@ class PlaylistController {
   static async getManyPublic(req: Request, res: Response): Promise<void> {
     validateQueryObject(paginationSchema, req, res, async () => {
       try {
+        const { medium } = req.query;
         const { page, limit, offset } = getPaginationParams(req);
         const options = {
-          where: { sharable_status: { id: SharableStatusEnum.Public } },
+          where: {
+            sharable_status: { id: SharableStatusEnum.Public },
+            ...(medium && { medium: { id: medium } })
+          },
           skip: offset,
           take: limit,
-          relations: ['account']
+          relations: ['account', 'medium']
         };
         const playlists = await PlaylistController.playlistService.getMany(options);
         res.status(200).json({
@@ -157,15 +162,63 @@ class PlaylistController {
   static async getManyPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       validateQueryObject(paginationSchema, req, res, async () => {
-        const account = req.user!;
-
         try {
-          const playlists = await PlaylistController.playlistService.getManyByAccount(account.id);
-          res.status(200).json(playlists);
+          const account = req.user!;
+          const { medium } = req.query;
+          const { page, limit, offset } = getPaginationParams(req);
+          const options = {
+            where: {
+              ...(medium && { medium: { id: medium } }),
+              account: { id: account.id }
+            },
+            skip: offset,
+            take: limit,
+            relations: ['account', 'medium']
+          };
+          const playlists = await PlaylistController.playlistService.getMany(options);
+          res.status(200).json({
+            data: playlists,
+            meta: { page }
+          });
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
       });
+    });
+  }
+
+  static async getAllFavoritesPrivate(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      const account = req.user!;
+      try {
+        const options = {
+          select: {
+            id_text: true,
+            medium: {
+              id: true,
+              value: true
+            },
+            playlist_resources: {
+              clip_id: true,
+              item_id: true,
+              item_chapter_id: true,
+              item_soundbite_id: true,
+              add_by_rss_hash_id: true
+            }
+          },
+          where: {
+            is_default_favorites: true,
+            account: { id: account.id }
+          },
+          relations: ['medium', 'playlist_resources']
+        };
+
+        const favorites = await PlaylistController.playlistService.getMany(options);
+
+        res.status(200).json(favorites);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
     });
   }
 
