@@ -189,33 +189,9 @@ class PlaylistController {
 
   static async getAllFavoritesPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      const account = req.user!;
       try {
-        const options = {
-          select: {
-            id: true,
-            id_text: true,
-            medium: {
-              id: true,
-              value: true
-            },
-            playlist_resources: {
-              clip_id: true,
-              item_id: true,
-              item_chapter_id: true,
-              item_soundbite_id: true,
-              add_by_rss_hash_id: true
-            }
-          },
-          where: {
-            is_default_favorites: true,
-            account: { id: account.id }
-          },
-          relations: ['medium', 'playlist_resources']
-        };
-
-        const favorites = await PlaylistController.playlistService.getMany(options);
-
+        const account = req.user!;
+        const favorites = await PlaylistController.playlistService.getAllFavoritesPrivate(account.id);
         res.status(200).json(favorites);
       } catch (err) {
         handleGenericErrorResponse(res, err);
