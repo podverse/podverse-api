@@ -54,7 +54,7 @@ const getByIdOrIdTextSchema = Joi.object({
 
 const getManySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
-  type: Joi.string().valid("all", "category").optional(),
+  type: Joi.string().valid("global", "category").optional(),
   sort: Joi.string().valid("top").optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional()
@@ -193,7 +193,7 @@ export class ChannelController {
       return { channel: { channel_about: { last_pub_date: 'DESC' } } };
     case 'oldest':
       return { channel: { channel_about: { last_pub_date: 'ASC' } } };
-    case 'alphabetical':
+    case 'a_z':
       return { channel: { sortable_title: 'ASC' } };
     default:
       return undefined;
