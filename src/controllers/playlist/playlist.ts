@@ -367,7 +367,7 @@ class PlaylistController {
     let count = 0;
     
     if (sort === 'top') {
-      const playlist_ids = await getFollowedPlaylistIdsPrivate(account_id);
+      const playlist_ids = await getFollowedPlaylistIdsPrivate(account_id, medium_id);
       const order = getStatsOrder(range);
       const config: FindManyOptions<StatsAggregatedPlaylist> = {
         order: { [order]: 'DESC' },

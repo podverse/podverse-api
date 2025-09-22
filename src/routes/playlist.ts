@@ -13,7 +13,7 @@ const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/playlist`, router);
 
 router.get('/private/favorites', asyncHandler(PlaylistController.getAllFavoritesPrivate));
-router.get('/private/subscribed', asyncHandler(PlaylistController.getManyFollowedPrivate));
+router.get('/private/followed', asyncHandler(PlaylistController.getManyFollowedPrivate));
 router.get('/private', asyncHandler(PlaylistController.getManyPrivate));
 router.get('/public', asyncHandler(PlaylistController.getManyPublic));
 router.post('/', asyncHandler(PlaylistController.createPlaylist));
