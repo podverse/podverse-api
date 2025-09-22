@@ -12,7 +12,7 @@ import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pag
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getStatsOrder } from '@api/lib/stats';
-import { getFollowedChannelIds } from '@api/lib/subscribed';
+import { getFollowedChannelIds } from '@api/lib/followed';
 
 interface SubscribedParams {
   account_id: number;

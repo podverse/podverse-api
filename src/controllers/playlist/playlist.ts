@@ -7,7 +7,7 @@ import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getPaginationParams, PaginatedData } from '../helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
-import { getFollowedPlaylistIdsPrivate } from '@api/lib/subscribed';
+import { getFollowedPlaylistIdsPrivate } from '@api/lib/followed';
 
 type TopPublicPlaylistsParams = {
   range?: QueryParamsStatsRange;
@@ -18,7 +18,7 @@ type TopPublicPlaylistsParams = {
 
 type TopPrivatePlaylistsParams = TopPublicPlaylistsParams & { account_id: number }
 
-interface SubscribedParams {
+interface FollowedParams {
   account_id: number;
   medium_id?: MediumEnum;
   sort?: QueryParamsPlaylistsSort;
@@ -245,7 +245,7 @@ class PlaylistController {
     });
   }
 
-  static async getManySubscribedPrivate(req: Request, res: Response): Promise<void> {
+  static async getManyFollowedPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       validateQueryObject(getManyPrivateSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
@@ -264,7 +264,7 @@ class PlaylistController {
           res.json(response);
         };
 
-        await PlaylistController.handleSubscribedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse });
+        await PlaylistController.handleFollowedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse });
       });
     });
   };
@@ -362,7 +362,7 @@ class PlaylistController {
     return PlaylistController.playlistService.getManyPrivate(account_id, config);
   }
 
-  private static async handleSubscribedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse }: SubscribedParams) {
+  private static async handleFollowedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse }: FollowedParams) {
     let playlists: Playlist[] = [];
     let count = 0;
     
@@ -384,7 +384,7 @@ class PlaylistController {
       count = statsResults[1];
     } else {
       const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
-      const order = PlaylistController.getSubscribedOrder(sort);
+      const order = PlaylistController.getFollowedOrder(sort);
       const config: FindManyOptions<AccountFollowingPlaylist> = {
         skip: offset,
         take: limit,
@@ -399,7 +399,7 @@ class PlaylistController {
     sendResponse({ results: playlists, count });
   }
 
-  private static getSubscribedOrder(
+  private static getFollowedOrder(
     sort?: QueryParamsPlaylistsSort)
     : FindOptionsOrder<AccountFollowingPlaylist> | undefined {
     switch (sort) {

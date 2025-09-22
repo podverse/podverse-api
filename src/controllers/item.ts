@@ -13,7 +13,7 @@ import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategor
   QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
-import { getFollowedChannelIds } from '@api/lib/subscribed';
+import { getFollowedChannelIds } from '@api/lib/followed';
 
 interface SubscribedParams {
   account_id: number;
