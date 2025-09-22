@@ -32,8 +32,7 @@ const createPlaylistSchema = Joi.object({
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
   medium_id: Joi.number().min(1).required(),
-  sharable_status_id: Joi.number().min(1).required(),
-  is_default_favorites: Joi.boolean().required()
+  sharable_status_id: Joi.number().min(1).required()
 });
 
 const updatePlaylistSchema = createPlaylistSchema;
@@ -120,8 +119,7 @@ class PlaylistController {
           title: req.body.title,
           description: req.body.description,
           medium_id: req.body.medium_id,
-          sharable_status_id: req.body.sharable_status_id,
-          is_default_favorites: req.body.is_default_favorites
+          sharable_status_id: req.body.sharable_status_id
         };
 
         try {
@@ -148,8 +146,7 @@ class PlaylistController {
               title: req.body.title,
               description: req.body.description,
               medium_id: req.body.medium_id,
-              sharable_status_id: req.body.sharable_status_id,
-              is_default_favorites: req.body.is_default_favorites
+              sharable_status_id: req.body.sharable_status_id
             };
 
             try {
