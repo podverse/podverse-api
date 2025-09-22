@@ -28,13 +28,15 @@ interface FollowedParams {
   sendResponse: (data: PaginatedData<Playlist>) => void;
 }
 
-const playlistSchema = Joi.object({
+const createPlaylistSchema = Joi.object({
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
   medium_id: Joi.number().min(1).required(),
   sharable_status_id: Joi.number().min(1).required(),
   is_default_favorites: Joi.boolean().required()
 });
+
+const updatePlaylistSchema = createPlaylistSchema;
 
 const playlistIdSchema = Joi.object({
   playlist_id_text: Joi.string().required()
@@ -111,14 +113,14 @@ class PlaylistController {
 
   static async createPlaylist(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateBodyObject(playlistSchema, req, res, async () => {
+      validateBodyObject(createPlaylistSchema, req, res, async () => {
         const account = req.user!;
 
         const dto = {
           title: req.body.title,
           description: req.body.description,
-          medium_id: req.body.medium,
-          sharable_status_id: req.body.sharable_status,
+          medium_id: req.body.medium_id,
+          sharable_status_id: req.body.sharable_status_id,
           is_default_favorites: req.body.is_default_favorites
         };
 
@@ -139,7 +141,7 @@ class PlaylistController {
     ensureAuthenticated(req, res, async () => {
       validateParamsObject(playlistIdSchema, req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          validateBodyObject(playlistSchema, req, res, async () => {
+          validateBodyObject(updatePlaylistSchema, req, res, async () => {
             const account = req.user!;
             const { playlist_id_text } = req.params;
             const dto = {
