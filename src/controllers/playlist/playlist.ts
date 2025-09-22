@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { MediumEnum, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsPlaylistsSort, QueryParamsPlaylistsSort, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
+import { MediumEnum, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsPlaylistsSort, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
 import { FindManyOptions, Playlist, PlaylistService, StatsAggregatedPlaylist, StatsAggregatedPlaylistService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
@@ -259,7 +259,7 @@ class PlaylistController {
     });
   }
 
-  private static async _getTopPublicPlaylists({ range, offset, limit, medium }: TopPublicPlaylistsParams): Promise<Playlist[]> {
+  private static async _getTopPublicPlaylists({ range, offset, limit, medium_id }: TopPublicPlaylistsParams): Promise<Playlist[]> {
     const order = getStatsOrder(range);
     const config: FindManyOptions<StatsAggregatedPlaylist> = {
       order: { [order]: 'DESC' },
@@ -267,7 +267,7 @@ class PlaylistController {
       take: limit
     };
 
-    const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPublic(config, medium);
+    const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPublic(config, medium_id);
     return statsResults.map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
   }
 
