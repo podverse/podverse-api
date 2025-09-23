@@ -12,7 +12,7 @@ const clipCreateSchema = Joi.object({
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
   item_id_text: Joi.string().required(),
-  sharable_status: Joi.number().min(1).required(),
+  sharable_status_id: Joi.number().min(1).required(),
 });
 
 const clipUpdateSchema = Joi.object({
@@ -20,7 +20,7 @@ const clipUpdateSchema = Joi.object({
   end_time: Joi.number().greater(0).allow(null, ''),
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
-  sharable_status: Joi.number().min(1).required(),
+  sharable_status_id: Joi.number().min(1).required(),
 });
 
 const clipIdSchema = Joi.object({
@@ -140,7 +140,7 @@ class ClipController {
         verifyPrivateClipOwnership()(req, res, async () => {
           try {
             const { clip_id_text } = req.params;
-            const clip = await clipService.getByIdText(clip_id_text);
+            const clip = await clipService.getByIdText(clip_id_text, { relations: ['sharable_status'] });
             if (clip) {
               res.status(200).json(clip);
             } else {
@@ -157,7 +157,7 @@ class ClipController {
   static async getClipsPublic(req: Request, res: Response): Promise<void> {
     try {
       const clips = await clipService.getMany({
-        where: { sharable_status: { id: SharableStatusEnum.Public } },
+        where: { sharable_status_id: { id: SharableStatusEnum.Public } },
         relations: ['sharable_status']
       });
       res.status(200).json(clips);
