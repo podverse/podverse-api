@@ -1,10 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { SharableStatusEnum } from 'podverse-helpers';
-import { ClipService } from 'podverse-orm';
+import { ApiListResponse, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsClipsByChannelSort, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
+import { Clip, ClipService, FindManyOptions, StatsAggregatedClip, StatsAggregatedClipService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from './helpers/error';
-import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
+import { getPaginationParams } from './helpers/pagination';
+import { getStatsOrder } from '@api/lib/stats';
+
+const getClipsPublicByChannelIdTextSchema = Joi.object({
+  page: Joi.number().integer().min(1).optional(),
+  sort: Joi.string().valid("top", "recent", "oldest").optional(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+});
 
 const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
@@ -25,6 +33,10 @@ const clipUpdateSchema = Joi.object({
 
 const clipIdSchema = Joi.object({
   clip_id_text: Joi.string().required(),
+});
+
+const getByChannelIdTextSchema = Joi.object({
+  channel_id_text: Joi.string().required()
 });
 
 const clipService = new ClipService();
@@ -79,6 +91,8 @@ const verifyPrivateClipOwnership = () => {
 };
 
 class ClipController {
+  private static statsAggregatedClipService = new StatsAggregatedClipService();
+
   static async createClip(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       validateBodyObject(clipCreateSchema, req, res, async () => {
@@ -164,6 +178,68 @@ class ClipController {
     } catch (err) {
       handleGenericErrorResponse(res, err);
     }
+  }
+
+  static async getManyByChannelIdTextPublic(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByChannelIdTextSchema, req, res, async () => {
+        try {
+          const { channel_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+          const { sort, range } = req.query as {
+            sort?: QueryParamsClipsByChannelSort;
+            range?: QueryParamsStatsRange
+          };
+
+          if (sort === "top") {
+            const order = getStatsOrder(range);
+            const config: FindManyOptions<StatsAggregatedClip> = {
+              order: { [order]: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: ["clip", "clip.item", "clip.item.item_images"]
+            };
+            const [statsResults, count] = await ClipController
+              .statsAggregatedClipService.getManyAndCountPublic(config);
+            const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
+
+            const response: ApiListResponse<Clip> = {
+              data: clips,
+              meta: { page, count, limit }
+            };
+
+            res.status(200).json(response);  
+          } else {
+            let order = { created_at: 'DESC' };
+            if (sort === "oldest") {
+              order = { created_at: "ASC" };
+            }
+    
+            const [clips, count] = await clipService.getManyAndCount({
+              where: {
+                sharable_status: { id: SharableStatusEnum.Public },
+                item: {
+                  channel: { id_text: channel_id_text }
+                }
+              },
+              order,
+              skip: offset,
+              take: limit,
+              relations: ['item', 'item.item_images']
+            });
+  
+            const response: ApiListResponse<Clip> = {
+              data: clips,
+              meta: { page, count, limit }
+            };
+  
+            res.status(200).json(response);
+          }
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
   }
 
   static async getClipsPrivate(req: Request, res: Response): Promise<void> {
