@@ -24,28 +24,6 @@ interface SubscribedParams {
   sendResponse: (data: PaginatedData<Item>) => void;
 }
 
-interface TopSortParams {
-  range?: QueryParamsStatsRange;
-  category?: CategoryMappingKeys;
-  offset: number;
-  limit: number;
-  sendResponse: (data: PaginatedData<Item>) => void;
-}
-
-type TopSubscribedChannelsItemsParams = {
-  channel_ids: number[];
-  range?: QueryParamsStatsRange;
-  offset?: number;
-  limit?: number;
-};
-
-type SortedSubscribedChannelsItemsParams = {
-  channel_ids: number[];
-  sort?: QueryParamsItemsSort;
-  offset?: number;
-  limit?: number;
-};
-
 type ItemWhere = FindOptionsWhere<Item>;
 type ItemOrder = FindOptionsOrder<Item>;
 
@@ -113,7 +91,22 @@ export class ItemController {
           };
           res.json(response);
         };
-        await ItemController.handleTopSort({ range, category, offset, limit, sendResponse });
+        
+        const order = getStatsOrder(range);
+        const where = ItemController.buildItemWhere(category);
+        const config: FindManyOptions<StatsAggregatedItem> = {
+          order: { [order]: 'DESC' },
+          skip: offset,
+          take: limit,
+          relations: subItemGetManyRelations,
+          ...(where ? { where } : {})
+        };
+
+        const statsResults = await ItemController.statsAggregatedItemService.getMany(config);
+
+        const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
+        sendResponse({ results: items, count: null });
+
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -143,8 +136,8 @@ export class ItemController {
               order: { [order]: 'DESC' },
               skip: offset,
               take: limit,
-              relations: itemGetManyRelations,
-              where: { item: { channel_id: channel.id } }
+              relations: subItemGetManyRelations,
+              where: { item: { channel: { id: channel.id} } }
             };
             const statsResults = await ItemController.statsAggregatedItemService.getMany(config);
             items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
@@ -196,7 +189,10 @@ export class ItemController {
     validateParamsObject(parseAndGetChaptersSchema, req, res, async () => {
       const { item_id_text } = req.params;
       try {
-        const item = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: itemGetManyRelations });
+        const item = await ItemController
+          .itemService.getByIdOrIdText(item_id_text, {
+            relations: itemGetManyRelations
+          });
         if (!item) {
           res.status(404).json({ message: 'Item not found' });
           return;
@@ -204,7 +200,10 @@ export class ItemController {
 
         await parseChapters(item);
 
-        const updatedItem = await ItemController.itemService.getByIdOrIdText(item_id_text, { relations: itemGetManyRelations });
+        const updatedItem = await ItemController
+          .itemService.getByIdOrIdText(item_id_text, {
+            relations: itemGetManyRelations
+          });
         const chapters = await ItemController.itemChapterService.getAll(updatedItem.item_chapters_feed, {
           order: { start_time: 'ASC' }
         });
@@ -216,59 +215,31 @@ export class ItemController {
     });
   }
 
-  // --- Helper Handlers ---
-
-  private static async handleTopSort({ range, category, offset, limit, sendResponse }: TopSortParams) {
-    const order = getStatsOrder(range);
-    const where = ItemController.buildItemWhere(category);
-    const config: FindManyOptions<StatsAggregatedItem> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit,
-      relations: subItemGetManyRelations,
-      ...(where ? { where } : {})
-    };
-
-    const statsResults = await ItemController.statsAggregatedItemService.getMany(config);
-
-    const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
-    sendResponse({ results: items, count: null });
-  }
-
   private static async handleSubscribed({ account_id, sort, range, offset, limit, sendResponse }: SubscribedParams) {
     const channel_ids = await getFollowedChannelIds(account_id);
     if (!channel_ids.length) return sendResponse({ results: [], count: 0 });
     if (sort === 'top') {
-      const items = await ItemController._getTopSubscribedChannelsItems({ channel_ids, range, offset, limit });
+      const order = getStatsOrder(range);
+      const config: FindManyOptions<StatsAggregatedItem> = {
+        order: { [order]: 'DESC' },
+        skip: offset,
+        take: limit,
+        relations: subItemGetManyRelations
+      };
+      const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(channel_ids, config);
+      const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
+      return sendResponse({ results: items, count: null });
+    } else {
+      const order = ItemController.getOrder(sort);
+      const config: FindManyOptions<Item> = {
+        skip: offset,
+        take: limit,
+        relations: subItemGetManyRelations,
+        ...(order && { order }),
+      };
+      const items = await ItemController.itemService.getManyByChannels(channel_ids, config);
       return sendResponse({ results: items, count: null });
     }
-    const items = await ItemController._getSortedSubscribedChannelsItems({ channel_ids, sort, offset, limit });
-    return sendResponse({ results: items, count: null });
-  }
-
-  private static async _getTopSubscribedChannelsItems({ channel_ids, range, offset, limit }: TopSubscribedChannelsItemsParams): Promise<Item[]> {
-    const order = getStatsOrder(range);
-    const config: FindManyOptions<StatsAggregatedItem> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit,
-      relations: subItemGetManyRelations
-    };
-    const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(channel_ids, config);
-    return statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
-  }
-
-  private static async _getSortedSubscribedChannelsItems(
-    { channel_ids, sort, offset, limit }: SortedSubscribedChannelsItemsParams)
-    : Promise<Item[]> {
-    const order = ItemController.getOrder(sort);
-    const config: FindManyOptions<Item> = {
-      skip: offset,
-      take: limit,
-      relations: subItemGetManyRelations,
-      ...(order && { order }),
-    };
-    return await ItemController.itemService.getManyByChannels(channel_ids, config);
   }
 
   private static getOrder(sort?: QueryParamsItemsSort): ItemOrder | undefined {
