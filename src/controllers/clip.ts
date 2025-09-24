@@ -100,8 +100,17 @@ class ClipController {
         const account = req.user!;
         const dto = req.body;
 
+        const finalDto = {
+          title: dto.title || null,
+          description: dto.description || null,
+          start_time: dto.start_time,
+          end_time: dto.end_time || null,
+          item_id_text: dto.item_id_text,
+          sharable_status_id: dto.sharable_status_id
+        };
+
         try {
-          const clip = await clipService.create(account.id, dto);
+          const clip = await clipService.create(account.id, finalDto);
           res.status(201).json(clip);
         } catch (err) {
           handleGenericErrorResponse(res, err);
