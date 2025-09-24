@@ -191,13 +191,43 @@ class ClipController {
             range?: QueryParamsStatsRange
           };
 
+          const select = {
+            id: true,
+            id_text: true,
+            start_time: true,
+            end_time: true,
+            title: true,
+            description: true,
+            created_at: true,
+            item: {
+              id: true,
+              id_text: true,
+              pub_date: true,
+              title: true,
+              item_images: true
+            },
+            account: {
+              id_text: true
+            }
+          };
+
           if (sort === "top") {
             const order = getStatsOrder(range);
             const config: FindManyOptions<StatsAggregatedClip> = {
               order: { [order]: 'DESC' },
               skip: offset,
               take: limit,
-              relations: ["clip", "clip.item", "clip.item.item_images"]
+              select: {
+                clip: {
+                  ...select
+                }
+              },
+              relations: [
+                "clip",
+                "clip.item",
+                "clip.item.item_images",
+                "clip.account"
+              ]
             };
             const [statsResults, count] = await ClipController
               .statsAggregatedClipService.getManyAndCountPublic(config);
@@ -225,7 +255,12 @@ class ClipController {
               order,
               skip: offset,
               take: limit,
-              relations: ['item', 'item.item_images']
+              select,
+              relations: [
+                'item',
+                'item.item_images',
+                'account'
+              ]
             });
   
             const response: ApiListResponse<Clip> = {
