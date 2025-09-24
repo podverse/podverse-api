@@ -28,6 +28,7 @@ const clipUpdateSchema = Joi.object({
   end_time: Joi.number().greater(0).allow(null, ''),
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
+  item_id_text: Joi.string().required(),
   sharable_status_id: Joi.number().min(1).required(),
 });
 
@@ -118,8 +119,17 @@ class ClipController {
             const { clip_id_text } = req.params;
             const dto = req.body;
 
+            const finalDto = {
+              title: dto.title || null,
+              description: dto.description || null,
+              start_time: dto.start_time,
+              end_time: dto.end_time || null,
+              item_id_text: dto.item_id_text,
+              sharable_status_id: dto.sharable_status_id
+            };
+
             try {
-              const clip = await clipService.update(account.id, clip_id_text, dto);
+              const clip = await clipService.update(account.id, clip_id_text, finalDto);
               res.status(200).json(clip);
             } catch (err) {
               handleGenericErrorResponse(res, err);
@@ -154,8 +164,50 @@ class ClipController {
         verifyPrivateClipOwnership()(req, res, async () => {
           try {
             const { clip_id_text } = req.params;
-            const clip = await clipService.getByIdText(clip_id_text, { relations: ['sharable_status'] });
+            const clip = await clipService.getByIdText(
+              clip_id_text,
+              {
+                select: {
+                  id: true,
+                  id_text: true,
+                  start_time: true,
+                  end_time: true,
+                  title: true,
+                  description: true,
+                  created_at: true,
+                  item: {
+                    id_text: true,
+                    title: true,
+                    pub_date: true,
+                    item_enclosures: true,
+                    item_images: true,
+                    channel: {
+                      id_text: true,
+                      title: true,
+                      channel_images: true
+                    }
+                  },
+                  account: {
+                    id_text: true
+                  },
+                  sharable_status: {
+                    id: true
+                  }
+                },
+                relations: [
+                  "item",
+                  "item.item_enclosures",
+                  "item.item_enclosures.item_enclosure_sources",
+                  "item.item_images",
+                  "item.channel",
+                  "item.channel.channel_images",
+                  "account",
+                  "sharable_status"
+                ]
+              }
+            );
             if (clip) {
+              delete clip.id;
               res.status(200).json(clip);
             } else {
               res.status(404).json({ message: 'Clip not found' });
@@ -204,6 +256,7 @@ class ClipController {
               id_text: true,
               pub_date: true,
               title: true,
+              item_enclosures: true,
               item_images: true
             },
             account: {
@@ -225,6 +278,8 @@ class ClipController {
               relations: [
                 "clip",
                 "clip.item",
+                "clip.item_enclosures",
+                "clip.item_enclosures.item_enclosure_sources",
                 "clip.item.item_images",
                 "clip.account"
               ]
@@ -258,6 +313,8 @@ class ClipController {
               select,
               relations: [
                 'item',
+                'item.item_enclosures',
+                'item.item_enclosures.item_enclosure_sources',
                 'item.item_images',
                 'account'
               ]
