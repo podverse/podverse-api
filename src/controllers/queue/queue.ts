@@ -3,14 +3,10 @@ import Joi from 'joi';
 import { QueueService } from 'podverse-orm';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
-import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { validateBodyObject } from '@api/lib/validation';
 
 const queueSchema = Joi.object({
   medium: Joi.number().min(1).required()
-});
-
-const queueIdSchema = Joi.object({
-  queue_id_text: Joi.string().required()
 });
 
 const queueService = new QueueService();
@@ -52,24 +48,6 @@ class QueueController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
-    });
-  }
-
-  static async delete(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      validateParamsObject(queueIdSchema, req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          const account = req.user!;
-          const { queue_id_text } = req.params;
-
-          try {
-            await QueueController.queueService.delete(account.id, queue_id_text);
-            res.status(204).end();
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
-        });
       });
     });
   }
