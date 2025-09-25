@@ -16,6 +16,12 @@ const queueAndItemIdSchema = Joi.object({
   item_id_text: Joi.string().required()
 });
 
+export const addItemToHistorySchema = Joi.object({
+  playback_position: Joi.number().min(0).optional(),
+  media_file_duration: Joi.number().min(0).optional(),
+  completed: Joi.boolean().optional()
+});
+
 class QueueResourceItemController {
   private static queueResourceService = new QueueResourceService();
 
@@ -92,16 +98,27 @@ class QueueResourceItemController {
 
   static async addItemToHistory(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueAndItemIdSchema, req, res, async () => {
-      ensureAuthenticated(req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_id_text } = req.params;
+      validateBodyObject(addItemToHistorySchema, req, res, async () => {
+        ensureAuthenticated(req, res, async () => {
+          verifyQueueOwnership()(req, res, async () => {
+            const { queue_id_text, item_id_text } = req.params;
+            const { playback_position, media_file_duration, completed } = req.body;
 
-          try {
-            const queueResource = await QueueResourceItemController.queueResourceService.addItemToHistory(queue_id_text, item_id_text);
-            res.status(201).json(queueResource);
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
+            const dto = {
+              ...((playback_position || playback_position === 0) ? { playback_position } : {}),
+              ...((media_file_duration || media_file_duration === 0) ? { media_file_duration } : {}),
+              ...(completed ? { completed } : {})
+            };
+  
+            try {
+              const queueResource = await QueueResourceItemController
+                .queueResourceService
+                .addItemToHistory(queue_id_text, item_id_text, dto);
+              res.status(201).json(queueResource);
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
         });
       });
     });

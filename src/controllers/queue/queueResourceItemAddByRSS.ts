@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import { addItemToHistorySchema } from './queueResourceItem';
 import { QueueResourceService } from 'podverse-orm';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
@@ -106,13 +107,21 @@ class QueueResourceItemAddByRSSController {
 
   static async addItemAddByRSSToHistory(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueIdSchema, req, res, async () => {
-      ensureAuthenticated(req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          validateBodyObject(addItemToQueueSchema, req, res, async () => {
+      validateBodyObject(addItemToHistorySchema, req, res, async () => {
+        ensureAuthenticated(req, res, async () => {
+          verifyQueueOwnership()(req, res, async () => {
             const { queue_id_text } = req.params;
-            const { add_by_rss_resource_data } = req.body;
+            const { add_by_rss_resource_data, playback_position, media_file_duration, completed } = req.body;
+
+            const dto = {
+              add_by_rss_resource_data,
+              ...((playback_position || playback_position === 0) ? { playback_position } : {}),
+              ...((media_file_duration || media_file_duration === 0) ? { media_file_duration } : {}),
+              ...(completed ? { completed } : {})
+            };
+
             try {
-              const queueResource = await QueueResourceItemAddByRSSController.queueResourceService.addItemAddByRSSToHistory(queue_id_text, add_by_rss_resource_data);
+              const queueResource = await QueueResourceItemAddByRSSController.queueResourceService.addItemAddByRSSToHistory(queue_id_text, dto);
               res.status(201).json(queueResource);
             } catch (err) {
               handleGenericErrorResponse(res, err);

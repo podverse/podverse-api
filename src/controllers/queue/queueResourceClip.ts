@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import { addItemToHistorySchema } from './queueResourceItem';
 import { QueueResourceService } from 'podverse-orm';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
@@ -92,16 +93,25 @@ class QueueResourceClipController {
 
   static async addClipToHistory(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueAndClipIdSchema, req, res, async () => {
-      ensureAuthenticated(req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, clip_id_text } = req.params;
+      validateBodyObject(addItemToHistorySchema, req, res, async () => {
+        ensureAuthenticated(req, res, async () => {
+          verifyQueueOwnership()(req, res, async () => {
+            const { queue_id_text, clip_id_text } = req.params;
+            const { playback_position, media_file_duration, completed } = req.body;
 
-          try {
-            const queueResource = await QueueResourceClipController.queueResourceService.addClipToHistory(queue_id_text, clip_id_text);
-            res.status(201).json(queueResource);
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
+            const dto = {
+              ...((playback_position || playback_position === 0) ? { playback_position } : {}),
+              ...((media_file_duration || media_file_duration === 0) ? { media_file_duration } : {}),
+              ...(completed ? { completed } : {})
+            };
+
+            try {
+              const queueResource = await QueueResourceClipController.queueResourceService.addClipToHistory(queue_id_text, clip_id_text, dto);
+              res.status(201).json(queueResource);
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
         });
       });
     });

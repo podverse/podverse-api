@@ -5,6 +5,7 @@ import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
+import { addItemToHistorySchema } from './queueResourceItem';
 
 const addItemChapterToQueueBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -92,16 +93,25 @@ class QueueResourceItemChapterController {
 
   static async addItemChapterToHistory(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueAndChapterIdSchema, req, res, async () => {
-      ensureAuthenticated(req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_chapter_id_text } = req.params;
+      validateBodyObject(addItemToHistorySchema, req, res, async () => {
+        ensureAuthenticated(req, res, async () => {
+          verifyQueueOwnership()(req, res, async () => {
+            const { queue_id_text, item_chapter_id_text } = req.params;
+            const { playback_position, media_file_duration, completed } = req.body;
 
-          try {
-            const queueResource = await QueueResourceItemChapterController.queueResourceService.addItemChapterToHistory(queue_id_text, item_chapter_id_text);
-            res.status(201).json(queueResource);
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
+            const dto = {
+              ...((playback_position || playback_position === 0) ? { playback_position } : {}),
+              ...((media_file_duration || media_file_duration === 0) ? { media_file_duration } : {}),
+              ...(completed ? { completed } : {})
+            };
+
+            try {
+              const queueResource = await QueueResourceItemChapterController.queueResourceService.addItemChapterToHistory(queue_id_text, item_chapter_id_text, dto);
+              res.status(201).json(queueResource);
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
         });
       });
     });
