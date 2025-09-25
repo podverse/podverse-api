@@ -287,8 +287,8 @@ class ClipController {
               relations: [
                 "clip",
                 "clip.item",
-                "clip.item_enclosures",
-                "clip.item_enclosures.item_enclosure_sources",
+                "clip.item.item_enclosures",
+                "clip.item.item_enclosures.item_enclosure_sources",
                 "clip.item.item_images",
                 "clip.account"
               ]
