@@ -1,13 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import Joi from 'joi';
 import { QueueService } from 'podverse-orm';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
-import { validateBodyObject } from '@api/lib/validation';
-
-const queueSchema = Joi.object({
-  medium: Joi.number().min(1).required()
-});
 
 const queueService = new QueueService();
 
@@ -35,22 +29,6 @@ export const verifyQueueOwnership = () => {
 
 class QueueController {
   private static queueService = new QueueService();
-
-  static async create(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      validateBodyObject(queueSchema, req, res, async () => {
-        const account = req.user!;
-        const dto = req.body;
-
-        try {
-          const queue = await QueueController.queueService.create(account.id, dto);
-          res.status(201).json(queue);
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
-      });
-    });
-  }
 
   static async getAllPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {

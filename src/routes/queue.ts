@@ -12,8 +12,6 @@ import { QueueResourceItemSoundbiteController } from '@api/controllers/queue/que
 const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/queue`, router);
 
-router.post('/', asyncHandler(QueueController.create));
-// router.delete('/:queue_id_text', asyncHandler(QueueController.delete)); // This may not be needed
 router.get('/all-for-account/private', asyncHandler(QueueController.getAllPrivate));
 router.get('/:queue_id_text/resources', asyncHandler(QueueResourceController.getAllByQueueIdPrivate));
 
