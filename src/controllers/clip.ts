@@ -14,6 +14,12 @@ const getClipsPublicByChannelIdTextSchema = Joi.object({
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
 });
 
+const getClipsPublicByItemIdTextSchema = Joi.object({
+  page: Joi.number().integer().min(1).optional(),
+  sort: Joi.string().valid("top", "recent", "oldest").optional(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+});
+
 const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
   end_time: Joi.number().greater(0).allow(null, ''),
@@ -38,6 +44,10 @@ const clipIdSchema = Joi.object({
 
 const getByChannelIdTextSchema = Joi.object({
   channel_id_text: Joi.string().required()
+});
+
+const getByItemIdTextSchema = Joi.object({
+  item_id_text: Joi.string().required()
 });
 
 const clipService = new ClipService();
@@ -325,6 +335,90 @@ class ClipController {
                 'item.item_enclosures',
                 'item.item_enclosures.item_enclosure_sources',
                 'item.item_images',
+                'account'
+              ]
+            });
+  
+            const response: ApiListResponse<Clip> = {
+              data: clips,
+              meta: { page, count, limit }
+            };
+  
+            res.status(200).json(response);
+          }
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByItemIdTextPublic(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByItemIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByItemIdTextSchema, req, res, async () => {
+        try {
+          const { item_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+          const { sort, range } = req.query as {
+            sort?: QueryParamsClipsByChannelSort;
+            range?: QueryParamsStatsRange
+          };
+
+          const select = {
+            id: true,
+            id_text: true,
+            start_time: true,
+            end_time: true,
+            title: true,
+            description: true,
+            created_at: true,
+            account: {
+              id_text: true
+            }
+          };
+
+          if (sort === "top") {
+            const order = getStatsOrder(range);
+            const config: FindManyOptions<StatsAggregatedClip> = {
+              order: { [order]: 'DESC' },
+              skip: offset,
+              take: limit,
+              select: {
+                clip: {
+                  ...select
+                }
+              },
+              relations: [
+                "clip",
+                "clip.account"
+              ]
+            };
+            const [statsResults, count] = await ClipController
+              .statsAggregatedClipService.getManyAndCountPublic(config);
+            const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
+
+            const response: ApiListResponse<Clip> = {
+              data: clips,
+              meta: { page, count, limit }
+            };
+
+            res.status(200).json(response);  
+          } else {
+            let order = { created_at: 'DESC' };
+            if (sort === "oldest") {
+              order = { created_at: "ASC" };
+            }
+    
+            const [clips, count] = await clipService.getManyAndCount({
+              where: {
+                sharable_status: { id: SharableStatusEnum.Public },
+                item: { id_text: item_id_text }
+              },
+              order,
+              skip: offset,
+              take: limit,
+              select,
+              relations: [
                 'account'
               ]
             });
