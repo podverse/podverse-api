@@ -197,8 +197,8 @@ export class ItemController {
           return;
         }
 
-        // Skip parseChapters if last_finished_parse_time is less than 1 hour old
         const lastFinished = item?.item_chapters_feed?.item_chapters_feed_log?.last_finished_parse_time;
+
         if (lastFinished) {
           const last = new Date(lastFinished).getTime();
           const now = Date.now();
