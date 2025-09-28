@@ -14,6 +14,7 @@ import { channelRouter } from '@api/routes/channel';
 import { clipRouter } from '@api/routes/clip';
 import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
+import { itemSoundbiteRouter } from "./routes/itemSoundbite";
 import { mediumRouter } from '@api/routes/medium';
 import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
 import { accountPayPalOrderRouter } from '@api/routes/paypal';
@@ -56,6 +57,7 @@ export const startApp = async () => {
     app.use(clipRouter);
     app.use(feedRouter);
     app.use(itemRouter);
+    app.use(itemSoundbiteRouter);
     app.use(mediumRouter);
     app.use(membershipClaimTokenRouter);
     app.use(playlistRouter);
