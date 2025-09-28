@@ -190,25 +190,43 @@ export class ItemController {
       const { item_id_text } = req.params;
       try {
         const item = await ItemController
-          .itemService.getByIdOrIdText(item_id_text, {
-            relations: itemGetManyRelations
-          });
+          .itemService.getByIdOrIdText(item_id_text, itemGetOneRelations);
+
         if (!item) {
           res.status(404).json({ message: 'Item not found' });
           return;
         }
 
-        await parseChapters(item);
+        // Skip parseChapters if last_finished_parse_time is less than 1 hour old
+        const lastFinished = item?.item_chapters_feed?.item_chapters_feed_log?.last_finished_parse_time;
+        if (lastFinished) {
+          const last = new Date(lastFinished).getTime();
+          const now = Date.now();
+          const diffMs = now - last;
+          if (diffMs >= 1000 * 60 * 60) {
+            await parseChapters(item);
+          }
+        } else {
+          await parseChapters(item);
+        }
 
         const updatedItem = await ItemController
-          .itemService.getByIdOrIdText(item_id_text, {
-            relations: itemGetManyRelations
-          });
-        const chapters = await ItemController.itemChapterService.getAll(updatedItem.item_chapters_feed, {
-          order: { start_time: 'ASC' }
-        });
+          .itemService.getByIdOrIdText(item_id_text, itemGetOneRelations);
+        
+        const results = await ItemController.itemChapterService.getAllWithCount(
+          updatedItem.item_chapters_feed, {
+            order: { start_time: 'ASC' }
+          }
+        );
 
-        res.json({ data: chapters });
+        const data = results.results;
+
+        const response: ApiListResponse<Item> = {
+          data,
+          meta: { page: 1, count: data.length, limit: data.length }
+        };
+
+        res.json(response);
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
