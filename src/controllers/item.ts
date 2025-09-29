@@ -219,11 +219,31 @@ export class ItemController {
           }
         );
 
-        const data = results.results;
-
+        const chapters = results.results;
+        const transformed: typeof chapters = [];
+        // Only consider chapters with table_of_contents true for end_time assignment
+        const tocChapters = chapters.filter(ch => ch.table_of_contents);
+        for (let i = 0; i < chapters.length; i++) {
+          const ch = chapters[i];
+          if (ch.table_of_contents) {
+            // Find the next toc chapter ahead
+            const nextToc = tocChapters.find(toc => parseFloat(toc.start_time) > parseFloat(ch.start_time));
+            if (nextToc) {
+              transformed.push({ ...ch, end_time: nextToc.start_time });
+            } else {
+              transformed.push({ ...ch });
+            }
+          } else {
+            // Only include if end_time is present
+            if (ch.end_time) {
+              transformed.push(ch);
+            }
+          }
+        }
+        
         const response: ApiListResponse<Item> = {
-          data,
-          meta: { page: 1, count: data.length, limit: data.length }
+          data: transformed,
+          meta: { page: 1, count: transformed.length, limit: transformed.length }
         };
 
         res.json(response);
