@@ -22,6 +22,7 @@ import { playlistRouter } from '@api/routes/playlist';
 import { podrollRouter } from "@api/routes/podroll";
 import { queueRouter } from '@api/routes/queue';
 import { statsRouter } from '@api/routes/stats';
+import { itemTranscriptRouter } from "./routes/itemTranscript";
 
 export const app = express();
 const port = 1234;
@@ -58,13 +59,14 @@ export const startApp = async () => {
     app.use(feedRouter);
     app.use(itemRouter);
     app.use(itemSoundbiteRouter);
+    app.use(itemTranscriptRouter);
     app.use(mediumRouter);
     app.use(membershipClaimTokenRouter);
     app.use(playlistRouter);
     app.use(podrollRouter);
     app.use(queueRouter);
     app.use(statsRouter);
-
+    
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       loggerService.logError('API Router Error', err);
