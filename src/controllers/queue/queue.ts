@@ -2,6 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { QueueService } from 'podverse-orm';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
+import Joi from 'joi';
+import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+
+const queueIdTextParamsSchema = Joi.object({
+  queue_id_text: Joi.string().required()
+});
+
+const updateIsActiveQueueSchema = Joi.object({
+  is_active_queue: Joi.boolean().required()
+});
 
 const queueService = new QueueService();
 
@@ -39,6 +49,31 @@ class QueueController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
+    });
+  }
+
+  static async updateIsActiveQueue(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      verifyQueueOwnership()(req, res, async () => {
+        validateParamsObject(queueIdTextParamsSchema, req, res, async () => {
+          validateBodyObject(updateIsActiveQueueSchema, req, res, async () => {
+            const account = req.user!;
+            const { queue_id_text } = req.params;
+            const { is_active_queue } = req.body;
+      
+            if (typeof is_active_queue !== 'boolean') {
+              return res.status(400).json({ message: 'Invalid is_active_queue value' });
+            }
+      
+            try {
+              await QueueController.queueService.updateIsActiveQueue(account.id, queue_id_text, is_active_queue);
+              res.status(200).json({ message: 'Queue updated successfully' });
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
+        });
+      });
     });
   }
 }
