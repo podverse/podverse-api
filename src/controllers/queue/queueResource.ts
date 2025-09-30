@@ -13,7 +13,7 @@ const queueIdSchema = Joi.object({
 class QueueResourceController {
   private static queueResourceService = new QueueResourceService();
 
-  static async getAllByQueueIdPrivate(req: Request, res: Response): Promise<void> {
+  static async getAllByQueueIdTextPrivate(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
@@ -32,6 +32,25 @@ class QueueResourceController {
     });
   }
   
+  static async getAllNowPlayingOrUpcomingByQueueIdText(req: Request, res: Response): Promise<void> {
+    validateParamsObject(queueIdSchema, req, res, async () => {
+      ensureAuthenticated(req, res, async () => {
+        verifyQueueOwnership()(req, res, async () => {
+          const { queue_id_text } = req.params;
+
+          try {
+            const queueResources = await QueueResourceController
+              .queueResourceService
+              .getAllNowPlayingOrUpcomingByQueueIdText(queue_id_text);
+            res.status(200).json(queueResources);
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
+          }
+        });
+      });
+    });
+  }
+
 }
 
 export { QueueResourceController };

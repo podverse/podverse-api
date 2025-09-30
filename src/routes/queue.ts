@@ -13,7 +13,8 @@ const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/queue`, router);
 
 router.get('/all-for-account/private', asyncHandler(QueueController.getAllPrivate));
-router.get('/:queue_id_text/resources', asyncHandler(QueueResourceController.getAllByQueueIdPrivate));
+router.get('/:queue_id_text/resources', asyncHandler(QueueResourceController.getAllByQueueIdTextPrivate));
+router.get('/:queue_id_text/resources/now-playing-or-upcoming', asyncHandler(QueueResourceController.getAllNowPlayingOrUpcomingByQueueIdText));
 
 router.post('/:queue_id_text/clip/:clip_id_text/now-playing', asyncHandler(QueueResourceClipController.addClipToNowPlaying));
 router.post('/:queue_id_text/clip/:clip_id_text/next', asyncHandler(QueueResourceClipController.addClipToQueueNext));
