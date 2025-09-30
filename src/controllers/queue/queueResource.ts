@@ -7,7 +7,7 @@ import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateParamsObject } from '@api/lib/validation';
 
 const queueIdSchema = Joi.object({
-  queue_id: Joi.string().required()
+  queue_id_text: Joi.string().required()
 });
 
 class QueueResourceController {
@@ -17,10 +17,12 @@ class QueueResourceController {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id } = req.params;
+          const { queue_id_text } = req.params;
 
           try {
-            const queueResources = await QueueResourceController.queueResourceService.getAllByQueueId(queue_id);
+            const queueResources = await QueueResourceController
+              .queueResourceService
+              .getAllByQueueIdText(queue_id_text);
             res.status(200).json(queueResources);
           } catch (err) {
             handleGenericErrorResponse(res, err);
@@ -29,6 +31,7 @@ class QueueResourceController {
       });
     });
   }
+  
 }
 
 export { QueueResourceController };
