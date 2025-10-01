@@ -37,7 +37,10 @@ export class ItemSoundbiteController {
     validateParamsObject(itemSoundbiteIdTextSchema, req, res, async () => {
       try {
         const { item_soundbite_id_text } = req.params;
-        const itemSoundbite = await itemSoundbiteService.getByIdText(item_soundbite_id_text);
+        const itemSoundbite = await itemSoundbiteService.getByIdText(
+          item_soundbite_id_text,
+          { relations: ['item'] }
+        );
         if (itemSoundbite) {
           res.status(200).json(itemSoundbite);
         } else {

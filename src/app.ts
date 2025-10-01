@@ -23,6 +23,7 @@ import { podrollRouter } from "@api/routes/podroll";
 import { queueRouter } from '@api/routes/queue';
 import { statsRouter } from '@api/routes/stats';
 import { itemTranscriptRouter } from "./routes/itemTranscript";
+import { itemChapterRouter } from "./routes/itemChapter";
 
 export const app = express();
 const port = 1234;
@@ -58,6 +59,7 @@ export const startApp = async () => {
     app.use(clipRouter);
     app.use(feedRouter);
     app.use(itemRouter);
+    app.use(itemChapterRouter);
     app.use(itemSoundbiteRouter);
     app.use(itemTranscriptRouter);
     app.use(mediumRouter);
