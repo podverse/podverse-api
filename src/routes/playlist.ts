@@ -6,7 +6,6 @@ import { PlaylistResourceClipController } from '@api/controllers/playlist/playli
 import { PlaylistResourceItemController } from '@api/controllers/playlist/playlistResourceItem';
 import { asyncHandler } from '@api/middleware/asyncHandler';
 import { PlaylistResourceItemAddByRSSController } from '@api/controllers/playlist/playlistResourceItemAddByRSS';
-import { PlaylistResourceItemChapterController } from '@api/controllers/playlist/playlistResourceItemChapter';
 import { PlaylistResourceItemSoundbiteController } from '@api/controllers/playlist/playlistResourceItemSoundbite';
 
 const router = Router();
@@ -36,11 +35,6 @@ router.post('/:playlist_id_text/item-add-by-rss/first', asyncHandler(PlaylistRes
 router.post('/:playlist_id_text/item-add-by-rss/between', asyncHandler(PlaylistResourceItemAddByRSSController.addItemAddByRSSToPlaylistBetween));
 router.post('/:playlist_id_text/item-add-by-rss/last', asyncHandler(PlaylistResourceItemAddByRSSController.addItemAddByRSSToPlaylistLast));
 router.delete('/:playlist_id_text/item-add-by-rss/:add_by_rss_hash_id', asyncHandler(PlaylistResourceItemAddByRSSController.removeItemAddByRSSFromPlaylist));
-
-router.post('/:playlist_id_text/item-chapter/:item_chapter_id_text/first', asyncHandler(PlaylistResourceItemChapterController.addChapterToPlaylistFirst));
-router.post('/:playlist_id_text/item-chapter/:item_chapter_id_text/between', asyncHandler(PlaylistResourceItemChapterController.addChapterToPlaylistBetween));
-router.post('/:playlist_id_text/item-chapter/:item_chapter_id_text/last', asyncHandler(PlaylistResourceItemChapterController.addChapterToPlaylistLast));
-router.delete('/:playlist_id_text/item-chapter/:item_chapter_id_text', asyncHandler(PlaylistResourceItemChapterController.removeChapterFromPlaylist));
 
 router.post('/:playlist_id_text/item-soundbite/:soundbite_id_text/first', asyncHandler(PlaylistResourceItemSoundbiteController.addItemSoundbiteToPlaylistFirst));
 router.post('/:playlist_id_text/item-soundbite/:soundbite_id_text/between', asyncHandler(PlaylistResourceItemSoundbiteController.addItemSoundbiteToPlaylistBetween));

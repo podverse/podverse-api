@@ -6,7 +6,6 @@ import { QueueResourceController } from '@api/controllers/queue/queueResource';
 import { QueueResourceItemController } from '@api/controllers/queue/queueResourceItem';
 import { QueueResourceClipController } from '@api/controllers/queue/queueResourceClip';
 import { QueueResourceItemAddByRSSController } from '@api/controllers/queue/queueResourceItemAddByRSS';
-import { QueueResourceItemChapterController } from '@api/controllers/queue/queueResourceItemChapter';
 import { QueueResourceItemSoundbiteController } from '@api/controllers/queue/queueResourceItemSoundbite';
 
 const router = Router();
@@ -37,13 +36,6 @@ router.post('/:queue_id_text/item-add-by-rss/last', asyncHandler(QueueResourceIt
 router.post('/:queue_id_text/item-add-by-rss/between', asyncHandler(QueueResourceItemAddByRSSController.addItemAddByRSSToQueueBetween));
 router.post('/:queue_id_text/item-add-by-rss/history', asyncHandler(QueueResourceItemAddByRSSController.addItemAddByRSSToHistory));
 router.delete('/:queue_id_text/item-add-by-rss/:add_by_rss_hash_id', asyncHandler(QueueResourceItemAddByRSSController.removeItemAddByRSSFromQueue));
-
-router.post('/:queue_id_text/item-chapter/:item_chapter_id_text/now-playing', asyncHandler(QueueResourceItemChapterController.addItemChapterToNowPlaying));
-router.post('/:queue_id_text/item-chapter/:item_chapter_id_text/next', asyncHandler(QueueResourceItemChapterController.addItemChapterToQueueNext));
-router.post('/:queue_id_text/item-chapter/:item_chapter_id_text/last', asyncHandler(QueueResourceItemChapterController.addItemChapterToQueueLast));
-router.post('/:queue_id_text/item-chapter/:item_chapter_id_text/between', asyncHandler(QueueResourceItemChapterController.addItemChapterToQueueBetween));
-router.post('/:queue_id_text/item-chapter/:item_chapter_id_text/history', asyncHandler(QueueResourceItemChapterController.addItemChapterToHistory));
-router.delete('/:queue_id_text/item-chapter/:item_chapter_id_text', asyncHandler(QueueResourceItemChapterController.removeItemChapterFromQueue));
 
 router.post('/:queue_id_text/item-soundbite/:item_soundbite_id_text/now-playing', asyncHandler(QueueResourceItemSoundbiteController.addItemSoundbiteToNowPlaying));
 router.post('/:queue_id_text/item-soundbite/:item_soundbite_id_text/next', asyncHandler(QueueResourceItemSoundbiteController.addItemSoundbiteToQueueNext));
