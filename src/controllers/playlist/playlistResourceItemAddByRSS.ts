@@ -104,6 +104,8 @@ class PlaylistResourceItemAddByRSSController {
       });
     });
   }
+
+  // TODO: add favorites add to next/prev handling
 }
 
 export { PlaylistResourceItemAddByRSSController };

@@ -86,6 +86,8 @@ class PlaylistResourceItemController {
       });
     });
   }
+
+  // TODO: add favorites add to next/prev handling
 }
 
 export { PlaylistResourceItemController };

@@ -89,6 +89,8 @@ class PlaylistResourceItemSoundbiteController {
       });
     });
   }
+
+  // TODO: add favorites add to next/prev handling
 }
 
 export { PlaylistResourceItemSoundbiteController };

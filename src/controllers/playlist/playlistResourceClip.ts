@@ -86,6 +86,8 @@ class PlaylistResourceClipController {
       });
     });
   }
+
+  // TODO: add favorites add to next/prev handling
 }
 
 export { PlaylistResourceClipController };
