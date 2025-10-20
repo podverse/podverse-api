@@ -31,8 +31,8 @@ class QueueResourceController {
       });
     });
   }
-  
-  static async getAllNowPlayingOrUpcomingByQueueIdText(req: Request, res: Response): Promise<void> {
+
+  static async getNowPlayingByQueueIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
@@ -41,7 +41,26 @@ class QueueResourceController {
           try {
             const queueResources = await QueueResourceController
               .queueResourceService
-              .getAllNowPlayingOrUpcomingByQueueIdText(queue_id_text);
+              .getNowPlayingByQueueIdText(queue_id_text);
+            res.status(200).json(queueResources);
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
+          }
+        });
+      });
+    });
+  }
+
+  static async getAllUpcomingByQueueIdText(req: Request, res: Response): Promise<void> {
+    validateParamsObject(queueIdSchema, req, res, async () => {
+      ensureAuthenticated(req, res, async () => {
+        verifyQueueOwnership()(req, res, async () => {
+          const { queue_id_text } = req.params;
+
+          try {
+            const queueResources = await QueueResourceController
+              .queueResourceService
+              .getAllUpcomingByQueueIdText(queue_id_text);
             res.status(200).json(queueResources);
           } catch (err) {
             handleGenericErrorResponse(res, err);
