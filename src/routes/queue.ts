@@ -12,7 +12,7 @@ const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/queue`, router);
 
 router.get('/all-for-account/private', asyncHandler(QueueController.getAllPrivate));
-router.get('/:queue_id_text/resources', asyncHandler(QueueResourceController.getAllByQueueIdTextPrivate));
+router.get('/resources/all-by-account-abridged', asyncHandler(QueueResourceController.getAllByAccountAbridged));
 router.get('/:queue_id_text/resources/now-playing', asyncHandler(QueueResourceController.getNowPlayingByQueueIdText));
 router.get('/:queue_id_text/resources/upcoming-all', asyncHandler(QueueResourceController.getAllUpcomingByQueueIdText));
 router.get('/:queue_id_text/resources/history-paginated', asyncHandler(QueueResourceController.getHistoryResourcesByQueueIdText));

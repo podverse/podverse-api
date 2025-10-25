@@ -6,7 +6,7 @@ import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateParamsObject } from '@api/lib/validation';
 import { getPaginationParams } from '../helpers/pagination';
-import { ApiListResponse } from 'podverse-helpers';
+import { ApiListResponse, DTOQueueResourceAbridged } from 'podverse-helpers';
 
 const queueIdSchema = Joi.object({
   queue_id_text: Joi.string().required()
@@ -15,21 +15,27 @@ const queueIdSchema = Joi.object({
 class QueueResourceController {
   private static queueResourceService = new QueueResourceService();
 
-  static async getAllByQueueIdTextPrivate(req: Request, res: Response): Promise<void> {
-    validateParamsObject(queueIdSchema, req, res, async () => {
-      ensureAuthenticated(req, res, async () => {
-        verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text } = req.params;
+  static async getAllByAccountAbridged(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      verifyQueueOwnership()(req, res, async () => {
+        const account = req.user!;
 
-          try {
-            const queueResources = await QueueResourceController
-              .queueResourceService
-              .getAllByQueueIdText(queue_id_text);
-            res.status(200).json(queueResources);
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
-        });
+        try {
+          const queueResources = await QueueResourceController
+            .queueResourceService
+            .getAllByAccountAbridged(account.id);
+
+          const minimized = queueResources.map((row: DTOQueueResourceAbridged) =>
+            Object.fromEntries(
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              Object.entries(row).filter(([_, v]) => v !== null && v !== false)
+            )
+          );
+
+          res.status(200).json(minimized);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
       });
     });
   }
