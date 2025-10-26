@@ -197,6 +197,11 @@ export class ItemController {
           return;
         }
 
+        if (!item.item_chapters_feed) {
+          res.status(204).end();
+          return;
+        }
+
         const lastFinished = item?.item_chapters_feed?.item_chapters_feed_log?.last_finished_parse_time;
 
         if (lastFinished) {
@@ -211,8 +216,13 @@ export class ItemController {
         }
 
         const updatedItem = await ItemController
-          .itemService.getByIdOrIdText(item_id_text, itemGetOneRelations);
+          .itemService.getByIdOrIdText(item_id_text, itemGetOneRelations) as Item | null;
         
+        if (!updatedItem || !updatedItem.item_chapters_feed) {
+          res.status(404).json({ message: 'Item or Item Chapters Feed not found after parsing' });
+          return;
+        }
+
         const results = await ItemController.itemChapterService.getAllWithCount(
           updatedItem.item_chapters_feed, {
             order: { start_time: 'ASC' }
