@@ -6,7 +6,7 @@ export function validateBodyObject(schema: Joi.ObjectSchema, req: Request, res: 
 
   // Convert numeric string values to numbers
   for (const key of numericFields) {
-    if (req.body[key] && typeof req.body[key] === 'string') {
+    if (req.body && req.body[key] && typeof req.body[key] === 'string') {
       req.body[key] = parseFloat(req.body[key]);
     }
   }

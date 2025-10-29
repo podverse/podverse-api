@@ -20,7 +20,7 @@ export const queueResourceNowPlayingSchema = Joi.object({
   playback_position: Joi.number().min(0).optional(),
   media_file_duration: Joi.number().min(0).optional(),
   completed: Joi.boolean().optional()
-});
+}).required();
 
 class QueueResourceItemController {
   private static queueResourceService = new QueueResourceService();
