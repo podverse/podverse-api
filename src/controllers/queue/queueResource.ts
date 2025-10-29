@@ -6,7 +6,7 @@ import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateParamsObject } from '@api/lib/validation';
 import { getPaginationParams } from '../helpers/pagination';
-import { ApiListResponse, DTOQueueResourceAbridged } from 'podverse-helpers';
+import { ApiListResponse, DTOQueueResourceAbridgedResponseData } from 'podverse-helpers';
 
 const queueIdSchema = Joi.object({
   queue_id_text: Joi.string().required()
@@ -25,7 +25,7 @@ class QueueResourceController {
             .queueResourceService
             .getAllByAccountAbridged(account.id);
 
-          const minimized = queueResources.map((row: DTOQueueResourceAbridged) =>
+          const minimized = queueResources.map((row: DTOQueueResourceAbridgedResponseData) =>
             Object.fromEntries(
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               Object.entries(row).filter(([_, v]) => v !== null && v !== false)
