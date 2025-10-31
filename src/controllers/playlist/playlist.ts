@@ -288,12 +288,17 @@ class PlaylistController {
             const { playlist_id_text } = req.params;
             const account = req.user!;
 
-            let playlist: DTOPlaylist | null = null;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let playlist: any | null = null;
 
             if (account) {
               playlist = await PlaylistController.playlistService.getOnePrivate(account.id_text, playlist_id_text);
             } else {
               playlist = await PlaylistController.playlistService.getOnePublic(playlist_id_text);
+            }
+
+            if (playlist?.account?.id) {
+              delete playlist.account.id;
             }
             
             if (playlist) {
