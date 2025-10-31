@@ -79,7 +79,7 @@ export const verifyPlaylistOwnership = () => {
   };
 };
 
-const verifyPrivatePlaylistOwnership = () => {
+export const verifyPrivatePlaylistOwnershipIfNeeded = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user;
     const { playlist_id_text } = req.params;
@@ -283,7 +283,7 @@ class PlaylistController {
   static async getPlaylistById(req: Request, res: Response): Promise<void> {
     validateParamsObject(playlistIdSchema, req, res, async () => {
       optionalEnsureAuthenticated(req, res, async () => {
-        verifyPrivatePlaylistOwnership()(req, res, async () => {
+        verifyPrivatePlaylistOwnershipIfNeeded()(req, res, async () => {
           try {
             const { playlist_id_text } = req.params;
             const account = req.user!;
