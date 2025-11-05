@@ -11,6 +11,8 @@ router.get('/chapters/:item_id_text', asyncHandler(ItemController.parseAndGetCha
 
 router.get('/channel/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannel));
 
+router.get('/queue/pub-date/:idText', asyncHandler(ItemController.getManyForQueueByPubDate));
+
 router.get('/:idOrIdText', asyncHandler(ItemController.getByIdOrIdText));
 
 router.get('/', asyncHandler((req, res) => {
@@ -20,6 +22,5 @@ router.get('/', asyncHandler((req, res) => {
     return ItemController.getMany(req, res);
   }
 }));
-
 
 export const itemRouter = router;

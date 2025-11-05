@@ -9,7 +9,8 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue,
-  QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES,
+  QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_DIRECTION_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES,
+  QueryParamsDirection,
   QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
@@ -48,6 +49,14 @@ const getManyByChannelQuerySchema = Joi.object({
   sort: Joi.string().valid(...QUERY_PARAMS_CHANNEL_SORT_VALUES).optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   page: Joi.number().integer().min(1).optional(),
+});
+
+const getManyForQueueByPubDateParamsSchema = Joi.object({
+  idText: Joi.string().required()
+});
+
+const getManyForQueueByPubDateQuerySchema = Joi.object({
+  direction: Joi.string().valid(...QUERY_PARAMS_DIRECTION_VALUES).required()
 });
 
 const getManySubscribedSchema = Joi.object({
@@ -178,6 +187,27 @@ export class ItemController {
             res.json(response);
           };
           await ItemController.handleSubscribed({ account_id: accountId, sort, range, offset, limit, sendResponse });
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManyForQueueByPubDate(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getManyForQueueByPubDateParamsSchema, req, res, async () => {
+      validateQueryObject(getManyForQueueByPubDateQuerySchema, req, res, async () => {
+        try {
+          const { direction } = req.query as QueryParamsDirection;
+
+          const items = await ItemController
+            .itemService
+            .getManyForQueueByPubDate(
+              req.params.idText,
+              direction
+            );
+          
+          res.json(items);
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
