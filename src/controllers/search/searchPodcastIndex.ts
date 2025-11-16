@@ -7,14 +7,17 @@ export const searchPodcastsQuerySchema = Joi.object({
   q: Joi.string().trim().min(1).required()
 }).unknown(false);
 
-interface SearchPodcastsQuery { q?: string }
+interface SearchPodcastsQuery {
+  q: string
+}
 
 export class SearchPodcastIndexController {
   static async searchPodcasts(req: Request, res: Response): Promise<void> {
     validateQueryObject(searchPodcastsQuerySchema, req, res,
       async () => {
         const { q } = req.query as unknown as SearchPodcastsQuery;
-        const results = await podcastIndexService.searchPodcasts(q || "", {});
+        const options = { max: 50 };
+        const results = await podcastIndexService.searchPodcasts(q, options);
 
         if (!results) {
           res.status(500).json({ error: 'Failed to fetch search results from Podcast Index' });
