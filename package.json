@@ -14,7 +14,7 @@
     "build:dev": "tsc",
     "build:prod": "tsc -p tsconfig.prod.json",
     "dev": "tsc && node --inspect ./dist/index.js",
-    "dev:watch": "tsc --watch & nodemon --inspect --watch 'src' --watch $(realpath node_modules/podverse-helpers) --watch $(realpath node_modules/podverse-orm) --watch 'dist' dist/index.js",
+    "dev:watch": "tsc --watch & nodemon --inspect --watch 'src' --watch $(realpath node_modules/podverse-helpers) --watch $(realpath node_modules/podverse-external-services)  --watch $(realpath node_modules/podverse-orm) --watch 'dist' dist/index.js",
     "lint": "eslint 'src/**/*.{ts,js}'",
     "start": "ts-node ./dist/index.js",
     "test:e2e": "jest --config jest.e2e.config.js --runInBand"
