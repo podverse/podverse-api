@@ -22,6 +22,7 @@ import { accountPayPalOrderRouter } from '@api/routes/paypal';
 import { playlistRouter } from '@api/routes/playlist';
 import { podrollRouter } from "@api/routes/podroll";
 import { queueRouter } from '@api/routes/queue';
+import { searchRouter } from '@api/routes/search';
 import { statsRouter } from '@api/routes/stats';
 import { itemTranscriptRouter } from "./routes/itemTranscript";
 import { itemChapterRouter } from "./routes/itemChapter";
@@ -69,6 +70,7 @@ export const startApp = async () => {
     app.use(playlistRouter);
     app.use(podrollRouter);
     app.use(queueRouter);
+    app.use(searchRouter);
     app.use(statsRouter);
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
