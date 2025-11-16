@@ -52,6 +52,11 @@ type Config = {
     clientId: string;
     clientSecret: string;
   };
+  podcastIndex: {
+    authKey: string;
+    baseUrl: string;
+    secretKey: string;
+  };
   resetPassword: {
     tokenExpiration: number;
     pagePath: string;
@@ -120,6 +125,11 @@ export const config: Config = {
   paypal: {
     clientId: process.env.PAYPAL_CLIENT_ID || '',
     clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
+  },
+  podcastIndex: {
+    authKey: process.env.PODCAST_INDEX_AUTH_KEY || '',
+    baseUrl: process.env.PODCAST_INDEX_BASE_URL || '',
+    secretKey: process.env.PODCAST_INDEX_SECRET_KEY || ''
   },
   resetPassword: {
     tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),
