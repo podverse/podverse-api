@@ -5,6 +5,7 @@ import { validateBodyObject } from "@api/lib/validation";
 import { handleGenericErrorResponse } from "../helpers/error";
 import { activeMQArtemisService } from "@api/factories/activeMQArtemisService";
 import { queueRSSAdd } from "podverse-queue";
+import { MQ_QUEUES } from "podverse-helpers";
 
 const addToOnDemandMQSchema = Joi.object({
   url: Joi.string().uri().required(),
@@ -13,7 +14,7 @@ const addToOnDemandMQSchema = Joi.object({
 
 export class MQController {
 
-  static async addToOnDemandMQ(req: Request, res: Response): Promise<void> {
+  static async rssAddToOnDemandMQ(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
         const dto = req.body;
@@ -24,11 +25,13 @@ export class MQController {
         };
 
         try {
-          queueRSSAdd(activeMQArtemisService, {
-            queueName: "rss-on-demand",
+          const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
+          
+          await queueRSSAdd(activeMQArtemisService, {
+            ...mqConstantMessageOptions,
+            dedupeCacheTimeMS: null,
             feedUrl: finalDto.url,
-            podcastIndexId: finalDto.podcast_index_id,
-            priority: 'normal'
+            podcastIndexId: finalDto.podcast_index_id
           });
           res.status(201).json({ message: "Feed added to on-demand queue successfully." });
         } catch (err) {

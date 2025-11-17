@@ -7,6 +7,6 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/mq`, router);
 
-router.post('/add-to-on-demand', asyncHandler(MQController.addToOnDemandMQ));
+router.post('/rss/add/on-demand', asyncHandler(MQController.rssAddToOnDemandMQ));
 
 export const mqRouter = router;
