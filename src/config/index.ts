@@ -57,6 +57,14 @@ type Config = {
     baseUrl: string;
     secretKey: string;
   };
+  rabbitmq: {
+    protocol: string;
+    host: string;
+    username: string;
+    password: string;
+    port: number;
+    vhost: string;
+  };
   resetPassword: {
     tokenExpiration: number;
     pagePath: string;
@@ -130,6 +138,14 @@ export const config: Config = {
     authKey: process.env.PODCAST_INDEX_AUTH_KEY || '',
     baseUrl: process.env.PODCAST_INDEX_BASE_URL || '',
     secretKey: process.env.PODCAST_INDEX_SECRET_KEY || ''
+  },
+  rabbitmq: {
+    protocol: process.env.RABBITMQ_PROTOCOL || 'amqp',
+    host: process.env.RABBITMQ_HOST || 'localhost',
+    username: process.env.RABBITMQ_USERNAME || 'user',
+    password: process.env.RABBITMQ_PASSWORD || 'mysecretpw',
+    port: Number(process.env.RABBITMQ_PORT) || 5672,
+    vhost: process.env.RABBITMQ_VHOST || '/'
   },
   resetPassword: {
     tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),
