@@ -57,13 +57,12 @@ type Config = {
     baseUrl: string;
     secretKey: string;
   };
-  rabbitmq: {
+  activeMQArtemis: {
     protocol: string;
     host: string;
     username: string;
     password: string;
     port: number;
-    vhost: string;
   };
   resetPassword: {
     tokenExpiration: number;
@@ -139,13 +138,12 @@ export const config: Config = {
     baseUrl: process.env.PODCAST_INDEX_BASE_URL || '',
     secretKey: process.env.PODCAST_INDEX_SECRET_KEY || ''
   },
-  rabbitmq: {
-    protocol: process.env.RABBITMQ_PROTOCOL || 'amqp',
-    host: process.env.RABBITMQ_HOST || 'localhost',
-    username: process.env.RABBITMQ_USERNAME || 'user',
-    password: process.env.RABBITMQ_PASSWORD || 'mysecretpw',
-    port: Number(process.env.RABBITMQ_PORT) || 5672,
-    vhost: process.env.RABBITMQ_VHOST || '/'
+  activeMQArtemis: {
+    protocol: process.env.MESSAGE_QUEUE_PROTOCOL || 'amqp',
+    host: process.env.MESSAGE_QUEUE_HOST || 'localhost',
+    username: process.env.MESSAGE_QUEUE_USERNAME || 'user',
+    password: process.env.MESSAGE_QUEUE_PASSWORD || 'mysecretpw',
+    port: Number(process.env.MESSAGE_QUEUE_PORT) || 5672
   },
   resetPassword: {
     tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),
