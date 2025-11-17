@@ -12,6 +12,7 @@ import { authRouter } from '@api/routes/auth';
 import { categoryRouter } from '@api/routes/category';
 import { channelRouter } from '@api/routes/channel';
 import { clipRouter } from '@api/routes/clip';
+import { externalServicesRouter } from '@api/routes/externalServices';
 import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
 import { itemSoundbiteRouter } from "./routes/itemSoundbite";
@@ -22,7 +23,6 @@ import { accountPayPalOrderRouter } from '@api/routes/paypal';
 import { playlistRouter } from '@api/routes/playlist';
 import { podrollRouter } from "@api/routes/podroll";
 import { queueRouter } from '@api/routes/queue';
-import { searchRouter } from '@api/routes/search';
 import { statsRouter } from '@api/routes/stats';
 import { itemTranscriptRouter } from "./routes/itemTranscript";
 import { itemChapterRouter } from "./routes/itemChapter";
@@ -59,6 +59,7 @@ export const startApp = async () => {
     app.use(categoryRouter);
     app.use(channelRouter);
     app.use(clipRouter);
+    app.use(externalServicesRouter);
     app.use(feedRouter);
     app.use(itemRouter);
     app.use(itemChapterRouter);
@@ -70,7 +71,6 @@ export const startApp = async () => {
     app.use(playlistRouter);
     app.use(podrollRouter);
     app.use(queueRouter);
-    app.use(searchRouter);
     app.use(statsRouter);
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
