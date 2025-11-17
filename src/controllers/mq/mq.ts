@@ -27,7 +27,8 @@ export class MQController {
           queueRSSAdd(activeMQArtemisService, {
             queueName: "rss-on-demand",
             feedUrl: finalDto.url,
-            podcastIndexId: finalDto.podcast_index_id
+            podcastIndexId: finalDto.podcast_index_id,
+            priority: 'normal'
           });
           res.status(201).json({ message: "Feed added to on-demand queue successfully." });
         } catch (err) {
