@@ -35,9 +35,12 @@ export function rateLimitAuthEndpoint(options: RateLimitAuthOptions) {
       const timeUntilResetMs = resetTime
         ? resetTime.getTime()
         : Date.now() + windowMs;
+      const minutesRemainingRaw = Math.ceil((timeUntilResetMs - Date.now()) / 60000);
+      const minutesRemaining = minutesRemainingRaw < 1 ? 1 : minutesRemainingRaw;
       res.status(429).json({
         tooManyRequests: true,
-        timeUntilResetMs
+        timeUntilResetMs,
+        minutesRemaining
       });
     },
     message: undefined // ensure default text message not sent
