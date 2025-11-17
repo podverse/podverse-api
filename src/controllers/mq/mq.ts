@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import Joi from "joi";
+import { MQ_QUEUES } from "podverse-helpers";
+import { queueRSSAdd } from "podverse-queue";
 import { ensureAuthenticated } from "@api/lib/auth";
 import { validateBodyObject } from "@api/lib/validation";
 import { handleGenericErrorResponse } from "../helpers/error";
 import { activeMQArtemisService } from "@api/factories/activeMQArtemisService";
-import { queueRSSAdd } from "podverse-queue";
-import { MQ_QUEUES } from "podverse-helpers";
+import { rateLimitAuthEndpoint } from "@api/lib/rateLimiter";
 
 const addToOnDemandMQSchema = Joi.object({
   url: Joi.string().uri().required(),
@@ -13,31 +14,33 @@ const addToOnDemandMQSchema = Joi.object({
 });
 
 export class MQController {
+  static rssOnDemandMiddleware = rateLimitAuthEndpoint({
+    windowMs: 60 * 60 * 1000,
+    max: 10
+  });
 
   static async rssAddToOnDemandMQ(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
-        const dto = req.body;
-
-        const finalDto = {
-          url: dto.url,
-          podcast_index_id: dto.podcast_index_id
-        };
-
-        try {
-          const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
-          
-          await queueRSSAdd(activeMQArtemisService, {
-            ...mqConstantMessageOptions,
-            feedUrl: finalDto.url,
-            podcastIndexId: finalDto.podcast_index_id
-          });
-          res.status(201).json({ message: "Feed added to on-demand queue successfully." });
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
+      MQController.rssOnDemandMiddleware(req, res, () => {
+        validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
+          const dto = req.body;
+          const finalDto = {
+            url: dto.url,
+            podcast_index_id: dto.podcast_index_id
+          };
+          try {
+            const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
+            await queueRSSAdd(activeMQArtemisService, {
+              ...mqConstantMessageOptions,
+              feedUrl: finalDto.url,
+              podcastIndexId: finalDto.podcast_index_id
+            });
+            res.status(201).json({ message: "Feed added to on-demand queue successfully." });
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
+          }
+        });
       });
     });
   }
-  
 }
