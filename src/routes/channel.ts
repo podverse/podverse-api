@@ -7,7 +7,10 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/channel`, router);
 
+router.get('/podcast-index/:podcast_index_id', asyncHandler(ChannelController.getbyPodcastIndexId));
+
 router.get('/:idOrIdText', asyncHandler(ChannelController.getByIdOrIdText));
+
 router.get('/', asyncHandler((req, res) => {
   if (req.query.type === 'subscribed') {
     return ChannelController.getManySubscribed(req, res);

@@ -48,6 +48,10 @@ type SortedSubscribedChannelsParams = {
 type ChannelWhere = FindOptionsWhere<Channel>;
 type AccountFollowingChannelOrder = FindOptionsOrder<AccountFollowingChannel>;
 
+const getByPodcastIndexIdSchema = Joi.object({
+  podcast_index_id: Joi.string().required()
+});
+
 const getByIdOrIdTextSchema = Joi.object({
   idOrIdText: Joi.string().required()
 });
@@ -76,6 +80,22 @@ export class ChannelController {
       try {
         const data: Channel | null = await ChannelController.channelService.getByIdOrIdText(req.params.idOrIdText, channelGetOneRelations);
         handleReturnDataOrNotFound(res, data, 'Channel');
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    });
+  }
+
+  // Always returning 200 to avoid Next.js SSR issues with error logging.
+  static async getbyPodcastIndexId(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByPodcastIndexIdSchema, req, res, async () => {
+      try {
+        const podcastIndexId = parseInt(req.params.podcast_index_id, 10);
+        if (isNaN(podcastIndexId)) {
+          return res.status(400).json({ error: "Invalid podcast_index_id" });
+        }
+        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(podcastIndexId, channelGetOneRelations);
+        res.json(data || null);
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
