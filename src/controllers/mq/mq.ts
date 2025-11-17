@@ -29,7 +29,6 @@ export class MQController {
           
           await queueRSSAdd(activeMQArtemisService, {
             ...mqConstantMessageOptions,
-            dedupeCacheTimeMS: null,
             feedUrl: finalDto.url,
             podcastIndexId: finalDto.podcast_index_id
           });
