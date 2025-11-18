@@ -30,6 +30,9 @@ jobs:
       - name: Install podverse-parser latest alpha version
         run: npm i podverse-parser@alpha --save
 
+      - name: Install podverse-queue latest alpha version
+        run: npm i podverse-queue@alpha --save
+
       - name: Clean install dependencies
         run: npm clean-install
 
