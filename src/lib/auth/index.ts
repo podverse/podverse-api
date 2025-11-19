@@ -26,11 +26,6 @@ passport.use(new LocalStrategy(
         return done(null, false, { message: 'Incorrect email.' });
       }
 
-      const isVerified = account.verified;
-      if (!isVerified) {
-        return done(null, false, { message: ERROR_MESSAGES.ACCOUNT.NOT_VERIFIED });
-      }
-
       const accountCredentials = account.account_credentials;
       if (!accountCredentials) {
         return done(null, false, { message: 'Credentials missing.' });
@@ -39,6 +34,11 @@ passport.use(new LocalStrategy(
       const isMatch = await verifyPassword(password, accountCredentials.password);
       if (!isMatch) {
         return done(null, false, { message: 'Incorrect password.' });
+      }
+
+      const isVerified = account.verified;
+      if (!isVerified) {
+        return done(null, false, { message: ERROR_MESSAGES.ACCOUNT.NOT_VERIFIED });
       }
       
       return done(null, account);
