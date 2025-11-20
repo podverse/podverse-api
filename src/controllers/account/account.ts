@@ -208,21 +208,35 @@ export class AccountController {
   }
 
   private static async sendVerificationEmailHelper(email: string): Promise<void> {
+    console.log('[AccountController.sendVerificationEmailHelper] start', { email });
     const account = await AccountController.accountService.getByEmail(email);
+    console.log('[AccountController.sendVerificationEmailHelper] account lookup', {
+      found: !!account,
+      email
+    });
 
     if (!account) {
+      console.warn('[AccountController.sendVerificationEmailHelper] account not found', { email });
       throw new Error('Account not found.');
     }
 
     const verificationToken = uuidv4();
     const verificationTokenExpiresAt = new Date(Date.now() + config.verifyEmail.tokenExpiration);
+    console.log('[AccountController.sendVerificationEmailHelper] token generated', {
+      tokenPreview: verificationToken.slice(0, 8),
+      expiresAt: verificationTokenExpiresAt.toISOString()
+    });
 
+    console.log('[AccountController.sendVerificationEmailHelper] updating verification record');
     await AccountController.accountVerificationService.update(account, {
       verification_token: verificationToken,
       verification_token_expires_at: verificationTokenExpiresAt
     });
+    console.log('[AccountController.sendVerificationEmailHelper] verification record updated');
 
+    console.log('[AccountController.sendVerificationEmailHelper] sending email');
     await sendVerificationEmail(email, account.id_text, verificationToken);
+    console.log('[AccountController.sendVerificationEmailHelper] end');
   }
 
   static async verifyEmail(req: Request, res: Response): Promise<void> {
