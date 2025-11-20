@@ -31,6 +31,14 @@ import { mqRouter } from "./routes/mq";
 export const app = express();
 const port = 1234;
 
+// TODO: is this safe? Needed? The express-rate-limiter wanted it for the error message below:
+// ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default).
+// This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users.
+// See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+if (config.nodeEnv === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(cors({
   origin: config.api.allowedCORSOrigins,
   credentials: true
