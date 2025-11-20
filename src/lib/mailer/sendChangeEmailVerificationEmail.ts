@@ -36,7 +36,7 @@ export const sendEmailChangeVerificationEmail = async (pending_email_address: st
     buttonText: 'Verify Email Change',
     closing: '',
     headerText: 'Verify your change of email',
-    paragraphText: `Are you SURE you want to change your email address to ${pending_email_address}? Please click the button below to complete your email change.`,
+    paragraphText: `Are you sure you want to change your email address to ${pending_email_address}? Please click the button below to complete your email change.`,
     unsubscribeLink: ''
   };
 

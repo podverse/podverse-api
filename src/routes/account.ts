@@ -21,7 +21,7 @@ router.post('/', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 2 }), asyncH
 router.put('/', asyncHandler(AccountController.update));
 router.post('/send-verification-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendVerificationEmail));
 router.post('/verify-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 10 }), asyncHandler(AccountController.verifyEmail));
-router.post('/send-email-change-verification-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendEmailChangeVerificationEmail));
+router.post('/send-change-email-address-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendEmailChangeVerificationEmail));
 router.post('/verify-email-change', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 10 }), asyncHandler(AccountController.verifyEmailChange));
 router.post('/send-reset-password-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendResetPasswordEmail));
 router.post('/reset-password', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.resetPassword));
