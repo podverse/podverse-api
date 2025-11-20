@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import { MQ_QUEUES } from "podverse-helpers";
-import { queueRSSAdd } from "podverse-queue";
+import { mqRSSAdd } from "podverse-mq";
 import { ensureAuthenticated } from "@api/lib/auth";
 import { validateBodyObject } from "@api/lib/validation";
 import { handleGenericErrorResponse } from "../helpers/error";
@@ -30,7 +30,7 @@ export class MQController {
           };
           try {
             const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
-            await queueRSSAdd(activeMQArtemisService, {
+            await mqRSSAdd(activeMQArtemisService, {
               ...mqConstantMessageOptions,
               feedUrl: finalDto.url,
               podcastIndexId: finalDto.podcast_index_id

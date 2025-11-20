@@ -1,4 +1,4 @@
-import { ActiveMQArtemisService, ActiveMQArtemisServiceParams } from 'podverse-queue';
+import { ActiveMQArtemisService, ActiveMQArtemisServiceParams } from 'podverse-mq';
 import { loggerService } from './loggerService';
 import { config } from '@api/config';
 
