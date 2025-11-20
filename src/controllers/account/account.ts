@@ -246,16 +246,25 @@ export class AccountController {
   }
 
   static async sendEmailChangeVerificationEmail(req: Request, res: Response): Promise<void> {
+    console.log('[AccountController.sendEmailChangeVerificationEmail] entry');
     ensureAuthenticated(req, res, async () => {
+      console.log('[AccountController.sendEmailChangeVerificationEmail] authenticated, validating body');
       validateBodyObject(sendEmailChangeVerificationSchema, req, res, async () => {
+        console.log('[AccountController.sendEmailChangeVerificationEmail] body validated', { body: req.body });
         try {
           const account_id = req.user!.id;
           const { new_email } = req.body;
+          console.log('[AccountController.sendEmailChangeVerificationEmail] calling helper', {
+            account_id,
+            new_email
+          });
           await AccountController.sendEmailChangeVerificationEmailHelper(account_id, new_email);
+          console.log('[AccountController.sendEmailChangeVerificationEmail] helper success');
           res.json({
             message: 'Email change verification email sent'
           });
         } catch (error) {
+          console.error('[AccountController.sendEmailChangeVerificationEmail] error', error);
           handleGenericErrorResponse(res, error);
         }
       });
@@ -263,22 +272,35 @@ export class AccountController {
   }
 
   private static async sendEmailChangeVerificationEmailHelper(account_id: number, pending_email_address: string): Promise<void> {
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] start', {
+      account_id,
+      pending_email_address
+    });
     const account = await AccountController.accountService.get(account_id, { relations: ['account_credentials'] });
-  
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] account fetched', {
+      found: !!account
+    });
     if (!account) {
+      console.warn('[AccountController.sendEmailChangeVerificationEmailHelper] account not found', { account_id });
       throw new Error('Account not found.');
     }
   
     const verificationToken = uuidv4();
     const verificationTokenExpiresAt = new Date(Date.now() + config.emailChangeVerification.tokenExpiration);
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] token generated', {
+      tokenPreview: verificationToken.slice(0, 8),
+      expiresAt: verificationTokenExpiresAt.toISOString()
+    });
   
     await AccountController.accountEmailChangeVerificationService.create(account, {
       verification_token: verificationToken,
       verification_token_expires_at: verificationTokenExpiresAt,
       pending_email_address
     });
-
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] verification record created');
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] sending email');
     await sendEmailChangeVerificationEmail(pending_email_address, verificationToken);
+    console.log('[AccountController.sendEmailChangeVerificationEmailHelper] end');
   }
 
   static async verifyEmailChange(req: Request, res: Response): Promise<void> {
