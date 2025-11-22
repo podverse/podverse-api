@@ -5,7 +5,8 @@ import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT
   QueryParamsChannelsSort} from 'podverse-helpers';
 import { channelGetOneRelations, Channel, ChannelService, FindManyOptions, FindOptionsOrder, FindOptionsWhere,
   AccountFollowingChannelService, StatsAggregatedChannelService, AccountFollowingChannel,
-  StatsAggregatedChannel, subChannelGetManyRelations} from 'podverse-orm';
+  StatsAggregatedChannel, subChannelGetManyRelations,
+  channelGetManyRelations} from 'podverse-orm';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
@@ -59,7 +60,7 @@ const getByIdOrIdTextSchema = Joi.object({
 const getManySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   type: Joi.string().valid("global", "category").optional(),
-  sort: Joi.string().valid("top").optional(),
+  sort: Joi.string().valid("recent", "top").optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional()
 });
@@ -106,7 +107,7 @@ export class ChannelController {
     validateQueryObject(getManySchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { category, range } = req.query as { category?: CategoryMappingKeys; range?: QueryParamsStatsRange };
+        const { category, sort, range } = req.query as { category?: CategoryMappingKeys; sort?: QueryParamsChannelsSort; range?: QueryParamsStatsRange };
         const sendResponse = (data: PaginatedData<Channel>) => {
           const response: ApiListResponse<Channel> = {
             data: data.results,
@@ -114,7 +115,11 @@ export class ChannelController {
           };
           res.json(response);
         };
-        await ChannelController.handleTopSort({ range, category, offset, limit, sendResponse });
+        if (sort === "recent") {
+          await ChannelController.handleGlobalSortRecent({ category, offset, limit, sendResponse });
+        } else {
+          await ChannelController.handleGlobalTopSort({ range, category, offset, limit, sendResponse });
+        }
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -148,7 +153,21 @@ export class ChannelController {
 
   // --- Helper Handlers ---
 
-  private static async handleTopSort({ range, category, offset, limit, sendResponse }: TopSortParams) {
+  private static async handleGlobalSortRecent({ category, offset, limit, sendResponse }: Omit<TopSortParams, 'range'>) {
+    const where = ChannelController.buildChannelWhere(category);
+    const config: FindManyOptions<Channel> = {
+      order: { channel_about: { last_pub_date: 'DESC' } },
+      skip: offset,
+      take: limit,
+      relations: channelGetManyRelations,
+      ...(where && { where }),
+    };
+    
+    const channels = await ChannelController.channelService.getMany(config);
+    sendResponse({ results: channels, count: null });
+  }
+
+  private static async handleGlobalTopSort({ range, category, offset, limit, sendResponse }: TopSortParams) {
     const order = getStatsOrder(range);
     const where = ChannelController.buildChannelWhere(category);
     const config: FindManyOptions<StatsAggregatedChannel> = {
