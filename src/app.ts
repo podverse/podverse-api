@@ -13,7 +13,6 @@ import { categoryRouter } from '@api/routes/category';
 import { channelRouter } from '@api/routes/channel';
 import { clipRouter } from '@api/routes/clip';
 import { externalServicesRouter } from '@api/routes/externalServices';
-import { feedRouter } from '@api/routes/feed';
 import { itemRouter } from '@api/routes/item';
 import { itemSoundbiteRouter } from "./routes/itemSoundbite";
 import { liveItemRouter } from "./routes/liveItem";
@@ -69,7 +68,6 @@ export const startApp = async () => {
     app.use(channelRouter);
     app.use(clipRouter);
     app.use(externalServicesRouter);
-    app.use(feedRouter);
     app.use(itemRouter);
     app.use(itemChapterRouter);
     app.use(itemSoundbiteRouter);
