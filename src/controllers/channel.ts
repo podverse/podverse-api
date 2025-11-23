@@ -91,11 +91,11 @@ export class ChannelController {
   static async getbyPodcastIndexId(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByPodcastIndexIdSchema, req, res, async () => {
       try {
-        const podcastIndexId = parseInt(req.params.podcast_index_id, 10);
-        if (isNaN(podcastIndexId)) {
+        const podcast_index_id = parseInt(req.params.podcast_index_id, 10);
+        if (isNaN(podcast_index_id)) {
           return res.status(400).json({ error: "Invalid podcast_index_id" });
         }
-        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(podcastIndexId, channelGetOneRelations);
+        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(podcast_index_id, channelGetOneRelations);
         res.json(data || null);
       } catch (error) {
         handleGenericErrorResponse(res, error);

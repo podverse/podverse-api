@@ -4,7 +4,7 @@ import { podcastIndexService } from '@api/factories/podcastIndexService';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 
 const podcastIndexFeedParamsSchema = Joi.object({
-  podcastIndexId: Joi.number().integer().required()
+  podcast_index_id: Joi.number().integer().required()
 }).unknown(false);
 
 const podcastIndexSearchPodcastsQuerySchema = Joi.object({
@@ -20,8 +20,8 @@ export class PodcastIndexController {
   static async podcastById(req: Request, res: Response): Promise<void> {
     validateParamsObject(podcastIndexFeedParamsSchema, req, res,
       async () => {
-        const { podcastIndexId } = req.params as unknown as { podcastIndexId: number };
-        const result = await podcastIndexService.podcastGetById(podcastIndexId);
+        const { podcast_index_id } = req.params as unknown as { podcast_index_id: number };
+        const result = await podcastIndexService.podcastGetById(podcast_index_id);
 
         if (!result) {
           res.status(500).json({ error: 'Failed to fetch podcast from Podcast Index' });

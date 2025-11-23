@@ -33,7 +33,7 @@ export class MQController {
             await mqRSSAdd(activeMQArtemisService, {
               ...mqConstantMessageOptions,
               feedUrl: finalDto.url,
-              podcastIndexId: finalDto.podcast_index_id
+              podcast_index_id: finalDto.podcast_index_id
             });
             res.status(201).json({ message: "Feed added to on-demand queue successfully." });
           } catch (err) {

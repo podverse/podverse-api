@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/external-services`, router);
 
-router.get('/podcast-index/feed/:podcastIndexId', asyncHandler(PodcastIndexController.podcastById));
+router.get('/podcast-index/feed/:podcast_index_id', asyncHandler(PodcastIndexController.podcastById));
 
 router.get('/podcast-index/search/podcasts', asyncHandler(PodcastIndexController.searchPodcasts));
 
