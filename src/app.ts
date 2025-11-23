@@ -26,6 +26,7 @@ import { statsRouter } from '@api/routes/stats';
 import { itemTranscriptRouter } from "./routes/itemTranscript";
 import { itemChapterRouter } from "./routes/itemChapter";
 import { mqRouter } from "./routes/mq";
+import { feedRouter } from "./routes/feed";
 
 export const app = express();
 const port = 1234;
@@ -68,6 +69,7 @@ export const startApp = async () => {
     app.use(channelRouter);
     app.use(clipRouter);
     app.use(externalServicesRouter);
+    app.use(feedRouter);
     app.use(itemRouter);
     app.use(itemChapterRouter);
     app.use(itemSoundbiteRouter);
