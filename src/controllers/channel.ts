@@ -2,52 +2,19 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT_VALUES,
   QUERY_PARAMS_STATS_RANGE_VALUES, ApiListResponse, CategoryMappingKeys, QueryParamsStatsRange,
-  QueryParamsChannelsSort} from 'podverse-helpers';
-import { channelGetOneRelations, Channel, ChannelService, FindManyOptions, FindOptionsOrder, FindOptionsWhere,
+  QueryParamsChannelsSort, QueryParamsMedium,
+  getMediumFromQueryParam,
+  QUERY_PARAMS_MEDIUMS} from 'podverse-helpers';
+import { channelGetOneRelations, channelGetManyRelations, Channel, ChannelService, FindManyOptions,
   AccountFollowingChannelService, StatsAggregatedChannelService, AccountFollowingChannel,
-  StatsAggregatedChannel, subChannelGetManyRelations,
-  channelGetManyRelations} from 'podverse-orm';
+  StatsAggregatedChannel, subChannelGetManyRelations} from 'podverse-orm';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
-import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
+import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getStatsOrder } from '@api/lib/stats';
 import { getFollowedChannelIds } from '@api/lib/followed';
-
-interface SubscribedParams {
-  account_id: number;
-  sort?: QueryParamsChannelsSort;
-  range?: QueryParamsStatsRange;
-  offset: number;
-  limit: number;
-  sendResponse: (data: PaginatedData<Channel>) => void;
-}
-
-interface TopSortParams {
-  range?: QueryParamsStatsRange;
-  category?: CategoryMappingKeys;
-  offset: number;
-  limit: number;
-  sendResponse: (data: PaginatedData<Channel>) => void;
-}
-
-type TopSubscribedChannelsParams = {
-  channel_ids: number[];
-  range?: QueryParamsStatsRange;
-  offset?: number;
-  limit?: number;
-};
-
-type SortedSubscribedChannelsParams = {
-  account_id: number;
-  sort?: QueryParamsChannelsSort;
-  offset?: number;
-  limit?: number;
-};
-
-type ChannelWhere = FindOptionsWhere<Channel>;
-type AccountFollowingChannelOrder = FindOptionsOrder<AccountFollowingChannel>;
 
 const getByPodcastIndexIdSchema = Joi.object({
   podcast_index_id: Joi.string().required()
@@ -60,16 +27,18 @@ const getByIdOrIdTextSchema = Joi.object({
 const getManySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   type: Joi.string().valid("global", "category").optional(),
-  sort: Joi.string().valid("recent", "top").optional(),
+  sort: Joi.string().valid("top", "recent").optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
-  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional()
+  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 const getManySubscribedSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   type: Joi.string().valid("subscribed").optional(),
   sort: Joi.string().valid(...QUERY_PARAMS_CHANNELS_SORT_VALUES).optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 export class ChannelController {
@@ -87,15 +56,14 @@ export class ChannelController {
     });
   }
 
-  // Always returning 200 to avoid Next.js SSR issues with error logging.
   static async getbyPodcastIndexId(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByPodcastIndexIdSchema, req, res, async () => {
       try {
-        const podcast_index_id = parseInt(req.params.podcast_index_id, 10);
-        if (isNaN(podcast_index_id)) {
+        const podcastIndexId = parseInt(req.params.podcast_index_id, 10);
+        if (isNaN(podcastIndexId)) {
           return res.status(400).json({ error: "Invalid podcast_index_id" });
         }
-        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(podcast_index_id, channelGetOneRelations);
+        const data: Channel | null = await ChannelController.channelService.getByPodcastIndexId(podcastIndexId, channelGetOneRelations);
         res.json(data || null);
       } catch (error) {
         handleGenericErrorResponse(res, error);
@@ -107,19 +75,50 @@ export class ChannelController {
     validateQueryObject(getManySchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { category, sort, range } = req.query as { category?: CategoryMappingKeys; sort?: QueryParamsChannelsSort; range?: QueryParamsStatsRange };
-        const sendResponse = (data: PaginatedData<Channel>) => {
-          const response: ApiListResponse<Channel> = {
-            data: data.results,
-            meta: { page, count: data.count, limit }
-          };
-          res.json(response);
+        const { category, range, medium, sort } = req.query as {
+          category?: CategoryMappingKeys;
+          range?: QueryParamsStatsRange;
+          medium?: QueryParamsMedium;
+          sort?: 'top' | 'recent'
         };
-        if (sort === "recent") {
-          await ChannelController.handleGlobalSortRecent({ category, offset, limit, sendResponse });
+        const selectedMedium: QueryParamsMedium = medium || 'all';
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = category ? getCategoryEnumValue(category) : null;
+
+        let channels: Channel[] = [];
+
+        if (sort === 'recent') {
+          const channelWhere = category_id !== null ? { channel_categories: { category_id } } : undefined;
+          const recentConfig: FindManyOptions<Channel> = {
+            order: { channel_about: { last_pub_date: 'DESC' } },
+            skip: offset,
+            take: limit,
+            relations: channelGetManyRelations
+          };
+          const recentResults = await ChannelController.channelService.getMany(recentConfig, medium_id, channelWhere);
+          channels = recentResults.filter(Boolean);
         } else {
-          await ChannelController.handleGlobalTopSort({ range, category, offset, limit, sendResponse });
+          const orderField = getStatsOrder(range);
+          let statsWhere: { channel: { channel_categories: { category_id: number } } } | undefined;
+          if (category_id !== null) {
+            statsWhere = { channel: { channel_categories: { category_id } } };
+          }
+          const topConfig: FindManyOptions<StatsAggregatedChannel> = {
+            order: { [orderField]: 'DESC' },
+            skip: offset,
+            take: limit,
+            relations: subChannelGetManyRelations,
+            ...(statsWhere && { where: statsWhere }),
+          };
+          const statsResults = await ChannelController.statsAggregatedChannelService.getMany(topConfig, medium_id);
+          channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
         }
+
+        const response: ApiListResponse<Channel> = {
+          data: channels,
+          meta: { page, count: null, limit }
+        };
+        res.json(response);
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
@@ -131,119 +130,70 @@ export class ChannelController {
       ensureAuthenticated(req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range } = req.query as {
+          const { sort, range, medium } = req.query as {
             sort?: QueryParamsChannelsSort;
             range?: QueryParamsStatsRange;
+            medium?: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const sendResponse = (data: PaginatedData<Channel>) => {
-            const response: ApiListResponse<Channel> = {
-              data: data.results,
-              meta: { page, count: data.count, limit }
-            };
-            res.json(response);
+          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const medium_id = getMediumFromQueryParam(selectedMedium);
+
+          const channelIds = await getFollowedChannelIds(account_id);
+          let channels: Channel[] = [];
+          let count = channelIds.length;
+          
+          if (channelIds.length) {
+            if (sort === 'top') {
+              const orderField = getStatsOrder(range);
+              const config: FindManyOptions<StatsAggregatedChannel> = {
+                order: { [orderField]: 'DESC' },
+                skip: offset,
+                take: limit,
+                relations: subChannelGetManyRelations
+              };
+              const statsResults = await ChannelController.statsAggregatedChannelService.getManyByChannels(channelIds, medium_id, config);
+              channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
+            } else {
+              const accountFollowingChannelService = new AccountFollowingChannelService();
+              let order: FindManyOptions<AccountFollowingChannel>['order'];
+              switch (sort) {
+              case 'recent':
+                order = { channel: { channel_about: { last_pub_date: 'DESC' } } };
+                break;
+              case 'oldest':
+                order = { channel: { channel_about: { last_pub_date: 'ASC' } } };
+                break;
+              case 'a_z':
+                order = { channel: { sortable_title: 'ASC' } };
+                break;
+              default:
+                order = undefined;
+              }
+
+              const config: FindManyOptions<AccountFollowingChannel> = {
+                skip: offset,
+                take: limit,
+                relations: subChannelGetManyRelations,
+                ...(order && { order }),
+              };
+
+              const { results: followedResults, count: followedCount } = await accountFollowingChannelService
+                .getFollowedChannelsWithCount(Number(account_id), medium_id, config);
+              count = followedCount ?? channelIds.length;
+              channels = followedResults.map((f: { channel: Channel }) => f.channel).filter(Boolean);
+            }
+          }
+          
+          const response: ApiListResponse<Channel> = {
+            data: channels,
+            meta: { page, count, limit }
           };
-          await ChannelController.handleSubscribed({ account_id, sort, range, offset, limit, sendResponse });
+          res.json(response);
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
       });
     });
-  }
-
-  // --- Helper Handlers ---
-
-  private static async handleGlobalSortRecent({ category, offset, limit, sendResponse }: Omit<TopSortParams, 'range'>) {
-    const where = ChannelController.buildChannelWhere(category);
-    const config: FindManyOptions<Channel> = {
-      order: { channel_about: { last_pub_date: 'DESC' } },
-      skip: offset,
-      take: limit,
-      relations: channelGetManyRelations,
-      ...(where && { where }),
-    };
-    
-    const channels = await ChannelController.channelService.getMany(config);
-    sendResponse({ results: channels, count: null });
-  }
-
-  private static async handleGlobalTopSort({ range, category, offset, limit, sendResponse }: TopSortParams) {
-    const order = getStatsOrder(range);
-    const where = ChannelController.buildChannelWhere(category);
-    const config: FindManyOptions<StatsAggregatedChannel> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit,
-      relations: subChannelGetManyRelations,
-      ...(where && { where }),
-    };
-    
-    const statsResults = await ChannelController.statsAggregatedChannelService.getMany(config);
-        
-    const channels = statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
-    sendResponse({ results: channels, count: null });
-  }
-
-  private static async handleSubscribed({ account_id, sort, range, offset, limit, sendResponse }: SubscribedParams) {
-    const channel_ids = await getFollowedChannelIds(account_id);
-    let channels: Channel[] = [];
-    let count = channel_ids.length;
-    
-    if (channel_ids.length) {
-      if (sort === 'top') {
-        channels = await ChannelController._getTopSubscribedChannels({ channel_ids, range, offset, limit });
-      } else {
-        const { results: accountFollowingChannels, count: accountFollowingChannelsCount } = await ChannelController._getSortedSubscribedChannels({ account_id, sort, offset, limit });
-        count = accountFollowingChannelsCount ?? channel_ids.length;
-        channels = accountFollowingChannels.map((account_following_channel: { channel: Channel }) => account_following_channel.channel).filter(Boolean);
-      }
-    }
-    
-    sendResponse({ results: channels, count });
-  }
-
-  private static async _getTopSubscribedChannels({ channel_ids, range, offset, limit }: TopSubscribedChannelsParams): Promise<Channel[]> {
-    const order = getStatsOrder(range);
-    const config: FindManyOptions<StatsAggregatedChannel> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit,
-      relations: subChannelGetManyRelations
-    };
-    const statsResults = await ChannelController.statsAggregatedChannelService.getManyByChannels(channel_ids, config);
-    return statsResults.map((stat: { channel: Channel }) => stat.channel).filter(Boolean);
-  }
-
-  private static async _getSortedSubscribedChannels({ account_id, sort, offset, limit }: SortedSubscribedChannelsParams): Promise<{ count: number, results: AccountFollowingChannel[] }> {
-    const accountFollowingChannelService = new AccountFollowingChannelService();
-    const order = ChannelController.getSubscribedOrder(sort);
-    const config: FindManyOptions<AccountFollowingChannel> = {
-      skip: offset,
-      take: limit,
-      relations: subChannelGetManyRelations,
-      ...(order && { order }),
-    };
-    return await accountFollowingChannelService.getFollowedChannelsWithCount(Number(account_id), config);
-  }
-
-  private static getSubscribedOrder(sort?: QueryParamsChannelsSort): AccountFollowingChannelOrder | undefined {
-    switch (sort) {
-    case 'recent':
-      return { channel: { channel_about: { last_pub_date: 'DESC' } } };
-    case 'oldest':
-      return { channel: { channel_about: { last_pub_date: 'ASC' } } };
-    case 'a_z':
-      return { channel: { sortable_title: 'ASC' } };
-    default:
-      return undefined;
-    }
-  }
-
-  private static buildChannelWhere(category?: CategoryMappingKeys): ChannelWhere | undefined {
-    if (typeof category === 'string') {
-      const category_id = getCategoryEnumValue(category);
-      return { channel: { channel_categories: { category_id } } } as ChannelWhere;
-    }
-    return undefined;
   }
 }
