@@ -154,8 +154,10 @@ const verifyTokenAndMembership = async (
 };
 
 export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
+  console.log("Ensuring authentication for request:", req.path);
   const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
-
+  console.log("Extracted req.cookies.jwt", req.cookies);
+  console.log("Extracted req.headers.authorization", req.headers);
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
