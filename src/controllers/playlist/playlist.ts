@@ -20,7 +20,7 @@ type TopPrivatePlaylistsParams = TopPublicPlaylistsParams & { account_id: number
 
 interface FollowedParams {
   account_id: number;
-  medium_id?: MediumEnum;
+  medium_id: MediumEnum | null;
   sort?: QueryParamsPlaylistsSort;
   range?: QueryParamsStatsRange;
   offset: number;
@@ -248,7 +248,7 @@ class PlaylistController {
     ensureAuthenticated(req, res, async () => {
       validateQueryObject(getManyPrivateSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
-        const { sort, range, medium_id } = req.query as {
+        const { sort, range, medium_id = null } = req.query as {
           sort?: QueryParamsPlaylistsSort;
           range?: QueryParamsStatsRange;
           medium_id?: MediumEnum;

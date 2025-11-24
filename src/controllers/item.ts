@@ -9,21 +9,13 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams, PaginatedData } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, getCategoryEnumValue,
-  QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_DIRECTION_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES,
+  getMediumFromQueryParam,
+  QUERY_PARAMS_CHANNEL_SORT_VALUES, QUERY_PARAMS_DIRECTION_VALUES, QUERY_PARAMS_ITEMS_SORT_VALUES, QUERY_PARAMS_MEDIUMS, QUERY_PARAMS_STATS_RANGE_VALUES,
   QueryParamsDirection,
-  QueryParamsItemsSort, QueryParamsStatsRange } from 'podverse-helpers';
+  QueryParamsItemsSort, QueryParamsMedium, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getFollowedChannelIds } from '@api/lib/followed';
-
-interface SubscribedParams {
-  account_id: number;
-  sort?: QueryParamsItemsSort;
-  range?: QueryParamsStatsRange;
-  offset: number;
-  limit: number;
-  sendResponse: (data: PaginatedData<Item>) => void;
-}
 
 type ItemWhere = FindOptionsWhere<Item>;
 type ItemOrder = FindOptionsOrder<Item>;
@@ -49,6 +41,7 @@ const getManyByChannelQuerySchema = Joi.object({
   sort: Joi.string().valid(...QUERY_PARAMS_CHANNEL_SORT_VALUES).optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   page: Joi.number().integer().min(1).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 const getManyForQueueByPubDateParamsSchema = Joi.object({
@@ -63,7 +56,8 @@ const getManySubscribedSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   type: Joi.string().valid("subscribed").optional(),
   sort: Joi.string().valid(...QUERY_PARAMS_ITEMS_SORT_VALUES).optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 const parseAndGetChaptersSchema = Joi.object({
@@ -92,7 +86,13 @@ export class ItemController {
     validateQueryObject(getManySchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { category, range } = req.query as { category?: CategoryMappingKeys; range?: QueryParamsStatsRange };
+        const { category, range, medium } = req.query as {
+          category?: CategoryMappingKeys;
+          range?: QueryParamsStatsRange;
+          medium?: QueryParamsMedium;
+        };
+        const selectedMedium: QueryParamsMedium = medium || 'all';
+        const medium_id = getMediumFromQueryParam(selectedMedium);
         const sendResponse = (data: PaginatedData<Item>) => {
           const response: ApiListResponse<Item> = {
             data: data.results,
@@ -111,7 +111,7 @@ export class ItemController {
           ...(where ? { where } : {})
         };
 
-        const statsResults = await ItemController.statsAggregatedItemService.getMany(config);
+        const statsResults = await ItemController.statsAggregatedItemService.getMany(config, medium_id);
 
         const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
         sendResponse({ results: items, count: null });
@@ -128,10 +128,13 @@ export class ItemController {
         try {
           const { page, limit, offset } = getPaginationParams(req);
           const { channelIdOrIdText } = req.params;
-          const { sort, range } = req.query as {
+          const { sort, range, medium } = req.query as {
             sort?: QueryParamsItemsSort;
             range?: QueryParamsStatsRange;
+            medium?: QueryParamsMedium;
           };
+          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const medium_id = getMediumFromQueryParam(selectedMedium);
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -148,7 +151,7 @@ export class ItemController {
               relations: subItemGetManyRelations,
               where: { item: { channel: { id: channel.id} } }
             };
-            const statsResults = await ItemController.statsAggregatedItemService.getMany(config);
+            const statsResults = await ItemController.statsAggregatedItemService.getMany(config, medium_id);
             items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
           } else {
             const order = ItemController.getOrder(sort);
@@ -174,11 +177,14 @@ export class ItemController {
       ensureAuthenticated(req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range } = req.query as {
+          const { sort, range, medium } = req.query as {
             sort?: QueryParamsItemsSort;
-            range?: QueryParamsStatsRange
+            range?: QueryParamsStatsRange;
+            medium?: QueryParamsMedium;
           };
-          const accountId = req.user!.id;
+          const account_id = req.user!.id;
+          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const medium_id = getMediumFromQueryParam(selectedMedium);
           const sendResponse = (data: PaginatedData<Item>) => {
             const response: ApiListResponse<Item> = {
               data: data.results,
@@ -186,7 +192,32 @@ export class ItemController {
             };
             res.json(response);
           };
-          await ItemController.handleSubscribed({ account_id: accountId, sort, range, offset, limit, sendResponse });
+
+          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          if (!channel_ids.length) return sendResponse({ results: [], count: 0 });
+          if (sort === 'top') {
+            const order = getStatsOrder(range);
+            const config: FindManyOptions<StatsAggregatedItem> = {
+              order: { [order]: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: subItemGetManyRelations
+            };
+            const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(channel_ids, medium_id, config);
+            const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
+            return sendResponse({ results: items, count: null });
+          } else {
+            const order = ItemController.getOrder(sort);
+            const config: FindManyOptions<Item> = {
+              skip: offset,
+              take: limit,
+              relations: subItemGetManyRelations,
+              ...(order && { order }),
+            };
+            const items = await ItemController.itemService.getManyByChannels(channel_ids, config);
+            return sendResponse({ results: items, count: null });
+          }
+
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
@@ -291,33 +322,6 @@ export class ItemController {
         handleGenericErrorResponse(res, error);
       }
     });
-  }
-
-  private static async handleSubscribed({ account_id, sort, range, offset, limit, sendResponse }: SubscribedParams) {
-    const channel_ids = await getFollowedChannelIds(account_id);
-    if (!channel_ids.length) return sendResponse({ results: [], count: 0 });
-    if (sort === 'top') {
-      const order = getStatsOrder(range);
-      const config: FindManyOptions<StatsAggregatedItem> = {
-        order: { [order]: 'DESC' },
-        skip: offset,
-        take: limit,
-        relations: subItemGetManyRelations
-      };
-      const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(channel_ids, config);
-      const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
-      return sendResponse({ results: items, count: null });
-    } else {
-      const order = ItemController.getOrder(sort);
-      const config: FindManyOptions<Item> = {
-        skip: offset,
-        take: limit,
-        relations: subItemGetManyRelations,
-        ...(order && { order }),
-      };
-      const items = await ItemController.itemService.getManyByChannels(channel_ids, config);
-      return sendResponse({ results: items, count: null });
-    }
   }
 
   private static getOrder(sort?: QueryParamsItemsSort): ItemOrder | undefined {

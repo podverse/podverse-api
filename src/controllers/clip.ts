@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { ApiListResponse, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsClipsByChannelSort, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
+import { ApiListResponse, getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsClipsByChannelSort, QueryParamsMedium, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
 import { Clip, ClipService, FindManyOptions, StatsAggregatedClip, StatsAggregatedClipService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from './helpers/error';
@@ -11,13 +11,15 @@ import { getStatsOrder } from '@api/lib/stats';
 const getClipsPublicByChannelIdTextSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   sort: Joi.string().valid("top", "recent", "oldest").optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 const getClipsPublicByItemIdTextSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   sort: Joi.string().valid("top", "recent", "oldest").optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional()
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
 });
 
 const clipCreateSchema = Joi.object({
@@ -257,10 +259,14 @@ class ClipController {
         try {
           const { channel_id_text } = req.params;
           const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range } = req.query as {
+          const { sort, range, medium } = req.query as {
             sort?: QueryParamsClipsByChannelSort;
-            range?: QueryParamsStatsRange
+            range?: QueryParamsStatsRange;
+            medium?: QueryParamsMedium;
           };
+
+          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const medium_id = getMediumFromQueryParam(selectedMedium);
 
           const select = {
             id: true,
@@ -304,7 +310,7 @@ class ClipController {
               ]
             };
             const [statsResults, count] = await ClipController
-              .statsAggregatedClipService.getManyAndCountPublic(config);
+              .statsAggregatedClipService.getManyAndCountPublic(config, medium_id);
             const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
 
             const response: ApiListResponse<Clip> = {
@@ -359,10 +365,14 @@ class ClipController {
         try {
           const { item_id_text } = req.params;
           const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range } = req.query as {
+          const { sort, range, medium } = req.query as {
             sort?: QueryParamsClipsByChannelSort;
-            range?: QueryParamsStatsRange
+            range?: QueryParamsStatsRange;
+            medium?: QueryParamsMedium;
           };
+
+          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const medium_id = getMediumFromQueryParam(selectedMedium);
 
           const select = {
             id: true,
@@ -394,7 +404,7 @@ class ClipController {
               ]
             };
             const [statsResults, count] = await ClipController
-              .statsAggregatedClipService.getManyAndCountPublic(config);
+              .statsAggregatedClipService.getManyAndCountPublic(config, medium_id);
             const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
 
             const response: ApiListResponse<Clip> = {

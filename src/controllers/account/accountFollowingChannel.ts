@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import { AccountFollowingChannelService, AccountService } from "podverse-orm";
+import { getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS, QueryParamsMedium, SharableStatusEnum } from "podverse-helpers";
 import { ensureAuthenticated, optionalEnsureAuthenticated } from "@api/lib/auth";
 import { handleGenericErrorResponse } from "../helpers/error";
-import { validateBodyObject, validateParamsObject } from "@api/lib/validation";
-import { SharableStatusEnum } from "podverse-helpers";
+import { validateBodyObject, validateParamsObject, validateQueryObject } from "@api/lib/validation";
 
 const followChannelSchema = Joi.object({
   channel_id_text: Joi.string().required()
@@ -14,34 +14,45 @@ const getFollowedChannelsSchema = Joi.object({
   account_id_text: Joi.string().required()
 });
 
+const getFollowedChannelsQuerySchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
+});
+
 class AccountFollowingChannelController {
   private static accountFollowingChannelService = new AccountFollowingChannelService();
   private static accountService = new AccountService();
 
   static async getFollowedChannels(req: Request, res: Response): Promise<void> {
     validateParamsObject(getFollowedChannelsSchema, req, res, async () => {
-      optionalEnsureAuthenticated(req, res, async () => {
-        try {
-          const jwtUser = req.user!;
-          const { account_id_text } = req.params;
-          const account = await AccountFollowingChannelController.accountService.getByIdText(account_id_text, { relations: ['sharable_status'] });
-          if (!account) {
-            return res.status(404).json({ message: 'Account not found' });
-          }
-
-          if (account.sharable_status.id === SharableStatusEnum.Private) {
-            if (!jwtUser?.id || account.id !== jwtUser.id) {
+      validateQueryObject(getFollowedChannelsQuerySchema, req, res, async () => {
+        optionalEnsureAuthenticated(req, res, async () => {
+          try {
+            const jwtUser = req.user!;
+            const { account_id_text } = req.params;
+            const { medium } = req.query as {
+              medium?: QueryParamsMedium;
+            };
+            const selectedMedium: QueryParamsMedium = medium || 'all';
+            const medium_id = getMediumFromQueryParam(selectedMedium);
+            const account = await AccountFollowingChannelController.accountService.getByIdText(account_id_text, { relations: ['sharable_status'] });
+            if (!account) {
               return res.status(404).json({ message: 'Account not found' });
             }
+  
+            if (account.sharable_status.id === SharableStatusEnum.Private) {
+              if (!jwtUser?.id || account.id !== jwtUser.id) {
+                return res.status(404).json({ message: 'Account not found' });
+              }
+            }
+  
+            const followedChannels = await AccountFollowingChannelController
+              .accountFollowingChannelService
+              .getFollowedChannels(account.id, medium_id, { relations: ['channel'] });
+            res.json(followedChannels);
+          } catch (err) {
+            handleGenericErrorResponse(res, err);
           }
-
-          const followedChannels = await AccountFollowingChannelController
-            .accountFollowingChannelService
-            .getFollowedChannels(account.id, { relations: ['channel'] });
-          res.json(followedChannels);
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
+        });
       });
     });
   }

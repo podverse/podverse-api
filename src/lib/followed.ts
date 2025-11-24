@@ -1,14 +1,14 @@
 import { AccountFollowingChannelService, AccountFollowingPlaylistService } from "podverse-orm";
 
-export async function getFollowedChannelIds(account_id: number): Promise<number[]> {
+export async function getFollowedChannelIds(account_id: number, medium_id: number | null): Promise<number[]> {
   const accountFollowingChannelService = new AccountFollowingChannelService();
-  const { results } = await accountFollowingChannelService.getFollowedChannelsWithCount(Number(account_id));
+  const { results } = await accountFollowingChannelService.getFollowedChannelsWithCount(Number(account_id), medium_id);
   return results.map((f: { channel_id: number }) => f.channel_id);
 }
 
 export async function getFollowedPlaylistIdsPrivate(
   account_id: number,
-  medium_id?: number
+  medium_id: number | null
 ): Promise<number[]> {
   const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
   const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(Number(account_id), medium_id);

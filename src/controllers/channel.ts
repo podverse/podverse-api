@@ -140,7 +140,7 @@ export class ChannelController {
           const selectedMedium: QueryParamsMedium = medium || 'all';
           const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channelIds = await getFollowedChannelIds(account_id);
+          const channelIds = await getFollowedChannelIds(account_id, medium_id);
           let channels: Channel[] = [];
           let count = channelIds.length;
           
