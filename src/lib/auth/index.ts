@@ -122,33 +122,53 @@ const verifyTokenAndMembership = async (
   token: string,
   options?: { skipMembershipStatus?: boolean }
 ) => {
+  console.log('[verifyTokenAndMembership] Starting verification');
+  console.log('config.auth.jwtSecret', config.auth.jwtSecret);
+  console.log('[verifyTokenAndMembership] Token:', token);
+  console.log('[verifyTokenAndMembership] Options:', options);
+
   jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: any) => {
-    if (err || !decoded) {
+    if (err) {
+      console.error('[verifyTokenAndMembership] JWT verification error:', err);
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    if (!decoded) {
+      console.error('[verifyTokenAndMembership] No decoded JWT payload');
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    console.log('[verifyTokenAndMembership] Decoded JWT:', decoded);
     req.user = decoded;
 
     if (!req?.user?.id) {
+      console.error('[verifyTokenAndMembership] Decoded JWT missing user id');
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
     if (!options?.skipMembershipStatus) {
+      console.log('[verifyTokenAndMembership] Checking membership status for user id:', req.user.id);
       const account = await accountService.get(req.user.id, { relations: ['account_membership_status'] });
       if (!account) {
+        console.error('[verifyTokenAndMembership] No account found for user id:', req.user.id);
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
       const membershipStatus = account.account_membership_status;
+      console.log('[verifyTokenAndMembership] Membership status:', membershipStatus);
+
       if (
         !membershipStatus ||
         !membershipStatus.membership_expires_at ||
         new Date(membershipStatus.membership_expires_at) < new Date()
       ) {
+        console.warn('[verifyTokenAndMembership] Membership expired or missing for user id:', req.user.id);
         return res.status(403).json({ message: 'Membership expired' });
       }
+    } else {
+      console.log('[verifyTokenAndMembership] Skipping membership status check');
     }
 
+    console.log('[verifyTokenAndMembership] Verification successful, calling next()');
     next();
   });
 };
@@ -161,7 +181,7 @@ export const ensureAuthenticated = (req: Request, res: Response, next: NextFunct
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-
+  console.log("Extracted token:", token);
   verifyTokenAndMembership(req, res, next, token, options);
 };
 
