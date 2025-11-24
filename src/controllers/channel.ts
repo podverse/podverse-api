@@ -4,7 +4,8 @@ import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_CHANNELS_SORT
   QUERY_PARAMS_STATS_RANGE_VALUES, ApiListResponse, CategoryMappingKeys, QueryParamsStatsRange,
   QueryParamsChannelsSort, QueryParamsMedium,
   getMediumFromQueryParam,
-  QUERY_PARAMS_MEDIUMS} from 'podverse-helpers';
+  QUERY_PARAMS_MEDIUMS,
+  QUERY_PARAMS_GLOBAL_GET_MANY_SORT_VALUES} from 'podverse-helpers';
 import { channelGetOneRelations, channelGetManyRelations, Channel, ChannelService, FindManyOptions,
   AccountFollowingChannelService, StatsAggregatedChannelService, AccountFollowingChannel,
   StatsAggregatedChannel, subChannelGetManyRelations} from 'podverse-orm';
@@ -27,7 +28,7 @@ const getByIdOrIdTextSchema = Joi.object({
 const getManySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   type: Joi.string().valid("global", "category").optional(),
-  sort: Joi.string().valid("top", "recent").optional(),
+  sort: Joi.string().valid(...QUERY_PARAMS_GLOBAL_GET_MANY_SORT_VALUES).optional(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
   category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).optional(),
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
