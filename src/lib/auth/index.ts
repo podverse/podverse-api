@@ -3,13 +3,12 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { AuthCookieNameDevelopment, AuthCookieNameProduction, ERROR_MESSAGES, getAuthCookieName } from 'podverse-helpers';
+import { AuthCookieName, ERROR_MESSAGES } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 import { verifyPassword } from './password';
 
 const isProduction = config.nodeEnv === 'production';
-const authCookieName = getAuthCookieName(isProduction);
 
 const setAuthCookie = (res: Response, token: string) => {
   console.log("configgggg", config);
@@ -22,9 +21,9 @@ const setAuthCookie = (res: Response, token: string) => {
       path: '/',
       maxAge: 365 * 24 * 60 * 60 * 1000,
     };
-    res.cookie(authCookieName, token, prodCookieOptions);
+    res.cookie(AuthCookieName, token, prodCookieOptions);
   } else {
-    res.cookie(authCookieName, token, {
+    res.cookie(AuthCookieName, token, {
       httpOnly: true,
       secure: false, // dev only
       sameSite: 'strict',
@@ -197,7 +196,7 @@ const verifyTokenAndMembership = async (
 
 export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
   console.log("Ensuring authentication for request:", req.path);
-  const token = req.cookies[authCookieName] || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies[AuthCookieName] || req.headers.authorization?.split(' ')[1];
   console.log("Extracted req.cookies", req.cookies);
   console.log("Extracted req.headers.authorization", req.headers);
   if (!token) {
@@ -208,7 +207,7 @@ export const ensureAuthenticated = (req: Request, res: Response, next: NextFunct
 };
 
 export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
-  const token = req.cookies[authCookieName] || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies[AuthCookieName] || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return next();
@@ -218,18 +217,18 @@ export const optionalEnsureAuthenticated = (req: Request, res: Response, next: N
 };
 
 export const logout = (req: Request, res: Response) => {
-  // Clear both possible cookie names to be safe
-  res.clearCookie(AuthCookieNameProduction, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+  // Clear possible host-only cookie (older deployments or dev)
+  res.clearCookie(AuthCookieName, {
     path: '/',
   });
-  res.clearCookie(AuthCookieNameDevelopment, {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    path: '/',
-  });
+
+  // If in production and you set a domain cookie, clear that too
+  if (isProduction) {
+    res.clearCookie(AuthCookieName, {
+      path: '/',
+      domain: config.api.cookie.domain, // e.g. '.podverse.fm'
+    });
+  }
+
   return res.json({ message: 'Logged out successfully' });
 };
