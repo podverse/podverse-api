@@ -8,10 +8,11 @@ import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 import { verifyPassword } from './password';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = config.nodeEnv === 'production';
 const authCookieName = isProduction ? '__Host-jwt' : 'jwt';
 
 const setAuthCookie = (res: Response, token: string) => {
+  console.log("configgggg", config);
   if (isProduction) {
     // __Host- prefix requires: secure, path=/, no Domain attribute
     interface PartitionedCookieOptions extends CookieOptions { partitioned?: boolean }
