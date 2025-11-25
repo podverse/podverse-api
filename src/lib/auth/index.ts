@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, CookieOptions } from 'express';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
@@ -7,6 +7,33 @@ import { ERROR_MESSAGES } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 import { verifyPassword } from './password';
+
+const isProduction = process.env.NODE_ENV === 'production';
+const authCookieName = isProduction ? '__Host-jwt' : 'jwt';
+
+const setAuthCookie = (res: Response, token: string) => {
+  if (isProduction) {
+    // __Host- prefix requires: secure, path=/, no Domain attribute
+    interface PartitionedCookieOptions extends CookieOptions { partitioned?: boolean }
+    const prodCookieOptions: PartitionedCookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      partitioned: true,
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+    };
+    res.cookie(authCookieName, token, prodCookieOptions);
+  } else {
+    res.cookie(authCookieName, token, {
+      httpOnly: true,
+      secure: false, // dev only
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+    });
+  }
+};
 
 const accountService = new AccountService();
 
@@ -96,14 +123,9 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     }
 
     const token = jwt.sign({ id: user.id }, config.auth.jwtSecret, { expiresIn: '365d' });
-
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      ...(config.api.cookie.domain !== 'localhost' ? { domain: config.api.cookie.domain } : {}),
-      maxAge: 31536000000 // 1 year in milliseconds
-    });
-
+    
+    setAuthCookie(res, token);
+    
     const response: { message: string; token?: string } = { message: 'Authenticated successfully' };
     if (req.body.includeTokenInResponseBody) {
       response['token'] = token;
@@ -127,7 +149,8 @@ const verifyTokenAndMembership = async (
   console.log('[verifyTokenAndMembership] Token:', token);
   console.log('[verifyTokenAndMembership] Options:', options);
 
-  jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: any) => {
+  interface DecodedToken { id: number; [key: string]: unknown }
+  jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: unknown) => {
     if (err) {
       console.error('[verifyTokenAndMembership] JWT verification error:', err);
       return res.status(401).json({ message: 'Unauthorized' });
@@ -136,9 +159,9 @@ const verifyTokenAndMembership = async (
       console.error('[verifyTokenAndMembership] No decoded JWT payload');
       return res.status(401).json({ message: 'Unauthorized' });
     }
-
-    console.log('[verifyTokenAndMembership] Decoded JWT:', decoded);
-    req.user = decoded;
+    const payload = decoded as DecodedToken;
+    console.log('[verifyTokenAndMembership] Decoded JWT:', payload);
+    req.user = { id: payload.id } as unknown as globalThis.Express.User;
 
     if (!req?.user?.id) {
       console.error('[verifyTokenAndMembership] Decoded JWT missing user id');
@@ -175,8 +198,8 @@ const verifyTokenAndMembership = async (
 
 export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
   console.log("Ensuring authentication for request:", req.path);
-  const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
-  console.log("Extracted req.cookies.jwt", req.cookies);
+  const token = req.cookies[authCookieName] || req.headers.authorization?.split(' ')[1];
+  console.log("Extracted req.cookies.__Host-jwt", req.cookies);
   console.log("Extracted req.headers.authorization", req.headers);
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -186,7 +209,7 @@ export const ensureAuthenticated = (req: Request, res: Response, next: NextFunct
 };
 
 export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
-  const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies[authCookieName] || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return next();
@@ -196,9 +219,18 @@ export const optionalEnsureAuthenticated = (req: Request, res: Response, next: N
 };
 
 export const logout = (req: Request, res: Response) => {
+  // Clear both possible cookie names to be safe
+  res.clearCookie('__Host-jwt', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+  });
   res.clearCookie('jwt', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
+    secure: false,
+    sameSite: 'lax',
+    path: '/',
   });
   return res.json({ message: 'Logged out successfully' });
 };
