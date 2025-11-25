@@ -20,7 +20,6 @@ type Config = {
     version: string;
     cookie: {
       domain: string;
-      secure: boolean;
     };
     allowedCORSOrigins: string[];
   };
@@ -100,8 +99,7 @@ export const config: Config = {
     prefix: process.env.API_PREFIX || '/api',
     version: process.env.API_VERSION || '/v2',
     cookie: {
-      domain: process.env.COOKIE_DOMAIN || 'localhost',
-      secure: process.env.COOKIE_SECURE === 'true',
+      domain: process.env.COOKIE_DOMAIN || 'localhost'
     },
     allowedCORSOrigins: (process.env.API_ALLOWED_CORS_ORIGINS || '').split(',').map(origin => origin.trim()),
   },

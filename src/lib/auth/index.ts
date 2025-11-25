@@ -14,13 +14,11 @@ const authCookieName = getAuthCookieName(isProduction);
 const setAuthCookie = (res: Response, token: string) => {
   console.log("configgggg", config);
   if (isProduction) {
-    // __Host- prefix requires: secure, path=/, no Domain attribute
-    interface PartitionedCookieOptions extends CookieOptions { partitioned?: boolean }
-    const prodCookieOptions: PartitionedCookieOptions = {
+    const prodCookieOptions: CookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
-      partitioned: true,
+      sameSite: 'lax',
+      domain: config.api.cookie.domain,
       path: '/',
       maxAge: 365 * 24 * 60 * 60 * 1000,
     };
