@@ -11,7 +11,6 @@ import { verifyPassword } from './password';
 const isProduction = config.nodeEnv === 'production';
 
 const setAuthCookie = (res: Response, token: string) => {
-  console.log("configgggg", config);
   if (isProduction) {
     const prodCookieOptions: CookieOptions = {
       httpOnly: true,
@@ -142,11 +141,6 @@ const verifyTokenAndMembership = async (
   token: string,
   options?: { skipMembershipStatus?: boolean }
 ) => {
-  console.log('[verifyTokenAndMembership] Starting verification');
-  console.log('config.auth.jwtSecret', config.auth.jwtSecret);
-  console.log('[verifyTokenAndMembership] Token:', token);
-  console.log('[verifyTokenAndMembership] Options:', options);
-
   interface DecodedToken { id: number; [key: string]: unknown }
   jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: unknown) => {
     if (err) {
@@ -158,7 +152,6 @@ const verifyTokenAndMembership = async (
       return res.status(401).json({ message: 'Unauthorized' });
     }
     const payload = decoded as DecodedToken;
-    console.log('[verifyTokenAndMembership] Decoded JWT:', payload);
     req.user = { id: payload.id } as unknown as globalThis.Express.User;
 
     if (!req?.user?.id) {
@@ -167,7 +160,6 @@ const verifyTokenAndMembership = async (
     }
 
     if (!options?.skipMembershipStatus) {
-      console.log('[verifyTokenAndMembership] Checking membership status for user id:', req.user.id);
       const account = await accountService.get(req.user.id, { relations: ['account_membership_status'] });
       if (!account) {
         console.error('[verifyTokenAndMembership] No account found for user id:', req.user.id);
@@ -175,7 +167,6 @@ const verifyTokenAndMembership = async (
       }
 
       const membershipStatus = account.account_membership_status;
-      console.log('[verifyTokenAndMembership] Membership status:', membershipStatus);
 
       if (
         !membershipStatus ||
@@ -185,24 +176,17 @@ const verifyTokenAndMembership = async (
         console.warn('[verifyTokenAndMembership] Membership expired or missing for user id:', req.user.id);
         return res.status(403).json({ message: 'Membership expired' });
       }
-    } else {
-      console.log('[verifyTokenAndMembership] Skipping membership status check');
     }
 
-    console.log('[verifyTokenAndMembership] Verification successful, calling next()');
     next();
   });
 };
 
 export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
-  console.log("Ensuring authentication for request:", req.path);
   const token = req.cookies[AuthCookieName] || req.headers.authorization?.split(' ')[1];
-  console.log("Extracted req.cookies", req.cookies);
-  console.log("Extracted req.headers.authorization", req.headers);
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  console.log("Extracted token:", token);
   verifyTokenAndMembership(req, res, next, token, options);
 };
 

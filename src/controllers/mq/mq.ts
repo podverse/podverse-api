@@ -21,7 +21,6 @@ export class MQController {
 
   static async rssAddToOnDemandMQ(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      console.log("Authenticated user:", req.user);
       MQController.rssOnDemandMiddleware(req, res, () => {
         validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
           const dto = req.body;
@@ -30,12 +29,8 @@ export class MQController {
             podcast_index_id: dto.podcast_index_id
           };
 
-          console.log("dto", dto);
-          console.log("finalDto", finalDto);
-          console.log("Authenticated user inside rssAddToOnDemandMQ:", req.user);
           try {
             const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
-            console.log("mqConstantMessageOptions", mqConstantMessageOptions);
             await mqRSSAdd(activeMQArtemisService, {
               ...mqConstantMessageOptions,
               feedUrl: finalDto.url,
