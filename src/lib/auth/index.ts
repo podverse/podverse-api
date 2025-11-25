@@ -3,13 +3,13 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { ERROR_MESSAGES } from 'podverse-helpers';
+import { AuthCookieNameDevelopment, AuthCookieNameProduction, ERROR_MESSAGES, getAuthCookieName } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 import { verifyPassword } from './password';
 
 const isProduction = config.nodeEnv === 'production';
-const authCookieName = isProduction ? '__Host-jwt' : 'jwt';
+const authCookieName = getAuthCookieName(isProduction);
 
 const setAuthCookie = (res: Response, token: string) => {
   console.log("configgggg", config);
@@ -221,13 +221,13 @@ export const optionalEnsureAuthenticated = (req: Request, res: Response, next: N
 
 export const logout = (req: Request, res: Response) => {
   // Clear both possible cookie names to be safe
-  res.clearCookie('__Host-jwt', {
+  res.clearCookie(AuthCookieNameProduction, {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
     path: '/',
   });
-  res.clearCookie('jwt', {
+  res.clearCookie(AuthCookieNameDevelopment, {
     httpOnly: true,
     secure: false,
     sameSite: 'lax',
