@@ -101,6 +101,7 @@ export class ChannelController {
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = null;
 
         const recentConfig: FindManyOptions<Channel> = {
           order: { channel_about: { last_pub_date: 'DESC' } },
@@ -108,7 +109,11 @@ export class ChannelController {
           take: limit,
           relations: channelGetManyRelations
         };
-        const channels = await ChannelController.channelService.getMany(recentConfig, medium_id);
+        const channels = await ChannelController.channelService.getMany(
+          recentConfig,
+          medium_id,
+          category_id
+        );
 
         const response: ApiListResponse<Channel> = {
           data: channels.filter(Boolean),
@@ -131,6 +136,7 @@ export class ChannelController {
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = null;
 
         const orderField = getStatsOrder(range);
         const topConfig: FindManyOptions<StatsAggregatedChannel> = {
@@ -139,7 +145,11 @@ export class ChannelController {
           take: limit,
           relations: subChannelGetManyRelations,
         };
-        const statsResults = await ChannelController.statsAggregatedChannelService.getMany(topConfig, medium_id);
+        const statsResults = await ChannelController.statsAggregatedChannelService.getMany(
+          topConfig,
+          medium_id,
+          category_id
+        );
         const channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
 
         const response: ApiListResponse<Channel> = {
@@ -165,14 +175,17 @@ export class ChannelController {
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
-        const channelWhere = { channel_categories: { category_id } };
         const recentConfig: FindManyOptions<Channel> = {
           order: { channel_about: { last_pub_date: 'DESC' } },
           skip: offset,
           take: limit,
           relations: channelGetManyRelations
         };
-        const recentResults = await ChannelController.channelService.getMany(recentConfig, medium_id, channelWhere);
+        const recentResults = await ChannelController.channelService.getMany(
+          recentConfig,
+          medium_id,
+          category_id
+        );
         const channels = recentResults.filter(Boolean);
 
         const response: ApiListResponse<Channel> = {
@@ -199,16 +212,18 @@ export class ChannelController {
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
-        const orderField = getStatsOrder(range);
-        const statsWhere = { channel: { channel_categories: { category_id } } };
+        const orderField = getStatsOrder(range);;
         const topConfig: FindManyOptions<StatsAggregatedChannel> = {
           order: { [orderField]: 'DESC' },
           skip: offset,
           take: limit,
-          relations: subChannelGetManyRelations,
-          where: statsWhere,
+          relations: subChannelGetManyRelations
         };
-        const statsResults = await ChannelController.statsAggregatedChannelService.getMany(topConfig, medium_id);
+        const statsResults = await ChannelController.statsAggregatedChannelService.getMany(
+          topConfig,
+          medium_id,
+          category_id
+        );
         const channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
 
         const response: ApiListResponse<Channel> = {
