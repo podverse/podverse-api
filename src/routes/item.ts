@@ -9,18 +9,21 @@ router.use(`${config.api.prefix}${config.api.version}/item`, router);
 
 router.get('/chapters/:item_id_text', asyncHandler(ItemController.parseAndGetChapters));
 
-router.get('/channel/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannel));
+router.get('/channel/recent/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelRecent));
+router.get('/channel/oldest/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelOldest));
+router.get('/channel/top/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelTop));
 
 router.get('/queue/pub-date/:idText', asyncHandler(ItemController.getManyForQueueByPubDate));
 
-router.get('/:idOrIdText', asyncHandler(ItemController.getByIdOrIdText));
+router.get('/global/recent', asyncHandler(ItemController.getManyGlobalRecent));
+router.get('/global/top', asyncHandler(ItemController.getManyGlobalTop));
 
-router.get('/', asyncHandler((req, res) => {
-  if (req.query.type === 'subscribed') {
-    return ItemController.getManySubscribed(req, res);
-  } else {
-    return ItemController.getMany(req, res);
-  }
-}));
+router.get('/category/recent', asyncHandler(ItemController.getManyCategoryRecent));
+router.get('/category/top', asyncHandler(ItemController.getManyCategoryTop));
+
+router.get('/subscribed/recent', asyncHandler(ItemController.getManySubscribedRecent));
+router.get('/subscribed/top', asyncHandler(ItemController.getManySubscribedTop));
+
+router.get('/:idOrIdText', asyncHandler(ItemController.getByIdOrIdText));
 
 export const itemRouter = router;
