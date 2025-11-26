@@ -12,10 +12,21 @@ const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/playlist`, router);
 
 router.get('/private/favorites', asyncHandler(PlaylistController.getAllFavoritesPrivate));
-router.get('/private/followed', asyncHandler(PlaylistController.getManyFollowedPrivate));
-router.get('/private', asyncHandler(PlaylistController.getManyPrivate));
-router.get('/public', asyncHandler(PlaylistController.getManyPublic));
+
+router.get('/private/top', asyncHandler(PlaylistController.getManyPrivateTop));
+router.get('/private/recent', asyncHandler(PlaylistController.getManyPrivateRecent));
+router.get('/private/oldest', asyncHandler(PlaylistController.getManyPrivateOldest));
+router.get('/private/az', asyncHandler(PlaylistController.getManyPrivateAZ));
+
+router.get('/private/followed/top', asyncHandler(PlaylistController.getManyFollowedPrivateTop));
+router.get('/private/followed/recent', asyncHandler(PlaylistController.getManyFollowedPrivateRecent));
+router.get('/private/followed/oldest', asyncHandler(PlaylistController.getManyFollowedPrivateOldest));
+router.get('/private/followed/az', asyncHandler(PlaylistController.getManyFollowedPrivateAZ));
+
+router.get('/public/top', asyncHandler(PlaylistController.getManyPublicTop));
+
 router.post('/', asyncHandler(PlaylistController.createPlaylist));
+
 router.get('/:playlist_id_text/resources/private-all', asyncHandler(PlaylistResourceController.getAllByPlaylistIdTextPrivate));
 router.get('/:playlist_id_text/resources', asyncHandler(PlaylistResourceController.getManyByPlaylistIdText));
 router.get('/:playlist_id_text', asyncHandler(PlaylistController.getPlaylistById));

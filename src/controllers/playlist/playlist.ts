@@ -1,32 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { ApiListResponse, DTOPlaylist, MediumEnum, QUERY_PARAMS_PLAYLISTS_SORT_VALUES, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsPlaylistsSort, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
-import { AccountFollowingPlaylist, AccountFollowingPlaylistService, FindManyOptions, FindOptionsOrder, Playlist, PlaylistService, StatsAggregatedPlaylist, StatsAggregatedPlaylistService } from 'podverse-orm';
+import { ApiListResponse, getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS,
+  QUERY_PARAMS_STATS_RANGE_VALUES, QUERY_PARAMS_SUBSCRIBED_FULL_SORT,
+  QueryParamsMedium, QueryParamsStatsRange,
+  SharableStatusEnum } from 'podverse-helpers';
+import { AccountFollowingPlaylist, AccountFollowingPlaylistService, FindManyOptions, Playlist,
+  PlaylistService, StatsAggregatedPlaylist, StatsAggregatedPlaylistService } from 'podverse-orm';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
-import { getPaginationParams, PaginatedData } from '../helpers/pagination';
+import { getPaginationParams } from '../helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
 import { getFollowedPlaylistIdsPrivate } from '@api/lib/followed';
-
-type TopPublicPlaylistsParams = {
-  range?: QueryParamsStatsRange;
-  offset?: number;
-  limit?: number;
-  medium_id?: MediumEnum;
-};
-
-type TopPrivatePlaylistsParams = TopPublicPlaylistsParams & { account_id: number }
-
-interface FollowedParams {
-  account_id: number;
-  medium_id: MediumEnum | null;
-  sort?: QueryParamsPlaylistsSort;
-  range?: QueryParamsStatsRange;
-  offset: number;
-  limit: number;
-  sendResponse: (data: PaginatedData<Playlist>) => void;
-}
 
 const createPlaylistSchema = Joi.object({
   title: Joi.string().allow(null, ''),
@@ -41,18 +26,52 @@ const playlistIdSchema = Joi.object({
   playlist_id_text: Joi.string().required()
 });
 
-const getManyPublicSchema = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  sort: Joi.string().valid("top").optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
-  medium_id: Joi.number().integer().min(1).optional()
+const getManyPublicTopSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
+  page: Joi.number().integer().min(1).required()
 });
 
-const getManyPrivateSchema = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  sort: Joi.string().valid(...QUERY_PARAMS_PLAYLISTS_SORT_VALUES).optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
-  medium_id: Joi.number().integer().min(1).optional(),
+const getManyPrivateRecentSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyPrivateOldestSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyPrivateAZSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyPrivateTopSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const getManyPrivateFollowedTopSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const getManyPrivateFollowedRecentSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyPrivateFollowedOldestSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyPrivateFollowedAZSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
 });
 
 const playlistService = new PlaylistService();
@@ -179,18 +198,27 @@ class PlaylistController {
     });
   }
 
-  static async getManyPublic(req: Request, res: Response): Promise<void> {
-    validateQueryObject(getManyPublicSchema, req, res, async () => {
+  static async getManyPublicTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyPublicTopSchema, req, res, async () => {
       try {
-        const { medium_id, range } = req.query as { medium_id?: MediumEnum; range?: QueryParamsStatsRange };
+        const { medium, range } = req.query as {
+          medium: QueryParamsMedium;
+          range: QueryParamsStatsRange
+        };
         const { page, limit, offset } = getPaginationParams(req);
+        const medium_id = getMediumFromQueryParam(medium);
+        
+        const order = getStatsOrder(range);
+        const config: FindManyOptions<StatsAggregatedPlaylist> = {
+          order: { [order]: 'DESC' },
+          skip: offset,
+          take: limit
+        };
 
-        const playlists = await PlaylistController._getTopPublicPlaylists({
-          range,
-          offset,
-          limit,
-          medium_id
-        });
+        const statsResults = await PlaylistController
+          .statsAggregatedPlaylistService.getManyPublic(config, medium_id);
+        const playlists = statsResults
+          .map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
 
         res.status(200).json({
           data: playlists,
@@ -202,34 +230,69 @@ class PlaylistController {
     });
   }
 
-  static async getManyPrivate(req: Request, res: Response): Promise<void> {
+  static async getManyPrivateTop(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateQueryObject(getManyPrivateSchema, req, res, async () => {
+      validateQueryObject(getManyPrivateTopSchema, req, res, async () => {
         try {
           const account = req.user!;
-          const { medium_id, sort, range } = req.query as { medium_id?: MediumEnum; sort?: QueryParamsPlaylistsSort; range?: QueryParamsStatsRange };
+
+          const { medium, range } = req.query as {
+            medium: QueryParamsMedium;
+            range: QueryParamsStatsRange;
+          };
+
           const { page, limit, offset } = getPaginationParams(req);
 
+          const order = getStatsOrder(range);
+          const config: FindManyOptions<StatsAggregatedPlaylist> = {
+            order: { [order]: 'DESC' },
+            skip: offset,
+            take: limit
+          };
 
-          let results: [Playlist[], number] = [[], 0];
+          const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPrivate(
+            config,
+            account.id,
+            getMediumFromQueryParam(medium)
+          );
+          const data = statsResults[0].map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
+          const count = statsResults[1];
 
-          if (sort === "top") {
-            results = await PlaylistController._getTopPrivatePlaylists({
-              range,
-              offset,
-              limit,
-              medium_id,
-              account_id: account.id
-            });
-          } else {
-            results = await PlaylistController._getPrivatePlaylists({
-              sort,
-              offset,
-              limit,
-              medium_id,
-              account_id: account.id
-            });
-          }
+          const response: ApiListResponse<Playlist> = {
+            data: data,
+            meta: { page, count, limit }
+          };
+
+          res.status(200).json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyPrivateRecent(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateRecentSchema, req, res, async () => {
+        try {
+          const account = req.user!;
+          const { medium } = req.query as {
+            medium: QueryParamsMedium;
+          };
+          const { page, limit, offset } = getPaginationParams(req);
+          const medium_id = getMediumFromQueryParam(medium);
+
+          const config: FindManyOptions<Playlist> = {
+            skip: offset,
+            take: limit,
+            order: { last_updated: 'DESC' }
+          };
+
+          const results = await PlaylistController.playlistService.getManyPrivate(
+            account.id,
+            medium_id,
+            config
+          );
 
           const response: ApiListResponse<Playlist> = {
             data: results[0],
@@ -244,26 +307,205 @@ class PlaylistController {
     });
   }
 
-  static async getManyFollowedPrivate(req: Request, res: Response): Promise<void> {
+  static async getManyPrivateOldest(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateQueryObject(getManyPrivateSchema, req, res, async () => {
+      validateQueryObject(getManyPrivateOldestSchema, req, res, async () => {
+        try {
+          const account = req.user!;
+          const { medium } = req.query as {
+            medium: QueryParamsMedium;
+          };
+          const { page, limit, offset } = getPaginationParams(req);
+          const medium_id = getMediumFromQueryParam(medium);
+
+          const config: FindManyOptions<Playlist> = {
+            skip: offset,
+            take: limit,
+            order: { last_updated: 'ASC' }
+          };
+
+          const results = await PlaylistController.playlistService.getManyPrivate(
+            account.id,
+            medium_id,
+            config
+          );
+
+          const response: ApiListResponse<Playlist> = {
+            data: results[0],
+            meta: { page, count: results[1], limit }
+          };
+
+          res.status(200).json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyPrivateAZ(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateAZSchema, req, res, async () => {
+        try {
+          const account = req.user!;
+          const { medium } = req.query as {
+            medium: QueryParamsMedium;
+          };
+          const { page, limit, offset } = getPaginationParams(req);
+          const medium_id = getMediumFromQueryParam(medium);
+
+          const config: FindManyOptions<Playlist> = {
+            skip: offset,
+            take: limit,
+            order: { title: 'ASC' }
+          };
+
+          const results = await PlaylistController.playlistService.getManyPrivate(
+            account.id,
+            medium_id,
+            config
+          );
+
+          const response: ApiListResponse<Playlist> = {
+            data: results[0],
+            meta: { page, count: results[1], limit }
+          };
+
+          res.status(200).json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyFollowedPrivateTop(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateFollowedTopSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
-        const { sort, range, medium_id = null } = req.query as {
-          sort?: QueryParamsPlaylistsSort;
-          range?: QueryParamsStatsRange;
-          medium_id?: MediumEnum;
+        const { range, medium } = req.query as {
+          range: QueryParamsStatsRange;
+          medium: QueryParamsMedium;
         };
         const account_id = req.user!.id;
+        const medium_id = getMediumFromQueryParam(medium);
 
-        const sendResponse = (data: PaginatedData<Playlist>) => {
-          const response: ApiListResponse<Playlist> = {
-            data: data.results,
-            meta: { page, count: data.count, limit }
-          };
-          res.json(response);
+        const playlist_ids = await getFollowedPlaylistIdsPrivate(
+          account_id,
+          medium_id
+        );
+        const order = getStatsOrder(range);
+        const config: FindManyOptions<StatsAggregatedPlaylist> = {
+          order: { [order]: 'DESC' },
+          skip: offset,
+          take: limit,
+          relations: ['playlist', 'playlist.account', 'playlist.account.account_profile']
         };
+        const statsResults = await PlaylistController
+          .statsAggregatedPlaylistService
+          .getManyPrivateByPlaylists(
+            playlist_ids,
+            config
+          );
 
-        await PlaylistController.handleFollowedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse });
+        const playlists = statsResults[0].map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
+        const count = statsResults[1];
+
+        const response: ApiListResponse<Playlist> = {
+          data: playlists,
+          meta: { page, count, limit }
+        };
+        res.json(response);
+      });
+    });
+  };
+
+  static async getManyFollowedPrivateRecent(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateFollowedRecentSchema, req, res, async () => {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium } = req.query as {
+          medium: QueryParamsMedium;
+        };
+        const account_id = req.user!.id;
+        const medium_id = getMediumFromQueryParam(medium);
+
+        const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
+        const config: FindManyOptions<AccountFollowingPlaylist> = {
+          skip: offset,
+          take: limit,
+          relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
+          order: { playlist: { last_updated: 'DESC' } }
+        };
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
+        const count = results[1];
+
+        const response: ApiListResponse<Playlist> = {
+          data: playlists,
+          meta: { page, count, limit }
+        };
+        res.json(response);
+      });
+    });
+  };
+
+  static async getManyFollowedPrivateOldest(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateFollowedOldestSchema, req, res, async () => {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium } = req.query as {
+          medium: QueryParamsMedium;
+        };
+        const account_id = req.user!.id;
+        const medium_id = getMediumFromQueryParam(medium);
+
+        const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
+        const config: FindManyOptions<AccountFollowingPlaylist> = {
+          skip: offset,
+          take: limit,
+          relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
+          order: { playlist: { last_updated: 'ASC' } }
+        };
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
+        const count = results[1];
+
+        const response: ApiListResponse<Playlist> = {
+          data: playlists,
+          meta: { page, count, limit }
+        };
+        res.json(response);
+      });
+    });
+  };
+
+  static async getManyFollowedPrivateAZ(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      validateQueryObject(getManyPrivateFollowedAZSchema, req, res, async () => {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium } = req.query as {
+          medium: QueryParamsMedium;
+        };
+        const account_id = req.user!.id;
+        const medium_id = getMediumFromQueryParam(medium);
+
+        const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
+        const config: FindManyOptions<AccountFollowingPlaylist> = {
+          skip: offset,
+          take: limit,
+          relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
+          order: { playlist: { title: 'ASC' } }
+        };
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
+        const count = results[1];
+
+        const response: ApiListResponse<Playlist> = {
+          data: playlists,
+          meta: { page, count, limit }
+        };
+        res.json(response);
       });
     });
   };
@@ -312,110 +554,6 @@ class PlaylistController {
         });
       });
     });
-  }
-
-  private static async _getTopPublicPlaylists({ range, offset, limit, medium_id }: TopPublicPlaylistsParams): Promise<Playlist[]> {
-    const order = getStatsOrder(range);
-    const config: FindManyOptions<StatsAggregatedPlaylist> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit
-    };
-
-    const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPublic(config, medium_id);
-    return statsResults.map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
-  }
-
-  private static async _getTopPrivatePlaylists({ range, offset, limit, medium_id, account_id }: TopPrivatePlaylistsParams): Promise<[Playlist[], number]> {
-    const order = getStatsOrder(range);
-    const config: FindManyOptions<StatsAggregatedPlaylist> = {
-      order: { [order]: 'DESC' },
-      skip: offset,
-      take: limit
-    };
-
-    const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPrivate(config, account_id, medium_id);
-    const data = statsResults[0].map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
-    const count = statsResults[1];
-    
-    return [data, count];
-  }
-
-  private static async _getPrivatePlaylists({ sort, offset, limit, medium_id, account_id }: {
-    sort?: QueryParamsPlaylistsSort;
-    offset?: number;
-    limit?: number;
-    medium_id?:
-    MediumEnum;
-    account_id: number;
-  }): Promise<[Playlist[], number]> {
-    const config: FindManyOptions<Playlist> = {
-      skip: offset,
-      take: limit,
-      ...(medium_id ? { where: { medium_id } } : {})
-    };
-
-    if (sort === "recent") {
-      config.order = { last_updated: 'DESC' };
-    } else if (sort === "oldest") {
-      config.order = { last_updated: 'ASC' };
-    } else {
-      config.order = { title: 'ASC' };
-    }
-
-    return PlaylistController.playlistService.getManyPrivate(account_id, config);
-  }
-
-  private static async handleFollowedPrivate({ account_id, medium_id, sort, range, offset, limit, sendResponse }: FollowedParams) {
-    let playlists: Playlist[] = [];
-    let count = 0;
-    
-    if (sort === 'top') {
-      const playlist_ids = await getFollowedPlaylistIdsPrivate(account_id, medium_id);
-      const order = getStatsOrder(range);
-      const config: FindManyOptions<StatsAggregatedPlaylist> = {
-        order: { [order]: 'DESC' },
-        skip: offset,
-        take: limit,
-        relations: ['playlist', 'playlist.account', 'playlist.account.account_profile']
-      };
-      const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPrivateByPlaylists(
-        playlist_ids,
-        config
-      );
-
-      playlists = statsResults[0].map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
-      count = statsResults[1];
-    } else {
-      const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
-      const order = PlaylistController.getFollowedOrder(sort);
-      const config: FindManyOptions<AccountFollowingPlaylist> = {
-        skip: offset,
-        take: limit,
-        relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
-        ...(order && { order }),
-      };
-      const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
-      playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
-      count = results[1];
-    }
-    
-    sendResponse({ results: playlists, count });
-  }
-
-  private static getFollowedOrder(
-    sort?: QueryParamsPlaylistsSort)
-    : FindOptionsOrder<AccountFollowingPlaylist> | undefined {
-    switch (sort) {
-    case 'recent':
-      return { playlist: { last_updated: 'DESC' } };
-    case 'oldest':
-      return { playlist: { last_updated: 'ASC' } };
-    case 'a_z':
-      return { playlist: { title: 'ASC' } };
-    default:
-      return undefined;
-    }
   }
 
 }
