@@ -259,14 +259,12 @@ class ClipController {
         try {
           const { channel_id_text } = req.params;
           const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range, medium } = req.query as {
+          const { sort, range } = req.query as {
             sort?: QueryParamsClipsByChannelSort;
             range?: QueryParamsStatsRange;
-            medium?: QueryParamsMedium;
           };
 
-          const selectedMedium: QueryParamsMedium = medium || 'all';
-          const medium_id = getMediumFromQueryParam(selectedMedium);
+          const medium_id = null;
 
           const select = {
             id: true,
