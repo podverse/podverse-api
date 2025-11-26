@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemService, Item,
   StatsAggregatedItem, FindManyOptions, subItemGetManyRelations,
-  StatsAggregatedItemService, ChannelService } from 'podverse-orm';
+  StatsAggregatedItemService, ChannelService, 
+  itemGetManyRelationsWithChannel} from 'podverse-orm';
 import { parseChapters } from 'podverse-parser';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -13,6 +14,7 @@ import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, emptyApiLi
   QUERY_PARAMS_DIRECTION_VALUES,
   QUERY_PARAMS_MEDIUMS,
   QUERY_PARAMS_STATS_RANGE_VALUES,
+  QueryParamsDirection,
   QueryParamsMedium, QueryParamsStatsRange } from 'podverse-helpers';
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
@@ -115,7 +117,7 @@ export class ItemController {
           order: { pub_date: 'DESC' },
           skip: offset,
           take: limit,
-          relations: itemGetManyRelations
+          relations: itemGetManyRelationsWithChannel
         };
         const items = await ItemController.itemService.getMany(
           recentConfig,
@@ -152,7 +154,7 @@ export class ItemController {
           order: { [order]: 'DESC' },
           skip: offset,
           take: limit,
-          relations: subItemGetManyRelations
+          relations: itemGetManyRelationsWithChannel
         };
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
@@ -186,13 +188,11 @@ export class ItemController {
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
-        const itemWhere = { channel: { channel_categories: { category_id } } };
         const recentConfig: FindManyOptions<Item> = {
           order: { pub_date: 'DESC' },
           skip: offset,
           take: limit,
-          relations: itemGetManyRelations,
-          where: itemWhere
+          relations: itemGetManyRelationsWithChannel
         };
         const recentResults = await ItemController.itemService.getMany(
           recentConfig,
@@ -231,7 +231,7 @@ export class ItemController {
           order: { [order]: 'DESC' },
           skip: offset,
           take: limit,
-          relations: subItemGetManyRelations
+          relations: itemGetManyRelationsWithChannel
         };
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
@@ -275,7 +275,7 @@ export class ItemController {
             order: { pub_date: 'DESC' },
             skip: offset,
             take: limit,
-            relations: itemGetManyRelations,
+            relations: itemGetManyRelationsWithChannel,
           };
           const items = await ItemController.itemService.getManyByChannels(channel_ids, config);
 
@@ -315,7 +315,7 @@ export class ItemController {
             order: { [order]: 'DESC' },
             skip: offset,
             take: limit,
-            relations: subItemGetManyRelations
+            relations: itemGetManyRelationsWithChannel
           };
           const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(
             config,
