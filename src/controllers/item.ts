@@ -3,7 +3,8 @@ import Joi from 'joi';
 import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemService, Item,
   StatsAggregatedItem, FindManyOptions, subItemGetManyRelations,
   StatsAggregatedItemService, ChannelService, 
-  itemGetManyRelationsWithChannel} from 'podverse-orm';
+  itemGetManyRelationsWithChannel,
+  subItemGetManyRelationsWithChannel} from 'podverse-orm';
 import { parseChapters } from 'podverse-parser';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -154,7 +155,7 @@ export class ItemController {
           order: { [order]: 'DESC' },
           skip: offset,
           take: limit,
-          relations: itemGetManyRelationsWithChannel
+          relations: subItemGetManyRelationsWithChannel
         };
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
@@ -231,7 +232,7 @@ export class ItemController {
           order: { [order]: 'DESC' },
           skip: offset,
           take: limit,
-          relations: itemGetManyRelationsWithChannel
+          relations: subItemGetManyRelationsWithChannel
         };
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
@@ -315,7 +316,7 @@ export class ItemController {
             order: { [order]: 'DESC' },
             skip: offset,
             take: limit,
-            relations: itemGetManyRelationsWithChannel
+            relations: subItemGetManyRelationsWithChannel
           };
           const itemType = "normal";
           const results = await ItemController.statsAggregatedItemService.getManyByChannelsAndCount(
