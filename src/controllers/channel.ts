@@ -131,7 +131,7 @@ export class ChannelController {
       try {
         const { page, limit, offset } = getPaginationParams(req);
         const { range, medium } = req.query as {
-          range?: QueryParamsStatsRange;
+          range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
         };
         const selectedMedium: QueryParamsMedium = medium;
@@ -205,7 +205,7 @@ export class ChannelController {
         const { page, limit, offset } = getPaginationParams(req);
         const { category, range, medium } = req.query as {
           category: CategoryMappingKeys;
-          range?: QueryParamsStatsRange;
+          range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
         };
         const selectedMedium: QueryParamsMedium = medium;
@@ -331,7 +331,7 @@ export class ChannelController {
         try {
           const { page, limit, offset } = getPaginationParams(req);
           const { range, medium } = req.query as {
-            range?: QueryParamsStatsRange;
+            range: QueryParamsStatsRange;
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
@@ -340,7 +340,7 @@ export class ChannelController {
 
           const channelIds = await getFollowedChannelIds(account_id, medium_id);
           let channels: Channel[] = [];
-          const count = channelIds.length;
+          let count = 0;
 
           if (channelIds.length) {
             const orderField = getStatsOrder(range);
@@ -350,8 +350,10 @@ export class ChannelController {
               take: limit,
               relations: subChannelGetManyRelations
             };
-            const statsResults = await ChannelController.statsAggregatedChannelService.getManyByChannels(channelIds, medium_id, config);
+            const results = await ChannelController.statsAggregatedChannelService.getManyByChannelsAndCount(channelIds, config);
+            const statsResults = results[0];
             channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
+            count = results[1];
           }
 
           const response: ApiListResponse<Channel> = {
