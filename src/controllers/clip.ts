@@ -1,26 +1,23 @@
+import {
+  ApiListResponse,
+  CATEGORY_MAPPING_KEYS,
+  CategoryMappingKeys,
+  getCategoryEnumValue,
+  getMediumFromQueryParam,
+  QUERY_PARAMS_MEDIUMS,
+  QUERY_PARAMS_STATS_RANGE_VALUES,
+  QueryParamsMedium,
+  QueryParamsStatsRange,
+  SharableStatusEnum
+} from 'podverse-helpers';
 import { NextFunction, Request, Response } from 'express';
+import { ensureAuthenticated, optionalEnsureAuthenticated } from '../lib/auth';
 import Joi from 'joi';
-import { ApiListResponse, getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS, QUERY_PARAMS_STATS_RANGE_VALUES, QueryParamsClipsByChannelSort, QueryParamsMedium, QueryParamsStatsRange, SharableStatusEnum } from 'podverse-helpers';
-import { Clip, ClipService, FindManyOptions, StatsAggregatedClip, StatsAggregatedClipService } from 'podverse-orm';
-import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
+import { ChannelService, Clip, ClipService, FindManyOptions, ItemService, StatsAggregatedClip, StatsAggregatedClipService } from 'podverse-orm';
 import { handleGenericErrorResponse } from './helpers/error';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getPaginationParams } from './helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
-
-const getClipsPublicByChannelIdTextSchema = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  sort: Joi.string().valid("top", "recent", "oldest").optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
-  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
-});
-
-const getClipsPublicByItemIdTextSchema = Joi.object({
-  page: Joi.number().integer().min(1).optional(),
-  sort: Joi.string().valid("top", "recent", "oldest").optional(),
-  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).optional(),
-  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
-});
 
 const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
@@ -52,6 +49,122 @@ const getByItemIdTextSchema = Joi.object({
   item_id_text: Joi.string().required()
 });
 
+const getClipsPublicManyRecentSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+});
+
+const getClipsPublicManyOldestSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+});
+
+const getClipsPublicTopSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const getClipsPublicManyCategoryRecentSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).required()
+});
+
+const getClipsPublicManyCategoryOldestSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).required()
+});
+
+const getClipsPublicManyCategoryTopSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
+  category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).required()
+});
+
+const getClipsPublicByChannelRecentSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+});
+
+const getClipsPublicByChannelOldestSchema = Joi.object({
+  page: Joi.number().integer().min(1).required()
+});
+
+const getClipsPublicByChannelTopSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const getClipsPublicByItemRecentSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+});
+
+const getClipsPublicByItemOldestSchema = Joi.object({
+  page: Joi.number().integer().min(1).required()
+});
+
+const getClipsPublicByItemTopSchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const clipPublicManyRelations = [
+  "item",
+  "item.item_enclosures",
+  "item.item_enclosures.item_enclosure_sources",
+  "item.item_images",
+  "item.channel",
+  "item.channel.channel_images",
+  "account",
+  "sharable_status"
+];
+
+const clipPublicManyChannelRelations = [
+  "item",
+  "item.item_enclosures",
+  "item.item_enclosures.item_enclosure_sources",
+  "item.item_images",
+  "account",
+  "sharable_status"
+];
+
+const clipPublicManyItemRelations = [
+  "account",
+  "sharable_status"
+];
+
+const statsAggregationRelations = [
+  "clip",
+  "clip.item",
+  "clip.item.item_enclosures",
+  "clip.item.item_enclosures.item_enclosure_sources",
+  "clip.item.item_images",
+  "clip.item.channel",
+  "clip.item.channel.channel_images",
+  "clip.account",
+  "clip.sharable_status"
+];
+
+const statsAggregationChannelRelations = [
+  "clip",
+  "clip.item",
+  "clip.item.item_enclosures",
+  "clip.item.item_enclosures.item_enclosure_sources",
+  "clip.item.item_images",
+  "clip.account",
+  "clip.sharable_status"
+];
+
+const statsAggregationItemRelations = [
+  "clip",
+  "clip.account",
+  "clip.sharable_status"
+];
+
+const channelService = new ChannelService();
+const itemService = new ItemService();
 const clipService = new ClipService();
 
 const verifyClipOwnership = () => {
@@ -179,7 +292,7 @@ class ClipController {
     });
   }
 
-  static async getClipById(req: Request, res: Response): Promise<void> {
+  static async getClipByIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(clipIdSchema, req, res, () => {
       optionalEnsureAuthenticated(req, res, () => {
         verifyPrivateClipOwnership()(req, res, async () => {
@@ -188,33 +301,6 @@ class ClipController {
             const clip = await clipService.getByIdText(
               clip_id_text,
               {
-                select: {
-                  id: true,
-                  id_text: true,
-                  start_time: true,
-                  end_time: true,
-                  title: true,
-                  description: true,
-                  created_at: true,
-                  item: {
-                    id_text: true,
-                    title: true,
-                    pub_date: true,
-                    item_enclosures: true,
-                    item_images: true,
-                    channel: {
-                      id_text: true,
-                      title: true,
-                      channel_images: true
-                    }
-                  },
-                  account: {
-                    id_text: true
-                  },
-                  sharable_status: {
-                    id: true
-                  }
-                },
                 relations: [
                   "item",
                   "item.item_enclosures",
@@ -241,210 +327,6 @@ class ClipController {
     });
   }
 
-  static async getClipsPublic(req: Request, res: Response): Promise<void> {
-    try {
-      const clips = await clipService.getMany({
-        where: { sharable_status_id: { id: SharableStatusEnum.Public } },
-        relations: ['sharable_status']
-      });
-      res.status(200).json(clips);
-    } catch (err) {
-      handleGenericErrorResponse(res, err);
-    }
-  }
-
-  static async getManyByChannelIdTextPublic(req: Request, res: Response): Promise<void> {
-    validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
-      validateQueryObject(getClipsPublicByChannelIdTextSchema, req, res, async () => {
-        try {
-          const { channel_id_text } = req.params;
-          const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range } = req.query as {
-            sort?: QueryParamsClipsByChannelSort;
-            range?: QueryParamsStatsRange;
-          };
-
-          const medium_id = null;
-
-          const select = {
-            id: true,
-            id_text: true,
-            start_time: true,
-            end_time: true,
-            title: true,
-            description: true,
-            created_at: true,
-            item: {
-              id: true,
-              id_text: true,
-              pub_date: true,
-              title: true,
-              item_enclosures: true,
-              item_images: true
-            },
-            account: {
-              id_text: true
-            }
-          };
-
-          if (sort === "top") {
-            const order = getStatsOrder(range);
-            const config: FindManyOptions<StatsAggregatedClip> = {
-              order: { [order]: 'DESC' },
-              skip: offset,
-              take: limit,
-              select: {
-                clip: {
-                  ...select
-                }
-              },
-              relations: [
-                "clip",
-                "clip.item",
-                "clip.item.item_enclosures",
-                "clip.item.item_enclosures.item_enclosure_sources",
-                "clip.item.item_images",
-                "clip.account"
-              ]
-            };
-            const [statsResults, count] = await ClipController
-              .statsAggregatedClipService.getManyAndCountPublic(config, medium_id);
-            const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
-
-            const response: ApiListResponse<Clip> = {
-              data: clips,
-              meta: { page, count, limit }
-            };
-
-            res.status(200).json(response);  
-          } else {
-            let order = { created_at: 'DESC' };
-            if (sort === "oldest") {
-              order = { created_at: "ASC" };
-            }
-    
-            const [clips, count] = await clipService.getManyAndCount({
-              where: {
-                sharable_status: { id: SharableStatusEnum.Public },
-                item: {
-                  channel: { id_text: channel_id_text }
-                }
-              },
-              order,
-              skip: offset,
-              take: limit,
-              select,
-              relations: [
-                'item',
-                'item.item_enclosures',
-                'item.item_enclosures.item_enclosure_sources',
-                'item.item_images',
-                'account'
-              ]
-            });
-  
-            const response: ApiListResponse<Clip> = {
-              data: clips,
-              meta: { page, count, limit }
-            };
-  
-            res.status(200).json(response);
-          }
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
-      });
-    });
-  }
-
-  static async getManyByItemIdTextPublic(req: Request, res: Response): Promise<void> {
-    validateParamsObject(getByItemIdTextSchema, req, res, async () => {
-      validateQueryObject(getClipsPublicByItemIdTextSchema, req, res, async () => {
-        try {
-          const { item_id_text } = req.params;
-          const { page, limit, offset } = getPaginationParams(req);
-          const { sort, range, medium } = req.query as {
-            sort?: QueryParamsClipsByChannelSort;
-            range?: QueryParamsStatsRange;
-            medium?: QueryParamsMedium;
-          };
-
-          const selectedMedium: QueryParamsMedium = medium || 'all';
-          const medium_id = getMediumFromQueryParam(selectedMedium);
-
-          const select = {
-            id: true,
-            id_text: true,
-            start_time: true,
-            end_time: true,
-            title: true,
-            description: true,
-            created_at: true,
-            account: {
-              id_text: true
-            }
-          };
-
-          if (sort === "top") {
-            const order = getStatsOrder(range);
-            const config: FindManyOptions<StatsAggregatedClip> = {
-              order: { [order]: 'DESC' },
-              skip: offset,
-              take: limit,
-              select: {
-                clip: {
-                  ...select
-                }
-              },
-              relations: [
-                "clip",
-                "clip.account"
-              ]
-            };
-            const [statsResults, count] = await ClipController
-              .statsAggregatedClipService.getManyAndCountPublic(config, medium_id);
-            const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
-
-            const response: ApiListResponse<Clip> = {
-              data: clips,
-              meta: { page, count, limit }
-            };
-
-            res.status(200).json(response);  
-          } else {
-            let order = { created_at: 'DESC' };
-            if (sort === "oldest") {
-              order = { created_at: "ASC" };
-            }
-    
-            const [clips, count] = await clipService.getManyAndCount({
-              where: {
-                sharable_status: { id: SharableStatusEnum.Public },
-                item: { id_text: item_id_text }
-              },
-              order,
-              skip: offset,
-              take: limit,
-              select,
-              relations: [
-                'account'
-              ]
-            });
-  
-            const response: ApiListResponse<Clip> = {
-              data: clips,
-              meta: { page, count, limit }
-            };
-  
-            res.status(200).json(response);
-          }
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
-      });
-    });
-  }
-
   static async getClipsPrivate(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       try {
@@ -456,6 +338,442 @@ class ClipController {
       }
     });
   }
+
+  static async getManyPublicRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicManyRecentSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium } = req.query as {
+          medium: QueryParamsMedium;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = null;
+ 
+        const [clips, count] = await clipService.getManyPublic(
+          medium_id,
+          category_id,
+          {
+            order: { created_at: 'DESC' },
+            skip: offset,
+            take: limit,
+            relations: clipPublicManyRelations
+          }
+        );
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyPublicOldest(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicManyOldestSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium } = req.query as {
+          medium: QueryParamsMedium;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = null;
+ 
+        const [clips, count] = await clipService.getManyPublic(
+          medium_id,
+          category_id,
+          {
+            order: { created_at: 'ASC' },
+            skip: offset,
+            take: limit,
+            relations: clipPublicManyRelations
+          }
+        );
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyPublicTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicTopSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { range, medium } = req.query as {
+          range: QueryParamsStatsRange;
+          medium: QueryParamsMedium;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = null;
+
+        const order = getStatsOrder(range);
+        const config: FindManyOptions<StatsAggregatedClip> = {
+          order: { [order]: 'DESC' },
+          skip: offset,
+          take: limit,
+          relations: statsAggregationRelations
+        };
+        const [statsResults, count] = await ClipController
+          .statsAggregatedClipService.getManyAndCountPublic(config, medium_id, category_id);
+        const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);  
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyByCategoryPublicRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicManyCategoryRecentSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium, category } = req.query as {
+          medium: QueryParamsMedium;
+          category: CategoryMappingKeys;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = getCategoryEnumValue(category);
+ 
+        const [clips, count] = await clipService.getManyPublic(
+          medium_id,
+          category_id,
+          {
+            order: { created_at: 'DESC' },
+            skip: offset,
+            take: limit,
+            relations: clipPublicManyRelations
+          }
+        );
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyByCategoryPublicOldest(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicManyCategoryOldestSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { medium, category } = req.query as {
+          medium: QueryParamsMedium;
+          category: CategoryMappingKeys;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = getCategoryEnumValue(category);
+ 
+        const [clips, count] = await clipService.getManyPublic(
+          medium_id,
+          category_id,
+          {
+            order: { created_at: 'ASC' },
+            skip: offset,
+            take: limit,
+            relations: clipPublicManyRelations
+          }
+        );
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyByCategoryPublicTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getClipsPublicManyCategoryTopSchema, req, res, async () => {
+      try {
+        const { page, limit, offset } = getPaginationParams(req);
+        const { range, medium, category } = req.query as {
+          range: QueryParamsStatsRange;
+          medium: QueryParamsMedium;
+          category: CategoryMappingKeys;
+        };
+
+        const selectedMedium: QueryParamsMedium = medium;
+        const medium_id = getMediumFromQueryParam(selectedMedium);
+        const category_id = getCategoryEnumValue(category);
+
+        const order = getStatsOrder(range);
+        const config: FindManyOptions<StatsAggregatedClip> = {
+          order: { [order]: 'DESC' },
+          skip: offset,
+          take: limit,
+          relations: statsAggregationRelations
+        };
+        const [statsResults, count] = await ClipController
+          .statsAggregatedClipService.getManyAndCountPublic(config, medium_id, category_id);
+        const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
+
+        const response: ApiListResponse<Clip> = {
+          data: clips,
+          meta: { page, count, limit }
+        };
+
+        res.status(200).json(response);  
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
+    });
+  }
+
+  static async getManyByChannelPublicRecent(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByChannelRecentSchema, req, res, async () => {
+        try {
+          const { channel_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+
+          const channel = await channelService.getByIdText(channel_id_text);
+          if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+          }
+          
+          const [clips, count] = await clipService.getManyByChannelAndCountPublic(
+            channel_id_text,
+            {
+              order: { created_at: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: clipPublicManyChannelRelations
+            }
+          );
+          
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByChannelPublicOldest(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByChannelOldestSchema, req, res, async () => {
+        try {
+          const { channel_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+
+          const channel = await channelService.getByIdText(channel_id_text);
+          if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+          }
+
+          const [clips, count] = await clipService.getManyByChannelAndCountPublic(
+            channel_id_text,
+            {
+              order: { created_at: 'ASC' },
+              skip: offset,
+              take: limit,
+              relations: clipPublicManyChannelRelations
+            }
+          );
+          
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByChannelPublicTop(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByChannelTopSchema, req, res, async () => {
+        try {
+          const { channel_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+          const { range } = req.query as {
+            range: QueryParamsStatsRange;
+          };
+
+          const order = getStatsOrder(range);
+
+          const channel = await channelService.getByIdText(channel_id_text);
+          if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+          }
+
+          const results = await ClipController.statsAggregatedClipService.getManyByChannelsAndCountPublic(
+            [channel.id],
+            {
+              order: { [order]: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: statsAggregationChannelRelations
+            }
+          );
+          const statsResults = results[0];
+          const count = results[1];
+          const clips = statsResults.map((s: { clip: Clip }) => s.clip).filter(Boolean);
+
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByItemPublicRecent(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByItemIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByItemRecentSchema, req, res, async () => {
+        try {
+          const { item_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+
+          const item = await itemService.getByIdText(item_id_text);
+          if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+          }
+          
+          const [clips, count] = await clipService.getManyByItemAndCountPublic(
+            item_id_text,
+            {
+              order: { created_at: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: clipPublicManyItemRelations
+            }
+          );
+          
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByItemPublicOldest(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByItemIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByItemOldestSchema, req, res, async () => {
+        try {
+          const { item_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+
+          const item = await itemService.getByIdText(item_id_text);
+          if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+          }
+          
+          const [clips, count] = await clipService.getManyByItemAndCountPublic(
+            item_id_text,
+            {
+              order: { created_at: 'ASC' },
+              skip: offset,
+              take: limit,
+              relations: clipPublicManyItemRelations
+            }
+          );
+          
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManyByItemPublicTop(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getByItemIdTextSchema, req, res, async () => {
+      validateQueryObject(getClipsPublicByItemTopSchema, req, res, async () => {
+        try {
+          const { item_id_text } = req.params;
+          const { page, limit, offset } = getPaginationParams(req);
+          const { range } = req.query as {
+            range: QueryParamsStatsRange;
+          };
+
+          const order = getStatsOrder(range);
+
+          const item = await itemService.getByIdText(item_id_text);
+          if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+          }
+
+          const results = await ClipController.statsAggregatedClipService.getManyByItemAndCountPublic(
+            item.id,
+            {
+              order: { [order]: 'DESC' },
+              skip: offset,
+              take: limit,
+              relations: statsAggregationItemRelations
+            }
+          );
+          const statsResults = results[0];
+          const count = results[1];
+          const clips = statsResults.map((s: { clip: Clip }) => s.clip).filter(Boolean);
+
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (err) {
+          handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
 }
 
 export { ClipController };

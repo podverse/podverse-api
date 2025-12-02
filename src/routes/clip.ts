@@ -6,13 +6,27 @@ import { asyncHandler } from '@api/middleware/asyncHandler';
 const router = Router();
 router.use(`${config.api.prefix}${config.api.version}/clip`, router);
 
-router.post('/', asyncHandler(ClipController.createClip));
+router.get('/public/recent', asyncHandler(ClipController.getManyPublicRecent));
+router.get('/public/oldest', asyncHandler(ClipController.getManyPublicOldest));
+router.get('/public/top', asyncHandler(ClipController.getManyPublicTop));
+
+router.get('/public/category/recent', asyncHandler(ClipController.getManyByCategoryPublicRecent));
+router.get('/public/category/oldest', asyncHandler(ClipController.getManyByCategoryPublicOldest));
+router.get('/public/category/top', asyncHandler(ClipController.getManyByCategoryPublicTop));
+
+router.get('/public/channel/recent/:channel_id_text', asyncHandler(ClipController.getManyByChannelPublicRecent));
+router.get('/public/channel/oldest/:channel_id_text', asyncHandler(ClipController.getManyByChannelPublicOldest));
+router.get('/public/channel/top/:channel_id_text', asyncHandler(ClipController.getManyByChannelPublicTop));
+
+router.get('/public/item/recent/:item_id_text', asyncHandler(ClipController.getManyByItemPublicRecent));
+router.get('/public/item/oldest/:item_id_text', asyncHandler(ClipController.getManyByItemPublicOldest));
+router.get('/public/item/top/:item_id_text', asyncHandler(ClipController.getManyByItemPublicTop));
+
 router.get('/private', asyncHandler(ClipController.getClipsPrivate));
-router.get('/public/channel/:channel_id_text', asyncHandler(ClipController.getManyByChannelIdTextPublic));
-router.get('/public/item/:item_id_text', asyncHandler(ClipController.getManyByItemIdTextPublic));
-router.get('/public', asyncHandler(ClipController.getClipsPublic));
+
+router.post('/', asyncHandler(ClipController.createClip));
+router.get('/:clip_id_text', asyncHandler(ClipController.getClipByIdText));
 router.patch('/:clip_id_text', asyncHandler(ClipController.updateClip));
 router.delete('/:clip_id_text', asyncHandler(ClipController.deleteClip));
-router.get('/:clip_id_text', asyncHandler(ClipController.getClipById));
 
 export const clipRouter = router;
