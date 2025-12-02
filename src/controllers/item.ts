@@ -318,11 +318,10 @@ export class ItemController {
             take: limit,
             relations: subItemGetManyRelationsWithChannel
           };
-          const itemType = "normal";
           const results = await ItemController.statsAggregatedItemService.getManyByChannelsAndCount(
             config,
             channel_ids,
-            itemType
+            "normal"
           );
           const statsResults = results[0];
           const count = results[1];
