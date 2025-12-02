@@ -317,17 +317,19 @@ export class ItemController {
             take: limit,
             relations: itemGetManyRelationsWithChannel
           };
-          const statsResults = await ItemController.statsAggregatedItemService.getManyByChannels(
+          const itemType = "normal";
+          const results = await ItemController.statsAggregatedItemService.getManyByChannelsAndCount(
             config,
             channel_ids,
-            medium_id,
-            "normal"
+            itemType
           );
+          const statsResults = results[0];
+          const count = results[1];
           const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
 
           const response: ApiListResponse<Item> = {
             data: items,
-            meta: { page, count: null, limit }
+            meta: { page, count, limit }
           };
           res.json(response);
         } catch (error) {
