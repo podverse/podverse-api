@@ -2,6 +2,7 @@ import {
   ApiListResponse,
   CATEGORY_MAPPING_KEYS,
   CategoryMappingKeys,
+  emptyApiListResponse,
   getCategoryEnumValue,
   getMediumFromQueryParam,
   QUERY_PARAMS_MEDIUMS,
@@ -18,6 +19,7 @@ import { handleGenericErrorResponse } from './helpers/error';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getPaginationParams } from './helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
+import { getFollowedChannelIds } from '@api/lib/followed';
 
 const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
@@ -108,6 +110,17 @@ const getClipsPublicByItemOldestSchema = Joi.object({
 const getClipsPublicByItemTopSchema = Joi.object({
   page: Joi.number().integer().min(1).required(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required()
+});
+
+const getManySubscribedRecentSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManySubscribedTopSchema = Joi.object({
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
+  range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
+  page: Joi.number().integer().min(1).required()
 });
 
 const clipPublicManyRelations = [
@@ -351,7 +364,7 @@ class ClipController {
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
  
-        const [clips, count] = await clipService.getManyPublic(
+        const clips = await clipService.getManyPublic(
           medium_id,
           category_id,
           {
@@ -364,7 +377,7 @@ class ClipController {
 
         const response: ApiListResponse<Clip> = {
           data: clips,
-          meta: { page, count, limit }
+          meta: { page, count: null, limit }
         };
 
         res.status(200).json(response);
@@ -386,7 +399,7 @@ class ClipController {
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
  
-        const [clips, count] = await clipService.getManyPublic(
+        const clips = await clipService.getManyPublic(
           medium_id,
           category_id,
           {
@@ -399,7 +412,7 @@ class ClipController {
 
         const response: ApiListResponse<Clip> = {
           data: clips,
-          meta: { page, count, limit }
+          meta: { page, count: null, limit }
         };
 
         res.status(200).json(response);
@@ -429,13 +442,13 @@ class ClipController {
           take: limit,
           relations: statsAggregationRelations
         };
-        const [statsResults, count] = await ClipController
-          .statsAggregatedClipService.getManyAndCountPublic(config, medium_id, category_id);
+        const statsResults = await ClipController
+          .statsAggregatedClipService.getManyPublic(config, medium_id, category_id);
         const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
 
         const response: ApiListResponse<Clip> = {
           data: clips,
-          meta: { page, count, limit }
+          meta: { page, count: null, limit }
         };
 
         res.status(200).json(response);  
@@ -769,6 +782,93 @@ class ClipController {
           res.json(response);
         } catch (err) {
           handleGenericErrorResponse(res, err);
+        }
+      });
+    });
+  }
+
+  static async getManySubscribedPublicRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManySubscribedRecentSchema, req, res, async () => {
+      ensureAuthenticated(req, res, async () => {
+        try {
+          const { page, limit, offset } = getPaginationParams(req);
+          const { medium } = req.query as {
+            medium: QueryParamsMedium;
+          };
+          const account_id = req.user!.id;
+          const selectedMedium: QueryParamsMedium = medium;
+          const medium_id = getMediumFromQueryParam(selectedMedium);
+
+          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          if (!channel_ids.length) {
+            const response: ApiListResponse<Clip> = emptyApiListResponse;
+            return res.json(response);
+          }
+
+          const config: FindManyOptions<Clip> = {
+            order: { created_at: 'DESC' },
+            skip: offset,
+            take: limit,
+            relations: clipPublicManyRelations,
+          };
+
+          const results = await clipService.getManyByChannels(channel_ids, config);
+          const clips = results[0];
+          const count = results[1];
+
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManySubscribedPublicTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManySubscribedTopSchema, req, res, async () => {
+      ensureAuthenticated(req, res, async () => {
+        try {
+          const { page, limit, offset } = getPaginationParams(req);
+          const { range, medium } = req.query as {
+            range: QueryParamsStatsRange;
+            medium: QueryParamsMedium;
+          };
+          const account_id = req.user!.id;
+          const selectedMedium: QueryParamsMedium = medium;
+          const medium_id = getMediumFromQueryParam(selectedMedium);
+
+          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          if (!channel_ids.length) {
+            const response: ApiListResponse<Clip> = emptyApiListResponse;
+            return res.json(response);
+          }
+
+          const order = getStatsOrder(range);
+          const config: FindManyOptions<StatsAggregatedClip> = {
+            order: { [order]: 'DESC' },
+            skip: offset,
+            take: limit,
+            relations: statsAggregationRelations
+          };
+          const results = await ClipController.statsAggregatedClipService.getManyByChannelsAndCountPublic(
+            channel_ids,
+            config
+          );
+          const statsResults = results[0];
+          const count = results[1];
+          const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
+
+          const response: ApiListResponse<Clip> = {
+            data: clips,
+            meta: { page, count, limit }
+          };
+          res.json(response);
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
         }
       });
     });
