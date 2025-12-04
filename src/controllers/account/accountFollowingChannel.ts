@@ -15,7 +15,7 @@ const getFollowedChannelsSchema = Joi.object({
 });
 
 const getFollowedChannelsQuerySchema = Joi.object({
-  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).optional()
+  medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required()
 });
 
 class AccountFollowingChannelController {
@@ -30,9 +30,9 @@ class AccountFollowingChannelController {
             const jwtUser = req.user!;
             const { account_id_text } = req.params;
             const { medium } = req.query as {
-              medium?: QueryParamsMedium;
+              medium: QueryParamsMedium;
             };
-            const selectedMedium: QueryParamsMedium = medium || 'all';
+            const selectedMedium: QueryParamsMedium = medium;
             const medium_id = getMediumFromQueryParam(selectedMedium);
             const account = await AccountFollowingChannelController.accountService.getByIdText(account_id_text, { relations: ['sharable_status'] });
             if (!account) {
