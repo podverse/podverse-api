@@ -22,6 +22,9 @@ router.get('/public/item/recent/:item_id_text', asyncHandler(ClipController.getM
 router.get('/public/item/oldest/:item_id_text', asyncHandler(ClipController.getManyByItemPublicOldest));
 router.get('/public/item/top/:item_id_text', asyncHandler(ClipController.getManyByItemPublicTop));
 
+router.get('/public/subscribed/recent', asyncHandler(ClipController.getManySubscribedPublicRecent));
+router.get('/public/subscribed/top', asyncHandler(ClipController.getManySubscribedPublicTop));
+
 router.get('/private', asyncHandler(ClipController.getClipsPrivate));
 
 router.post('/', asyncHandler(ClipController.createClip));
