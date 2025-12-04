@@ -113,6 +113,7 @@ export class ItemController {
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
+        const liveItemType = null;
 
         const recentConfig: FindManyOptions<Item> = {
           order: { pub_date: 'DESC' },
@@ -124,7 +125,8 @@ export class ItemController {
           recentConfig,
           medium_id,
           category_id,
-          "normal"
+          "normal",
+          liveItemType
         );
 
         const response: ApiListResponse<Item> = {
@@ -146,7 +148,7 @@ export class ItemController {
           range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium || 'all';
+        const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
         
@@ -185,9 +187,10 @@ export class ItemController {
           category: CategoryMappingKeys;
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium || 'all';
+        const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
+        const liveItemType = null;
 
         const recentConfig: FindManyOptions<Item> = {
           order: { pub_date: 'DESC' },
@@ -199,7 +202,8 @@ export class ItemController {
           recentConfig,
           medium_id,
           category_id,
-          "normal"
+          "normal",
+          liveItemType
         );
         const items = recentResults.filter(Boolean);
 
@@ -263,7 +267,7 @@ export class ItemController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium || 'all';
+          const selectedMedium: QueryParamsMedium = medium;
           const medium_id = getMediumFromQueryParam(selectedMedium);
 
           const channel_ids = await getFollowedChannelIds(account_id, medium_id);
