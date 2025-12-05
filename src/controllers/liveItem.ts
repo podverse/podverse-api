@@ -1,9 +1,53 @@
 import { Request, Response } from "express";
+import Joi from "joi";
+import { LIVE_ITEM_STATUSES } from "podverse-helpers";
 import { ChannelService, Item, itemGetManyRelations, ItemService, LiveItemStatusEnum } from "podverse-orm";
+import { validateQueryObject } from "@api/lib/validation";
+import { ItemController } from "@api/controllers/item";
+
+export const getManyLiveSchema = Joi.object({
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).required()
+}).unknown(true);
 
 export class LiveItemController {
   private static itemService = new ItemService();
   private static channelService = new ChannelService();
+
+  static async getManyGlobalRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManyGlobalRecent(req, res);
+    });
+  }
+
+  static async getManyGlobalTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManyGlobalTop(req, res);
+    });
+  }
+
+  static async getManyCategoryRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManyCategoryRecent(req, res);
+    });
+  }
+
+  static async getManyCategoryTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManyCategoryTop(req, res);
+    });
+  }
+
+  static async getManySubscribedRecent(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManySubscribedRecent(req, res);
+    });
+  }
+
+  static async getManySubscribedTop(req: Request, res: Response): Promise<void> {
+    validateQueryObject(getManyLiveSchema, req, res, async () => {
+      return ItemController.getManySubscribedTop(req, res);
+    });
+  }
 
   static async getManyByChannel(req: Request, res: Response): Promise<void> {
     const { channelIdOrIdText } = req.params;

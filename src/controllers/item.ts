@@ -4,7 +4,7 @@ import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemServ
   StatsAggregatedItem, FindManyOptions, subItemGetManyRelations,
   StatsAggregatedItemService, ChannelService, 
   itemGetManyRelationsWithChannel,
-  subItemGetManyRelationsWithChannel} from 'podverse-orm';
+  subItemGetManyRelationsWithChannel } from 'podverse-orm';
 import { parseChapters } from 'podverse-parser';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -12,6 +12,7 @@ import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, emptyApiListResponse, getCategoryEnumValue,
   getMediumFromQueryParam,
+  LIVE_ITEM_STATUSES,
   QUERY_PARAMS_DIRECTION_VALUES,
   QUERY_PARAMS_MEDIUMS,
   QUERY_PARAMS_STATS_RANGE_VALUES,
@@ -27,37 +28,43 @@ const getByIdOrIdTextSchema = Joi.object({
 
 const getManyGlobalRecentSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManyGlobalTopSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManyCategoryRecentSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
   category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManyCategoryTopSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
   category: Joi.string().valid(...CATEGORY_MAPPING_KEYS).required(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManySubscribedRecentSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManySubscribedTopSchema = Joi.object({
   medium: Joi.string().valid(...QUERY_PARAMS_MEDIUMS).required(),
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
-  page: Joi.number().integer().min(1).required()
+  page: Joi.number().integer().min(1).required(),
+  liveItemType: Joi.string().valid(...LIVE_ITEM_STATUSES).optional()
 });
 
 const getManyByChannelParmsSchema = Joi.object({
@@ -107,13 +114,15 @@ export class ItemController {
     validateQueryObject(getManyGlobalRecentSchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { medium } = req.query as {
+        const { medium, liveItemType: liveItemTypeParam } = req.query as {
           medium: QueryParamsMedium;
+          liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
-        const liveItemType = null;
+        const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+        let liveItemType = liveItemTypeParam || null;
 
         const recentConfig: FindManyOptions<Item> = {
           order: { pub_date: 'DESC' },
@@ -125,7 +134,7 @@ export class ItemController {
           recentConfig,
           medium_id,
           category_id,
-          "normal",
+          itemType,
           liveItemType
         );
 
@@ -144,13 +153,16 @@ export class ItemController {
     validateQueryObject(getManyGlobalTopSchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { range, medium } = req.query as {
+        const { range, medium, liveItemType: liveItemTypeParam } = req.query as {
           range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
+          liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
+        const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+        let liveItemType = liveItemTypeParam || null;
         
         const order = getStatsOrder(range);
         const config: FindManyOptions<StatsAggregatedItem> = {
@@ -164,7 +176,8 @@ export class ItemController {
           config,
           medium_id,
           category_id,
-          "normal"
+          itemType,
+          liveItemType
         );
 
         const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
@@ -183,14 +196,16 @@ export class ItemController {
     validateQueryObject(getManyCategoryRecentSchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { category, medium } = req.query as {
+        const { category, medium, liveItemType: liveItemTypeParam } = req.query as {
           category: CategoryMappingKeys;
           medium: QueryParamsMedium;
+          liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
-        const liveItemType = null;
+        const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+        const liveItemType = liveItemTypeParam || null;
 
         const recentConfig: FindManyOptions<Item> = {
           order: { pub_date: 'DESC' },
@@ -202,7 +217,7 @@ export class ItemController {
           recentConfig,
           medium_id,
           category_id,
-          "normal",
+          itemType,
           liveItemType
         );
         const items = recentResults.filter(Boolean);
@@ -222,14 +237,17 @@ export class ItemController {
     validateQueryObject(getManyCategoryTopSchema, req, res, async () => {
       try {
         const { page, limit, offset } = getPaginationParams(req);
-        const { category, range, medium } = req.query as {
+        const { category, range, medium, liveItemType: liveItemTypeParam } = req.query as {
           category: CategoryMappingKeys;
           range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
+          liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
         const selectedMedium: QueryParamsMedium = medium;
         const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
+        const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+        const liveItemType = liveItemTypeParam || null;
         
         const order = getStatsOrder(range);
         const config: FindManyOptions<StatsAggregatedItem> = {
@@ -243,7 +261,8 @@ export class ItemController {
           config,
           medium_id,
           category_id,
-          "normal"
+          itemType,
+          liveItemType
         );
 
         const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
@@ -263,12 +282,15 @@ export class ItemController {
       ensureAuthenticated(req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { medium } = req.query as {
+          const { medium, liveItemType: liveItemTypeParam } = req.query as {
             medium: QueryParamsMedium;
+            liveItemType?: typeof LIVE_ITEM_STATUSES[number];
           };
           const account_id = req.user!.id;
           const selectedMedium: QueryParamsMedium = medium;
           const medium_id = getMediumFromQueryParam(selectedMedium);
+          const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+          const liveItemType = liveItemTypeParam || null;
 
           const channel_ids = await getFollowedChannelIds(account_id, medium_id);
           if (!channel_ids.length) {
@@ -282,7 +304,12 @@ export class ItemController {
             take: limit,
             relations: itemGetManyRelationsWithChannel,
           };
-          const items = await ItemController.itemService.getManyByChannels(channel_ids, config);
+          const items = await ItemController.itemService.getManyByChannels(
+            channel_ids,
+            itemType,
+            liveItemType,
+            config
+          );
 
           const response: ApiListResponse<Item> = {
             data: items,
@@ -301,13 +328,16 @@ export class ItemController {
       ensureAuthenticated(req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { range, medium } = req.query as {
+          const { range, medium, liveItemType: liveItemTypeParam } = req.query as {
             range: QueryParamsStatsRange;
             medium: QueryParamsMedium;
+            liveItemType?: typeof LIVE_ITEM_STATUSES[number];
           };
           const account_id = req.user!.id;
           const selectedMedium: QueryParamsMedium = medium;
           const medium_id = getMediumFromQueryParam(selectedMedium);
+          const itemType = liveItemTypeParam ? 'live-item' : 'normal';
+          const liveItemType = liveItemTypeParam || null;
 
           const channel_ids = await getFollowedChannelIds(account_id, medium_id);
           if (!channel_ids.length) {
@@ -325,7 +355,8 @@ export class ItemController {
           const results = await ItemController.statsAggregatedItemService.getManyByChannelsAndCount(
             config,
             channel_ids,
-            "normal"
+            itemType,
+            liveItemType
           );
           const statsResults = results[0];
           const count = results[1];
