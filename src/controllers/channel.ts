@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { getCategoryEnumValue, CATEGORY_MAPPING_KEYS, QUERY_PARAMS_STATS_RANGE_VALUES,
   ApiListResponse, CategoryMappingKeys, QueryParamsStatsRange, QueryParamsMedium,
-  getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS } from 'podverse-helpers';
+  QUERY_PARAMS_MEDIUMS } from 'podverse-helpers';
 import { channelGetOneRelations, channelGetManyRelations, Channel, ChannelService, FindManyOptions,
   AccountFollowingChannelService, StatsAggregatedChannelService, AccountFollowingChannel,
   StatsAggregatedChannel, subChannelGetManyRelations} from 'podverse-orm';
@@ -99,8 +99,6 @@ export class ChannelController {
         const { medium } = req.query as {
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
 
         const recentConfig: FindManyOptions<Channel> = {
@@ -111,7 +109,7 @@ export class ChannelController {
         };
         const channels = await ChannelController.channelService.getMany(
           recentConfig,
-          medium_id,
+          medium,
           category_id
         );
 
@@ -134,8 +132,6 @@ export class ChannelController {
           range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
 
         const orderField = getStatsOrder(range);
@@ -147,7 +143,7 @@ export class ChannelController {
         };
         const statsResults = await ChannelController.statsAggregatedChannelService.getMany(
           topConfig,
-          medium_id,
+          medium,
           category_id
         );
         const channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
@@ -171,8 +167,6 @@ export class ChannelController {
           category: CategoryMappingKeys;
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
         const recentConfig: FindManyOptions<Channel> = {
@@ -183,7 +177,7 @@ export class ChannelController {
         };
         const recentResults = await ChannelController.channelService.getMany(
           recentConfig,
-          medium_id,
+          medium,
           category_id
         );
         const channels = recentResults.filter(Boolean);
@@ -208,8 +202,6 @@ export class ChannelController {
           range: QueryParamsStatsRange;
           medium: QueryParamsMedium;
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
         const orderField = getStatsOrder(range);;
@@ -221,7 +213,7 @@ export class ChannelController {
         };
         const statsResults = await ChannelController.statsAggregatedChannelService.getMany(
           topConfig,
-          medium_id,
+          medium,
           category_id
         );
         const channels = statsResults.map((s: { channel: Channel }) => s.channel).filter(Boolean);
@@ -246,10 +238,8 @@ export class ChannelController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channelIds = await getFollowedChannelIds(account_id, medium_id);
+          const channelIds = await getFollowedChannelIds(account_id, medium);
           let channels: Channel[] = [];
           let count = channelIds.length;
 
@@ -264,7 +254,7 @@ export class ChannelController {
             };
 
             const { results: followedResults, count: followedCount } = await accountFollowingChannelService
-              .getFollowedChannelsWithCount(Number(account_id), medium_id, config);
+              .getFollowedChannelsWithCount(Number(account_id), medium, config);
             count = followedCount ?? channelIds.length;
             channels = followedResults.map((f: { channel: Channel }) => f.channel).filter(Boolean);
           }
@@ -290,10 +280,8 @@ export class ChannelController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channelIds = await getFollowedChannelIds(account_id, medium_id);
+          const channelIds = await getFollowedChannelIds(account_id, medium);
           let channels: Channel[] = [];
           let count = channelIds.length;
 
@@ -308,7 +296,7 @@ export class ChannelController {
             };
 
             const { results: followedResults, count: followedCount } = await accountFollowingChannelService
-              .getFollowedChannelsWithCount(Number(account_id), medium_id, config);
+              .getFollowedChannelsWithCount(Number(account_id), medium, config);
             count = followedCount ?? channelIds.length;
             channels = followedResults.map((f: { channel: Channel }) => f.channel).filter(Boolean);
           }
@@ -335,10 +323,8 @@ export class ChannelController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channelIds = await getFollowedChannelIds(account_id, medium_id);
+          const channelIds = await getFollowedChannelIds(account_id, medium);
           let channels: Channel[] = [];
           let count = 0;
 

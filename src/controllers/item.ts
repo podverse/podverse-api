@@ -11,7 +11,6 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { getPaginationParams } from '@api/controllers/helpers/pagination';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, emptyApiListResponse, getCategoryEnumValue,
-  getMediumFromQueryParam,
   LIVE_ITEM_STATUSES,
   QUERY_PARAMS_DIRECTION_VALUES,
   QUERY_PARAMS_MEDIUMS,
@@ -118,8 +117,6 @@ export class ItemController {
           medium: QueryParamsMedium;
           liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         let liveItemType = liveItemTypeParam || null;
@@ -130,9 +127,12 @@ export class ItemController {
           take: limit,
           relations: itemGetManyRelationsWithChannel
         };
+
+        console.log("itemType", itemType, "liveItemType", liveItemType);
+
         const items = await ItemController.itemService.getMany(
           recentConfig,
-          medium_id,
+          medium,
           category_id,
           itemType,
           liveItemType
@@ -158,8 +158,6 @@ export class ItemController {
           medium: QueryParamsMedium;
           liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         let liveItemType = liveItemTypeParam || null;
@@ -174,7 +172,7 @@ export class ItemController {
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
           config,
-          medium_id,
+          medium,
           category_id,
           itemType,
           liveItemType
@@ -201,8 +199,6 @@ export class ItemController {
           medium: QueryParamsMedium;
           liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         const liveItemType = liveItemTypeParam || null;
@@ -215,7 +211,7 @@ export class ItemController {
         };
         const recentResults = await ItemController.itemService.getMany(
           recentConfig,
-          medium_id,
+          medium,
           category_id,
           itemType,
           liveItemType
@@ -243,8 +239,6 @@ export class ItemController {
           medium: QueryParamsMedium;
           liveItemType?: typeof LIVE_ITEM_STATUSES[number];
         };
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         const liveItemType = liveItemTypeParam || null;
@@ -259,7 +253,7 @@ export class ItemController {
 
         const statsResults = await ItemController.statsAggregatedItemService.getMany(
           config,
-          medium_id,
+          medium,
           category_id,
           itemType,
           liveItemType
@@ -287,12 +281,10 @@ export class ItemController {
             liveItemType?: typeof LIVE_ITEM_STATUSES[number];
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
           const itemType = liveItemTypeParam ? 'live-item' : 'normal';
           const liveItemType = liveItemTypeParam || null;
 
-          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          const channel_ids = await getFollowedChannelIds(account_id, medium);
           if (!channel_ids.length) {
             const response: ApiListResponse<Item> = emptyApiListResponse;
             return res.json(response);
@@ -334,12 +326,10 @@ export class ItemController {
             liveItemType?: typeof LIVE_ITEM_STATUSES[number];
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
           const itemType = liveItemTypeParam ? 'live-item' : 'normal';
           const liveItemType = liveItemTypeParam || null;
 
-          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          const channel_ids = await getFollowedChannelIds(account_id, medium);
           if (!channel_ids.length) {
             const response: ApiListResponse<Item> = emptyApiListResponse;
             return res.json(response);
@@ -449,8 +439,10 @@ export class ItemController {
           const { range } = req.query as {
             range: QueryParamsStatsRange;
           };
-          const medium_id = null;
+          const medium = null;
           const category_id = null;
+          const itemType = "normal";
+          const liveItemType = null;
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -472,9 +464,10 @@ export class ItemController {
           };
           const statsResults = await ItemController.statsAggregatedItemService.getMany(
             config,
-            medium_id,
+            medium,
             category_id,
-            "normal"
+            itemType,
+            liveItemType
           );
           const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
 

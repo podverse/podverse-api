@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import { AccountFollowingChannelService, AccountService } from "podverse-orm";
-import { getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS, QueryParamsMedium, SharableStatusEnum } from "podverse-helpers";
+import { QUERY_PARAMS_MEDIUMS, QueryParamsMedium, SharableStatusEnum } from "podverse-helpers";
 import { ensureAuthenticated, optionalEnsureAuthenticated } from "@api/lib/auth";
 import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject, validateQueryObject } from "@api/lib/validation";
@@ -32,9 +32,8 @@ class AccountFollowingChannelController {
             const { medium } = req.query as {
               medium: QueryParamsMedium;
             };
-            const selectedMedium: QueryParamsMedium = medium;
-            const medium_id = getMediumFromQueryParam(selectedMedium);
-            const account = await AccountFollowingChannelController.accountService.getByIdText(account_id_text, { relations: ['sharable_status'] });
+            const account = await AccountFollowingChannelController.accountService.getByIdText(
+              account_id_text, { relations: ['sharable_status'] });
             if (!account) {
               return res.status(404).json({ message: 'Account not found' });
             }
@@ -47,7 +46,7 @@ class AccountFollowingChannelController {
   
             const followedChannels = await AccountFollowingChannelController
               .accountFollowingChannelService
-              .getFollowedChannels(account.id, medium_id, { relations: ['channel'] });
+              .getFollowedChannels(account.id, medium, { relations: ['channel'] });
             res.json(followedChannels);
           } catch (err) {
             handleGenericErrorResponse(res, err);

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { ApiListResponse, getMediumFromQueryParam, QUERY_PARAMS_MEDIUMS,
-  QUERY_PARAMS_STATS_RANGE_VALUES, QUERY_PARAMS_SUBSCRIBED_FULL_SORT,
-  QueryParamsMedium, QueryParamsStatsRange,
+import { ApiListResponse, getQueueMediumIdFromType, QUERY_PARAMS_MEDIUMS,
+  QUERY_PARAMS_QUEUE_MEDIUMS,
+  QUERY_PARAMS_STATS_RANGE_VALUES,
+  QueryParamsQueueMedium, QueryParamsStatsRange,
   SharableStatusEnum } from 'podverse-helpers';
 import { AccountFollowingPlaylist, AccountFollowingPlaylistService, FindManyOptions, Playlist,
   PlaylistService, StatsAggregatedPlaylist, StatsAggregatedPlaylistService } from 'podverse-orm';
@@ -16,7 +17,7 @@ import { getFollowedPlaylistIdsPrivate } from '@api/lib/followed';
 const createPlaylistSchema = Joi.object({
   title: Joi.string().allow(null, ''),
   description: Joi.string().allow(null, ''),
-  medium_id: Joi.number().min(1).required(),
+  medium: Joi.string().valid(...QUERY_PARAMS_QUEUE_MEDIUMS).required(),
   sharable_status_id: Joi.number().min(1).required()
 });
 
@@ -134,11 +135,24 @@ class PlaylistController {
       validateBodyObject(createPlaylistSchema, req, res, async () => {
         const account = req.user!;
 
+        const { title, description, medium, sharable_status_id } = req.body as {
+          title: string;
+          description: string;
+          medium: QueryParamsQueueMedium;
+          sharable_status_id: number;
+        };
+
+        const medium_id = getQueueMediumIdFromType(medium);
+
+        if (!medium_id) {
+          return res.status(400).json({ message: 'Invalid medium type' });
+        }
+
         const dto = {
-          title: req.body.title,
-          description: req.body.description,
-          medium_id: req.body.medium_id,
-          sharable_status_id: req.body.sharable_status_id
+          title,
+          description,
+          medium_id,
+          sharable_status_id
         };
 
         try {
@@ -161,11 +175,25 @@ class PlaylistController {
           validateBodyObject(updatePlaylistSchema, req, res, async () => {
             const account = req.user!;
             const { playlist_id_text } = req.params;
+            
+            const { title, description, medium, sharable_status_id } = req.body as {
+              title: string;
+              description: string;
+              medium: QueryParamsQueueMedium;
+              sharable_status_id: number;
+            };
+
+            const medium_id = getQueueMediumIdFromType(medium);
+
+            if (!medium_id) {
+              return res.status(400).json({ message: 'Invalid medium type' });
+            }
+
             const dto = {
-              title: req.body.title,
-              description: req.body.description,
-              medium_id: req.body.medium_id,
-              sharable_status_id: req.body.sharable_status_id
+              title,
+              description,
+              medium_id,
+              sharable_status_id
             };
 
             try {
@@ -202,11 +230,10 @@ class PlaylistController {
     validateQueryObject(getManyPublicTopSchema, req, res, async () => {
       try {
         const { medium, range } = req.query as {
-          medium: QueryParamsMedium;
+          medium: QueryParamsQueueMedium;
           range: QueryParamsStatsRange
         };
         const { page, limit, offset } = getPaginationParams(req);
-        const medium_id = getMediumFromQueryParam(medium);
         
         const order = getStatsOrder(range);
         const config: FindManyOptions<StatsAggregatedPlaylist> = {
@@ -216,7 +243,7 @@ class PlaylistController {
         };
 
         const statsResults = await PlaylistController
-          .statsAggregatedPlaylistService.getManyPublic(config, medium_id);
+          .statsAggregatedPlaylistService.getManyPublic(config, medium);
         const playlists = statsResults
           .map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
 
@@ -237,7 +264,7 @@ class PlaylistController {
           const account = req.user!;
 
           const { medium, range } = req.query as {
-            medium: QueryParamsMedium;
+            medium: QueryParamsQueueMedium;
             range: QueryParamsStatsRange;
           };
 
@@ -253,7 +280,7 @@ class PlaylistController {
           const statsResults = await PlaylistController.statsAggregatedPlaylistService.getManyPrivate(
             config,
             account.id,
-            getMediumFromQueryParam(medium)
+            medium
           );
           const data = statsResults[0].map((stat: { playlist: Playlist }) => stat.playlist).filter(Boolean);
           const count = statsResults[1];
@@ -277,10 +304,9 @@ class PlaylistController {
         try {
           const account = req.user!;
           const { medium } = req.query as {
-            medium: QueryParamsMedium;
+            medium: QueryParamsQueueMedium;
           };
           const { page, limit, offset } = getPaginationParams(req);
-          const medium_id = getMediumFromQueryParam(medium);
 
           const config: FindManyOptions<Playlist> = {
             skip: offset,
@@ -290,7 +316,7 @@ class PlaylistController {
 
           const results = await PlaylistController.playlistService.getManyPrivate(
             account.id,
-            medium_id,
+            medium,
             config
           );
 
@@ -313,10 +339,9 @@ class PlaylistController {
         try {
           const account = req.user!;
           const { medium } = req.query as {
-            medium: QueryParamsMedium;
+            medium: QueryParamsQueueMedium;
           };
           const { page, limit, offset } = getPaginationParams(req);
-          const medium_id = getMediumFromQueryParam(medium);
 
           const config: FindManyOptions<Playlist> = {
             skip: offset,
@@ -326,7 +351,7 @@ class PlaylistController {
 
           const results = await PlaylistController.playlistService.getManyPrivate(
             account.id,
-            medium_id,
+            medium,
             config
           );
 
@@ -349,10 +374,9 @@ class PlaylistController {
         try {
           const account = req.user!;
           const { medium } = req.query as {
-            medium: QueryParamsMedium;
+            medium: QueryParamsQueueMedium;
           };
           const { page, limit, offset } = getPaginationParams(req);
-          const medium_id = getMediumFromQueryParam(medium);
 
           const config: FindManyOptions<Playlist> = {
             skip: offset,
@@ -362,7 +386,7 @@ class PlaylistController {
 
           const results = await PlaylistController.playlistService.getManyPrivate(
             account.id,
-            medium_id,
+            medium,
             config
           );
 
@@ -385,14 +409,13 @@ class PlaylistController {
         const { page, limit, offset } = getPaginationParams(req);
         const { range, medium } = req.query as {
           range: QueryParamsStatsRange;
-          medium: QueryParamsMedium;
+          medium: QueryParamsQueueMedium;
         };
         const account_id = req.user!.id;
-        const medium_id = getMediumFromQueryParam(medium);
 
         const playlist_ids = await getFollowedPlaylistIdsPrivate(
           account_id,
-          medium_id
+          medium
         );
         const order = getStatsOrder(range);
         const config: FindManyOptions<StatsAggregatedPlaylist> = {
@@ -425,10 +448,9 @@ class PlaylistController {
       validateQueryObject(getManyPrivateFollowedRecentSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
         const { medium } = req.query as {
-          medium: QueryParamsMedium;
+          medium: QueryParamsQueueMedium;
         };
         const account_id = req.user!.id;
-        const medium_id = getMediumFromQueryParam(medium);
 
         const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
         const config: FindManyOptions<AccountFollowingPlaylist> = {
@@ -437,7 +459,7 @@ class PlaylistController {
           relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
           order: { playlist: { last_updated: 'DESC' } }
         };
-        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium, config);
         const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
         const count = results[1];
 
@@ -455,10 +477,9 @@ class PlaylistController {
       validateQueryObject(getManyPrivateFollowedOldestSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
         const { medium } = req.query as {
-          medium: QueryParamsMedium;
+          medium: QueryParamsQueueMedium;
         };
         const account_id = req.user!.id;
-        const medium_id = getMediumFromQueryParam(medium);
 
         const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
         const config: FindManyOptions<AccountFollowingPlaylist> = {
@@ -467,7 +488,7 @@ class PlaylistController {
           relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
           order: { playlist: { last_updated: 'ASC' } }
         };
-        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium, config);
         const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
         const count = results[1];
 
@@ -485,10 +506,9 @@ class PlaylistController {
       validateQueryObject(getManyPrivateFollowedAZSchema, req, res, async () => {
         const { page, limit, offset } = getPaginationParams(req);
         const { medium } = req.query as {
-          medium: QueryParamsMedium;
+          medium: QueryParamsQueueMedium;
         };
         const account_id = req.user!.id;
-        const medium_id = getMediumFromQueryParam(medium);
 
         const accountFollowingPlaylistService = new AccountFollowingPlaylistService();
         const config: FindManyOptions<AccountFollowingPlaylist> = {
@@ -497,7 +517,7 @@ class PlaylistController {
           relations: ['playlist', 'playlist.account', 'playlist.account.account_profile'],
           order: { playlist: { title: 'ASC' } }
         };
-        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium_id, config);
+        const results = await accountFollowingPlaylistService.getFollowedPlaylistsPrivateWithCount(account_id, medium, config);
         const playlists = results[0].map((account_following_playlist: { playlist: Playlist }) => account_following_playlist.playlist).filter(Boolean);
         const count = results[1];
 

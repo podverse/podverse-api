@@ -359,13 +359,10 @@ class ClipController {
         const { medium } = req.query as {
           medium: QueryParamsMedium;
         };
-
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
  
         const clips = await clipService.getManyPublic(
-          medium_id,
+          medium,
           category_id,
           {
             order: { created_at: 'DESC' },
@@ -394,13 +391,10 @@ class ClipController {
         const { medium } = req.query as {
           medium: QueryParamsMedium;
         };
-
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
  
         const clips = await clipService.getManyPublic(
-          medium_id,
+          medium,
           category_id,
           {
             order: { created_at: 'ASC' },
@@ -431,8 +425,6 @@ class ClipController {
           medium: QueryParamsMedium;
         };
 
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = null;
 
         const order = getStatsOrder(range);
@@ -443,7 +435,7 @@ class ClipController {
           relations: statsAggregationRelations
         };
         const statsResults = await ClipController
-          .statsAggregatedClipService.getManyPublic(config, medium_id, category_id);
+          .statsAggregatedClipService.getManyPublic(config, medium, category_id);
         const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
 
         const response: ApiListResponse<Clip> = {
@@ -467,12 +459,10 @@ class ClipController {
           category: CategoryMappingKeys;
         };
 
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
  
         const [clips, count] = await clipService.getManyPublic(
-          medium_id,
+          medium,
           category_id,
           {
             order: { created_at: 'DESC' },
@@ -503,12 +493,10 @@ class ClipController {
           category: CategoryMappingKeys;
         };
 
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
  
         const [clips, count] = await clipService.getManyPublic(
-          medium_id,
+          medium,
           category_id,
           {
             order: { created_at: 'ASC' },
@@ -539,9 +527,6 @@ class ClipController {
           medium: QueryParamsMedium;
           category: CategoryMappingKeys;
         };
-
-        const selectedMedium: QueryParamsMedium = medium;
-        const medium_id = getMediumFromQueryParam(selectedMedium);
         const category_id = getCategoryEnumValue(category);
 
         const order = getStatsOrder(range);
@@ -552,7 +537,7 @@ class ClipController {
           relations: statsAggregationRelations
         };
         const [statsResults, count] = await ClipController
-          .statsAggregatedClipService.getManyAndCountPublic(config, medium_id, category_id);
+          .statsAggregatedClipService.getManyAndCountPublic(config, medium, category_id);
         const clips = statsResults.map((stat: { clip: Clip }) => stat.clip).filter(Boolean);
 
         const response: ApiListResponse<Clip> = {
@@ -796,10 +781,8 @@ class ClipController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          const channel_ids = await getFollowedChannelIds(account_id, medium);
           if (!channel_ids.length) {
             const response: ApiListResponse<Clip> = emptyApiListResponse;
             return res.json(response);
@@ -838,10 +821,8 @@ class ClipController {
             medium: QueryParamsMedium;
           };
           const account_id = req.user!.id;
-          const selectedMedium: QueryParamsMedium = medium;
-          const medium_id = getMediumFromQueryParam(selectedMedium);
 
-          const channel_ids = await getFollowedChannelIds(account_id, medium_id);
+          const channel_ids = await getFollowedChannelIds(account_id, medium);
           if (!channel_ids.length) {
             const response: ApiListResponse<Clip> = emptyApiListResponse;
             return res.json(response);
