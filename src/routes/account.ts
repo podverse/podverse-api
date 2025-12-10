@@ -17,14 +17,14 @@ router.use(`${config.api.prefix}${config.api.version}/account`, router);
 router.get('/', asyncHandler(AccountController.getManyPublic));
 router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
-router.post('/', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 2 }), asyncHandler(AccountController.create));
+router.post('/', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.create));
 router.put('/', asyncHandler(AccountController.update));
-router.post('/send-verification-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendVerificationEmail));
+router.post('/send-verification-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.sendVerificationEmail));
 router.post('/verify-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 10 }), asyncHandler(AccountController.verifyEmail));
-router.post('/send-change-email-address-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendEmailChangeVerificationEmail));
+router.post('/send-change-email-address-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.sendEmailChangeVerificationEmail));
 router.post('/verify-email-change', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 10 }), asyncHandler(AccountController.verifyEmailChange));
-router.post('/send-reset-password-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.sendResetPasswordEmail));
-router.post('/reset-password', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.resetPassword));
+router.post('/send-reset-password-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.sendResetPasswordEmail));
+router.post('/reset-password', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.resetPassword));
 router.delete('/delete', asyncHandler(AccountController.delete));
 
 router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create));
