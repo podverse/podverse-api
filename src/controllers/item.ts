@@ -4,7 +4,8 @@ import { itemGetOneRelations, itemGetManyRelations, ItemChapterService, ItemServ
   StatsAggregatedItem, FindManyOptions, subItemGetManyRelations,
   StatsAggregatedItemService, ChannelService, 
   itemGetManyRelationsWithChannel,
-  subItemGetManyRelationsWithChannel } from 'podverse-orm';
+  subItemGetManyRelationsWithChannel, 
+  FindOptionsOrder} from 'podverse-orm';
 import { parseChapters } from 'podverse-parser';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
@@ -91,6 +92,13 @@ const parseAndGetChaptersSchema = Joi.object({
   item_id_text: Joi.string().required()
 });
 
+const getRecentOrder = (itemType: 'normal' | 'live-item'): FindOptionsOrder<Item> => {
+  if (itemType === 'live-item') {
+    return { live_item: { start_time: 'DESC' } };
+  }
+  return { pub_date: 'DESC' };
+};
+
 export class ItemController {
   private static itemService: ItemService = new ItemService();
   private static itemChapterService: ItemChapterService = new ItemChapterService();
@@ -120,15 +128,14 @@ export class ItemController {
         const category_id = null;
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         let liveItemType = liveItemTypeParam || null;
+        const order = getRecentOrder(itemType);
 
         const recentConfig: FindManyOptions<Item> = {
-          order: { pub_date: 'DESC' },
+          order,
           skip: offset,
           take: limit,
           relations: itemGetManyRelationsWithChannel
         };
-
-        console.log("itemType", itemType, "liveItemType", liveItemType);
 
         const items = await ItemController.itemService.getMany(
           recentConfig,
@@ -202,9 +209,10 @@ export class ItemController {
         const category_id = getCategoryEnumValue(category);
         const itemType = liveItemTypeParam ? 'live-item' : 'normal';
         const liveItemType = liveItemTypeParam || null;
+        const order = getRecentOrder(itemType);
 
         const recentConfig: FindManyOptions<Item> = {
-          order: { pub_date: 'DESC' },
+          order,
           skip: offset,
           take: limit,
           relations: itemGetManyRelationsWithChannel
@@ -283,6 +291,7 @@ export class ItemController {
           const account_id = req.user!.id;
           const itemType = liveItemTypeParam ? 'live-item' : 'normal';
           const liveItemType = liveItemTypeParam || null;
+          const order = getRecentOrder(itemType);
 
           const channel_ids = await getFollowedChannelIds(account_id, medium);
           if (!channel_ids.length) {
@@ -291,7 +300,7 @@ export class ItemController {
           }
 
           const config: FindManyOptions<Item> = {
-            order: { pub_date: 'DESC' },
+            order,
             skip: offset,
             take: limit,
             relations: itemGetManyRelationsWithChannel,
