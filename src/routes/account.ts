@@ -46,6 +46,6 @@ router.post('/unfollow/playlist', asyncHandler(AccountFollowingPlaylistControlle
 router.get('/notification/channel/:channel_id_text', asyncHandler(AccountNotificationChannelController.getByAccountAndChannel));
 router.get('/notification/channels', asyncHandler(AccountNotificationChannelController.getAllByAccount));
 router.post('/notification/channel', asyncHandler(AccountNotificationChannelController.create));
-router.delete('/notification/channel', asyncHandler(AccountNotificationChannelController.delete));
+router.delete('/notification/channel/:channel_id_text', asyncHandler(AccountNotificationChannelController.delete));
 
 export const accountRouter = router;

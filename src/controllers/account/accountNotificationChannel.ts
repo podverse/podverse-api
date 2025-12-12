@@ -68,10 +68,10 @@ class AccountNotificationChannelController {
 
   static async delete(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateBodyObject(deleteNotificationChannelSchema, req, res, async () => {
+      validateParamsObject(deleteNotificationChannelSchema, req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { channel_id_text } = req.body;
+          const { channel_id_text } = req.params;
           await AccountNotificationChannelController.accountNotificationChannelService.delete(jwtUser.id, channel_id_text);
           res.status(204).end();
         } catch (err) {
