@@ -31,11 +31,15 @@ export class MQController {
 
           try {
             const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
-            await mqRSSAdd(activeMQArtemisService, {
-              ...mqConstantMessageOptions,
-              feedUrl: finalDto.url,
-              podcast_index_id: finalDto.podcast_index_id
-            });
+            await mqRSSAdd(
+              activeMQArtemisService,
+              {
+                ...mqConstantMessageOptions,
+                feedUrl: finalDto.url,
+                podcast_index_id: finalDto.podcast_index_id,
+              },
+              { forceParse: true }
+            );
             res.status(201).json({ message: "Feed added to on-demand queue successfully." });
           } catch (err) {
             handleGenericErrorResponse(res, err);
