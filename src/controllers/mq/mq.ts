@@ -38,7 +38,7 @@ export class MQController {
                 feedUrl: finalDto.url,
                 podcast_index_id: finalDto.podcast_index_id,
               },
-              { forceParse: true }
+              { forceParse: false }
             );
             res.status(201).json({ message: "Feed added to on-demand queue successfully." });
           } catch (err) {
