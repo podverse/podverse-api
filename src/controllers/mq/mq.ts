@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Joi from "joi";
-import { MQ_QUEUES } from "podverse-helpers";
+import { MQ_QUEUES, OnDemandParserEventType } from "podverse-helpers";
 import { mqRSSAdd } from "podverse-mq";
 import { ensureAuthenticated } from "@api/lib/auth";
 import { validateBodyObject } from "@api/lib/validation";
@@ -16,36 +16,45 @@ const addToOnDemandMQSchema = Joi.object({
 export class MQController {
   static rssOnDemandMiddleware = rateLimitAuthEndpoint({
     windowMs: 60 * 60 * 1000,
-    max: 10
+    max: 20
   });
 
-  static async rssAddToOnDemandMQ(req: Request, res: Response): Promise<void> {
-    ensureAuthenticated(req, res, async () => {
-      MQController.rssOnDemandMiddleware(req, res, () => {
-        validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
-          const dto = req.body;
-          const finalDto = {
-            url: dto.url,
-            podcast_index_id: dto.podcast_index_id
-          };
+  static rssAddToOnDemandMQ(type: OnDemandParserEventType) {
+    return async (req: Request, res: Response): Promise<void> => {
+      ensureAuthenticated(req, res, async () => {
+        MQController.rssOnDemandMiddleware(req, res, () => {
+          validateBodyObject(addToOnDemandMQSchema, req, res, async () => {
+            const dto = req.body;
+            const finalDto = {
+              url: dto.url,
+              podcast_index_id: dto.podcast_index_id,
+            };
 
-          try {
-            const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
-            await mqRSSAdd(
-              activeMQArtemisService,
-              {
-                ...mqConstantMessageOptions,
-                feedUrl: finalDto.url,
-                podcast_index_id: finalDto.podcast_index_id,
-              },
-              { forceParse: false }
-            );
-            res.status(201).json({ message: "Feed added to on-demand queue successfully." });
-          } catch (err) {
-            handleGenericErrorResponse(res, err);
-          }
+            try {
+              const mqConstantMessageOptions = MQ_QUEUES['rss-on-demand'];
+              await mqRSSAdd(
+                activeMQArtemisService,
+                {
+                  ...mqConstantMessageOptions,
+                  feedUrl: finalDto.url,
+                  podcast_index_id: finalDto.podcast_index_id,
+                },
+                {
+                  forceParse: false,
+                  onDemandParserEvent: {
+                    accountId: req.user!.id,
+                    remoteParentPodcastIndexId: null,
+                    type: type,
+                  },
+                },
+              );
+              res.status(201).json({ message: 'Feed added to on-demand queue successfully.' });
+            } catch (err) {
+              handleGenericErrorResponse(res, err);
+            }
+          });
         });
       });
-    });
+    };
   }
 }
