@@ -88,6 +88,14 @@ const getManyForQueueByPubDateQuerySchema = Joi.object({
   direction: Joi.string().valid(...QUERY_PARAMS_DIRECTION_VALUES).required()
 });
 
+const getManyForQueueBySeasonParamsSchema = Joi.object({
+  idText: Joi.string().required()
+});
+
+const getManyForQueueBySeasonQuerySchema = Joi.object({
+  direction: Joi.string().valid(...QUERY_PARAMS_DIRECTION_VALUES).required()
+});
+
 const parseAndGetChaptersSchema = Joi.object({
   item_id_text: Joi.string().required()
 });
@@ -501,6 +509,26 @@ export class ItemController {
               direction
             );
           
+          res.json(items);
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManyForQueueBySeason(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getManyForQueueBySeasonParamsSchema, req, res, async () => {
+      validateQueryObject(getManyForQueueBySeasonQuerySchema, req, res, async () => {
+        try {
+          const { direction } = req.query as QueryParamsDirection;
+
+          const items = await ItemController
+            .itemService
+            .getManyForQueueBySeason(
+              req.params.idText,
+              direction
+            );
           res.json(items);
         } catch (error) {
           handleGenericErrorResponse(res, error);
