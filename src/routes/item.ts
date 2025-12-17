@@ -9,6 +9,9 @@ router.use(`${config.api.prefix}${config.api.version}/item`, router);
 
 router.get('/chapters/:item_id_text', asyncHandler(ItemController.parseAndGetChapters));
 
+router.get('/channel/season/forward/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelBySeasonForward));
+router.get('/channel/season/backward/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelBySeasonBackward));
+
 router.get('/channel/recent/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelRecent));
 router.get('/channel/oldest/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelOldest));
 router.get('/channel/top/:channelIdOrIdText', asyncHandler(ItemController.getManyByChannelTop));

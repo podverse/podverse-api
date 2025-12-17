@@ -71,7 +71,15 @@ const getManyByChannelParmsSchema = Joi.object({
   channelIdOrIdText: Joi.string().required()
 });
 
-const getManyByChannelQuerySchema = Joi.object({
+const getManyByChannelQuerySchemaRecent = Joi.object({
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyByChannelQuerySchemaOldest = Joi.object({
+  page: Joi.number().integer().min(1).required()
+});
+
+const getManyByChannelBySeasonQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required()
 });
 
@@ -383,7 +391,7 @@ export class ItemController {
 
   static async getManyByChannelRecent(req: Request, res: Response): Promise<void> {
     validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
-      validateQueryObject(getManyByChannelQuerySchema, req, res, async () => {
+      validateQueryObject(getManyByChannelQuerySchemaRecent, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
           const { channelIdOrIdText } = req.params;
@@ -416,7 +424,7 @@ export class ItemController {
 
   static async getManyByChannelOldest(req: Request, res: Response): Promise<void> {
     validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
-      validateQueryObject(getManyByChannelQuerySchema, req, res, async () => {
+      validateQueryObject(getManyByChannelQuerySchemaOldest, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
           const { channelIdOrIdText } = req.params;
@@ -487,6 +495,68 @@ export class ItemController {
             liveItemType
           );
           const items = statsResults.map((stat: { item: Item }) => stat.item).filter(Boolean);
+
+          res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManyByChannelBySeasonForward(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
+      validateQueryObject(getManyByChannelBySeasonQuerySchema, req, res, async () => {
+        try {
+          const { page, limit, offset } = getPaginationParams(req);
+          const { channelIdOrIdText } = req.params;
+
+          const channel = await ItemController.channelService.getByIdOrIdText(
+            channelIdOrIdText,
+            { channel_about: true }
+          );
+
+          if (!channel) {
+            res.status(404).json({ message: 'Channel not found' });
+            return;
+          }
+
+          const config: FindManyOptions<Item> = {
+            skip: offset,
+            take: limit
+          };
+          const items = await ItemController.itemService.getManyByChannelBySeason(channel, "forward", config);
+
+          res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManyByChannelBySeasonBackward(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
+      validateQueryObject(getManyByChannelBySeasonQuerySchema, req, res, async () => {
+        try {
+          const { page, limit, offset } = getPaginationParams(req);
+          const { channelIdOrIdText } = req.params;
+
+          const channel = await ItemController.channelService.getByIdOrIdText(
+            channelIdOrIdText,
+            { channel_about: true }
+          );
+
+          if (!channel) {
+            res.status(404).json({ message: 'Channel not found' });
+            return;
+          }
+
+          const config: FindManyOptions<Item> = {
+            skip: offset,
+            take: limit
+          };
+          const items = await ItemController.itemService.getManyByChannelBySeason(channel, "backward", config);
 
           res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
         } catch (error) {
