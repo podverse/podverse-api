@@ -83,7 +83,7 @@ const getManyByChannelBySeasonQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required()
 });
 
-const getManyByChannelBySeasonShuffleQuerySchema = Joi.object({
+const getManyByChannelShuffleQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required(),
   shuffleHash: Joi.string().required()
 });
@@ -571,9 +571,9 @@ export class ItemController {
     });
   }
 
-  static async getManyByChannelBySeasonShuffle(req: Request, res: Response): Promise<void> {
+  static async getManyByChannelShuffle(req: Request, res: Response): Promise<void> {
     validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
-      validateQueryObject(getManyByChannelBySeasonShuffleQuerySchema, req, res, async () => {
+      validateQueryObject(getManyByChannelShuffleQuerySchema, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
           const { channelIdOrIdText } = req.params;
@@ -593,7 +593,7 @@ export class ItemController {
             skip: offset,
             take: limit
           };
-          const items = await ItemController.itemService.getManyByChannelBySeason(channel, "shuffle", config, shuffleHash);
+          const items = await ItemController.itemService.getManyByChannelShuffle(channel, shuffleHash, config);
 
           res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
         } catch (error) {
