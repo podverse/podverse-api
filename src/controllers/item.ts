@@ -83,6 +83,11 @@ const getManyByChannelBySeasonQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required()
 });
 
+const getManyByChannelBySeasonShuffleQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).required(),
+  shuffleHash: Joi.string().required()
+});
+
 const getManyByChannelTopQuerySchema = Joi.object({
   range: Joi.string().valid(...QUERY_PARAMS_STATS_RANGE_VALUES).required(),
   page: Joi.number().integer().min(1).required()
@@ -557,6 +562,38 @@ export class ItemController {
             take: limit
           };
           const items = await ItemController.itemService.getManyByChannelBySeason(channel, "backward", config);
+
+          res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
+        } catch (error) {
+          handleGenericErrorResponse(res, error);
+        }
+      });
+    });
+  }
+
+  static async getManyByChannelBySeasonShuffle(req: Request, res: Response): Promise<void> {
+    validateParamsObject(getManyByChannelParmsSchema, req, res, async () => {
+      validateQueryObject(getManyByChannelBySeasonShuffleQuerySchema, req, res, async () => {
+        try {
+          const { page, limit, offset } = getPaginationParams(req);
+          const { channelIdOrIdText } = req.params;
+          const { shuffleHash } = req.query as { shuffleHash: string };
+
+          const channel = await ItemController.channelService.getByIdOrIdText(
+            channelIdOrIdText,
+            { channel_about: true }
+          );
+
+          if (!channel) {
+            res.status(404).json({ message: 'Channel not found' });
+            return;
+          }
+
+          const config: FindManyOptions<Item> = {
+            skip: offset,
+            take: limit
+          };
+          const items = await ItemController.itemService.getManyByChannelBySeason(channel, "shuffle", config, shuffleHash);
 
           res.json({ data: items, meta: { page, count: channel.channel_about.episode_count, limit } });
         } catch (error) {
