@@ -28,6 +28,8 @@ router.get('/public/top', asyncHandler(PlaylistController.getManyPublicTop));
 router.post('/', asyncHandler(PlaylistController.createPlaylist));
 
 router.get('/:playlist_id_text/resources/private-all', asyncHandler(PlaylistResourceController.getAllByPlaylistIdTextPrivate));
+router.get('/:playlist_id_text/resources/queue-by-list-position', asyncHandler(PlaylistResourceController.getManyForQueueByListPosition));
+router.get('/:playlist_id_text/resources/shuffle', asyncHandler(PlaylistResourceController.getManyByPlaylistShuffle));
 router.get('/:playlist_id_text/resources', asyncHandler(PlaylistResourceController.getManyByPlaylistIdText));
 router.get('/:playlist_id_text', asyncHandler(PlaylistController.getPlaylistById));
 router.patch('/:playlist_id_text', asyncHandler(PlaylistController.updatePlaylist));

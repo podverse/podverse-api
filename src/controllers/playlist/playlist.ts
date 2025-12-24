@@ -112,9 +112,11 @@ export const verifyPrivatePlaylistOwnershipIfNeeded = () => {
       if (!playlist) {
         return res.status(404).json({ message: 'Playlist not found' });
       }
+      
+      const isOwner = !!account?.id && playlist.account.id === account.id;
 
       if (playlist.sharable_status.id === SharableStatusEnum.Private) {
-        if (!account?.id || playlist.account.id !== account.id) {
+        if (!isOwner) {
           return res.status(404).json({ message: 'Playlist not found' });
         }
       }
