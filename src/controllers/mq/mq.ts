@@ -38,6 +38,7 @@ export class MQController {
                   ...mqConstantMessageOptions,
                   feedUrl: finalDto.url,
                   podcast_index_id: finalDto.podcast_index_id,
+                  closeAfterSend: false
                 },
                 {
                   forceParse: false,
