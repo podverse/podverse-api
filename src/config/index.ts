@@ -63,6 +63,12 @@ type Config = {
     password: string;
     port: number;
   };
+  keyvaldb: {
+    host: string;
+    port: number;
+    password?: string;
+    cacheTTLSeconds: number;
+  };
   resetPassword: {
     tokenExpiration: number;
     pagePath: string;
@@ -142,6 +148,12 @@ export const config: Config = {
     username: process.env.MESSAGE_QUEUE_USERNAME || 'user',
     password: process.env.MESSAGE_QUEUE_PASSWORD || 'mysecretpw',
     port: Number(process.env.MESSAGE_QUEUE_PORT) || 5672
+  },
+  keyvaldb: {
+    host: process.env.KEYVALDB_HOST || '127.0.0.1',
+    port: Number(process.env.KEYVALDB_PORT) || 6379,
+    password: process.env.KEYVALDB_PASSWORD || undefined,
+    cacheTTLSeconds: Number(process.env.KEYVALDB_CACHE_TTL_SECONDS) || 86400,
   },
   resetPassword: {
     tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),
