@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { ChannelPodrollService } from 'podverse-orm';
 import { validateParamsObject } from '@api/lib/validation';
+import { buildRemoteItemsFinalResult } from '@api/lib/remoteItemsResponse';
 
 const getPodrollForChannelSchema = Joi.object({
   idOrIdText: Joi.string().required()
@@ -16,7 +17,15 @@ export class PodrollController {
       const result = await PodrollController
         .channelPodrollService
         .getPodrollForChannel(idOrIdText);
-      res.json(result);
+
+      const finalResult = await buildRemoteItemsFinalResult(
+        result.podrollChannelsAdded,
+        result.podrollChannelsUnadded,
+        result.podrollItemsAdded,
+        result.podrollItemsUnadded
+      );
+
+      res.json(finalResult);
     });
   }
 }
