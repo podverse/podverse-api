@@ -75,7 +75,7 @@ export async function buildRemoteItemsFinalResult(
     channelsUnaddedFromPI = [];
   }
 
-  let itemsUnaddedFromPI: EpisodeByGuidResponse['episode'][] = [];
+  let itemsUnaddedFromPI: NonNullable<EpisodeByGuidResponse['episode']>[] = [];
   try {
     itemsUnaddedFromPI = [];
     const items = originalItemsUnadded || [];
@@ -100,7 +100,7 @@ export async function buildRemoteItemsFinalResult(
         if (response?.episode) {
           itemsUnaddedFromPI.push(response.episode);
           const key = `pi:episode:${mi.item_guid}:${mi.feed_guid}`;
-          await cacheSetJson<EpisodeByGuidResponse['episode']>(key, response.episode, config.keyvaldb.cacheTTLSeconds);
+          await cacheSetJson<NonNullable<EpisodeByGuidResponse['episode']>>(key, response.episode, config.keyvaldb.cacheTTLSeconds);
         }
       } catch {
         // swallow

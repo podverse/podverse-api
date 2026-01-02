@@ -27,6 +27,7 @@ import { itemTranscriptRouter } from "./routes/itemTranscript";
 import { itemChapterRouter } from "./routes/itemChapter";
 import { mqRouter } from "./routes/mq";
 import { feedRouter } from "./routes/feed";
+import { publisherFeedRouter } from "./routes/publisherFeed";
 
 export const app = express();
 const port = 1234;
@@ -80,6 +81,7 @@ export const startApp = async () => {
     app.use(mqRouter);
     app.use(playlistRouter);
     app.use(podrollRouter);
+    app.use(publisherFeedRouter);
     app.use(queueRouter);
     app.use(statsRouter);
     
