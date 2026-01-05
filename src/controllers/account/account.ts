@@ -16,13 +16,15 @@ import { sendEmailChangeVerificationEmail } from '@api/lib/mailer/sendChangeEmai
 
 const createAccountSchema = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().min(8).required()
+  password: Joi.string().min(8).required(),
+  locale: Joi.string().required()
 });
 
 const updateAccountSchema = Joi.object({
   display_name: Joi.string().optional(),
   bio: Joi.string().optional(),
-  sharable_status: Joi.number().valid(...Object.values(SharableStatusEnum)).optional()
+  sharable_status: Joi.number().valid(...Object.values(SharableStatusEnum)).required(),
+  locale: Joi.string().required()
 });
 
 const sendVerificationEmailSchema = Joi.object({
@@ -164,8 +166,8 @@ export class AccountController {
   static async create(req: Request, res: Response): Promise<void> {
     validateBodyObject(createAccountSchema, req, res, async () => {
       try {
-        const { email, password } = req.body;
-        await AccountController.accountService.create({ email, password });
+        const { email, password, locale } = req.body as { email: string; password: string, locale: string };
+        await AccountController.accountService.create({ email, password, locale });
         await AccountController.sendVerificationEmailHelper(email);
         res.json({
           message: 'Account created'
@@ -187,8 +189,13 @@ export class AccountController {
       validateBodyObject(updateAccountSchema, req, res, async () => {
         try {
           const account_id = req.user!.id;
-          const dto = req.body;
-
+          const dto = req.body as {
+            display_name?: string;
+            bio?: string;
+            sharable_status: SharableStatusEnum,
+            locale: string
+          };
+          
           const updatedAccount = await AccountController.accountService.update(account_id, dto);
           res.json(updatedAccount);
         } catch (error) {

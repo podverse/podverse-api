@@ -9,16 +9,14 @@ import { ensureAuthenticated } from '@api/lib/auth';
 const createAccountFCMDeviceSchema = Joi.object({
   fcm_token: Joi.string().required(),
   installation_id: Joi.string().required(),
-  platform: Joi.string().valid(...ACCOUNT_FCM_DEVICE_PLATFORM_VALUES).required(),
-  locale: Joi.string().required()
+  platform: Joi.string().valid(...ACCOUNT_FCM_DEVICE_PLATFORM_VALUES).required()
 });
 
 const updateAccountFCMDeviceSchema = Joi.object({
   new_fcm_token: Joi.string().required(),
   installation_id: Joi.string().required(),
   previous_fcm_token: Joi.string().required().allow(null),
-  platform: Joi.string().valid(...ACCOUNT_FCM_DEVICE_PLATFORM_VALUES).required(),
-  locale: Joi.string().required()
+  platform: Joi.string().valid(...ACCOUNT_FCM_DEVICE_PLATFORM_VALUES).required()
 });
 
 const deleteAccountFCMDeviceSchema = Joi.object({
@@ -38,18 +36,16 @@ export class AccountFCMDeviceController {
       validateBodyObject(createAccountFCMDeviceSchema, req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { fcm_token, installation_id, platform, locale } = req.body as {
+          const { fcm_token, installation_id, platform } = req.body as {
             fcm_token: string;
             installation_id: string;
             platform: AccountFCMDevicePlatformValues;
-            locale: string;
           };
           const accountFCMDevice = await AccountFCMDeviceController
             .accountFCMDeviceService.create(jwtUser.id, {
               fcm_token,
               installation_id,
-              platform,
-              locale
+              platform
             });
           res.json(accountFCMDevice);
         } catch (error) {
@@ -64,20 +60,18 @@ export class AccountFCMDeviceController {
       validateBodyObject(updateAccountFCMDeviceSchema, req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { previous_fcm_token, new_fcm_token, installation_id, platform, locale } = req.body as {
+          const { previous_fcm_token, new_fcm_token, installation_id, platform } = req.body as {
             new_fcm_token: string;
             installation_id: string;
             previous_fcm_token: string | null;
             platform: AccountFCMDevicePlatformValues;
-            locale: string;
           };
           const accountFCMDevice = await AccountFCMDeviceController
             .accountFCMDeviceService.update(jwtUser.id, {
               new_fcm_token,
               installation_id,
               previous_fcm_token,
-              platform,
-              locale
+              platform
             });
           res.json(accountFCMDevice);
         } catch (error) {
