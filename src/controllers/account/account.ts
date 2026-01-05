@@ -70,8 +70,13 @@ const privateRelations = [
   'account_membership_status',
   'account_membership_status.account_membership',
   'account_notification_channels',
+  'account_notification_channels.account_notification_channel_types',
   // 'account_paypal_orders',
   // 'account_reset_password',
+  'account_settings',
+  'account_settings.account_settings_notification',
+  'account_settings.account_settings_notification.account_settings_notification_types',
+  // 'account_up_device_tokens',
   // 'account_up_devices',
   // 'account_verification'
 ];

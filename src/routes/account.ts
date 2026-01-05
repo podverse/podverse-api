@@ -31,6 +31,7 @@ router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create
 router.put('/fcm-device/update', asyncHandler(AccountFCMDeviceController.update));
 router.delete('/fcm-device/delete', asyncHandler(AccountFCMDeviceController.delete));
 router.get('/fcm-device/all-for-account', asyncHandler(AccountFCMDeviceController.getAllForAccount));
+router.put('/fcm-device/update-locale', asyncHandler(AccountFCMDeviceController.updateLocaleForAccount));
 
 router.post('/follow/account', asyncHandler(AccountFollowingAccountController.followAccount));
 router.post('/unfollow/account', asyncHandler(AccountFollowingAccountController.unfollowAccount));
