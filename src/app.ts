@@ -28,6 +28,7 @@ import { itemChapterRouter } from "./routes/itemChapter";
 import { mqRouter } from "./routes/mq";
 import { feedRouter } from "./routes/feed";
 import { publisherFeedRouter } from "./routes/publisherFeed";
+import { accountSettingsRouter } from "./routes/accountSettings";
 
 export const app = express();
 const port = 1234;
@@ -65,6 +66,7 @@ export const startApp = async () => {
 
     app.use(accountRouter);
     app.use(accountPayPalOrderRouter);
+    app.use(accountSettingsRouter);
     app.use(authRouter);
     app.use(categoryRouter);
     app.use(channelRouter);

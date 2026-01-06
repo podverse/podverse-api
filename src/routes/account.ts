@@ -7,6 +7,7 @@ import { AccountFollowingChannelController } from '@api/controllers/account/acco
 import { asyncHandler } from '@api/middleware/asyncHandler';
 import { AccountFollowingPlaylistController } from '@api/controllers/account/accountFollowingPlaylist';
 import { AccountNotificationChannelController } from '@api/controllers/account/accountNotificationChannel';
+import { AccountNotificationChannelTypeController } from '@api/controllers/account/accountNotificationChannelType';
 import { AccountFCMDeviceController } from '@api/controllers/account/accountFCMDevice';
 import { rateLimitEndpoint } from '@api/lib/rateLimiter';
 
@@ -30,6 +31,8 @@ router.delete('/delete', asyncHandler(AccountController.delete));
 router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create));
 router.put('/fcm-device/update', asyncHandler(AccountFCMDeviceController.update));
 router.delete('/fcm-device/delete', asyncHandler(AccountFCMDeviceController.delete));
+router.get('/fcm-device/all-for-account', asyncHandler(AccountFCMDeviceController.getAllForAccount));
+router.put('/fcm-device/update-locale', asyncHandler(AccountFCMDeviceController.updateLocaleForAccount));
 
 router.post('/follow/account', asyncHandler(AccountFollowingAccountController.followAccount));
 router.post('/unfollow/account', asyncHandler(AccountFollowingAccountController.unfollowAccount));
@@ -47,5 +50,8 @@ router.get('/notification/channel/:channel_id_text', asyncHandler(AccountNotific
 router.get('/notification/channels', asyncHandler(AccountNotificationChannelController.getAllByAccount));
 router.post('/notification/channel', asyncHandler(AccountNotificationChannelController.create));
 router.delete('/notification/channel/:channel_id_text', asyncHandler(AccountNotificationChannelController.delete));
+
+router.post('/notification/channel/type', asyncHandler(AccountNotificationChannelTypeController.create));
+router.delete('/notification/channel/:channel_id_text/type/:type', asyncHandler(AccountNotificationChannelTypeController.delete));
 
 export const accountRouter = router;
