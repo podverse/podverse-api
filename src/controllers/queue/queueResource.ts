@@ -17,26 +17,24 @@ class QueueResourceController {
 
   static async getAllByAccountAbridged(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      verifyQueueOwnership()(req, res, async () => {
-        const account = req.user!;
+      const account = req.user!;
 
-        try {
-          const queueResources = await QueueResourceController
-            .queueResourceService
-            .getAllByAccountAbridged(account.id);
+      try {
+        const queueResources = await QueueResourceController
+          .queueResourceService
+          .getAllByAccountAbridged(account.id);
 
-          const minimized = queueResources.map((row: DTOQueueResourceAbridgedResponseData) =>
-            Object.fromEntries(
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              Object.entries(row).filter(([_, v]) => v !== null && v !== false)
-            )
-          );
+        const minimized = queueResources.map((row: DTOQueueResourceAbridgedResponseData) =>
+          Object.fromEntries(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            Object.entries(row).filter(([_, v]) => v !== null && v !== false)
+          )
+        );
 
-          res.status(200).json(minimized);
-        } catch (err) {
-          handleGenericErrorResponse(res, err);
-        }
-      });
+        res.status(200).json(minimized);
+      } catch (err) {
+        handleGenericErrorResponse(res, err);
+      }
     });
   }
 

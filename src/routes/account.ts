@@ -10,6 +10,7 @@ import { AccountNotificationChannelController } from '@api/controllers/account/a
 import { AccountNotificationChannelTypeController } from '@api/controllers/account/accountNotificationChannelType';
 import { AccountFCMDeviceController } from '@api/controllers/account/accountFCMDevice';
 import { AccountWebPushDeviceController } from '@api/controllers/account/accountWebPushDevice';
+import { AccountUPDeviceController } from '@api/controllers/account/accountUPDevice';
 import { rateLimitEndpoint } from '@api/lib/rateLimiter';
 
 const router = Router();
@@ -40,6 +41,13 @@ router.put('/webpush-device/update', asyncHandler(AccountWebPushDeviceController
 router.delete('/webpush-device/delete', asyncHandler(AccountWebPushDeviceController.delete));
 router.get('/webpush-device/all-for-account', asyncHandler(AccountWebPushDeviceController.getAllForAccount));
 router.put('/webpush-device/update-locale', asyncHandler(AccountWebPushDeviceController.updateLocaleForAccount));
+
+router.post('/up-device/create', asyncHandler(AccountUPDeviceController.create));
+router.put('/up-device/update', asyncHandler(AccountUPDeviceController.update));
+router.delete('/up-device/delete', asyncHandler(AccountUPDeviceController.delete));
+router.get('/up-device/all-for-account', asyncHandler(AccountUPDeviceController.getAllForAccount));
+router.put('/up-device/update-locale', asyncHandler(AccountUPDeviceController.updateLocaleForAccount));
+router.delete('/up-device/delete-all', asyncHandler(AccountUPDeviceController.deleteAllForAccount));
 
 router.post('/follow/account', asyncHandler(AccountFollowingAccountController.followAccount));
 router.post('/unfollow/account', asyncHandler(AccountFollowingAccountController.unfollowAccount));
