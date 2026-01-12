@@ -15,10 +15,6 @@ const updateAccountUPDeviceSchema = Joi.object({
   up_auth_key: Joi.string().required().allow(null)
 });
 
-const deleteAccountUPDeviceSchema = Joi.object({
-  up_endpoint: Joi.string().uri().required()
-});
-
 const updateLocaleForAccountSchema = Joi.object({
   locale: Joi.string().required()
 });
@@ -72,30 +68,23 @@ export class AccountUPDeviceController {
 
   static async delete(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
-      validateBodyObject(deleteAccountUPDeviceSchema, req, res, async () => {
-        try {
-          const jwtUser = req.user!;
-          const { up_endpoint } = req.body as {
-            up_endpoint: string;
-          };
-          await AccountUPDeviceController
-            .accountUPDeviceService.delete(jwtUser.id, {
-              up_endpoint
-            });
-          res.json({ message: 'UP device deleted successfully' });
-        } catch (error) {
-          handleGenericErrorResponse(res, error);
-        }
-      });
+      try {
+        const jwtUser = req.user!;
+        await AccountUPDeviceController
+          .accountUPDeviceService.delete(jwtUser.id);
+        res.json({ message: 'UP device deleted successfully' });
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
     });
   }
 
-  static async getAllForAccount(req: Request, res: Response): Promise<void> {
+  static async getForAccount(req: Request, res: Response): Promise<void> {
     ensureAuthenticated(req, res, async () => {
       try {
         const jwtUser = req.user!;
-        const devices = await AccountUPDeviceController.accountUPDeviceService.getAllForAccount(jwtUser.id);
-        res.json(devices);
+        const device = await AccountUPDeviceController.accountUPDeviceService.getForAccount(jwtUser.id);
+        res.json(device);
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }

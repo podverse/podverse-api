@@ -45,7 +45,7 @@ router.put('/webpush-device/update-locale', asyncHandler(AccountWebPushDeviceCon
 router.post('/up-device/create', asyncHandler(AccountUPDeviceController.create));
 router.put('/up-device/update', asyncHandler(AccountUPDeviceController.update));
 router.delete('/up-device/delete', asyncHandler(AccountUPDeviceController.delete));
-router.get('/up-device/all-for-account', asyncHandler(AccountUPDeviceController.getAllForAccount));
+router.get('/up-device/for-account', asyncHandler(AccountUPDeviceController.getForAccount));
 router.put('/up-device/update-locale', asyncHandler(AccountUPDeviceController.updateLocaleForAccount));
 router.delete('/up-device/delete-all', asyncHandler(AccountUPDeviceController.deleteAllForAccount));
 
