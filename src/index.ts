@@ -8,6 +8,7 @@ import { AppDataSourceRead, AppDataSourceReadWrite } from "podverse-orm";
 import { startApp } from "./app";
 import { loggerService } from './factories/loggerService';
 import { activeMQArtemisService } from './factories/activeMQArtemisService';
+import { validateStartupRequirements } from './lib/startup/validation';
 
 let serverInstance: import('http').Server | null = null;
 
@@ -44,6 +45,8 @@ process.on('SIGTERM', () => void shutdown('SIGTERM'));
 
 (async () => {
   try {
+    validateStartupRequirements();
+
     loggerService.info("Connecting to the database");
     await AppDataSourceRead.initialize();
     await AppDataSourceReadWrite.initialize();
