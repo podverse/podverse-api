@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { AuthCookieName, ERROR_MESSAGES } from 'podverse-helpers';
+import { AuthCookieName, ERROR_MESSAGES, AccountMembershipEnum } from 'podverse-helpers';
 import { AccountService } from 'podverse-orm';
 import { config } from '@api/config';
 import { verifyPassword } from './password';
@@ -139,7 +139,7 @@ const verifyTokenAndMembership = async (
   res: Response,
   next: NextFunction,
   token: string,
-  options?: { skipMembershipStatus?: boolean }
+  options: { skipMembershipStatus: boolean; noFreeTrial?: boolean }
 ) => {
   interface DecodedToken { id: number; [key: string]: unknown }
   jwt.verify(token, config.auth.jwtSecret, async (err: jwt.VerifyErrors | null, decoded: unknown) => {
@@ -159,8 +159,11 @@ const verifyTokenAndMembership = async (
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (!options?.skipMembershipStatus) {
-      const account = await accountService.get(req.user.id, { relations: ['account_membership_status'] });
+    if (!options.skipMembershipStatus) {
+      const relations = options.noFreeTrial 
+        ? ['account_membership_status', 'account_membership_status.account_membership']
+        : ['account_membership_status'];
+      const account = await accountService.get(req.user.id, { relations });
       if (!account) {
         console.error('[verifyTokenAndMembership] No account found for user id:', req.user.id);
         return res.status(401).json({ message: 'Unauthorized' });
@@ -176,13 +179,20 @@ const verifyTokenAndMembership = async (
         console.warn('[verifyTokenAndMembership] Membership expired or missing for user id:', req.user.id);
         return res.status(403).json({ message: 'Membership expired' });
       }
+
+      if (options.noFreeTrial) {
+        const accountMembership = membershipStatus.account_membership;
+        if (accountMembership && accountMembership.id === AccountMembershipEnum.Trial) {
+          return res.status(403).json({ message: 'This feature is only available to premium accounts and is not available to free trials' });
+        }
+      }
     }
 
     next();
   });
 };
 
-export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
+export const ensureAuthenticated = (req: Request, res: Response, next: NextFunction, options: { skipMembershipStatus: boolean; noFreeTrial?: boolean }) => {
   const token = req.cookies[AuthCookieName] || req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
@@ -190,7 +200,7 @@ export const ensureAuthenticated = (req: Request, res: Response, next: NextFunct
   verifyTokenAndMembership(req, res, next, token, options);
 };
 
-export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction, options?: { skipMembershipStatus?: boolean }) => {
+export const optionalEnsureAuthenticated = (req: Request, res: Response, next: NextFunction, options: { skipMembershipStatus: boolean; noFreeTrial?: boolean }) => {
   const token = req.cookies[AuthCookieName] || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
