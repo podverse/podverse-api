@@ -18,6 +18,7 @@ import { itemSoundbiteRouter } from "./routes/itemSoundbite";
 import { liveItemRouter } from "./routes/liveItem";
 import { mediumRouter } from '@api/routes/medium';
 import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
+import { membershipRouter } from '@api/routes/membership';
 import { accountPayPalOrderRouter } from '@api/routes/paypal';
 import { playlistRouter } from '@api/routes/playlist';
 import { podrollRouter } from "@api/routes/podroll";
@@ -80,6 +81,7 @@ export const startApp = async () => {
     app.use(liveItemRouter);
     app.use(mediumRouter);
     app.use(membershipClaimTokenRouter);
+    app.use(membershipRouter);
     app.use(mqRouter);
     app.use(playlistRouter);
     app.use(podrollRouter);

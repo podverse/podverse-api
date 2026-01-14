@@ -1,3 +1,5 @@
+import { AccountSignupMode } from 'podverse-helpers';
+
 type SocialConfig = {
   pageUrl: string;
   imageUrl: string;
@@ -86,6 +88,12 @@ type Config = {
   web: {
     protocol: string;
     domain: string;
+  };
+  premium: {
+    costMonthly: number;
+    costAnnually: number;
+    signupMode: AccountSignupMode;
+    freeTrialExpiration: number;
   };
 };
 
@@ -184,5 +192,11 @@ export const config: Config = {
   web: {
     protocol: process.env.WEB_PROTOCOL || 'http',
     domain: process.env.WEB_DOMAIN || 'localhost',
+  },
+  premium: {
+    costMonthly: Number(process.env.PREMIUM_MEMBERSHIP_COST_MONTHLY) || 5,
+    costAnnually: Number(process.env.PREMIUM_MEMBERSHIP_COST_ANNUALLY) || 50,
+    signupMode: (process.env.ACCOUNT_SIGNUP_MODE || 'sign-up') as AccountSignupMode,
+    freeTrialExpiration: parseInt(process.env.FREE_TRIAL_EXPIRATION || '2592000', 10),
   }
 };
