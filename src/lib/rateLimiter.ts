@@ -60,7 +60,7 @@ export function rateLimitAuthEndpoint(options: { windowMs: number; max: number }
       } catch {
         res.status(401).json({ error: 'Authentication required' });
       }
-    });
+    }, { skipMembershipStatus: true });
   };
 }
 

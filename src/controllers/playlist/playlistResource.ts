@@ -52,7 +52,7 @@ class PlaylistResourceController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -92,7 +92,7 @@ class PlaylistResourceController {
           } catch (err) {
             handleGenericErrorResponse(res, err);
           }
-        });
+        }, { skipMembershipStatus: true });
       });
     });
   }
@@ -128,7 +128,7 @@ class PlaylistResourceController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: true });
       });
     });
   }
@@ -162,7 +162,7 @@ class PlaylistResourceController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

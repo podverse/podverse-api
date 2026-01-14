@@ -55,7 +55,7 @@ export class MQController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false, noFreeTrial: true });
     };
   }
 }

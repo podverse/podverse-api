@@ -341,7 +341,7 @@ export class ItemController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -390,7 +390,7 @@ export class ItemController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 

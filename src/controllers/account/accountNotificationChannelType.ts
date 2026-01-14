@@ -32,7 +32,7 @@ class AccountNotificationChannelTypeController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async delete(req: Request, res: Response): Promise<void> {
@@ -48,7 +48,7 @@ class AccountNotificationChannelTypeController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

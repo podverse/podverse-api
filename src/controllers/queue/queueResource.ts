@@ -35,7 +35,7 @@ class QueueResourceController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getNowPlayingByQueueIdText(req: Request, res: Response): Promise<void> {
@@ -53,7 +53,7 @@ class QueueResourceController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -72,7 +72,7 @@ class QueueResourceController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -101,7 +101,7 @@ class QueueResourceController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 

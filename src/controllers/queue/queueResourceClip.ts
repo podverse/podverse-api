@@ -33,7 +33,7 @@ class QueueResourceClipController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -50,7 +50,7 @@ class QueueResourceClipController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -70,7 +70,7 @@ class QueueResourceClipController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -95,7 +95,7 @@ class QueueResourceClipController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -121,7 +121,7 @@ class QueueResourceClipController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -139,7 +139,7 @@ class QueueResourceClipController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

@@ -254,7 +254,7 @@ class ClipController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async updateClip(req: Request, res: Response): Promise<void> {
@@ -284,7 +284,7 @@ class ClipController {
           });
         });
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async deleteClip(req: Request, res: Response): Promise<void> {
@@ -302,7 +302,7 @@ class ClipController {
           }
         });
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async getClipByIdText(req: Request, res: Response): Promise<void> {
@@ -336,7 +336,7 @@ class ClipController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -349,7 +349,7 @@ class ClipController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPublicRecent(req: Request, res: Response): Promise<void> {
@@ -807,7 +807,7 @@ class ClipController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -851,7 +851,7 @@ class ClipController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 

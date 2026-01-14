@@ -267,7 +267,7 @@ export class ChannelController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -309,7 +309,7 @@ export class ChannelController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -350,7 +350,7 @@ export class ChannelController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

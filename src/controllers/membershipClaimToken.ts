@@ -28,6 +28,6 @@ export class MembershipClaimTokenController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }

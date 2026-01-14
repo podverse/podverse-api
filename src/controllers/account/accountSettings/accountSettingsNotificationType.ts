@@ -27,7 +27,7 @@ export class AccountSettingsNotificationTypeController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -43,7 +43,7 @@ export class AccountSettingsNotificationTypeController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

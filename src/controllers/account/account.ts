@@ -202,7 +202,7 @@ export class AccountController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async sendVerificationEmail(req: Request, res: Response): Promise<void> {
@@ -274,7 +274,7 @@ export class AccountController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   private static async sendEmailChangeVerificationEmailHelper(account_id: number, pending_email_address: string): Promise<void> {
@@ -388,6 +388,6 @@ export class AccountController {
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 }

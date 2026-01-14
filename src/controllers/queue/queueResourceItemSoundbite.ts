@@ -33,7 +33,7 @@ class QueueResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -50,7 +50,7 @@ class QueueResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -70,7 +70,7 @@ class QueueResourceItemSoundbiteController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -95,7 +95,7 @@ class QueueResourceItemSoundbiteController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -121,7 +121,7 @@ class QueueResourceItemSoundbiteController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -139,7 +139,7 @@ class QueueResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

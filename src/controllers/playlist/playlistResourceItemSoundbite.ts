@@ -32,7 +32,7 @@ class PlaylistResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -49,7 +49,7 @@ class PlaylistResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -69,7 +69,7 @@ class PlaylistResourceItemSoundbiteController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -86,7 +86,7 @@ class PlaylistResourceItemSoundbiteController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 

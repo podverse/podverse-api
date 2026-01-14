@@ -35,7 +35,7 @@ class AccountNotificationChannelController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -48,7 +48,7 @@ class AccountNotificationChannelController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async create(req: Request, res: Response): Promise<void> {
@@ -63,7 +63,7 @@ class AccountNotificationChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async delete(req: Request, res: Response): Promise<void> {
@@ -78,7 +78,7 @@ class AccountNotificationChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

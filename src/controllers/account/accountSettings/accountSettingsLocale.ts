@@ -5,10 +5,6 @@ import { validateBodyObject } from '@api/lib/validation';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 
-const createAccountSettingsLocaleSchema = Joi.object({
-  locale: Joi.string().required()
-});
-
 const updateAccountSettingsLocaleSchema = Joi.object({
   locale: Joi.string().required()
 });
@@ -27,7 +23,7 @@ export class AccountSettingsLocaleController {
         } catch (error) {
           handleGenericErrorResponse(res, error);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
   

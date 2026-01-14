@@ -45,7 +45,7 @@ class AccountPayPalOrderController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -61,7 +61,7 @@ class AccountPayPalOrderController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -89,7 +89,7 @@ class AccountPayPalOrderController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

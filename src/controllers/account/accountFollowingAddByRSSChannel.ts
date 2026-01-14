@@ -45,7 +45,7 @@ class AccountFollowingAddByRSSChannelController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -63,7 +63,7 @@ class AccountFollowingAddByRSSChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async removeRSSChannel(req: Request, res: Response): Promise<void> {
@@ -79,7 +79,7 @@ class AccountFollowingAddByRSSChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

@@ -51,7 +51,7 @@ class AccountFollowingChannelController {
           } catch (err) {
             handleGenericErrorResponse(res, err);
           }
-        });
+        }, { skipMembershipStatus: true });
       });
     });
   }
@@ -70,7 +70,7 @@ class AccountFollowingChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async unfollowChannel(req: Request, res: Response): Promise<void> {
@@ -86,7 +86,7 @@ class AccountFollowingChannelController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

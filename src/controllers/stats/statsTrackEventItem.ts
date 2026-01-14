@@ -25,6 +25,6 @@ export class StatsTrackEventItemController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 }

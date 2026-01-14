@@ -167,7 +167,7 @@ class PlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async updatePlaylist(req: Request, res: Response): Promise<void> {
@@ -207,7 +207,7 @@ class PlaylistController {
           });
         });
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async deletePlaylist(req: Request, res: Response): Promise<void> {
@@ -225,7 +225,7 @@ class PlaylistController {
           }
         });
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPublicTop(req: Request, res: Response): Promise<void> {
@@ -297,7 +297,7 @@ class PlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPrivateRecent(req: Request, res: Response): Promise<void> {
@@ -332,7 +332,7 @@ class PlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPrivateOldest(req: Request, res: Response): Promise<void> {
@@ -367,7 +367,7 @@ class PlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPrivateAZ(req: Request, res: Response): Promise<void> {
@@ -402,7 +402,7 @@ class PlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyFollowedPrivateTop(req: Request, res: Response): Promise<void> {
@@ -442,7 +442,7 @@ class PlaylistController {
         };
         res.json(response);
       });
-    });
+    }, { skipMembershipStatus: true });
   };
 
   static async getManyFollowedPrivateRecent(req: Request, res: Response): Promise<void> {
@@ -471,7 +471,7 @@ class PlaylistController {
         };
         res.json(response);
       });
-    });
+    }, { skipMembershipStatus: true });
   };
 
   static async getManyFollowedPrivateOldest(req: Request, res: Response): Promise<void> {
@@ -500,7 +500,7 @@ class PlaylistController {
         };
         res.json(response);
       });
-    });
+    }, { skipMembershipStatus: true });
   };
 
   static async getManyFollowedPrivateAZ(req: Request, res: Response): Promise<void> {
@@ -529,7 +529,7 @@ class PlaylistController {
         };
         res.json(response);
       });
-    });
+    }, { skipMembershipStatus: true });
   };
 
   static async getAllFavoritesPrivate(req: Request, res: Response): Promise<void> {
@@ -541,7 +541,7 @@ class PlaylistController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getPlaylistById(req: Request, res: Response): Promise<void> {
@@ -574,7 +574,7 @@ class PlaylistController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 

@@ -52,7 +52,7 @@ export class AccountFCMDeviceController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async update(req: Request, res: Response): Promise<void> {
@@ -78,7 +78,7 @@ export class AccountFCMDeviceController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async delete(req: Request, res: Response): Promise<void> {
@@ -100,7 +100,7 @@ export class AccountFCMDeviceController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getAllForAccount(req: Request, res: Response): Promise<void> {
@@ -112,7 +112,7 @@ export class AccountFCMDeviceController {
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async updateLocaleForAccount(req: Request, res: Response): Promise<void> {
@@ -127,6 +127,6 @@ export class AccountFCMDeviceController {
           handleGenericErrorResponse(res, error);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }

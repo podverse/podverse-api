@@ -49,7 +49,7 @@ class AccountFollowingPlaylistController {
         } catch (err) {
           handleGenericErrorResponse(res, err);
         }
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
@@ -67,7 +67,7 @@ class AccountFollowingPlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: false });
   }
 
   static async unfollowPlaylist(req: Request, res: Response): Promise<void> {
@@ -83,7 +83,7 @@ class AccountFollowingPlaylistController {
           handleGenericErrorResponse(res, err);
         }
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

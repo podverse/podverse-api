@@ -44,7 +44,7 @@ class QueueResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -63,7 +63,7 @@ class QueueResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -82,7 +82,7 @@ class QueueResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -108,7 +108,7 @@ class QueueResourceItemAddByRSSController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -135,7 +135,7 @@ class QueueResourceItemAddByRSSController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -152,7 +152,7 @@ class QueueResourceItemAddByRSSController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

@@ -49,7 +49,7 @@ class QueueController {
       } catch (err) {
         handleGenericErrorResponse(res, err);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async updateIsActiveQueue(req: Request, res: Response): Promise<void> {
@@ -74,7 +74,7 @@ class QueueController {
           });
         });
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 }
 

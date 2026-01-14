@@ -47,7 +47,7 @@ class QueueResourceItemController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -65,7 +65,7 @@ class QueueResourceItemController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -82,7 +82,7 @@ class QueueResourceItemController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -102,7 +102,7 @@ class QueueResourceItemController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -129,7 +129,7 @@ class QueueResourceItemController {
               handleGenericErrorResponse(res, err);
             }
           });
-        });
+        }, { skipMembershipStatus: false });
       });
     });
   }
@@ -147,7 +147,7 @@ class QueueResourceItemController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 }

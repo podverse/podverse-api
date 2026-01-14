@@ -44,7 +44,7 @@ class PlaylistResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -64,7 +64,7 @@ class PlaylistResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -84,7 +84,7 @@ class PlaylistResourceItemAddByRSSController {
             }
           });
         });
-      });
+      }, { skipMembershipStatus: false });
     });
   }
 
@@ -101,7 +101,7 @@ class PlaylistResourceItemAddByRSSController {
             handleGenericErrorResponse(res, err);
           }
         });
-      });
+      }, { skipMembershipStatus: true });
     });
   }
 
