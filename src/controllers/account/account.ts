@@ -122,7 +122,7 @@ export class AccountController {
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async checkIfValidAuthSession(req: Request, res: Response): Promise<void> {
@@ -130,7 +130,7 @@ export class AccountController {
       res.json({
         message: 'Valid auth session'
       });
-    });
+    }, { skipMembershipStatus: true });
   }
 
   static async getManyPublic(req: Request, res: Response): Promise<void> {
