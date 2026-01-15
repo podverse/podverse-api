@@ -10,8 +10,6 @@ type Config = {
   userAgent: string;
   log: {
     level: string;
-    dir: string;
-    timer: boolean;
   };
   auth: {
     jwtSecret: string;
@@ -101,9 +99,7 @@ export const config: Config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   userAgent: process.env.USER_AGENT || '',
   log: {
-    level: process.env.LOG_LEVEL || 'info',
-    dir: process.env.LOG_DIR || 'logs',
-    timer: process.env.LOG_TIMER === 'true',
+    level: process.env.LOG_LEVEL || 'info'
   },
   auth: {
     jwtSecret: process.env.AUTH_JWT_SECRET || '',
