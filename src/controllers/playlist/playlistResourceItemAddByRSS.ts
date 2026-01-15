@@ -5,6 +5,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { verifyPlaylistOwnership } from '@api/controllers/playlist/playlist';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemToPlaylistSchema = Joi.object({
   add_by_rss_resource_data: Joi.object().required()
@@ -33,7 +34,7 @@ class PlaylistResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(addItemToPlaylistSchema, req, res, async () => {
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             const { add_by_rss_resource_data } = req.body;
 
             try {
@@ -53,7 +54,7 @@ class PlaylistResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(addItemToPlaylistSchema, req, res, async () => {
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             const { add_by_rss_resource_data } = req.body;
 
             try {
@@ -73,7 +74,7 @@ class PlaylistResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(addItemToPlaylistBetweenSchema, req, res, async () => {
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             const { add_by_rss_resource_data, position1, position2 } = req.body;
 
             try {
@@ -92,7 +93,8 @@ class PlaylistResourceItemAddByRSSController {
     validateParamsObject(playlistAndRSSHashIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text, add_by_rss_hash_id } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const add_by_rss_hash_id = getParamRequired(req, 'add_by_rss_hash_id');
 
           try {
             await PlaylistResourceItemAddByRSSController.playlistResourceService.removeItemAddByRSSFromPlaylist(playlist_id_text, add_by_rss_hash_id);

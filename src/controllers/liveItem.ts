@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { getParamRequired } from "@api/lib/params";
 import Joi from "joi";
 import { LIVE_ITEM_STATUSES } from "podverse-helpers";
 import { ChannelService, Item, itemGetManyRelations, ItemService, LiveItemStatusEnum } from "podverse-orm";
@@ -50,7 +51,7 @@ export class LiveItemController {
   }
 
   static async getManyByChannel(req: Request, res: Response): Promise<void> {
-    const { channelIdOrIdText } = req.params;
+    const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
 
     const channel = await LiveItemController.channelService.getByIdOrIdText(channelIdOrIdText);
     if (!channel) {

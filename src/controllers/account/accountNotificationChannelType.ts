@@ -5,6 +5,7 @@ import { ACCOUNT_NOTIFICATION_TYPE_VALUES, AccountNotificationTypeEnum } from 'p
 import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const createNotificationChannelTypeSchema = Joi.object({
   channel_id_text: Joi.string().required(),
@@ -40,7 +41,8 @@ class AccountNotificationChannelTypeController {
       validateParamsObject(deleteNotificationChannelTypeSchema, req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { channel_id_text, type } = req.params as { channel_id_text: string; type: AccountNotificationTypeEnum };
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
+          const type = getParamRequired(req, 'type') as AccountNotificationTypeEnum;
           await AccountNotificationChannelTypeController
             .accountNotificationChannelTypeService.delete(jwtUser.id, channel_id_text, type);
           res.status(204).end();

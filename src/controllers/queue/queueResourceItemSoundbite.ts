@@ -6,6 +6,7 @@ import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
 import { queueResourceNowPlayingSchema } from './queueResourceItem';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemSoundbiteToQueueBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -24,7 +25,8 @@ class QueueResourceItemSoundbiteController {
     validateParamsObject(queueAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_soundbite_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
 
           try {
             const queueResource = await QueueResourceItemSoundbiteController.queueResourceService.addItemSoundbiteToQueueNext(queue_id_text, item_soundbite_id_text);
@@ -41,7 +43,8 @@ class QueueResourceItemSoundbiteController {
     validateParamsObject(queueAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_soundbite_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
 
           try {
             const queueResource = await QueueResourceItemSoundbiteController.queueResourceService.addItemSoundbiteToQueueLast(queue_id_text, item_soundbite_id_text);
@@ -59,7 +62,8 @@ class QueueResourceItemSoundbiteController {
       ensureAuthenticated(req, res, async () => {
         validateBodyObject(addItemSoundbiteToQueueBetweenSchema, req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_soundbite_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
             const { position1, position2 } = req.body;
 
             try {
@@ -79,7 +83,8 @@ class QueueResourceItemSoundbiteController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_soundbite_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
             const { playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -105,7 +110,8 @@ class QueueResourceItemSoundbiteController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_soundbite_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
             const { playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -130,7 +136,8 @@ class QueueResourceItemSoundbiteController {
     validateParamsObject(queueAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_soundbite_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
 
           try {
             await QueueResourceItemSoundbiteController.queueResourceService.removeItemSoundbiteFromQueue(queue_id_text, item_soundbite_id_text);

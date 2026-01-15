@@ -3,6 +3,7 @@ import Joi from 'joi';
 import { ChannelPodrollService } from 'podverse-orm';
 import { validateParamsObject } from '@api/lib/validation';
 import { buildRemoteItemsFinalResult } from '@api/lib/remoteItems';
+import { getParamRequired } from '@api/lib/params';
 
 const getPodrollForChannelSchema = Joi.object({
   idOrIdText: Joi.string().required()
@@ -13,7 +14,7 @@ export class PodrollController {
 
   static async getPodrollForChannel(req: Request, res: Response): Promise<void> {
     validateParamsObject(getPodrollForChannelSchema, req, res, async () => {
-      const { idOrIdText } = req.params;
+      const idOrIdText = getParamRequired(req, 'idOrIdText');
       const result = await PodrollController
         .channelPodrollService
         .getPodrollForChannel(idOrIdText);

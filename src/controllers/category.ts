@@ -4,6 +4,7 @@ import { CategoryService } from 'podverse-orm';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
 import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const getCategorySchema = Joi.object({
   id: Joi.number().integer().min(1).required()
@@ -15,7 +16,7 @@ export class CategoryController {
   static async get(req: Request, res: Response): Promise<void> {
     validateParamsObject(getCategorySchema, req, res, async () => {
       try {
-        const { id } = req.params;
+        const id = getParamRequired(req, 'id');
         const numericId = parseInt(id, 10);
         const data = await CategoryController.categoryService.get(numericId);
         handleReturnDataOrNotFound(res, data, 'Category');

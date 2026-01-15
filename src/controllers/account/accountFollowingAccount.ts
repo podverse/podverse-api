@@ -5,6 +5,7 @@ import { ensureAuthenticated, optionalEnsureAuthenticated } from "@api/lib/auth"
 import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject } from "@api/lib/validation";
 import { SharableStatusEnum } from "podverse-helpers";
+import { getParamRequired } from "@api/lib/params";
 
 const followAccountSchema = Joi.object({
   following_account_id_text: Joi.string().required()
@@ -23,7 +24,7 @@ class AccountFollowingAccountController {
       optionalEnsureAuthenticated(req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { account_id_text } = req.params;
+          const account_id_text = getParamRequired(req, 'account_id_text');
 
           const account = await AccountFollowingAccountController.accountService.getByIdText(account_id_text, { relations: ['sharable_status'] });
 

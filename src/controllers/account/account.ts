@@ -13,6 +13,7 @@ import { sendVerificationEmail } from '@api/lib/mailer/sendVerificationEmail';
 import { sendResetPasswordEmail } from '@api/lib/mailer/sendResetPasswordEmail';
 import { validateBodyObject, validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { sendEmailChangeVerificationEmail } from '@api/lib/mailer/sendChangeEmailVerificationEmail';
+import { getParamRequired } from '@api/lib/params';
 
 const createAccountSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -93,7 +94,7 @@ export class AccountController {
   static async getByIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdTextSchema, req, res, async () => {
       try {
-        const { id_text } = req.params;
+        const id_text = getParamRequired(req, 'id_text');
         // TODO: Only return if is a public account
         const config = { relations: publicRelations };
         const data = await AccountController.accountService.getByIdText(id_text, config);

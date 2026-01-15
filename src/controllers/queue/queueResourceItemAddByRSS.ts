@@ -6,6 +6,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemToQueueSchema = Joi.object({
   add_by_rss_resource_data: Joi.object().required()
@@ -34,7 +35,7 @@ class QueueResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
           validateBodyObject(addItemToQueueSchema, req, res, async () => {
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { add_by_rss_resource_data } = req.body;
             try {
               const queueResource = await QueueResourceItemAddByRSSController.queueResourceService.addItemAddByRSSToQueueNext(queue_id_text, add_by_rss_resource_data);
@@ -53,7 +54,7 @@ class QueueResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
           validateBodyObject(addItemToQueueSchema, req, res, async () => {
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { add_by_rss_resource_data } = req.body;
             try {
               const queueResource = await QueueResourceItemAddByRSSController.queueResourceService.addItemAddByRSSToQueueLast(queue_id_text, add_by_rss_resource_data);
@@ -72,7 +73,7 @@ class QueueResourceItemAddByRSSController {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
           validateBodyObject(addItemToQueueBetweenSchema, req, res, async () => {
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { add_by_rss_resource_data, position1, position2 } = req.body;
             try {
               const queueResource = await QueueResourceItemAddByRSSController.queueResourceService.addItemAddByRSSToQueueBetween(queue_id_text, add_by_rss_resource_data, position1, position2);
@@ -91,7 +92,7 @@ class QueueResourceItemAddByRSSController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { add_by_rss_resource_data, playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -118,7 +119,7 @@ class QueueResourceItemAddByRSSController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { add_by_rss_resource_data, playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -144,7 +145,8 @@ class QueueResourceItemAddByRSSController {
     validateParamsObject(queueAndRSSHashIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, add_by_rss_hash_id } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const add_by_rss_hash_id = getParamRequired(req, 'add_by_rss_hash_id');
           try {
             await QueueResourceItemAddByRSSController.queueResourceService.removeItemAddByRSSFromQueue(queue_id_text, add_by_rss_hash_id);
             res.status(204).end();

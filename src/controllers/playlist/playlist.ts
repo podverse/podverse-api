@@ -13,6 +13,7 @@ import { validateBodyObject, validateParamsObject, validateQueryObject } from '@
 import { getPaginationParams } from '../helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
 import { getFollowedPlaylistIdsPrivate } from '@api/lib/followed';
+import { getParamRequired } from '@api/lib/params';
 
 const createPlaylistSchema = Joi.object({
   title: Joi.string().allow(null, ''),
@@ -80,7 +81,7 @@ const playlistService = new PlaylistService();
 export const verifyPlaylistOwnership = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user!;
-    const { playlist_id_text } = req.params;
+    const playlist_id_text = getParamRequired(req, 'playlist_id_text');
 
     try {
       const playlist = await playlistService.getByIdText(playlist_id_text, { relations: ['account'] });
@@ -102,7 +103,7 @@ export const verifyPlaylistOwnership = () => {
 export const verifyPrivatePlaylistOwnershipIfNeeded = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user;
-    const { playlist_id_text } = req.params;
+    const playlist_id_text = getParamRequired(req, 'playlist_id_text');
 
     try {
       const playlist = await playlistService.getByIdText(playlist_id_text, {
@@ -176,7 +177,7 @@ class PlaylistController {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(updatePlaylistSchema, req, res, async () => {
             const account = req.user!;
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             
             const { title, description, medium, sharable_status_id } = req.body as {
               title: string;
@@ -215,7 +216,7 @@ class PlaylistController {
       validateParamsObject(playlistIdSchema, req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           const account = req.user!;
-          const { playlist_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
 
           try {
             await PlaylistController.playlistService.delete(account.id, playlist_id_text);
@@ -549,7 +550,7 @@ class PlaylistController {
       optionalEnsureAuthenticated(req, res, async () => {
         verifyPrivatePlaylistOwnershipIfNeeded()(req, res, async () => {
           try {
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             const account = req.user!;
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

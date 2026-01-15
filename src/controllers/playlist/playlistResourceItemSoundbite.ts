@@ -5,6 +5,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { verifyPlaylistOwnership } from '@api/controllers/playlist/playlist';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemSoundbiteToPlaylistBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -23,7 +24,8 @@ class PlaylistResourceItemSoundbiteController {
     validateParamsObject(playlistAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text, soundbite_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const soundbite_id_text = getParamRequired(req, 'soundbite_id_text');
 
           try {
             const playlistResource = await PlaylistResourceItemSoundbiteController.playlistResourceService.addItemSoundbiteToPlaylistFirst(playlist_id_text, soundbite_id_text);
@@ -40,7 +42,8 @@ class PlaylistResourceItemSoundbiteController {
     validateParamsObject(playlistAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text, soundbite_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const soundbite_id_text = getParamRequired(req, 'soundbite_id_text');
 
           try {
             const playlistResource = await PlaylistResourceItemSoundbiteController.playlistResourceService.addItemSoundbiteToPlaylistLast(playlist_id_text, soundbite_id_text);
@@ -58,7 +61,8 @@ class PlaylistResourceItemSoundbiteController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(addItemSoundbiteToPlaylistBetweenSchema, req, res, async () => {
-            const { playlist_id_text, soundbite_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const soundbite_id_text = getParamRequired(req, 'soundbite_id_text');
             const { position1, position2 } = req.body;
 
             try {
@@ -77,7 +81,8 @@ class PlaylistResourceItemSoundbiteController {
     validateParamsObject(playlistAndSoundbiteIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text, soundbite_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const soundbite_id_text = getParamRequired(req, 'soundbite_id_text');
 
           try {
             await PlaylistResourceItemSoundbiteController.playlistResourceService.removeItemSoundbiteFromPlaylist(playlist_id_text, soundbite_id_text);

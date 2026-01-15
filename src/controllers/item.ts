@@ -21,6 +21,7 @@ import { ApiListResponse, CATEGORY_MAPPING_KEYS, CategoryMappingKeys, emptyApiLi
 import { getStatsOrder } from '@api/lib/stats';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getFollowedChannelIds } from '@api/lib/followed';
+import { getParamRequired } from '@api/lib/params';
 
 const getByIdOrIdTextSchema = Joi.object({
   idOrIdText: Joi.string().required()
@@ -129,7 +130,7 @@ export class ItemController {
   static async getByIdOrIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdOrIdTextSchema, req, res, async () => {
       try {
-        const { idOrIdText } = req.params;
+        const idOrIdText = getParamRequired(req, 'idOrIdText');
         const data = await ItemController.itemService.getByIdOrIdText(idOrIdText, itemGetOneRelations);
         handleReturnDataOrNotFound(res, data, 'Item');
       } catch (error) {
@@ -399,7 +400,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelQuerySchemaRecent, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -432,7 +433,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelQuerySchemaOldest, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -465,7 +466,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelTopQuerySchema, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
           const { range } = req.query as {
             range: QueryParamsStatsRange;
           };
@@ -514,7 +515,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelBySeasonQuerySchema, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -545,7 +546,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelBySeasonQuerySchema, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
 
           const channel = await ItemController.channelService.getByIdOrIdText(
             channelIdOrIdText,
@@ -576,7 +577,7 @@ export class ItemController {
       validateQueryObject(getManyByChannelShuffleQuerySchema, req, res, async () => {
         try {
           const { page, limit, offset } = getPaginationParams(req);
-          const { channelIdOrIdText } = req.params;
+          const channelIdOrIdText = getParamRequired(req, 'channelIdOrIdText');
           const { shuffleHash } = req.query as { shuffleHash: string };
 
           const channel = await ItemController.channelService.getByIdOrIdText(
@@ -612,7 +613,7 @@ export class ItemController {
           const items = await ItemController
             .itemService
             .getManyForQueueByPubDate(
-              req.params.idText,
+              getParamRequired(req, 'idText'),
               direction
             );
           
@@ -633,7 +634,7 @@ export class ItemController {
           const items = await ItemController
             .itemService
             .getManyForQueueBySeason(
-              req.params.idText,
+              getParamRequired(req, 'idText'),
               direction
             );
           res.json(items);
@@ -646,7 +647,7 @@ export class ItemController {
 
   static async parseAndGetChapters(req: Request, res: Response): Promise<void> {
     validateParamsObject(parseAndGetChaptersSchema, req, res, async () => {
-      const { item_id_text } = req.params;
+      const item_id_text = getParamRequired(req, 'item_id_text');
       try {
         const item = await ItemController
           .itemService.getByIdOrIdText(item_id_text, itemGetOneRelations);

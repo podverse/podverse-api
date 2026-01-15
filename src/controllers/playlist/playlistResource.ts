@@ -7,6 +7,7 @@ import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { verifyPlaylistOwnership, verifyPrivatePlaylistOwnershipIfNeeded } from './playlist';
 import { ensureAuthenticated, optionalEnsureAuthenticated } from '@api/lib/auth';
 import { getPaginationParams } from '../helpers/pagination';
+import { getParamRequired } from '@api/lib/params';
 
 const playlistIdSchema = Joi.object({
   playlist_id_text: Joi.string().required()
@@ -39,7 +40,7 @@ class PlaylistResourceController {
     validateParamsObject(playlistIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
           const account_id = req.user!.id;
           
           try {
@@ -60,7 +61,7 @@ class PlaylistResourceController {
     validateParamsObject(getManyForQueueByListPositionParamsSchema, req, res, async () => {
       validateQueryObject(getManyForQueueByListPositionQuerySchema, req, res, async () => {
         optionalEnsureAuthenticated(req, res, async () => {
-          const { playlist_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
           const {
             item_id_text,
             clip_id_text,
@@ -102,7 +103,7 @@ class PlaylistResourceController {
       validateQueryObject(getManyByPlaylistShuffleQuerySchema, req, res, async () => {
         optionalEnsureAuthenticated(req, res, async () => {
           verifyPrivatePlaylistOwnershipIfNeeded()(req, res, async () => {
-            const { playlist_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
             const { page, limit, offset } = getPaginationParams(req);
             const { shuffleHash } = req.query as { shuffleHash: string };
             const account_id = req.user?.id || null;
@@ -137,7 +138,7 @@ class PlaylistResourceController {
     validateParamsObject(playlistIdSchema, req, res, async () => {
       optionalEnsureAuthenticated(req, res, async () => {
         verifyPrivatePlaylistOwnershipIfNeeded()(req, res, async () => {
-          const { playlist_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
           const { page, limit, offset } = getPaginationParams(req);
           const account_id = req.user?.id || null;
           

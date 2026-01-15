@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { podcastIndexService } from '@api/factories/podcastIndexService';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const podcastIndexFeedParamsSchema = Joi.object({
   podcast_index_id: Joi.number().integer().required()
@@ -20,7 +21,8 @@ export class PodcastIndexController {
   static async podcastById(req: Request, res: Response): Promise<void> {
     validateParamsObject(podcastIndexFeedParamsSchema, req, res,
       async () => {
-        const { podcast_index_id } = req.params as unknown as { podcast_index_id: number };
+        const podcast_index_id_str = getParamRequired(req, 'podcast_index_id');
+        const podcast_index_id = parseInt(podcast_index_id_str, 10);
         const result = await podcastIndexService.podcastGetById(podcast_index_id);
 
         if (!result) {

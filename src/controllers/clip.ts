@@ -20,6 +20,7 @@ import { validateBodyObject, validateParamsObject, validateQueryObject } from '@
 import { getPaginationParams } from './helpers/pagination';
 import { getStatsOrder } from '@api/lib/stats';
 import { getFollowedChannelIds } from '@api/lib/followed';
+import { getParamRequired } from '@api/lib/params';
 
 const clipCreateSchema = Joi.object({
   start_time: Joi.number().min(0).required(),
@@ -183,7 +184,7 @@ const clipService = new ClipService();
 const verifyClipOwnership = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user!;
-    const { clip_id_text } = req.params;
+    const clip_id_text = getParamRequired(req, 'clip_id_text');
 
     try {
       const clip = await clipService.getByIdText(clip_id_text, { relations: ['account'] });
@@ -205,7 +206,7 @@ const verifyClipOwnership = () => {
 const verifyPrivateClipOwnership = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user;
-    const { clip_id_text } = req.params;
+    const clip_id_text = getParamRequired(req, 'clip_id_text');
 
     try {
       const clip = await clipService.getByIdText(clip_id_text, {
@@ -263,7 +264,7 @@ class ClipController {
         verifyClipOwnership()(req, res, () => {
           validateBodyObject(clipUpdateSchema, req, res, async () => {
             const account = req.user!;
-            const { clip_id_text } = req.params;
+            const clip_id_text = getParamRequired(req, 'clip_id_text');
             const dto = req.body;
 
             const finalDto = {
@@ -292,7 +293,7 @@ class ClipController {
       validateParamsObject(clipIdSchema, req, res, () => {
         verifyClipOwnership()(req, res, async () => {
           const account = req.user!;
-          const { clip_id_text } = req.params;
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
 
           try {
             await clipService.delete(account.id, clip_id_text);
@@ -310,7 +311,7 @@ class ClipController {
       optionalEnsureAuthenticated(req, res, () => {
         verifyPrivateClipOwnership()(req, res, async () => {
           try {
-            const { clip_id_text } = req.params;
+            const clip_id_text = getParamRequired(req, 'clip_id_text');
             const clip = await clipService.getByIdText(
               clip_id_text,
               {
@@ -556,7 +557,7 @@ class ClipController {
     validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByChannelRecentSchema, req, res, async () => {
         try {
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           const { page, limit, offset } = getPaginationParams(req);
 
           const channel = await channelService.getByIdText(channel_id_text);
@@ -590,7 +591,7 @@ class ClipController {
     validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByChannelOldestSchema, req, res, async () => {
         try {
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           const { page, limit, offset } = getPaginationParams(req);
 
           const channel = await channelService.getByIdText(channel_id_text);
@@ -624,7 +625,7 @@ class ClipController {
     validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByChannelTopSchema, req, res, async () => {
         try {
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           const { page, limit, offset } = getPaginationParams(req);
           const { range } = req.query as {
             range: QueryParamsStatsRange;
@@ -666,7 +667,7 @@ class ClipController {
     validateParamsObject(getByItemIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByItemRecentSchema, req, res, async () => {
         try {
-          const { item_id_text } = req.params;
+          const item_id_text = getParamRequired(req, 'item_id_text');
           const { page, limit, offset } = getPaginationParams(req);
 
           const item = await itemService.getByIdText(item_id_text);
@@ -700,7 +701,7 @@ class ClipController {
     validateParamsObject(getByItemIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByItemOldestSchema, req, res, async () => {
         try {
-          const { item_id_text } = req.params;
+          const item_id_text = getParamRequired(req, 'item_id_text');
           const { page, limit, offset } = getPaginationParams(req);
 
           const item = await itemService.getByIdText(item_id_text);
@@ -734,7 +735,7 @@ class ClipController {
     validateParamsObject(getByItemIdTextSchema, req, res, async () => {
       validateQueryObject(getClipsPublicByItemTopSchema, req, res, async () => {
         try {
-          const { item_id_text } = req.params;
+          const item_id_text = getParamRequired(req, 'item_id_text');
           const { page, limit, offset } = getPaginationParams(req);
           const { range } = req.query as {
             range: QueryParamsStatsRange;

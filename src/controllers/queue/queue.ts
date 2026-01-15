@@ -4,6 +4,7 @@ import { ensureAuthenticated } from '@api/lib/auth';
 import { handleGenericErrorResponse } from '../helpers/error';
 import Joi from 'joi';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const queueIdTextParamsSchema = Joi.object({
   queue_id_text: Joi.string().required()
@@ -18,7 +19,7 @@ const queueService = new QueueService();
 export const verifyQueueOwnership = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const account = req.user!;
-    const { queue_id_text } = req.params;
+    const queue_id_text = getParamRequired(req, 'queue_id_text');
 
     try {
       const queue = await queueService.getByIdText(queue_id_text, { relations: ['account'] });
@@ -58,7 +59,7 @@ class QueueController {
         validateParamsObject(queueIdTextParamsSchema, req, res, async () => {
           validateBodyObject(updateIsActiveQueueSchema, req, res, async () => {
             const account = req.user!;
-            const { queue_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
             const { is_active_queue } = req.body;
       
             if (typeof is_active_queue !== 'boolean') {

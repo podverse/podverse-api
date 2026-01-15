@@ -6,6 +6,7 @@ import { ItemSoundbite, ItemSoundbiteService } from 'podverse-orm';
 import { handleGenericErrorResponse } from './helpers/error';
 import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { getPaginationParams } from './helpers/pagination';
+import { getParamRequired } from '@api/lib/params';
 
 const getItemSoundbitesByChannelIdTextSchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
@@ -36,7 +37,7 @@ export class ItemSoundbiteController {
   static async getItemSoundbiteById(req: Request, res: Response): Promise<void> {
     validateParamsObject(itemSoundbiteIdTextSchema, req, res, async () => {
       try {
-        const { item_soundbite_id_text } = req.params;
+        const item_soundbite_id_text = getParamRequired(req, 'item_soundbite_id_text');
         const itemSoundbite = await itemSoundbiteService.getByIdText(
           item_soundbite_id_text,
           { relations: ['item'] }
@@ -56,7 +57,7 @@ export class ItemSoundbiteController {
     validateParamsObject(getByChannelIdTextSchema, req, res, async () => {
       validateQueryObject(getItemSoundbitesByChannelIdTextSchema, req, res, async () => {
         try {
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           const { page, limit, offset } = getPaginationParams(req);
           const { sort } = req.query as {
             sort?: QueryParamsItemSoundbitesByChannelSort;
@@ -101,7 +102,7 @@ export class ItemSoundbiteController {
     validateParamsObject(getByItemIdTextSchema, req, res, async () => {
       validateQueryObject(getItemSoundbitesByItemIdTextSchema, req, res, async () => {
         try {
-          const { item_id_text } = req.params;
+          const item_id_text = getParamRequired(req, 'item_id_text');
           const { page, limit, offset } = getPaginationParams(req);
           const { sort } = req.query as {
             sort?: QueryParamsItemSoundbitesByItemSort;

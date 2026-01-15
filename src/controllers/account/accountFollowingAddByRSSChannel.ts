@@ -4,6 +4,7 @@ import { AccountFollowingAddByRSSChannelService, AccountService } from "podverse
 import { ensureAuthenticated } from "@api/lib/auth";
 import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject } from "@api/lib/validation";
+import { getParamRequired } from "@api/lib/params";
 
 const addRSSChannelSchema = Joi.object({
   feed_url: Joi.string().uri().required(),
@@ -26,7 +27,7 @@ class AccountFollowingAddByRSSChannelController {
   static async getFollowedAddByRSSChannels(req: Request, res: Response): Promise<void> {
     validateParamsObject(getFollowedAddByRSSChannelsSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
-        const { account_id_text } = req.params;
+        const account_id_text = getParamRequired(req, 'account_id_text');
 
         try {
           const account = await AccountFollowingAddByRSSChannelController.accountService.getByIdText(account_id_text);

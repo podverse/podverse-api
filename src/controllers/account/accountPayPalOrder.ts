@@ -5,6 +5,7 @@ import { handleGenericErrorResponse } from '../helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import { paypalService } from '@api/factories/paypalService';
+import { getParamRequired } from '@api/lib/params';
 
 const getPayPalOrderSchema = Joi.object({
   payment_id: Joi.string().required()
@@ -32,7 +33,7 @@ class AccountPayPalOrderController {
       ensureAuthenticated(req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { payment_id } = req.params;
+          const payment_id = getParamRequired(req, 'payment_id');
 
           const accountPayPalOrder = await this.accountPayPalOrderService.get(jwtUser.id, payment_id);
 

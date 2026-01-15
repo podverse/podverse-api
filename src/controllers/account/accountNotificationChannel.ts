@@ -4,6 +4,7 @@ import { AccountNotificationChannelService } from 'podverse-orm';
 import { handleGenericErrorResponse } from '../helpers/error';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
 import Joi from 'joi';
+import { getParamRequired } from '@api/lib/params';
 
 const createNotificationChannelSchema = Joi.object({
   channel_id_text: Joi.string().required()
@@ -25,7 +26,7 @@ class AccountNotificationChannelController {
       ensureAuthenticated(req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           const notificationChannel = await AccountNotificationChannelController.accountNotificationChannelService.getByAccountIdAndChannelIdText(jwtUser.id, channel_id_text);
           if (!notificationChannel) {
             res.status(404).json({ message: 'Notification channel not found' });
@@ -71,7 +72,7 @@ class AccountNotificationChannelController {
       validateParamsObject(deleteNotificationChannelSchema, req, res, async () => {
         try {
           const jwtUser = req.user!;
-          const { channel_id_text } = req.params;
+          const channel_id_text = getParamRequired(req, 'channel_id_text');
           await AccountNotificationChannelController.accountNotificationChannelService.delete(jwtUser.id, channel_id_text);
           res.status(204).end();
         } catch (err) {

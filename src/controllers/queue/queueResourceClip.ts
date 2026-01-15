@@ -6,6 +6,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addClipToQueueBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -24,7 +25,8 @@ class QueueResourceClipController {
     validateParamsObject(queueAndClipIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, clip_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
 
           try {
             const queueResource = await QueueResourceClipController.queueResourceService.addClipToQueueNext(queue_id_text, clip_id_text);
@@ -41,7 +43,8 @@ class QueueResourceClipController {
     validateParamsObject(queueAndClipIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, clip_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
 
           try {
             const queueResource = await QueueResourceClipController.queueResourceService.addClipToQueueLast(queue_id_text, clip_id_text);
@@ -59,7 +62,8 @@ class QueueResourceClipController {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
           validateBodyObject(addClipToQueueBetweenSchema, req, res, async () => {
-            const { queue_id_text, clip_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
             const { position1, position2 } = req.body;
 
             try {
@@ -79,7 +83,8 @@ class QueueResourceClipController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, clip_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
             const { playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -105,7 +110,8 @@ class QueueResourceClipController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, clip_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
             const { playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -130,7 +136,8 @@ class QueueResourceClipController {
     validateParamsObject(queueAndClipIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, clip_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const clip_id_text = getParamRequired(req, 'clip_id_text');
 
           try {
             await QueueResourceClipController.queueResourceService.removeClipFromQueue(queue_id_text, clip_id_text);

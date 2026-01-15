@@ -13,6 +13,7 @@ import { validateParamsObject, validateQueryObject } from '@api/lib/validation';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { getStatsOrder } from '@api/lib/stats';
 import { getFollowedChannelIds } from '@api/lib/followed';
+import { getParamRequired } from '@api/lib/params';
 
 const getByPodcastIndexIdSchema = Joi.object({
   podcast_index_id: Joi.string().required()
@@ -69,7 +70,8 @@ export class ChannelController {
   static async getByIdOrIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdOrIdTextSchema, req, res, async () => {
       try {
-        const data: Channel | null = await ChannelController.channelService.getByIdOrIdText(req.params.idOrIdText, channelGetOneRelations);
+        const idOrIdText = getParamRequired(req, 'idOrIdText');
+        const data: Channel | null = await ChannelController.channelService.getByIdOrIdText(idOrIdText, channelGetOneRelations);
         handleReturnDataOrNotFound(res, data, 'Channel');
       } catch (error) {
         handleGenericErrorResponse(res, error);
@@ -80,7 +82,8 @@ export class ChannelController {
   static async getbyPodcastIndexId(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByPodcastIndexIdSchema, req, res, async () => {
       try {
-        const podcastIndexId = parseInt(req.params.podcast_index_id, 10);
+        const podcast_index_id = getParamRequired(req, 'podcast_index_id');
+        const podcastIndexId = parseInt(podcast_index_id, 10);
         if (isNaN(podcastIndexId)) {
           return res.status(400).json({ error: "Invalid podcast_index_id" });
         }

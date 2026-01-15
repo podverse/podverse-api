@@ -3,6 +3,7 @@ import Joi from 'joi';
 import { PublisherFeedService } from 'podverse-orm';
 import { validateParamsObject } from '@api/lib/validation';
 import { buildRemoteItemsFinalResult } from '@api/lib/remoteItems';
+import { getParamRequired } from '@api/lib/params';
 
 const getPublisherFeedRemoteItemsForChannelSchema = Joi.object({
   idOrIdText: Joi.string().required()
@@ -14,7 +15,7 @@ export class PublisherFeedController {
 
   static async getPublisherFeedRemoteItemsForChannel(req: Request, res: Response): Promise<void> {
     validateParamsObject(getPublisherFeedRemoteItemsForChannelSchema, req, res, async () => {
-      const { idOrIdText } = req.params;
+      const idOrIdText = getParamRequired(req, 'idOrIdText');
 
       const result = await PublisherFeedController.publisherFeedService.getPublisherFeedRemoteItemsForChannel(idOrIdText);
 

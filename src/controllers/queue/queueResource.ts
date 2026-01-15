@@ -7,6 +7,7 @@ import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateParamsObject } from '@api/lib/validation';
 import { getPaginationParams } from '../helpers/pagination';
+import { getParamRequired } from '@api/lib/params';
 
 const queueIdSchema = Joi.object({
   queue_id_text: Joi.string().required()
@@ -42,7 +43,7 @@ class QueueResourceController {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
 
           try {
             const queueResources = await QueueResourceController
@@ -61,7 +62,7 @@ class QueueResourceController {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
 
           try {
             const queueResources = await QueueResourceController
@@ -80,7 +81,7 @@ class QueueResourceController {
     validateParamsObject(queueIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
           const { page, limit, offset } = getPaginationParams(req);
 
           try {

@@ -5,6 +5,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { verifyPlaylistOwnership } from '@api/controllers/playlist/playlist';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemToPlaylistBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -23,7 +24,8 @@ class PlaylistResourceItemController {
     validateParamsObject(playlistAndItemIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
-          const { playlist_id_text, item_id_text } = req.params;
+          const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
 
           try {
             const playlistResource = await PlaylistResourceItemController.playlistResourceService.addItemToPlaylistFirst(playlist_id_text, item_id_text);
@@ -41,7 +43,8 @@ class PlaylistResourceItemController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           try {
-            const { playlist_id_text, item_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
             const playlistResource = await PlaylistResourceItemController.playlistResourceService.addItemToPlaylistLast(playlist_id_text, item_id_text);
             res.status(201).json(playlistResource);
           } catch (err) {
@@ -58,7 +61,8 @@ class PlaylistResourceItemController {
         verifyPlaylistOwnership()(req, res, async () => {
           validateBodyObject(addItemToPlaylistBetweenSchema, req, res, async () => {
             try {
-              const { playlist_id_text, item_id_text } = req.params;
+              const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
               const { position1, position2 } = req.body;
               const playlistResource = await PlaylistResourceItemController.playlistResourceService.addItemToPlaylistBetween(playlist_id_text, item_id_text, position1, position2);
               res.status(201).json(playlistResource);
@@ -76,7 +80,8 @@ class PlaylistResourceItemController {
       ensureAuthenticated(req, res, async () => {
         verifyPlaylistOwnership()(req, res, async () => {
           try {
-            const { playlist_id_text, item_id_text } = req.params;
+            const playlist_id_text = getParamRequired(req, 'playlist_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
             await PlaylistResourceItemController.playlistResourceService.removeItemFromPlaylist(playlist_id_text, item_id_text);
             res.status(204).end();
           } catch (err) {

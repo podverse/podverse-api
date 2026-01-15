@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { ItemTranscriptService } from 'podverse-orm';
 import { _request } from '../lib/_request';
+import { getParamRequired } from '@api/lib/params';
 
 const getByIdOrIdTextSchema = Joi.object({
   item_id_text: Joi.string().required()
@@ -13,7 +14,7 @@ export class ItemTranscriptController {
 
   static async getByIdOrIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdOrIdTextSchema, req, res, async () => {
-      const { item_id_text } = req.params;
+      const item_id_text = getParamRequired(req, 'item_id_text');
 
       const options = {
         where: {

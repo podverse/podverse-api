@@ -5,6 +5,7 @@ import { handleGenericErrorResponse } from '@api/controllers/helpers/error';
 import { ensureAuthenticated } from '@api/lib/auth';
 import { verifyQueueOwnership } from '@api/controllers/queue/queue';
 import { validateBodyObject, validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const addItemToQueueBetweenSchema = Joi.object({
   position1: Joi.number().min(0).required(),
@@ -30,7 +31,8 @@ class QueueResourceItemController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+            const item_id_text = getParamRequired(req, 'item_id_text');
   
             const { playback_position, media_file_duration, completed } = req.body;
   
@@ -56,7 +58,8 @@ class QueueResourceItemController {
     validateParamsObject(queueAndItemIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
 
           try {
             const queueResource = await QueueResourceItemController.queueResourceService.addItemToQueueNext(queue_id_text, item_id_text);
@@ -73,7 +76,8 @@ class QueueResourceItemController {
     validateParamsObject(queueAndItemIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
 
           try {
             const queueResource = await QueueResourceItemController.queueResourceService.addItemToQueueLast(queue_id_text, item_id_text);
@@ -91,7 +95,8 @@ class QueueResourceItemController {
       ensureAuthenticated(req, res, async () => {
         validateBodyObject(addItemToQueueBetweenSchema, req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+            const item_id_text = getParamRequired(req, 'item_id_text');
             const { position1, position2 } = req.body;
 
             try {
@@ -111,7 +116,8 @@ class QueueResourceItemController {
       validateBodyObject(queueResourceNowPlayingSchema, req, res, async () => {
         ensureAuthenticated(req, res, async () => {
           verifyQueueOwnership()(req, res, async () => {
-            const { queue_id_text, item_id_text } = req.params;
+            const queue_id_text = getParamRequired(req, 'queue_id_text');
+            const item_id_text = getParamRequired(req, 'item_id_text');
             const { playback_position, media_file_duration, completed } = req.body;
 
             const dto = {
@@ -138,7 +144,8 @@ class QueueResourceItemController {
     validateParamsObject(queueAndItemIdSchema, req, res, async () => {
       ensureAuthenticated(req, res, async () => {
         verifyQueueOwnership()(req, res, async () => {
-          const { queue_id_text, item_id_text } = req.params;
+          const queue_id_text = getParamRequired(req, 'queue_id_text');
+          const item_id_text = getParamRequired(req, 'item_id_text');
 
           try {
             await QueueResourceItemController.queueResourceService.removeItemFromQueue(queue_id_text, item_id_text);

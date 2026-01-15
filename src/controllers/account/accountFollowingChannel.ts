@@ -5,6 +5,7 @@ import { QUERY_PARAMS_MEDIUMS, QueryParamsMedium, SharableStatusEnum } from "pod
 import { ensureAuthenticated, optionalEnsureAuthenticated } from "@api/lib/auth";
 import { handleGenericErrorResponse } from "../helpers/error";
 import { validateBodyObject, validateParamsObject, validateQueryObject } from "@api/lib/validation";
+import { getParamRequired } from "@api/lib/params";
 
 const followChannelSchema = Joi.object({
   channel_id_text: Joi.string().required()
@@ -28,7 +29,7 @@ class AccountFollowingChannelController {
         optionalEnsureAuthenticated(req, res, async () => {
           try {
             const jwtUser = req.user!;
-            const { account_id_text } = req.params;
+            const account_id_text = getParamRequired(req, 'account_id_text');
             const { medium } = req.query as {
               medium: QueryParamsMedium;
             };

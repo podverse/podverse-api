@@ -3,6 +3,7 @@ import Joi from 'joi';
 import { ItemChapterService } from 'podverse-orm';
 import { handleGenericErrorResponse } from './helpers/error';
 import { validateParamsObject } from '@api/lib/validation';
+import { getParamRequired } from '@api/lib/params';
 
 const itemChapterByIdTextSchema = Joi.object({
   item_chapter_id_text: Joi.string().required(),
@@ -15,7 +16,7 @@ export class ItemChapterController {
   static async getItemChapterByIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(itemChapterByIdTextSchema, req, res, async () => {
       try {
-        const { item_chapter_id_text } = req.params;
+        const item_chapter_id_text = getParamRequired(req, 'item_chapter_id_text');
         const itemChapter = await itemChapterService.getByIdText(
           item_chapter_id_text,
           { relations: ['item_chapters_feed', 'item_chapters_feed.item'] }
