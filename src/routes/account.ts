@@ -17,7 +17,11 @@ const router = Router();
 
 router.use(`${config.api.prefix}${config.api.version}/account`, router);
 
-router.get('/', asyncHandler(AccountController.getManyPublic));
+router.get('/recent', asyncHandler(AccountController.getManyPublicRecent));
+router.get('/top', asyncHandler(AccountController.getManyPublicTop));
+router.get('/subscribed/az', asyncHandler(AccountController.getManySubscribedAZ));
+router.get('/subscribed/recent', asyncHandler(AccountController.getManySubscribedRecent));
+router.get('/subscribed/top', asyncHandler(AccountController.getManySubscribedTop));
 router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
 router.post('/', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.create));
