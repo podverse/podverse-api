@@ -30,6 +30,7 @@ import { mqRouter } from "./routes/mq";
 import { feedRouter } from "./routes/feed";
 import { publisherFeedRouter } from "./routes/publisherFeed";
 import { accountSettingsRouter } from "./routes/accountSettings";
+import { profileContentRouter, myProfileContentRouter } from "./routes/profileContent";
 
 export const app = express();
 const port = 1234;
@@ -85,6 +86,8 @@ export const startApp = async () => {
     app.use(mqRouter);
     app.use(playlistRouter);
     app.use(podrollRouter);
+    app.use(profileContentRouter);
+    app.use(myProfileContentRouter);
     app.use(publisherFeedRouter);
     app.use(queueRouter);
     app.use(statsRouter);
