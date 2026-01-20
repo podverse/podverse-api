@@ -279,9 +279,9 @@ export class ProfileContentController {
             order: { title: 'ASC' }
           };
 
-          // Content must be public even for my-profile
+          // My-profile should return all playlists regardless of sharable status
           const [playlists, count] = await ProfileContentController.playlistService
-            .getManyByAccountIdTextPublicAndCount(account.id_text, config);
+            .getManyByAccountIdTextAndCount(account.id_text, config);
 
           const response: ApiListResponse<Playlist> = {
             data: playlists,
@@ -309,9 +309,9 @@ export class ProfileContentController {
             order: { created_at: 'DESC' }
           };
 
-          // Content must be public even for my-profile
+          // My-profile should return all clips regardless of sharable status
           const [clips, count] = await ProfileContentController.clipService
-            .getManyByAccountIdTextPublicAndCount(account.id_text, config);
+            .getManyByAccountIdTextAndCount(account.id_text, config);
 
           const response: ApiListResponse<Clip> = {
             data: clips,
