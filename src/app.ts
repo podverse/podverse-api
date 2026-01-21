@@ -102,6 +102,15 @@ export const startApp = async () => {
       loggerService.info(`The server is running on port ${port}`);
     });
 
+    server.on('error', (err: Error & { code?: string }) => {
+      if (err.code === 'EADDRINUSE') {
+        loggerService.error(`API port ${port} is already in use. Exiting.`);
+      } else {
+        loggerService.error('HTTP server failed to start', err);
+      }
+      process.exit(1);
+    });
+
     return server;
   } catch (error) {
     loggerService.logError('API Top Level Router Error', error as Error);
