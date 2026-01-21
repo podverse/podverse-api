@@ -33,7 +33,7 @@ import { accountSettingsRouter } from "./routes/accountSettings";
 import { profileContentRouter, myProfileContentRouter } from "./routes/profileContent";
 
 export const app = express();
-const port = 1234;
+const port = parseInt(config.api.port, 10);
 
 // TODO: is this safe? Needed? The express-rate-limiter wanted it for the error message below:
 // ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default).
