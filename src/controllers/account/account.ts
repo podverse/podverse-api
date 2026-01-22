@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import archiver from 'archiver';
 import { ERROR_MESSAGES, SharableStatusEnum, getSharableStatusIdsForProfileType, QueryParamsStatsRange, QUERY_PARAMS_STATS_RANGE_VALUES } from 'podverse-helpers';
 import { AccountCredentialsService, AccountEmailChangeVerificationService,
   AccountResetPasswordService, AccountService, AccountVerificationService, AccountFollowingAccountService,
-  StatsAggregatedAccountService, FindManyOptions, StatsAggregatedAccount, Account, AccountFollowingAccount } from 'podverse-orm';
+  StatsAggregatedAccountService, FindManyOptions, StatsAggregatedAccount, Account, AccountFollowingAccount,
+  AccountDataExportService } from 'podverse-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '@api/config';
 import { handleReturnDataOrNotFound } from '@api/controllers/helpers/data';
@@ -123,6 +125,7 @@ export class AccountController {
   private static accountVerificationService = new AccountVerificationService();
   private static accountFollowingAccountService = new AccountFollowingAccountService();
   private static statsAggregatedAccountService = new StatsAggregatedAccountService();
+  private static accountDataExportService = new AccountDataExportService();
 
   static async getByIdText(req: Request, res: Response): Promise<void> {
     validateParamsObject(getByIdTextSchema, req, res, async () => {
@@ -677,6 +680,38 @@ export class AccountController {
         const account_id = req.user!.id;
         await AccountController.accountService.delete(account_id);
         res.json({ message: 'Account deleted successfully' });
+      } catch (error) {
+        handleGenericErrorResponse(res, error);
+      }
+    }, { skipMembershipStatus: true });
+  }
+
+  static async downloadData(req: Request, res: Response): Promise<void> {
+    ensureAuthenticated(req, res, async () => {
+      try {
+        const account_id = req.user!.id;
+        
+        const exportData = await AccountController.accountDataExportService.exportUserData(account_id);
+        
+        // Create zip file with JSON data
+        const archive = archiver('zip', {
+          zlib: { level: 9 } // Maximum compression
+        });
+
+        // Set headers for zip file download
+        const filename = `podverse-data-export-${new Date().toISOString().split('T')[0]}.zip`;
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        // Pipe archive data to response
+        archive.pipe(res);
+
+        // Add JSON data to zip
+        const jsonString = JSON.stringify(exportData, null, 2);
+        archive.append(jsonString, { name: 'data.json' });
+
+        // Finalize the archive
+        await archive.finalize();
       } catch (error) {
         handleGenericErrorResponse(res, error);
       }

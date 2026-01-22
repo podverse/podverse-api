@@ -35,6 +35,8 @@
     "podverse"
   ],
   "dependencies": {
+    "@types/archiver": "^7.0.0",
+    "archiver": "^7.0.1",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
@@ -51,9 +53,9 @@
     "passport-local": "^1.0.0",
     "podverse-external-services": "^5.1.12",
     "podverse-helpers": "^5.1.12",
+    "podverse-mq": "^5.1.12",
     "podverse-orm": "^5.1.12",
     "podverse-parser": "^5.1.12",
-    "podverse-mq": "^5.1.12",
     "reflect-metadata": "^0.2.2",
     "uuid": "^13.0.0"
   },

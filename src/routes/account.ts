@@ -11,7 +11,7 @@ import { AccountNotificationChannelTypeController } from '@api/controllers/accou
 import { AccountFCMDeviceController } from '@api/controllers/account/accountFCMDevice';
 import { AccountWebPushDeviceController } from '@api/controllers/account/accountWebPushDevice';
 import { AccountUPDeviceController } from '@api/controllers/account/accountUPDevice';
-import { rateLimitEndpoint } from '@api/lib/rateLimiter';
+import { rateLimitEndpoint, rateLimitAuthEndpoint } from '@api/lib/rateLimiter';
 
 const router = Router();
 
@@ -22,7 +22,6 @@ router.get('/top', asyncHandler(AccountController.getManyPublicTop));
 router.get('/subscribed/az', asyncHandler(AccountController.getManySubscribedAZ));
 router.get('/subscribed/recent', asyncHandler(AccountController.getManySubscribedRecent));
 router.get('/subscribed/top', asyncHandler(AccountController.getManySubscribedTop));
-router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
 router.post('/', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 3 }), asyncHandler(AccountController.create));
 router.put('/', asyncHandler(AccountController.update));
@@ -33,6 +32,7 @@ router.post('/verify-email-change', rateLimitEndpoint({ windowMs: 10 * 60 * 1000
 router.post('/send-reset-password-email', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.sendResetPasswordEmail));
 router.post('/reset-password', rateLimitEndpoint({ windowMs: 10 * 60 * 1000, max: 4 }), asyncHandler(AccountController.resetPassword));
 router.delete('/delete', asyncHandler(AccountController.delete));
+router.get('/download-data', rateLimitAuthEndpoint({ windowMs: 24 * 60 * 60 * 1000, max: 3 }), asyncHandler(AccountController.downloadData));
 
 router.post('/fcm-device/create', asyncHandler(AccountFCMDeviceController.create));
 router.put('/fcm-device/update', asyncHandler(AccountFCMDeviceController.update));
@@ -72,5 +72,7 @@ router.delete('/notification/channel/:channel_id_text', asyncHandler(AccountNoti
 
 router.post('/notification/channel/type', asyncHandler(AccountNotificationChannelTypeController.create));
 router.delete('/notification/channel/:channel_id_text/type/:type', asyncHandler(AccountNotificationChannelTypeController.delete));
+
+router.get('/:id_text', asyncHandler(AccountController.getByIdText));
 
 export const accountRouter = router;
