@@ -96,103 +96,103 @@ type Config = {
 };
 
 export const config: Config = {
-  nodeEnv: process.env.NODE_ENV || 'development',
-  userAgent: process.env.USER_AGENT || '',
+  nodeEnv: process.env.NODE_ENV!,
+  userAgent: process.env.USER_AGENT!,
   log: {
-    level: process.env.LOG_LEVEL || 'info'
+    level: process.env.LOG_LEVEL!
   },
   auth: {
-    jwtSecret: process.env.AUTH_JWT_SECRET || '',
+    jwtSecret: process.env.AUTH_JWT_SECRET!,
   },
   api: {
-    port: process.env.API_PORT || '1234',
-    prefix: process.env.API_PREFIX || '/api',
-    version: process.env.API_VERSION || '/v2',
+    port: process.env.API_PORT!,
+    prefix: process.env.API_PREFIX!,
+    version: process.env.API_VERSION!,
     cookie: {
-      domain: process.env.COOKIE_DOMAIN || 'localhost'
+      domain: process.env.COOKIE_DOMAIN!
     },
-    allowedCORSOrigins: (process.env.API_ALLOWED_CORS_ORIGINS || '').split(',').map(origin => origin.trim()),
+    allowedCORSOrigins: process.env.API_ALLOWED_CORS_ORIGINS!.split(',').map(origin => origin.trim()),
   },
   email: {
     styles: {
-      brandColor: process.env.EMAIL_BRAND_COLOR || '#FF0000',
+      brandColor: process.env.EMAIL_BRAND_COLOR!,
     },
     header: {
-      imagueUrl: process.env.EMAIL_HEADER_IMAGE_URL || '',
+      imagueUrl: process.env.EMAIL_HEADER_IMAGE_URL!,
     }
   },
   emailChangeVerification: {
-    pagePath: process.env.EMAIL_CHANGE_VERIFICATION_PAGE_PATH || '/',
-    tokenExpiration: parseInt(process.env.EMAIL_CHANGE_VERIFICATION_TOKEN_EXPIRATION || '31540000', 10),
+    pagePath: process.env.EMAIL_CHANGE_VERIFICATION_PAGE_PATH!,
+    tokenExpiration: parseInt(process.env.EMAIL_CHANGE_VERIFICATION_TOKEN_EXPIRATION!, 10),
   },
   legal: {
-    name: process.env.LEGAL_NAME || '',
-    address: process.env.LEGAL_ADDRESS || '',
+    name: process.env.LEGAL_NAME!,
+    address: process.env.LEGAL_ADDRESS!,
   },
   mailer: {
     disabled: process.env.MAILER_DISABLED === 'true',
-    host: process.env.MAILER_HOST || '',
-    port: process.env.MAILER_PORT || '',
-    username: process.env.MAILER_USERNAME || '',
-    password: process.env.MAILER_PASSWORD || '',
-    from: process.env.MAILER_FROM || '',
+    host: process.env.MAILER_HOST!,
+    port: process.env.MAILER_PORT!,
+    username: process.env.MAILER_USERNAME!,
+    password: process.env.MAILER_PASSWORD!,
+    from: process.env.MAILER_FROM!,
   },
   paypal: {
-    clientId: process.env.PAYPAL_CLIENT_ID || '',
-    clientSecret: process.env.PAYPAL_CLIENT_SECRET || '',
+    clientId: process.env.PAYPAL_CLIENT_ID!,
+    clientSecret: process.env.PAYPAL_CLIENT_SECRET!,
   },
   podcastIndex: {
-    authKey: process.env.PODCAST_INDEX_AUTH_KEY || '',
-    baseUrl: process.env.PODCAST_INDEX_BASE_URL || '',
-    secretKey: process.env.PODCAST_INDEX_SECRET_KEY || ''
+    authKey: process.env.PODCAST_INDEX_AUTH_KEY!,
+    baseUrl: process.env.PODCAST_INDEX_BASE_URL!,
+    secretKey: process.env.PODCAST_INDEX_SECRET_KEY!
   },
   activeMQArtemis: {
-    protocol: process.env.MESSAGE_QUEUE_PROTOCOL || 'amqp',
-    host: process.env.MESSAGE_QUEUE_HOST || 'localhost',
-    username: process.env.MESSAGE_QUEUE_USERNAME || 'user',
-    password: process.env.MESSAGE_QUEUE_PASSWORD || 'mysecretpw',
-    port: Number(process.env.MESSAGE_QUEUE_PORT) || 5672
+    protocol: process.env.MESSAGE_QUEUE_PROTOCOL!,
+    host: process.env.MESSAGE_QUEUE_HOST!,
+    username: process.env.MESSAGE_QUEUE_USERNAME!,
+    password: process.env.MESSAGE_QUEUE_PASSWORD!,
+    port: Number(process.env.MESSAGE_QUEUE_PORT!)
   },
   keyvaldb: {
-    host: process.env.KEYVALDB_HOST || '127.0.0.1',
-    port: Number(process.env.KEYVALDB_PORT) || 6379,
+    host: process.env.KEYVALDB_HOST!,
+    port: Number(process.env.KEYVALDB_PORT!),
     password: process.env.KEYVALDB_PASSWORD || undefined,
-    cacheTTLSeconds: Number(process.env.KEYVALDB_CACHE_TTL_SECONDS) || 86400,
+    cacheTTLSeconds: Number(process.env.KEYVALDB_CACHE_TTL_SECONDS!),
   },
   resetPassword: {
-    tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION || '86400', 10),
-    pagePath: process.env.RESET_PASSWORD_PAGE_PATH || '/',
+    tokenExpiration: parseInt(process.env.RESET_PASSWORD_TOKEN_EXPIRATION!, 10),
+    pagePath: process.env.RESET_PASSWORD_PAGE_PATH!,
   },
   social: {
     facebook: {
-      pageUrl: process.env.SOCIAL_FACEBOOK_PAGE_URL || '',
-      imageUrl: process.env.SOCIAL_FACEBOOK_IMAGE_URL || '',
+      pageUrl: process.env.SOCIAL_FACEBOOK_PAGE_URL!,
+      imageUrl: process.env.SOCIAL_FACEBOOK_IMAGE_URL!,
     },
     github: {
-      pageUrl: process.env.SOCIAL_GITHUB_PAGE_URL || '',
-      imageUrl: process.env.SOCIAL_GITHUB_IMAGE_URL || '',
+      pageUrl: process.env.SOCIAL_GITHUB_PAGE_URL!,
+      imageUrl: process.env.SOCIAL_GITHUB_IMAGE_URL!,
     },
     reddit: {
-      pageUrl: process.env.SOCIAL_REDDIT_PAGE_URL || '',
-      imageUrl: process.env.SOCIAL_REDDIT_IMAGE_URL || '',
+      pageUrl: process.env.SOCIAL_REDDIT_PAGE_URL!,
+      imageUrl: process.env.SOCIAL_REDDIT_IMAGE_URL!,
     },
     twitter: {
-      pageUrl: process.env.SOCIAL_TWITTER_PAGE_URL || '',
-      imageUrl: process.env.SOCIAL_TWITTER_IMAGE_URL || '',
+      pageUrl: process.env.SOCIAL_TWITTER_PAGE_URL!,
+      imageUrl: process.env.SOCIAL_TWITTER_IMAGE_URL!,
     },
   },
   verifyEmail: {
-    pagePath: process.env.VERIFY_EMAIL_PAGE_PATH || '/',
-    tokenExpiration: parseInt(process.env.VERIFY_EMAIL_TOKEN_EXPIRATION || '31540000', 10),
+    pagePath: process.env.VERIFY_EMAIL_PAGE_PATH!,
+    tokenExpiration: parseInt(process.env.VERIFY_EMAIL_TOKEN_EXPIRATION!, 10),
   },
   web: {
-    protocol: process.env.WEB_PROTOCOL || 'http',
-    domain: process.env.WEB_DOMAIN || 'localhost',
+    protocol: process.env.WEB_PROTOCOL!,
+    domain: process.env.WEB_DOMAIN!,
   },
   premium: {
-    costMonthly: Number(process.env.PREMIUM_MEMBERSHIP_COST_MONTHLY) || 5,
-    costAnnually: Number(process.env.PREMIUM_MEMBERSHIP_COST_ANNUALLY) || 50,
-    signupMode: (process.env.ACCOUNT_SIGNUP_MODE || 'sign-up') as AccountSignupMode,
-    freeTrialExpiration: parseInt(process.env.FREE_TRIAL_EXPIRATION || '2592000', 10),
+    costMonthly: Number(process.env.PREMIUM_MEMBERSHIP_COST_MONTHLY!),
+    costAnnually: Number(process.env.PREMIUM_MEMBERSHIP_COST_ANNUALLY!),
+    signupMode: process.env.ACCOUNT_SIGNUP_MODE! as AccountSignupMode,
+    freeTrialExpiration: parseInt(process.env.FREE_TRIAL_EXPIRATION!, 10),
   }
 };
