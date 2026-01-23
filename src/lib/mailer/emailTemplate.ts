@@ -10,7 +10,7 @@ type EmailTemplateParams = {
 
 export const emailTemplate = ({ buttonLink, buttonText, headerText, paragraphText, unsubscribeLink }: EmailTemplateParams) => `
   <!doctype html>
-  <html lang="en">
+  <html lang="en-US">
     <head>
       <meta charset="utf-8">
       <title>Podverse</title>

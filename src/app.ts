@@ -7,30 +7,7 @@ import { CategoryService } from "podverse-orm";
 import { config } from '@api/config';
 import { loggerService } from "@api/factories/loggerService";
 import { initializePassport } from '@api/lib/auth';
-import { accountRouter } from '@api/routes/account';
-import { authRouter } from '@api/routes/auth';
-import { categoryRouter } from '@api/routes/category';
-import { channelRouter } from '@api/routes/channel';
-import { clipRouter } from '@api/routes/clip';
-import { externalServicesRouter } from '@api/routes/externalServices';
-import { itemRouter } from '@api/routes/item';
-import { itemSoundbiteRouter } from "./routes/itemSoundbite";
-import { liveItemRouter } from "./routes/liveItem";
-import { mediumRouter } from '@api/routes/medium';
-import { membershipClaimTokenRouter } from '@api/routes/membershipClaimToken';
-import { membershipRouter } from '@api/routes/membership';
-import { accountPayPalOrderRouter } from '@api/routes/paypal';
-import { playlistRouter } from '@api/routes/playlist';
-import { podrollRouter } from "@api/routes/podroll";
-import { queueRouter } from '@api/routes/queue';
-import { statsRouter } from '@api/routes/stats';
-import { itemTranscriptRouter } from "./routes/itemTranscript";
-import { itemChapterRouter } from "./routes/itemChapter";
-import { mqRouter } from "./routes/mq";
-import { feedRouter } from "./routes/feed";
-import { publisherFeedRouter } from "./routes/publisherFeed";
-import { accountSettingsRouter } from "./routes/accountSettings";
-import { profileContentRouter, myProfileContentRouter } from "./routes/profileContent";
+// Route imports are deferred until after ORM initialization (see startApp function)
 
 export const app = express();
 const port = parseInt(config.api.port, 10);
@@ -61,6 +38,32 @@ export const startApp = async () => {
   try {
     const categoryService = new CategoryService();
     await categoryService.setCategoryCache();
+
+    // Import routes after ORM context is initialized
+    const { accountRouter } = await import('@api/routes/account');
+    const { authRouter } = await import('@api/routes/auth');
+    const { categoryRouter } = await import('@api/routes/category');
+    const { channelRouter } = await import('@api/routes/channel');
+    const { clipRouter } = await import('@api/routes/clip');
+    const { externalServicesRouter } = await import('@api/routes/externalServices');
+    const { itemRouter } = await import('@api/routes/item');
+    const { itemSoundbiteRouter } = await import('./routes/itemSoundbite');
+    const { liveItemRouter } = await import('./routes/liveItem');
+    const { mediumRouter } = await import('@api/routes/medium');
+    const { membershipClaimTokenRouter } = await import('@api/routes/membershipClaimToken');
+    const { membershipRouter } = await import('@api/routes/membership');
+    const { accountPayPalOrderRouter } = await import('@api/routes/paypal');
+    const { playlistRouter } = await import('@api/routes/playlist');
+    const { podrollRouter } = await import("@api/routes/podroll");
+    const { queueRouter } = await import('@api/routes/queue');
+    const { statsRouter } = await import('@api/routes/stats');
+    const { itemTranscriptRouter } = await import('./routes/itemTranscript');
+    const { itemChapterRouter } = await import('./routes/itemChapter');
+    const { mqRouter } = await import('./routes/mq');
+    const { feedRouter } = await import('./routes/feed');
+    const { publisherFeedRouter } = await import('./routes/publisherFeed');
+    const { accountSettingsRouter } = await import('./routes/accountSettings');
+    const { profileContentRouter, myProfileContentRouter } = await import('./routes/profileContent');
 
     app.get(`${baseUrl}/`, (req: Request, res: Response) => {
       res.send(`The server is running on port ${port}`);

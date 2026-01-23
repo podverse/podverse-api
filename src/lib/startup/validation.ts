@@ -46,7 +46,7 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
   results.push(validateRequired('DB_READ_WRITE_USERNAME', 'Database'));
   results.push(validateRequired('DB_READ_WRITE_PASSWORD', 'Database'));
   results.push(validateRequired('DB_DATABASE', 'Database'));
-  results.push(validateOptional('DB_SSL_CONNECTION', 'Database'));
+  results.push(validateOptional('DB_SSL_CONNECTION', 'Database', 'Use Default (false)'));
 
   // API Configuration
   results.push(validateRequired('API_PORT', 'API'));
@@ -102,7 +102,7 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
     const mailerFrom = validateConditionalOptional('MAILER_FROM', 'Mailer');
     if (mailerFrom) results.push(mailerFrom);
   }
-  results.push(validateOptional('MAILER_DISABLED', 'Mailer'));
+  results.push(validateOptional('MAILER_DISABLED', 'Mailer', 'Use Default (false)'));
 
   // Email Configuration (conditionally required when signup mode is 'sign-up')
   if (isSignupModeEnabled) {
@@ -172,7 +172,10 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
   const passed = results.filter(r => r.isValid && r.isSet).length;
   const failed = results.filter(r => !r.isValid).length;
   const requiredMissing = results.filter(r => r.isRequired && !r.isValid).length;
-  const skipped = results.filter(r => !r.isRequired && !r.isSet).length;
+  // Count as skipped only if not set and message is "Skipped" (exclude "Use Default" and "Blank")
+  const skipped = results.filter(r => !r.isRequired && !r.isSet && r.message === 'Skipped').length;
+  // Count defaults used (passed validations with "Use Default" or "Blank" messages)
+  const defaultsUsed = results.filter(r => r.isValid && r.isSet && (r.message.includes('Use Default') || r.message === 'Blank')).length;
 
   return {
     total,
@@ -180,6 +183,7 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
     failed,
     requiredMissing,
     skipped,
+    defaultsUsed,
     results
   };
 };
@@ -372,19 +376,23 @@ const displayValidationResults = (summary: ValidationSummary): void => {
   // Display summary
   loggerService.info('=== Validation Summary ===');
   loggerService.info(`Total: ${summary.total}`);
-  loggerService.info(`Passed: ${summary.passed}`);
+  const passedText = summary.defaultsUsed > 0 
+    ? `Passed: ${summary.passed} (${summary.defaultsUsed} using defaults)`
+    : `Passed: ${summary.passed}`;
+  loggerService.info(passedText);
   if (summary.skipped > 0) {
     loggerService.warn(`Skipped: ${summary.skipped}`);
   }
   loggerService.info(`Failed: ${summary.failed}`);
   loggerService.info(`Required Missing: ${summary.requiredMissing}`);
   
-  if (summary.requiredMissing > 0) {
-    loggerService.error('The following required environment variables are missing or invalid:');
+  if (summary.failed > 0) {
+    loggerService.error('The following environment variables failed validation:');
     summary.results
-      .filter(r => r.isRequired && !r.isValid)
+      .filter(r => !r.isValid)
       .forEach(r => {
-        loggerService.error(`  - ${r.name}: ${r.message}`);
+        const requiredText = r.isRequired ? ' (required)' : ' (optional)';
+        loggerService.error(`  - ${r.name}${requiredText}: ${r.message}`);
       });
   }
 };
