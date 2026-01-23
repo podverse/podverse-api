@@ -4,6 +4,8 @@
 
 The `podverse-api` application requires comprehensive environment variable validation on startup. All environment variables must be provided through the `.env` file - no default values are used in the configuration.
 
+**For comprehensive documentation, see [ENV.md](../../ENV.md) in the repository root.**
+
 ## Validation Pattern
 
 All environment variables are validated in `src/lib/startup/validation.ts` during application startup. The validation:
