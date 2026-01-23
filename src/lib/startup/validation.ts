@@ -292,7 +292,7 @@ const validateServerEnv = (): ValidationResult => {
   
   // Fallback values in case import fails (should match podverse-helpers)
   const validEnvs = SERVER_ENV_VALUES || ['prod', 'beta', 'alpha', 'local'];
-  const validateEnv = isValidServerEnv || ((value: string) => validEnvs.includes(value));
+  const validateEnv = isValidServerEnv || ((value: string) => validEnvs.includes(value as typeof validEnvs[number]));
 
   if (!serverEnv) {
     return {
