@@ -1,4 +1,4 @@
-import { isValidUUID, AccountSignupMode, ValidationResult, ValidationSummary, validateRequired, validateOptional, validateConditionalOptional } from 'podverse-helpers';
+import { isValidUUID, AccountSignupMode, ValidationResult, ValidationSummary, validateRequired, validateOptional, validateConditionalOptional, SERVER_ENV_VALUES, isValidServerEnv } from 'podverse-helpers';
 import { loggerService } from '@api/factories/loggerService';
 
 /**
@@ -165,6 +165,7 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
 
   // General
   results.push(validateOptional('NODE_ENV', 'General'));
+  results.push(validateServerEnv());
   results.push(validateOptional('LOG_LEVEL', 'General'));
 
   // Calculate summary
@@ -172,8 +173,8 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
   const passed = results.filter(r => r.isValid && r.isSet).length;
   const failed = results.filter(r => !r.isValid).length;
   const requiredMissing = results.filter(r => r.isRequired && !r.isValid).length;
-  // Count as skipped only if not set and message is "Skipped" (exclude "Use Default" and "Blank")
-  const skipped = results.filter(r => !r.isRequired && !r.isSet && r.message === 'Skipped').length;
+  // Count as skipped all optional variables that are not set (regardless of message)
+  const skipped = results.filter(r => !r.isRequired && !r.isSet).length;
   // Count defaults used (passed validations with "Use Default" or "Blank" messages)
   const defaultsUsed = results.filter(r => r.isValid && r.isSet && (r.message.includes('Use Default') || r.message === 'Blank')).length;
 
@@ -280,6 +281,48 @@ const validateUserAgent = (): ValidationResult => {
     isRequired: true,
     message: 'Valid format',
     category: 'Auth & Security'
+  };
+};
+
+/**
+ * Validates SERVER_ENV
+ */
+const validateServerEnv = (): ValidationResult => {
+  const serverEnv = process.env.SERVER_ENV || '';
+  
+  // Fallback values in case import fails (should match podverse-helpers)
+  const validEnvs = SERVER_ENV_VALUES || ['prod', 'beta', 'alpha', 'local'];
+  const validateEnv = isValidServerEnv || ((value: string) => validEnvs.includes(value));
+
+  if (!serverEnv) {
+    return {
+      name: 'SERVER_ENV',
+      isSet: false,
+      isValid: false,
+      isRequired: true,
+      message: `Missing - must be one of: ${validEnvs.join(', ')}`,
+      category: 'General'
+    };
+  }
+
+  if (!validateEnv(serverEnv)) {
+    return {
+      name: 'SERVER_ENV',
+      isSet: true,
+      isValid: false,
+      isRequired: true,
+      message: `Invalid value: "${serverEnv}" - must be one of: ${validEnvs.join(', ')}`,
+      category: 'General'
+    };
+  }
+
+  return {
+    name: 'SERVER_ENV',
+    isSet: true,
+    isValid: true,
+    isRequired: true,
+    message: `Set to "${serverEnv}"`,
+    category: 'General'
   };
 };
 

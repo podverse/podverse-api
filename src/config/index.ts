@@ -7,6 +7,7 @@ type SocialConfig = {
 
 type Config = {
   nodeEnv: string;
+  serverEnv: string;
   userAgent: string;
   log: {
     level: string;
@@ -97,6 +98,7 @@ type Config = {
 
 export const config: Config = {
   nodeEnv: process.env.NODE_ENV!,
+  serverEnv: process.env.SERVER_ENV!,
   userAgent: process.env.USER_AGENT!,
   log: {
     level: process.env.LOG_LEVEL!

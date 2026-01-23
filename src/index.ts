@@ -19,6 +19,7 @@ import { loggerService } from './factories/loggerService';
 import { activeMQArtemisService } from './factories/activeMQArtemisService';
 import { testKeyvaldbConnection, keyvaldb } from './lib/keyvaldb/keyvaldb';
 import { config } from './config';
+import { validateStartupRequirements } from './lib/startup/validation';
 
 let serverInstance: import('http').Server | null = null;
 
@@ -66,6 +67,9 @@ process.on('SIGTERM', () => void shutdown('SIGTERM'));
 
 (async () => {
   try {
+    // Validate podverse-api environment variables first
+    validateStartupRequirements();
+
     // Build module configs from app config
     const ormConfig = {
       nodeEnv: config.nodeEnv,

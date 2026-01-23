@@ -49,6 +49,12 @@ These variables are **always required** regardless of configuration:
 - **`COOKIE_DOMAIN`** (Required) - Domain for cookies
 - **`API_ALLOWED_CORS_ORIGINS`** (Required) - Comma-separated list of allowed CORS origins (must contain at least one origin)
 
+### App / General
+
+- **`SERVER_ENV`** (Required) - Server environment
+  - Must be one of: `prod`, `beta`, `alpha`, `local`
+  - Controls environment-specific behavior (e.g., bypassing free trial restrictions in non-production environments)
+
 ### Web
 
 - **`WEB_PROTOCOL`** (Required) - Web protocol (`http` or `https`)

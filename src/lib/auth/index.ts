@@ -180,10 +180,13 @@ const verifyTokenAndMembership = async (
         return res.status(403).json({ message: 'Membership expired' });
       }
 
-      if (options.noFreeTrial) {
+      if (options.noFreeTrial && config.serverEnv === 'prod') {
         const accountMembership = membershipStatus.account_membership;
         if (accountMembership && accountMembership.id === AccountMembershipEnum.Trial) {
-          return res.status(403).json({ message: 'This feature is only available to premium accounts and is not available to free trials' });
+          return res.status(403).json({ 
+            message: 'This feature is only available to premium accounts and is not available to free trials',
+            i18nKey: 'membership.free_trial_not_allowed'
+          });
         }
       }
     }
