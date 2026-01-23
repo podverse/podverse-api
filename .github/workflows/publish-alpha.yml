@@ -24,6 +24,9 @@ jobs:
       - name: Install podverse-external-services latest alpha version
         run: npm i podverse-external-services@alpha --save
 
+      - name: Install podverse-notifications latest alpha version
+        run: npm i podverse-notifications@alpha --save
+
       - name: Install podverse-orm latest alpha version
         run: npm i podverse-orm@alpha --save
 
