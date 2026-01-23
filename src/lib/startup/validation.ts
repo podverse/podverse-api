@@ -30,8 +30,14 @@ export const validateStartupRequirements = (): void => {
 const validateAllEnvironmentVariables = (): ValidationSummary => {
   const results: ValidationResult[] = [];
   
-  // Get signup mode early to determine conditional requirements
-  const signupMode = (process.env.ACCOUNT_SIGNUP_MODE || 'sign-up') as AccountSignupMode;
+  // Validate signup mode first (required) before using it to determine conditional requirements
+  const signupModeResult = validateSignupMode();
+  results.push(signupModeResult);
+  
+  // Get signup mode to determine conditional requirements
+  // If validation fails, we'll still check the env var (validation error will be caught later)
+  // This allows us to properly validate conditional requirements based on the actual value
+  const signupMode = (process.env.ACCOUNT_SIGNUP_MODE || '') as AccountSignupMode;
   const isSignupModeEnabled = signupMode === 'sign-up';
 
   // Auth & Security
@@ -78,7 +84,7 @@ const validateAllEnvironmentVariables = (): ValidationSummary => {
   results.push(validateRequired('PODCAST_INDEX_SECRET_KEY', 'Podcast Index'));
 
   // Premium/Membership
-  results.push(validateSignupMode());
+  // Note: validateSignupMode() is called earlier to determine conditional requirements
   results.push(validateOptional('PREMIUM_MEMBERSHIP_COST_MONTHLY', 'Premium'));
   results.push(validateOptional('PREMIUM_MEMBERSHIP_COST_ANNUALLY', 'Premium'));
   results.push(validateOptional('FREE_TRIAL_EXPIRATION', 'Premium'));
@@ -328,6 +334,8 @@ const validateServerEnv = (): ValidationResult => {
 
 /**
  * Validates ACCOUNT_SIGNUP_MODE
+ * This is a required environment variable with no default value.
+ * Valid values are: 'sign-up' or 'contact-only'
  */
 const validateSignupMode = (): ValidationResult => {
   const signupMode = process.env.ACCOUNT_SIGNUP_MODE || '';
@@ -339,7 +347,7 @@ const validateSignupMode = (): ValidationResult => {
       isSet: false,
       isValid: false,
       isRequired: true,
-      message: 'Missing - must be "sign-up" or "contact-only"',
+      message: `Missing - must be one of: ${validModes.map(m => `"${m}"`).join(' or ')}`,
       category: 'Premium/Membership'
     };
   }
@@ -350,7 +358,7 @@ const validateSignupMode = (): ValidationResult => {
       isSet: true,
       isValid: false,
       isRequired: true,
-      message: `Invalid value: "${signupMode}" - must be "sign-up" or "contact-only"`,
+      message: `Invalid value: "${signupMode}" - must be one of: ${validModes.map(m => `"${m}"`).join(' or ')}`,
       category: 'Premium/Membership'
     };
   }

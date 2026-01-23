@@ -83,7 +83,8 @@ These variables are **always required** regardless of configuration:
 
 ### Premium/Membership
 
-- **`ACCOUNT_SIGNUP_MODE`** (Required) - Must be either `'sign-up'` or `'contact-only'`
+- **`ACCOUNT_SIGNUP_MODE`** (Required) - Must be either `'sign-up'` or `'contact-only'` (no default value)
+  - Must be explicitly set - no default value is assumed
   - When set to `'sign-up'`: Enables user registration and requires additional email/mailer configuration
   - When set to `'contact-only'`: Disables user registration, email/mailer config becomes optional
 
